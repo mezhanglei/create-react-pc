@@ -9,7 +9,7 @@ import { PersonalRoutes } from "./personal-routes";
 import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default-routes";
 import { initWX } from "@/common/wx";
-import LoginComponent from "@/components/login/index";
+import LoginComponent from "@/components/login";
 import LeaveComponent from "@/components/routerHandle/router-leave";
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 

@@ -1,5 +1,5 @@
 // 登录拦截高阶组件
-import LoginComponent from "@/components/login/index";
+import LoginComponent from "@/components/login";
 
 const Cart = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/pages/index/cart/index.js'));
 

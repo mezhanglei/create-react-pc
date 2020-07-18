@@ -8,17 +8,24 @@ import { connect } from "react-redux";
 class Home extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {};
     }
     static defaultProps = {
         type: '首页'
     }
+
     componentDidMount() {
     }
+
+    onSubmit = () => {
+
+    }
+
     render() {
         return (
             <div>
                 <div className="home">首页
-                    <Button type="primary">11111</Button>
+                    <Button type="primary" onClick={this.onSubmit}>保存</Button>
                 </div>
             </div>
         );

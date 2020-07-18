@@ -1,5 +1,5 @@
 // 登录拦截高阶组件
-import LoginComponent from "@/components/login/index";
+import LoginComponent from "@/components/login";
 
 export const Home = React.lazy(() => import(/* webpackChunkName: "home" */ "@/pages/index/home/index.js"));
 

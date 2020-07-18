@@ -6,7 +6,6 @@ import { handleRedirect } from "@/common/wx";
 
 /**
  * 微信授权页面（中转页）
- * 只处理授权逻辑，不做渲染
  */
 
 const AuthWechat = (props) => {
