@@ -10,7 +10,6 @@ import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default-routes";
 import { initWX } from "@/common/wx";
 import LoginComponent from "@/components/login";
-// import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 /**
  * 页面路由配置
@@ -50,7 +49,6 @@ function beforeRouter(props) {
  * @param {*} callback 控制当前路由跳转或者不跳转
  */
 function getConfirmation(message, callback) {
-    console.log(location.href)
     alert(message);
     callback(true);
     // callback(true) 表示离开当前路由
@@ -100,3 +98,36 @@ export default function RouteComponent() {
         </Router>
     );
 }
+
+/**
+ * 缓存组件
+ */
+// export default function RouteComponent() {
+//     // 默认为设置的publicPath
+//     const basename = process.env.PUBLIC_PATH;
+//     return (
+//         <Router basename={basename} getUserConfirmation={getConfirmation}>
+//             <CacheSwitch>
+//                 {routes.map((item, index) => {
+//                     return (
+//                         <CacheRoute
+//                             key={index}
+//                             when="forward"
+//                             exact={item.exact}
+//                             path={item.path}
+//                             render={(props) => {
+//                                 beforeRouter(props, item);
+//                                 return (
+//                                     <React.Fragment>
+//                                         <Prompt message={`是否确定离开当前路由？${location.href}`} />
+//                                         <item.component {...props} data={item}></item.component>
+//                                     </React.Fragment>
+//                                 );
+//                             }}
+//                         />
+//                     );
+//                 })}
+//             </CacheSwitch>
+//         </Router>
+//     );
+// }
