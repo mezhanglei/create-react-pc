@@ -82,15 +82,13 @@ export default function RouteComponent() {
     const basename = process.env.PUBLIC_PATH;
     return (
         <Router basename={basename} getUserConfirmation={getConfirmation}>
-            {/* <Switch> */}
-            <CacheSwitch>
+            <Switch>
                 {routes.map((item, index) => {
                     return (
-                        item.cache ? cacheRoute(item, index) : normalRoute(item, index)
+                        normalRoute(item, index)
                     );
                 })}
-            </CacheSwitch>
-            {/* </Switch> */}
+            </Switch>
         </Router>
     );
 }
@@ -112,32 +110,3 @@ function normalRoute(item, index) {
         }}
     />;
 }
-
-/**
- * 缓存Route(外层需要套CacheSwitch)
- * CacheRoute组件的when：默认forward：缓存当前页面，下个页面不缓存, 
- *                      back: 不缓存当前页面，下个页面缓存
- *                      always：缓存当前页面和下个页面
- * 额外的生命周期：didCache和didRecover
- * props.cacheLifecycles.didCache(this.componentDidCache)
- * props.cacheLifecycles.didRecover(this.componentDidRecover)
- * 
- */
-function cacheRoute(item, index) {
-    return <CacheRoute
-        key={index}
-        when="back"
-        exact={item.exact}
-        path={item.path}
-        saveScrollPosition={true}
-        render={(props) => {
-            beforeRouter(props, item);
-            return (
-                <React.Fragment>
-                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                    <item.component {...props} data={item}></item.component>
-                </React.Fragment>
-            );
-        }}
-    />;
-};
