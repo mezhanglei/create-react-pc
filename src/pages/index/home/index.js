@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import "./index.less";
 import { Button } from "antd";
 import http from "@/http/request.js";
-import { urlDelQuery, getUrlQuery } from "@/utils/url-utils";
+import { urlDelQuery, getUrlQuery } from "@/utils/url";
 import { connect } from "react-redux";
 
 class Home extends React.Component {

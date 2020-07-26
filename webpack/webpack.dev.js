@@ -267,7 +267,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8084,
+        port: 8083,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新
@@ -357,7 +357,7 @@ function handleRequest(req, res) {
         return;
     }
     try {
-        data = fs.readFileSync(fileUrl, { encoding: 'utf-8' })
+        data = fs.readFileSync(fileUrl, { encoding: 'utf-8' });
         new Promise(function (resolve) {
             setTimeout(function () {
                 resolve();
@@ -365,6 +365,6 @@ function handleRequest(req, res) {
             }, Math.random() * 3000);
         });
     } catch (e) {
-        console.error(e)
+        console.error(e);
     }
 }

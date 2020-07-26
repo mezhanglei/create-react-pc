@@ -1,5 +1,5 @@
 import { message } from "antd";
-import { getUrlQuery } from "@/utils/url-utils";
+import { getUrlQuery } from "@/utils/url";
 import { WECHAT_TOKEN } from "@/constants/account/index";
 import { myStorage } from "@/utils/cache.js";
 import { handleRedirect } from "@/common/wx";

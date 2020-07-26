@@ -2,12 +2,12 @@ import React from "react";
 import { Prompt } from 'react-router';
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { HomeRoutes, Home } from "./home-routes";
-import { CategoryRoutes } from "./category-routes";
-import { CartRoutes } from "./cart-routes";
-import { PersonalRoutes } from "./personal-routes";
+import { HomeRoutes, Home } from "./home";
+import { CategoryRoutes } from "./category";
+import { CartRoutes } from "./cart";
+import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
-import { DefaultRoutes } from "./default-routes";
+import { DefaultRoutes } from "./default";
 import { initWX } from "@/common/wx";
 import LoginComponent from "@/components/login";
 
@@ -37,19 +37,26 @@ const routes = [
     }
 ];
 
+// 路由跳转历史
+let RoutesHistory = [];
+
 // 进入路由页面之前触发的方法
-function beforeRouter(props) {
+function beforeRouter(props, item) {
+    // 路由跳转历史
+    RoutesHistory.push(item.path);
+    // //使用它
+    // console.log(newFun);
     // 微信授权
     // initWX();
 }
 
 /**
- * 对于路由拦截组件Prompt自定义使用, 离开当前路由页面之前触发
+ * 离开当前路由页面之前触发的方法(需要实例化路由拦截组件Prompt)
  * @param {*} message Prompt组件的提示信息
  * @param {*} callback 控制当前路由跳转或者不跳转
  */
 function getConfirmation(message, callback) {
-    alert(message);
+    // alert(message);
     callback(true);
     // callback(true) 表示离开当前路由
     // callback(false) 表示留在当前路由
@@ -75,59 +82,62 @@ export default function RouteComponent() {
     const basename = process.env.PUBLIC_PATH;
     return (
         <Router basename={basename} getUserConfirmation={getConfirmation}>
-            <Switch>
+            {/* <Switch> */}
+            <CacheSwitch>
                 {routes.map((item, index) => {
                     return (
-                        <Route
-                            key={index}
-                            exact={item.exact ? true : false}
-                            path={item.path}
-                            render={(props) => {
-                                beforeRouter(props);
-                                return (
-                                    <React.Fragment>
-                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                                        <item.component {...props} data={item}></item.component>
-                                    </React.Fragment>
-                                );
-                            }}
-                        />
+                        item.cache ? cacheRoute(item, index) : normalRoute(item, index)
                     );
                 })}
-            </Switch>
+            </CacheSwitch>
+            {/* </Switch> */}
         </Router>
     );
 }
 
+// 普通正常Route
+function normalRoute(item, index) {
+    return <Route
+        key={index}
+        exact={item.exact}
+        path={item.path}
+        render={(props) => {
+            beforeRouter(props, item);
+            return (
+                <React.Fragment>
+                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                    <item.component {...props} data={item}></item.component>
+                </React.Fragment>
+            );
+        }}
+    />;
+}
+
 /**
- * 缓存组件
+ * 缓存Route(外层需要套CacheSwitch)
+ * CacheRoute组件的when：默认forward：缓存当前页面，下个页面不缓存, 
+ *                      back: 不缓存当前页面，下个页面缓存
+ *                      always：缓存当前页面和下个页面
+ * 额外的生命周期：didCache和didRecover
+ * props.cacheLifecycles.didCache(this.componentDidCache)
+ * props.cacheLifecycles.didRecover(this.componentDidRecover)
+ * 
  */
-// export default function RouteComponent() {
-//     // 默认为设置的publicPath
-//     const basename = process.env.PUBLIC_PATH;
-//     return (
-//         <Router basename={basename} getUserConfirmation={getConfirmation}>
-//             <CacheSwitch>
-//                 {routes.map((item, index) => {
-//                     return (
-//                         <CacheRoute
-//                             key={index}
-//                             when="forward"
-//                             exact={item.exact}
-//                             path={item.path}
-//                             render={(props) => {
-//                                 beforeRouter(props, item);
-//                                 return (
-//                                     <React.Fragment>
-//                                         <Prompt message={`是否确定离开当前路由？${location.href}`} />
-//                                         <item.component {...props} data={item}></item.component>
-//                                     </React.Fragment>
-//                                 );
-//                             }}
-//                         />
-//                     );
-//                 })}
-//             </CacheSwitch>
-//         </Router>
-//     );
-// }
+function cacheRoute(item, index) {
+    return <CacheRoute
+        key={index}
+        when="back"
+        exact={item.exact}
+        path={item.path}
+        saveScrollPosition={true}
+        render={(props) => {
+            beforeRouter(props, item);
+            return (
+                <React.Fragment>
+                    <Prompt message={`是否确定离开当前路由？${location.href}`} />
+                    <item.component {...props} data={item}></item.component>
+                </React.Fragment>
+            );
+        }}
+    />;
+};

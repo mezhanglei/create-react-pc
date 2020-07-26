@@ -1,19 +1,9 @@
 
 // 数组的一些方法
-
-// 归并排序（稳定O(nlogn) 和 快速排序排序(平均O(nlogn)) > sort(看个浏览器底层实现) > 冒泡排序
-
-function isEmpty(value) {
-    const type = ["", undefined, null];
-    if (type.indexOf(value) > -1) {
-        return true;
-    } else {
-        return false;
-    }
-}
+import { isObject, isArray, isEmpty } from "./type";
 
 /**
- * 数组排序，支持对象数组和常规简单数组
+ * 数组排序，支持对象数组和常规简单数组(数据量在万以内采取这种)
  * @param {Array} data 数组
  * @param {String} attr 属性名，可选, 对象数组需指定根据哪个属性排序
  * @param {bool} asc // 表示升序或降序，默认true升序
@@ -62,7 +52,7 @@ export function popSort(arr, attr) {
 }
 
 /**
- * 快速排序(从小到大)，支持对象数组和普通简单数组
+ * 快速排序(从小到大)，支持对象数组和普通简单数组(数据量大采取这种)
  * @param {Array} arr
  * @param {String} attr 属性名，可选，对象数组需指定根据哪个属性排序
  */
@@ -189,7 +179,7 @@ export function unique(arr, attr) {
  * @param {Object} children 如果有嵌套数组则指明嵌套的属性名字符串, 默认为children字符串
  */
 export function formaterData(data, attrObj = { label: 'key' }, children = 'children') {
-    if (Object.prototype.toString.call(attrObj) !== '[object Object]') {
+    if (!isObject(attrObj)) {
         return data;
     }
     let newArr = [];
@@ -201,7 +191,7 @@ export function formaterData(data, attrObj = { label: 'key' }, children = 'child
             newObj[attrObj[key]] = item[key];
         });
         // 判断是否有嵌套数组, 有的话也同样执行
-        if (Object.prototype.toString.call(item[children]) === '[object Array]' && item[children].length > 0) {
+        if (isArray(item[children]) && item[children].length > 0) {
             newObj[children] = formaterData(item[children], attrObj, children);
         }
         newArr.push({ ...item, ...newObj });
@@ -325,6 +315,7 @@ export function regQuery(list, keyWord, attr) {
             if (reg.test(newList[i][attr])) {
                 arr.push(newList[i]);
             }
+
         }
     }
     return arr;
