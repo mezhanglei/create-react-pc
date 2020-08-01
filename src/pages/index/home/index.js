@@ -15,6 +15,10 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
+        http.post({
+            url: "/list",
+            data: {}
+        });
     }
 
     onSubmit = () => {
