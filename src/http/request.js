@@ -4,7 +4,7 @@ import { message } from "antd";
 import { myStorage } from "@/utils/cache.js";
 import { clearLoginInfo } from "@/common/common.js";
 import { TOKEN } from "@/constants/account/index";
-import { trimParams } from "@/utils/base";
+import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
 
 // 开始loading
