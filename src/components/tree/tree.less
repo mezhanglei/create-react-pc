@@ -1,0 +1,27 @@
+ul,
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tree-list-box {
+
+  // 下拉菜单的关闭样式
+  .tree-menu-drop {
+    height: 0;
+    overflow: hidden;
+  }
+
+  // 打开下拉菜单的样式
+  .tree-menu-open-show {
+    height: auto;
+    overflow: hidden;
+  }
+
+  // 当为inline时选项的样式 默认一行三个选项
+  .tree-node-inline {
+    width: calc(100% / 3 - 16px);
+    display: inline-block;
+  }
+}

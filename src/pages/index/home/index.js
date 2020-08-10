@@ -4,6 +4,7 @@ import { Button } from "antd";
 import http from "@/http/request.js";
 import { urlDelQuery, getUrlQuery } from "@/utils/url";
 import { connect } from "react-redux";
+import Tree from "@/components/tree/tree";
 
 class Home extends React.Component {
     constructor(props) {
@@ -29,7 +30,7 @@ class Home extends React.Component {
         return (
             <div>
                 <div className="home">首页
-                    <Button type="primary" onClick={this.onSubmit}>保存</Button>
+                    <Tree inline={false} />
                 </div>
             </div>
         );
