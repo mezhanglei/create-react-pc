@@ -37,6 +37,9 @@ export default class extends React.Component {
         disabledKeys: [], // 不可选的选项的key
         inline: false, // 表示非折叠选项的布局，true表示行内排列，默认false独占一行
         data: [{
+            value: 3,
+            label: '1111',  
+        }, {
             value: 2,
             label: '产品管理',
             children: [{
@@ -65,7 +68,12 @@ export default class extends React.Component {
                 children: [{
                     checked: true,
                     value: 1100,
-                    label: '机器人编辑'
+                    label: '机器人编辑',
+                    children:[{
+                        checked: true,
+                    value: 11033,
+                    label: '机器人编辑',
+                    }]
                 }, {
                     checked: true,
                     value: 1200,
@@ -279,7 +287,7 @@ export default class extends React.Component {
             if (item && item.children && item.children.length > 0) {
                 return (
                     <li key={item.value}>
-                        <div style={{ paddingLeft: num * 10 + 'px' }} className={styles["tree-menu-title"]}>
+                        <div style={{ paddingLeft: num * 9 + 'px' }} className={styles["tree-menu-title"]}>
                             <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={folder} disabled={disabled || this.parentDisabled(item)} indeterminate={this.parentChecked(item) === 1} checked={this.parentChecked(item) === 2} value={item.label} />
                         </div>
                         <ul className={folder ? styles["tree-menu-drop"] : styles["tree-menu-open-show"]}>
