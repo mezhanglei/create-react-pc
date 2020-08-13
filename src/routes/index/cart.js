@@ -1,7 +1,6 @@
-// 登录拦截高阶组件
-import LoginComponent from "@/components/login";
+import loadable from "@/components/lazy";
 
-const Cart = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/pages/index/cart/index.js'));
+const Cart = loadable({ loader: () => import(/* webpackChunkName: "cart" */ '@/pages/index/cart/index.js') });
 
 export const CartRoutes = [
     {

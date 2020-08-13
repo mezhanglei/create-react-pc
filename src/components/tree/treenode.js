@@ -18,16 +18,16 @@ import styles from './treenode.less';
 export default class extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.props;
+        this.state = { ...props };
     };
 
     componentDidUpdate(preProps, preState) {
         // 异步更新的字段
         const changeProps = ["type", 'folder', "checked", "disabled", "indeterminate", "value"];
         changeProps.map(item => {
-            if (preProps[item] != this.props[item]) {
+            if (preProps[item]?.toString() != this.props[item]?.toString()) {
                 this.setState({
-                    [item]: this.props[item]
+                    [item]: this.props[item] && JSON.parse(JSON.stringify(this.props[item]))
                 });
             }
         });
@@ -57,20 +57,24 @@ export default class extends React.Component {
         const { disabled, checked, folder, className, indeterminate, value } = this.state;
         return (
             <div className={disabled ? `${styles["tree-node-default"]} ${styles["tree-node-disabled"]} ${className}` : `${styles["tree-node-default"]} ${className}`}>
-                <i onClick={() => this.switchIcon()} className={folder ? `${styles["folder-icon-down"]} ${styles["folder-icon-transition"]}` : styles["folder-icon-down"]}></i>
-                <span style={{ marginLeft: "4px" }} onClick={() => this.changeCheck()} className={indeterminate ? styles["check-box-indeterminate"] : (checked ? styles["check-box-selected"] : styles["check-box-default"])}></span>
-                <span className={styles["folder-text-default"]}>{value}</span>
+                <div className={styles["content"]}>
+                    <i onClick={() => this.switchIcon()} className={folder ? `${styles["folder-icon-down"]} ${styles["folder-icon-transition"]}` : styles["folder-icon-down"]}></i>
+                    <span style={{ marginLeft: "4px" }} onClick={() => this.changeCheck()} className={indeterminate ? styles["check-box-indeterminate"] : (checked ? styles["check-box-selected"] : styles["check-box-default"])}></span>
+                    {this.props.children ?? <span className={styles["folder-text-default"]}>{value}</span>}
+                </div>
             </div>
         );
     }
 
     // 普通选项
     normalNode() {
-        const { disabled, checked, className, value } = this.state;
+        const { disabled, checked, className, indeterminate, value } = this.state;
         return (
             <div className={disabled ? `${styles["tree-node-default"]} ${styles["tree-node-disabled"]} ${className}` : `${styles["tree-node-default"]} ${className}`}>
-                <span onClick={() => this.changeCheck()} className={checked ? styles["check-box-selected"] : styles["check-box-default"]}></span>
-                <span className={styles["folder-text-default"]}>{value}</span>
+                <div className={styles["content"]}>
+                    <span onClick={() => this.changeCheck()} className={indeterminate ? styles["check-box-indeterminate"] : (checked ? styles["check-box-selected"] : styles["check-box-default"])}></span>
+                    {this.props.children ?? <span className={styles["folder-text-default"]}>{value}</span>}
+                </div>
             </div>
         );
     }

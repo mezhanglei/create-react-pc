@@ -1,6 +1,5 @@
 import React from "react";
-import { Prompt } from 'react-router';
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { HashRouter as Router, Route, Switch, Prompt } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { HomeRoutes, Home } from "./home";
 import { CategoryRoutes } from "./category";

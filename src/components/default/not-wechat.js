@@ -1,4 +1,4 @@
-import Result from "@/components/result/result-mobile";
+import Result from "@/components/result/result";
 import { useEffect } from "react";
 import { message } from "antd";
 
@@ -11,5 +11,5 @@ export default function NotWechat(props) {
         document.title = title;
         message.info(title);
     });
-    return <Result imgUrl={imgUrl} title={title} />;
+    return <Result height="100vh" imgUrl={imgUrl} title={title} />;
 } 

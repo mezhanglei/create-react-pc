@@ -1,6 +1,8 @@
-const NotWechat = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/not-wechat'));
-const NotFound = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/not-found'));
-const AuthWechat = React.lazy(() => import(/* webpackChunkName: "cart" */ '@/components/default/wechat-auth'));
+import loadable from "@/components/lazy";
+
+const NotWechat = loadable({ loader: () => import(/* webpackChunkName: "default" */ '@/components/default/not-wechat') });
+const NotFound = loadable({ loader: () => import(/* webpackChunkName: "default" */ '@/components/default/not-found') });
+const AuthWechat = loadable({ loader: () => import(/* webpackChunkName: "default" */ '@/components/default/wechat-auth') });
 
 // 默认的部分
 export const DefaultRoutes = [

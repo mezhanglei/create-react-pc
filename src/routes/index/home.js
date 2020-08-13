@@ -1,7 +1,6 @@
-// 登录拦截高阶组件
-import LoginComponent from "@/components/login";
+import loadable from "@/components/lazy";
 
-export const Home = React.lazy(() => import(/* webpackChunkName: "home" */ "@/pages/index/home/index.js"));
+export const Home = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/index.js') });
 
 // 首页
 export const HomeRoutes = [

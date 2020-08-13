@@ -1,7 +1,6 @@
-// 登录拦截高阶组件
-import LoginComponent from "@/components/login";
+import loadable from "@/components/lazy";
 
-const Personal = React.lazy(() => import(/* webpackChunkName: "personal" */ '@/pages/index/personal/index.js'));
+const Personal = loadable({ loader: () => import(/* webpackChunkName: "personal" */ '@/pages/index/personal/index.js') });
 
 
 // 个人中心模块

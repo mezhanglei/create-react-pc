@@ -8,8 +8,8 @@ import { unique } from "@/utils/array";
  * tree参数说明:
  *    checkedKeys: [], // 选中的选项key的数组
  *    folderKeys: [], // 折叠起来的选项key的数组
- *    isAllDisabled: false, // 是否全部不可选, 优先级最高
  *    disabledKeys: [], // 不可选的选项的key
+ *    status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
  *    inline: false, // 表示非折叠选项的布局，true表示行内排列，默认false独占一行，优先级最高
  *    data: [] // 树列表的渲染数组
  * 渲染数组的内部参数说明:
@@ -20,25 +20,27 @@ import { unique } from "@/utils/array";
  *    label: 选项的名
  *    value: 选项的key
  * 回调函数：
- *  onSwitch: 切换折叠状态后的回调: function(folderKeys){}
- *  parentChange: 全选反选后的回调: function(checkedKeys){}
- *  onChange: 点击子元素切换选中状态的回调: function(checkedKeys){}
+ *  onSwitch: 切换折叠状态后的回调: function(folderKeys){ //  folderKeys为所有折叠选项  }
+ *  onSelect: 点击选项的回调: function(checkedKeys, currentKeys){ // checkedKeys所有选中点(不包括disabled) currentKeys为当前checked变化选项 }
+ *  onChange: 选中项变化的回调: function(checkedKeys){ // checkedKeys所有选中点(不包括disabled) }
  */
 export default class extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.props;
+        this.state = {
+            ...props
+        };
     };
 
     static defaultProps = {
         checkedKeys: [], // 选中的选项key的数组
         folderKeys: [], // 折叠起来的选项key的数组
-        isAllDisabled: false, // 是否全部不可选
         disabledKeys: [], // 不可选的选项的key
-        inline: false, // 表示非折叠选项的布局，true表示行内排列，默认false独占一行
+        status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
+        inline: false, // 表示选项的布局，true表示行内排列，默认false独占一行
         data: [{
             value: 3,
-            label: '1111',  
+            label: '1111',
         }, {
             value: 2,
             label: '产品管理',
@@ -69,20 +71,24 @@ export default class extends React.Component {
                     checked: true,
                     value: 1100,
                     label: '机器人编辑',
-                    children:[{
+                    children: [{
                         checked: true,
-                    value: 11033,
-                    label: '机器人编辑',
+                        disabled: true,
+                        value: 11033,
+                        label: '机器人编辑',
                     }]
                 }, {
+                    disabled: true,
                     checked: true,
                     value: 1200,
                     label: '参数配置'
                 }, {
                     value: 1300,
-                    label: '转人工配置启动'
+                    label: '转人工配置启动',
+                    disabled: true,
                 }, {
-                    // disabled: true,
+                    disabled: true,
+                    checked: true,
                     value: 1400,
                     label: '转人工配置'
                 }]
@@ -90,29 +96,52 @@ export default class extends React.Component {
         }]
     }
 
-    componentDidUpdate(preProps, preState) {
-        // 需要更改state的字段
-        const changeProps = ["checkedKeys", 'folderKeys', "isAllDisabled", "disabledKeys", "inline", "data"];
-        changeProps.map(item => {
-            if (JSON.stringify(preProps[item]) != JSON.stringify(this.props[item])) {
-                this.setState({
-                    [item]: JSON.parse(JSON.stringify(this.props[item]))
-                }, this.initTree);
-            }
-        });
-    }
-
     componentDidMount() {
         this.initTree();
     }
 
-    initTree() {
-        const { data = [] } = this.state;
-        this.setState({
-            checkedKeys: this.getKeysByName('checked', data),
-            folderKeys: this.getKeysByName('folder', data),
-            disabledKeys: this.getKeysByName('disabled', data)
+    componentDidUpdate(preProps, preState) {
+        // 需要更新state的字段
+        const changeProps = ["checkedKeys", 'folderKeys', "disabledKeys", "status", "inline", "data"];
+        changeProps.map(item => {
+            if (preProps[item]?.toString() != this.props[item]?.toString()) {
+                this.initTree();
+            }
         });
+    }
+
+    initTree() {
+        const { checkedKeys = [], folderKeys = [], disabledKeys = [], status, inline, data = [] } = this.props;
+        // 合并属性
+        let checkedKeys_result = [...checkedKeys, ...this.getKeysByName('checked', data)];
+        let folderKeys_result = [...folderKeys, ...this.getKeysByName('folder', data)];
+        let disabledKeys_result = [...disabledKeys, ...this.getKeysByName('disabled', data)];
+        const allChild = this.getChildrenKeys(data);
+
+        // 全选(忽略disabled选项)
+        if (status == "checked") {
+            const filterDisabled = this.filterArray(allChild, disabledKeys_result);
+            checkedKeys_result = [...checkedKeys_result, ...filterDisabled];
+            // 反选(忽略disabled选项)
+        } else if (status == "notChecked") {
+            checkedKeys_result = checkedKeys_result.filter(sub => { return disabledKeys_result.indexOf(sub) > -1; });
+            // 全部禁用
+        } else if (status == "disabled") {
+            disabledKeys_result = allChild;
+            // 全部不禁用
+        } else if (status == "notDisabled") {
+            disabledKeys_result = [];
+        }
+
+        // 合并
+        this.setState({
+            checkedKeys: unique(checkedKeys_result),
+            folderKeys: unique(folderKeys_result),
+            disabledKeys: unique(disabledKeys_result),
+            inline: inline
+        });
+
+        this.props.onChange && this.props.onChange(unique(this.filterArray(checkedKeys_result, disabledKeys_result)));
     }
 
     /**
@@ -146,9 +175,14 @@ export default class extends React.Component {
         return keys;
     }
 
+    // keys数组过滤掉filters数组中存在的元素
+    filterArray = (keys = [], filters = []) => {
+        return keys.filter(sub => { return filters.indexOf(sub) == -1; });
+    }
+
     // 父元素的折叠状态
     parentFolder(item) {
-        let { folderKeys } = this.state;
+        let { folderKeys = [] } = this.state;
         if (folderKeys.indexOf(item.value) > -1) {
             return 'folder';
         } else {
@@ -158,13 +192,14 @@ export default class extends React.Component {
 
     // 切换父元素折叠或打开
     switchParent(item) {
-        let { folderKeys } = this.state;
+        let { folderKeys = [] } = this.state;
         if (folderKeys.indexOf(item.value) > -1) {
             let index = folderKeys.indexOf(item.value);
             folderKeys.splice(index, 1);
         } else {
             folderKeys.push(item.value);
         }
+
         this.props.onSwitch && this.props.onSwitch(folderKeys);
         this.setState({
             folderKeys: folderKeys
@@ -173,53 +208,60 @@ export default class extends React.Component {
 
     // 父元素的选中状态
     parentChecked(item) {
-        const { checkedKeys = [] } = this.state;
+        const { checkedKeys = [], disabledKeys = [] } = this.state;
         // 父元素所有的子元素
-        let children = this.getChildrenKeys(item.children);
+        const children = this.getChildrenKeys(item.children);
+        // 过滤禁用子元素
+        const filterDisabled = this.filterArray(children, disabledKeys);
+        // 选中状态参考的对象：全部子元素或可点击子元素
+        let finallyChild = filterDisabled?.length ? filterDisabled : children;
         // 父元素选中的子元素
         let checkedChild = [];
-        children.map(sub => {
+        finallyChild.map(sub => {
             if (checkedKeys.indexOf(sub) > -1) {
                 checkedChild.push(sub);
             }
         });
         if (checkedChild.length === 0) {
-            return 0;
-        } else if (checkedChild.length > 0 && checkedChild.length < children.length) {
-            return 1;
-        } else if (checkedChild.length > 0 && checkedChild.length === children.length) {
-            return 2;
+            return 'none';
+        } else if (checkedChild.length > 0 && checkedChild.length < finallyChild.length) {
+            return 'indeterminate';
+        } else if (checkedChild.length > 0 && checkedChild.length === finallyChild.length) {
+            return "checked";
         }
     };
 
     // 选择父元素实现全选/反选
     chooseParent(item) {
-        let { checkedKeys } = this.state;
+        let { checkedKeys = [], disabledKeys = [] } = this.state;
         // 当前所有子元素
         let children = this.getChildrenKeys(item.children);
-
+        // 过滤禁用子元素
+        let filterDisabled = this.filterArray(children, disabledKeys);
+        // 所有选中的元素
+        let result = [];
+        // 当前全选/反选的元素
+        let current = [];
         // 反选
-        if (this.parentChecked(item) === 2) {
-            children.map(sub => {
-                if (checkedKeys.indexOf(sub) > -1) {
-                    const index = checkedKeys.indexOf(sub);
-                    checkedKeys.splice(index, 1);
-                }
-            });
-            // 全选(合并后去重)
+        if (this.parentChecked(item) === "checked") {
+            result = this.filterArray(checkedKeys, filterDisabled);
+            current = filterDisabled.filter(sub => { return checkedKeys.indexOf(sub) > -1; });
+            // 全选
         } else {
-            checkedKeys = unique([...checkedKeys, ...children]);
+            current = this.filterArray(filterDisabled, checkedKeys);
+            result = [...checkedKeys, ...current];
         }
-
-        this.props.parentChange && this.props.parentChange(checkedKeys);
         this.setState({
-            checkedKeys: checkedKeys
+            checkedKeys: result
         });
+        // 回调
+        this.props.onSelect && this.props.onSelect(this.filterArray(result, disabledKeys), current);
+        this.props.onChange && this.props.onChange(this.filterArray(result, disabledKeys));
     };
 
     // 父元素的禁用状态
     parentDisabled(item) {
-        let { disabledKeys } = this.state;
+        let { disabledKeys = [] } = this.state;
         // 获取当前所有子元素
         let children = this.getChildrenKeys(item.children);
         // 获取当前标题下的子元素为disabled的数组
@@ -230,26 +272,29 @@ export default class extends React.Component {
             }
         });
 
-        if (disabledChild.length === 0) {
-            return false;
-        } else if (disabledChild.length > 0) {
+        if (disabledChild.length === children.length) {
             return true;
+        } else {
+            return false;
         }
     };
 
     // 选择子元素
     chooseChild(item) {
-        let { checkedKeys = [] } = this.state;
+        let { checkedKeys = [], disabledKeys = [] } = this.state;
         if (checkedKeys.indexOf(item.value) > -1) {
             let index = checkedKeys.indexOf(item.value);
             checkedKeys.splice(index, 1);
         } else {
             checkedKeys.push(item.value);
         }
-        this.props.onChange && this.props.onChange(checkedKeys);
         this.setState({
             checkedKeys: checkedKeys
         });
+
+        // 回调
+        this.props.onSelect && this.props.onSelect(this.filterArray(checkedKeys, disabledKeys), [item.value]);
+        this.props.onChange && this.props.onChange(this.filterArray(checkedKeys, disabledKeys));
     };
 
     // 子元素的选中状态
@@ -260,17 +305,12 @@ export default class extends React.Component {
 
     // 子元素的禁用状态
     childDisabled(item) {
-        let { disabledKeys } = this.state;
-        // 看是否有没有这个id
-        if (disabledKeys.indexOf(item.value) > -1) {
-            return true;
-        } else {
-            return false;
-        }
+        let { disabledKeys = [] } = this.state;
+        return disabledKeys.indexOf(item.value) > -1;
     };
 
     render() {
-        const { data = [] } = this.state;
+        const { data = [] } = this.props;
         return (
             <ul className={styles["tree-list-box"]}>
                 {this.renderTree(data)}
@@ -279,26 +319,23 @@ export default class extends React.Component {
     };
 
     renderTree(arr, num = 1) {
+        const { inline } = this.state;
         return arr && arr.map((item, index) => {
-            // 全局的三个属性
-            const isInline = this.state.inline;
-            const disabled = this.state.isAllDisabled;
-            const folder = this.parentFolder(item) === 'folder' || this.state.folder;
             if (item && item.children && item.children.length > 0) {
                 return (
                     <li key={item.value}>
-                        <div style={{ paddingLeft: num * 9 + 'px' }} className={styles["tree-menu-title"]}>
-                            <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={folder} disabled={disabled || this.parentDisabled(item)} indeterminate={this.parentChecked(item) === 1} checked={this.parentChecked(item) === 2} value={item.label} />
+                        <div className={styles["tree-menu-title"]}>
+                            <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={this.parentFolder(item) === 'folder'} disabled={this.parentDisabled(item)} indeterminate={this.parentChecked(item) === "indeterminate"} checked={this.parentChecked(item) === "checked"} value={item.label} />
                         </div>
-                        <ul className={folder ? styles["tree-menu-drop"] : styles["tree-menu-open-show"]}>
+                        <ul style={{ paddingLeft: 13 + 'px' }} className={this.parentFolder(item) === 'folder' ? styles["tree-menu-drop"] : styles["tree-menu-open-show"]}>
                             {this.renderTree(item.children, num + 1)}
                         </ul>
                     </li>
                 );
             } else if (item) {
                 return (
-                    <li key={item.value} ref={ref => this.clickItem = ref} style={{ paddingLeft: num * 10 + 'px' }} className={isInline ? styles["tree-node-inline"] : undefined}>
-                        <TreeNode onCheck={() => this.chooseChild(item)} disabled={disabled || this.childDisabled(item)} checked={this.childChecked(item)} value={item.label} />
+                    <li key={item.value} ref={ref => this.clickItem = ref} className={inline ? styles["tree-node-inline"] : undefined}>
+                        <TreeNode onCheck={() => this.chooseChild(item)} disabled={this.childDisabled(item)} checked={this.childChecked(item)} value={item.label} />
                     </li>
                 );
             }

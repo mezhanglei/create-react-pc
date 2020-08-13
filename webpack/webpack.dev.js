@@ -233,11 +233,7 @@ module.exports = {
     plugins: [
         // 加载webpack内置的热更新插件
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.ProvidePlugin({
-            React: "react",
-            ReactDOM: "react-dom",
-            ReactRouter: "react-router",
-        }),
+        new webpack.ProvidePlugin(configs.providePlugin),
         // 清理dist目录
         // new CleanWebpackPlugin(),
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
@@ -267,7 +263,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8081,
+        port: 8083,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新

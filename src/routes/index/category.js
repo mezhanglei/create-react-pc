@@ -1,7 +1,6 @@
-// 登录拦截高阶组件
-import LoginComponent from "@/components/login";
+import loadable from "@/components/lazy";
 
-const Category = React.lazy(() => import(/* webpackChunkName: "category" */ '@/pages/index/category/index.js'));
+const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/index/category/index.js') });
 
 export const CategoryRoutes = [
     {
