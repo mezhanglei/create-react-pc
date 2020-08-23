@@ -12,7 +12,7 @@ import { unique } from "@/utils/array";
  *    status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
  *    inline: false, // 表示非折叠选项的布局，true表示行内排列，默认false独占一行，优先级最高
  *    data: [] // 树列表的渲染数组
- * 渲染数组的内部参数说明:
+ * 渲染数组的内部字段说明:
  *    checked: true表示选中
  *    disabled: true表示不可选
  *    folder：true表示折叠选项处于折叠状态
