@@ -21,7 +21,7 @@ function aop(type) {
         window.dispatchEvent(event);
         // 正常执行原事件
         const rewrite = source.apply(this, arguments);
-        // return rewrite;
+        return rewrite;
     };
 }
 

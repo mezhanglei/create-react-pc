@@ -2,7 +2,6 @@ import React, { Component, useState, useEffect } from 'react';
 import "./index.less";
 import { Button } from "antd";
 import http from "@/http/request.js";
-import { urlDelQuery, getUrlQuery } from "@/utils/url";
 import { connect } from "react-redux";
 import Tree from "@/components/tree/tree";
 import SendCode from "@/components/sendCode/sendcode";

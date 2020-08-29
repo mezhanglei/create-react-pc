@@ -5,7 +5,7 @@ import { myStorage } from "@/utils/cache.js";
 import { handleRedirect } from "@/common/wx";
 
 /**
- * 微信授权页面（中转页）
+ * 微信授权回调页面（中转页）
  */
 
 const AuthWechat = (props) => {

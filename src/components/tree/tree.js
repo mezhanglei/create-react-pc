@@ -4,7 +4,7 @@ import TreeNode from './treenode.js';
 import { unique } from "@/utils/array";
 
 /**
- * 树列表
+ * 树列表: 设计思路，完全由配置化数据控制行为表现
  * tree参数说明:
  *    checkedKeys: [], // 选中的选项key的数组
  *    folderKeys: [], // 折叠起来的选项key的数组

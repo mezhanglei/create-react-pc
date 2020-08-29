@@ -1,6 +1,7 @@
 
 import Fingerprint2 from "fingerprintjs2";
 
+// 浏览器指纹
 
 // 执行获取浏览器指纹的方法
 export function getFinger() {
