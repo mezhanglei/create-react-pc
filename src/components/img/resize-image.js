@@ -23,18 +23,19 @@ const ResizeImage = (props) => {
 
     useEffect(() => {
         const img = imgRef.current;
-        const imgWidth = img.width;
-        const imgHeight = img.height;
-        // 以窄边作为缩放基准
-        if (imgWidth > imgHeight) {
-            img.height = height;
-            img.classList.add(styles["horizontal"]);
-            img.classList.remove(styles['vertical']);
-        } else {
-            img.width = width;
-            img.classList.add(styles["vertical"]);
-            img.classList.remove(styles['horizontal']);
-        }
+        img.onload = () => {
+            const imgWidth = img.width;
+            const imgHeight = img.height;
+            if (imgWidth > imgHeight) {
+                img.height = props.height;
+                img.classList.add(styles["horizontal"]);
+                img.classList.remove(styles['vertical']);
+            } else {
+                img.width = props.width;
+                img.classList.add(styles["vertical"]);
+                img.classList.remove(styles['horizontal']);
+            }
+        };
     }, []);
 
     // 图片出错时
