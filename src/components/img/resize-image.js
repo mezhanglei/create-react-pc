@@ -8,6 +8,7 @@ import { useRef, useEffect } from "react";
  * height: 窗口高
  * src: 显示图片路径
  * defaultSrc: 默认显示图片路径
+ * imgRef: function(dom) {} 将图片的dom传给父组件
  * @param {*} props 
  */
 const ResizeImage = (props) => {
@@ -23,6 +24,8 @@ const ResizeImage = (props) => {
 
     useEffect(() => {
         const img = imgRef.current;
+        // 传给父组件
+        props.imgRef(img);
         img.onload = () => {
             const imgWidth = img.width;
             const imgHeight = img.height;
