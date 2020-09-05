@@ -93,3 +93,21 @@ export const trimParams = (data) => {
     return data;
 };
 
+// react将字符串转化为html
+export function showhtml(htmlString) {
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }}></div>;
+}
+
+// 格式化text-area文本, 返回格式化后的字符串： 去空格，并实现换行
+export const handleTextArea = (text) => {
+    let arr = [];
+    text.split('\n').forEach(item => arr.push(`<span>${item.trim()}</span>`));
+    return arr.join('<br>');
+};
+
+// 隐藏手机号中间的四位数并返回结果
+export function hideTelephone(phone) {
+    phone = "" + phone;
+    let reg = /(\d{3})\d{4}(\d{4})/;
+    return phone.replace(reg, "$1****$2");
+}
