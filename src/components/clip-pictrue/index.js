@@ -3,6 +3,9 @@ import styles from './index.less';
 import { pressImg } from '@/utils/image';
 const isMobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 
+/**
+ * 上传截图组件(简易版)
+ */
 export default class extends React.Component {
     constructor(props) {
         super(props);
@@ -12,9 +15,12 @@ export default class extends React.Component {
     };
 
     static defaultProps = {
+        // 尺寸限制: M
         size: 5,
+        // 图片展示窗口大小
         imgWidth: 300,
         imgHeight: 280,
+        // 裁剪窗口大小
         clipWidth: 100,
         clipHeight: 100
     }
@@ -240,4 +246,3 @@ export default class extends React.Component {
         );
     }
 }
-
