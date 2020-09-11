@@ -8,7 +8,7 @@ import { PersonalRoutes } from "./personal";
 import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default";
 import { initWX } from "@/common/wx";
-import LoginComponent from "@/components/login";
+import { isLogin } from "@/common/common";
 
 /**
  * 页面路由配置
@@ -100,6 +100,10 @@ function normalRoute(item, index) {
         path={item.path}
         render={(props) => {
             beforeRouter(props, item);
+            // 登录验证
+            if (isLogin() && item.auth) {
+                return <Redirect to={{ pathname: "/login", state: { from: props.location } }} />;
+            }
             return (
                 <React.Fragment>
                     <Prompt message={`是否确定离开当前路由？${location.href}`} />

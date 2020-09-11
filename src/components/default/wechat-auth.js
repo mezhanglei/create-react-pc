@@ -18,10 +18,6 @@ const AuthWechat = (props) => {
     const backPath = decodeURIComponent(getUrlQuery('current', normalUrl));
     // 先清除token
     myStorage.remove(WECHAT_TOKEN);
-    // 授权失败的处理
-    const errorHandle = () => {
-        message.error("微信授权失败, 请稍后再试");
-    };
 
     // 请求token
     if (code) {
@@ -30,7 +26,7 @@ const AuthWechat = (props) => {
         myStorage.set(WECHAT_TOKEN, token);
         window.location.replace(backPath);
     } else {
-        errorHandle();
+        message.error("微信授权失败, 请稍后再试");
     }
 
     return null;
