@@ -6,6 +6,8 @@ import { connect } from "react-redux";
 import Tree from "@/components/tree/tree";
 import SendCode from "@/components/sendCode/sendcode";
 import TreeTransfer from "@/components/transfer/treeTransfer";
+import Checkbox from "@/components/checkbox/index";
+import CheckBox from '@/components/checkbox/index';
 
 class Home extends React.Component {
     constructor(props) {
@@ -43,6 +45,9 @@ class Home extends React.Component {
                     <SendCode isSend={true} handle={this.handle} />
                     <TreeTransfer />
                 </div>
+                <CheckBox disabled checked indeterminate>
+                    123131321312
+                </CheckBox>
             </div>
         );
     }

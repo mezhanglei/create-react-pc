@@ -6,6 +6,7 @@ import { Input } from "antd";
 import { unique } from "@/utils/array";
 import Result from "@/components/result/result";
 import { regQuery } from "@/utils/array";
+import Button from "@/components/button/index";
 
 /**
  * 树形穿梭框
@@ -271,12 +272,12 @@ export default class TreeTransfer extends React.Component {
                     </div>
                 </div>
                 <div className={styles["transfer-middle"]}>
-                    <button disabled={!sourceSelectedKeys?.length} onClick={this.toRight} className={styles['to-right']}>
+                    <Button disabled={!sourceSelectedKeys?.length} onClick={this.toRight} className={styles['to-right']}>
                         right
-                    </button>
-                    <button disabled={!targetSelectedKeys?.length} onClick={this.toLeft} className={styles['to-left']}>
+                    </Button>
+                    <Button disabled={!targetSelectedKeys?.length} onClick={this.toLeft} className={styles['to-left']}>
                         left
-                    </button>
+                    </Button>
                 </div>
                 <div className={styles["transfer-base"]}>
                     <div className={styles["transfer-list-header"]}>

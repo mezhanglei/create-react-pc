@@ -325,7 +325,7 @@ export default class extends React.Component {
                 return (
                     <li key={item.value}>
                         <div className={styles["tree-menu-title"]}>
-                            <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={this.parentFolder(item) === 'folder'} disabled={this.parentDisabled(item)} indeterminate={this.parentChecked(item) === "indeterminate"} checked={this.parentChecked(item) === "checked"} value={item.label} />
+                            <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={this.parentFolder(item) === 'folder'} disabled={this.parentDisabled(item)} indeterminate={this.parentChecked(item) === "indeterminate"} checked={this.parentChecked(item) === "checked"}>{item.label}</TreeNode>
                         </div>
                         <ul style={{ paddingLeft: 13 + 'px' }} className={this.parentFolder(item) === 'folder' ? styles["tree-menu-drop"] : styles["tree-menu-open-show"]}>
                             {this.renderTree(item.children, num + 1)}
@@ -335,7 +335,7 @@ export default class extends React.Component {
             } else if (item) {
                 return (
                     <li key={item.value} ref={ref => this.clickItem = ref} className={inline ? styles["tree-node-inline"] : undefined}>
-                        <TreeNode onCheck={() => this.chooseChild(item)} disabled={this.childDisabled(item)} checked={this.childChecked(item)} value={item.label} />
+                        <TreeNode onCheck={() => this.chooseChild(item)} disabled={this.childDisabled(item)} checked={this.childChecked(item)}>{item.label}</TreeNode>
                     </li>
                 );
             }

@@ -1,29 +1,34 @@
 import React from 'react';
 import styles from './treenode.less';
-
+import CheckBox from "@/components/checkbox/index";
+import classNames from "classnames";
 
 /**
  * 参数说明：
- * type：表示该项的类型，type="drop"表示带折叠图标的选项，默认普通选项
- * folder: 表示折叠图标为折叠状态还是展开状态 默认false折叠
- * checked 布尔值 true表示选中 默认没有选中
- * disabled 布尔值 true表示不能点击 默认可点击
- * indeterminate true表示该项嵌套的子元素有被选中, 优先级比checked高
- * value 表示文字
- * onCheck 选中选项的回调函数: function(checked) {}
- * switch 切换折叠态的回调函数: function(folder) {}
- * <TreeNode />
+ * type：string  drop表示带折叠图标的选项
+ * folder: boolean  折叠状态
+ * checked: boolean 选中状态
+ * disabled: boolean 禁用状态
+ * indeterminate: boolean 不完全选中状态, 优先级比checked高
+ * onCheck: function(checked) {}  选中选项的回调函数
+ * switch: function(folder) {}  切换折叠态的回调函数
+ * children: 子元素
+ * <TreeNode> </TreeNode>
  */
 
 export default class extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { ...props };
+        this.state = {};
     };
+
+    static defaultProps = {
+        prefixCls: "tree-node"
+    }
 
     componentDidUpdate(preProps, preState) {
         // 异步更新的字段
-        const changeProps = ["type", 'folder', "checked", "disabled", "indeterminate", "value"];
+        const changeProps = ['folder'];
         changeProps.map(item => {
             if (preProps[item]?.toString() != this.props[item]?.toString()) {
                 this.setState({
@@ -34,14 +39,11 @@ export default class extends React.Component {
     }
 
     // 切换点击事件
-    changeCheck() {
-        if (this.state.disabled) {
+    changeCheck(checked) {
+        if (this.props.disabled) {
             return;
         }
-        this.setState({
-            checked: !this.state.checked
-        });
-        this.props.onCheck && this.props.onCheck(!this.state.checked);
+        this.props.onCheck && this.props.onCheck(checked);
     };
 
     // 切换折叠状态
@@ -54,37 +56,33 @@ export default class extends React.Component {
 
     // 可折叠的选项
     dropNode() {
-        const { disabled, checked, folder, className, indeterminate, value } = this.state;
-        return (
-            <div className={disabled ? `${styles["tree-node-default"]} ${styles["tree-node-disabled"]} ${className}` : `${styles["tree-node-default"]} ${className}`}>
-                <div className={styles["content"]}>
-                    <i onClick={() => this.switchIcon()} className={folder ? `${styles["folder-icon-down"]} ${styles["folder-icon-transition"]}` : styles["folder-icon-down"]}></i>
-                    <span style={{ marginLeft: "4px" }} onClick={() => this.changeCheck()} className={indeterminate ? styles["check-box-indeterminate"] : (checked ? styles["check-box-selected"] : styles["check-box-default"])}></span>
-                    {this.props.children ?? <span className={styles["folder-text-default"]}>{value}</span>}
-                </div>
-            </div>
-        );
-    }
+        const { folder } = this.state;
+        const { prefixCls, disabled, checked, className, indeterminate } = this.props;
 
-    // 普通选项
-    normalNode() {
-        const { disabled, checked, className, indeterminate, value } = this.state;
+        const boxClass = classNames(styles[prefixCls], className, {
+            [styles[`${prefixCls}-disabled`]]: disabled
+        });
+
+        const iconClass = classNames(styles['folder-icon-down'], {
+            [styles[`folder-icon-transition`]]: folder
+        });
+
         return (
-            <div className={disabled ? `${styles["tree-node-default"]} ${styles["tree-node-disabled"]} ${className}` : `${styles["tree-node-default"]} ${className}`}>
-                <div className={styles["content"]}>
-                    <span onClick={() => this.changeCheck()} className={indeterminate ? styles["check-box-indeterminate"] : (checked ? styles["check-box-selected"] : styles["check-box-default"])}></span>
-                    {this.props.children ?? <span className={styles["folder-text-default"]}>{value}</span>}
-                </div>
+            <div className={boxClass}>
+                <i onClick={() => this.switchIcon()} className={iconClass}></i>
+                <span className={styles['content']}>
+                    <CheckBox indeterminate={indeterminate} checked={checked} disabled={disabled} onChange={this.changeCheck.bind(this)}>{this.props.children}</CheckBox>
+                </span>
             </div>
         );
     }
 
     render() {
-        const { type } = this.state;
+        const { disabled, checked, type, indeterminate } = this.props;
         return (
             <>
                 {type == "drop" && this.dropNode()}
-                {type != "drop" && this.normalNode()}
+                {type != "drop" && <CheckBox indeterminate={indeterminate} checked={checked} disabled={disabled} onChange={this.changeCheck.bind(this)}>{this.props.children}</CheckBox>}
             </>
         );
     }
