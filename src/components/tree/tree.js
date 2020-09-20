@@ -22,7 +22,7 @@ import { unique } from "@/utils/array";
  * 回调函数：
  *  onSwitch: 切换折叠状态后的回调: function(folderKeys){ //  folderKeys为所有折叠选项  }
  *  onSelect: 点击选项的回调: function(checkedKeys, currentKeys){ // checkedKeys所有选中点(不包括disabled) currentKeys为当前checked变化选项 }
- *  onChange: 选中项变化的回调: function(checkedKeys){ // checkedKeys所有选中点(不包括disabled) }
+ *  onChange: 选中项变化的回调: function(checkedKeys, currentKeys){ // checkedKeys所有选中点(不包括disabled) currentKeys为当前checked变化选项}
  */
 export default class extends React.Component {
     constructor(props) {
@@ -141,7 +141,7 @@ export default class extends React.Component {
             inline: inline
         });
 
-        this.props.onChange && this.props.onChange(unique(this.filterArray(checkedKeys_result, disabledKeys_result)));
+        this.props.onChange && this.props.onChange(unique(this.filterArray(checkedKeys_result, disabledKeys_result)), this.props.checkedKeys);
     }
 
     /**
@@ -254,9 +254,10 @@ export default class extends React.Component {
         this.setState({
             checkedKeys: result
         });
+
         // 回调
         this.props.onSelect && this.props.onSelect(this.filterArray(result, disabledKeys), current);
-        this.props.onChange && this.props.onChange(this.filterArray(result, disabledKeys));
+        this.props.onChange && this.props.onChange(this.filterArray(result, disabledKeys), current);
     };
 
     // 父元素的禁用状态
@@ -294,7 +295,7 @@ export default class extends React.Component {
 
         // 回调
         this.props.onSelect && this.props.onSelect(this.filterArray(checkedKeys, disabledKeys), [item.value]);
-        this.props.onChange && this.props.onChange(this.filterArray(checkedKeys, disabledKeys));
+        this.props.onChange && this.props.onChange(this.filterArray(checkedKeys, disabledKeys), [item.value]);
     };
 
     // 子元素的选中状态

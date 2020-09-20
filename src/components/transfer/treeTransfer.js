@@ -2,10 +2,8 @@
 import styles from "./treeTransfer.less";
 import Tree from "@/components/tree/tree";
 import TreeNode from "@/components/tree/treenode";
-import { Input } from "antd";
 import { unique } from "@/utils/array";
 import Result from "@/components/result/result";
-import { regQuery } from "@/utils/array";
 import Button from "@/components/button/index";
 
 /**
@@ -93,7 +91,7 @@ export default class TreeTransfer extends React.Component {
 
     componentDidUpdate(preProps, preState) {
         // 需要更新state的字段
-        const changeProps = ["checkedKeys", 'folderKeys', "disabledKeys", "status", "inline", "data"];
+        const changeProps = ["disabledKeys", "status"];
         changeProps.map(item => {
             if (preProps[item]?.toString() != this.props[item]?.toString()) {
                 this.initTree();
@@ -107,14 +105,10 @@ export default class TreeTransfer extends React.Component {
 
     // 初始化树
     initTree() {
-        const { checkedKeys = [], folderKeys = [], disabledKeys = [], status, inline, data = [] } = this.props;
+        const { disabledKeys = [], status, data = [] } = this.props;
         this.setState({
-            checkedKeys,
-            folderKeys,
             disabledKeys,
             status,
-            inline,
-            data,
             list: this.getChildrenList(data)
         });
     }
@@ -167,12 +161,11 @@ export default class TreeTransfer extends React.Component {
         return list.filter(item => { return keys.indexOf(item.value) > -1; });
     }
 
-    handleChangeLeft = (checkedKeys) => {
+    handleChangeLeft = (checkedKeys, current) => {
         this.setState({
             sourceSelectedKeys: checkedKeys
         });
     }
-
 
     // 右侧选择选项
     handleSelectRight = (item, checked) => {
@@ -197,8 +190,7 @@ export default class TreeTransfer extends React.Component {
                     list.map((item, index) => {
                         return (
                             <div key={index} className={styles["list-item"]}>
-                                <TreeNode checked={targetSelectedKeys.indexOf(item.value) > -1} onCheck={(checked) => this.handleSelectRight(item, checked)} />
-                                {item.label}
+                                <TreeNode checked={targetSelectedKeys.indexOf(item.value) > -1} onCheck={(checked) => this.handleSelectRight(item, checked)}>{item.label}</TreeNode>
                             </div>
                         );
                     })
@@ -215,6 +207,7 @@ export default class TreeTransfer extends React.Component {
             this.setState({
                 disabledKeys: unique([...disabledKeys, ...sourceSelectedKeys]),
                 targetKeys: unique([...targetKeys, ...sourceSelectedKeys]),
+                saveCheckedKeys: unique([...targetKeys, ...sourceSelectedKeys]),
                 allLeft: false
             }, () => {
                 this.props.toRight && this.props.toRight(sourceSelectedKeys, targetKeys);
@@ -244,21 +237,23 @@ export default class TreeTransfer extends React.Component {
     }
 
     render() {
-        const { targetKeys = [], sourceSelectedKeys = [], targetSelectedKeys = [], checkedKeys = [], folderKeys = [], disabledKeys = [], status, inline, data = [] } = this.state;
+        const { targetKeys = [], sourceSelectedKeys = [], targetSelectedKeys = [], disabledKeys = [], status, saveCheckedKeys=[] } = this.state;
+        const { checkedKeys, folderKeys, inline, data = [] } = this.props;
         // 树列表的props
         const treeProps = {
-            checkedKeys: unique([...checkedKeys, ...targetSelectedKeys]),
+            checkedKeys: unique([...checkedKeys, ...saveCheckedKeys]),
             folderKeys: folderKeys,
             disabledKeys: disabledKeys,
             status: status,
             inline: inline,
             data: data
         };
+
         return (
             <div className={styles["tree-transfer"]}>
                 <div className={styles["transfer-base"]}>
                     <div className={styles["transfer-list-header"]}>
-                        <TreeNode checked={this.state.allLeft} onCheck={this.switchLeft} value="全选/反选" />
+                        <TreeNode checked={this.state.allLeft} onCheck={this.switchLeft}>全选/反选</TreeNode>
                     </div>
                     <div className={styles["transfer-list-body"]}>
                         <div className={styles['body-search']}>
@@ -281,7 +276,7 @@ export default class TreeTransfer extends React.Component {
                 </div>
                 <div className={styles["transfer-base"]}>
                     <div className={styles["transfer-list-header"]}>
-                        <TreeNode checked={this.state.allRight} onCheck={this.switchRight} value="全选/反选" />
+                        <TreeNode checked={this.state.allRight} onCheck={this.switchRight}>全选/反选</TreeNode>
                     </div>
                     <div className={styles["transfer-list-body"]}>
                         <div className={styles["body-content"]}>

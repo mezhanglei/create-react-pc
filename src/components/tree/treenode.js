@@ -4,6 +4,7 @@ import CheckBox from "@/components/checkbox/index";
 import classNames from "classnames";
 
 /**
+ * 生成节点
  * 参数说明：
  * type：string  drop表示带折叠图标的选项
  * folder: boolean  折叠状态

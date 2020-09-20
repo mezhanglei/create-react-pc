@@ -45,7 +45,7 @@ class Home extends React.Component {
                     <SendCode isSend={true} handle={this.handle} />
                     <TreeTransfer />
                 </div>
-                <CheckBox disabled checked indeterminate>
+                <CheckBox disabled checked>
                     123131321312
                 </CheckBox>
             </div>
