@@ -23,7 +23,7 @@ const outputPath = path.join(root, "dist");
 const dllOutputPath = path.join(staticPath, 'dll');
 // 单/多页面的入口所在目录
 const pagesRoot = path.join(srcPath, 'pages');
-// 资源访问的公共绝对路径(格式如: /publicPath/)
+// 资源访问的公共绝对路径, 默认为/不能为空(格式如: /publicPath/)
 const publicPath = '/';
 
 // 公共配置(开发/生产均使用)
@@ -66,7 +66,7 @@ const globalDefine = {
         // mock数据环境
         MOCK: process.env.MOCK,
         // 资源引用的公共路径字符串
-        PUBLIC_PATH: JSON.stringify(publicPath),
+        PUBLIC_PATH: JSON.stringify(publicPath || '/'),
     }
 };
 

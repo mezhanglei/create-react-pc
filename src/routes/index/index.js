@@ -9,6 +9,7 @@ import NotFound from "@/components/default/not-found";
 import { DefaultRoutes } from "./default";
 import { initWX } from "@/common/wx";
 import { isLogin } from "@/common/common";
+import { LOGIN_PATH } from "@/constants/common_link";
 
 /**
  * 页面路由配置
@@ -102,7 +103,7 @@ function normalRoute(item, index) {
             beforeRouter(props, item);
             // 登录验证
             if (isLogin() && item.auth) {
-                return <Redirect to={{ pathname: "/login", state: { from: props.location } }} />;
+                return <Redirect to={{ pathname: LOGIN_PATH, state: { from: props.location } }} />;
             }
             return (
                 <React.Fragment>
