@@ -41,12 +41,12 @@ class Home extends React.Component {
         this.setState({ visible: true });
     }
 
-    handleOk=() => {
+    handleOk = () => {
 
     }
 
-    handleCancel=() => {
-        
+    handleCancel = () => {
+
     }
 
     render() {

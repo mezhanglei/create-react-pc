@@ -15,7 +15,9 @@ import Button from "@/components/button/index";
  * status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
  * inline: false, // 表示选项的布局，true表示行内排列，默认false独占一行
  * data: [] // 渲染树列表的数据
- * 
+ * footer: 自定义底部
+ * toRight： function(sourceSelectedKeys, targetKeys) {} // 向右添加选项，sourceSelectedKeys为左边选中项, targetKeys为右边列表所有项
+ * toLeft： function(targetSelectedKeys, targetKeys) {} // 向右添加选项，targetSelectedKeys为右边选中项, targetKeys为右边列表所有项
  */
 export default class TreeTransfer extends React.Component {
     constructor(props) {
@@ -26,9 +28,9 @@ export default class TreeTransfer extends React.Component {
     }
 
     static defaultProps = {
-        checkedKeys: [], // 选中的选项key的数组
+        checkedKeys: [600, 700, 800, 900, 1300, 1400, 1500], // 选中的选项key的数组
         folderKeys: [], // 折叠起来的选项key的数组
-        disabledKeys: [], // 不可选的选项的key
+        disabledKeys: [1300, 1400, 1500], // 不可选的选项的key
         status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
         inline: false, // 表示选项的布局，true表示行内排列，默认false独占一行
         data: [{
@@ -41,19 +43,15 @@ export default class TreeTransfer extends React.Component {
                 value: 500,
                 label: '基础信息管理',
                 children: [{
-                    checked: true,
                     value: 600,
                     label: '机器人编辑'
                 }, {
-                    checked: true,
                     value: 700,
                     label: '参数配置'
                 }, {
-                    checked: true,
                     value: 800,
                     label: '转人工配置启动'
                 }, {
-                    checked: true,
                     value: 900,
                     label: '转人工配置'
                 }]
@@ -61,28 +59,20 @@ export default class TreeTransfer extends React.Component {
                 value: 1000,
                 label: '基础信息管理',
                 children: [{
-                    checked: true,
                     value: 1100,
                     label: '机器人编辑',
                     children: [{
-                        checked: true,
-                        disabled: true,
-                        value: 11033,
+                        value: 1200,
                         label: '机器人编辑',
                     }]
                 }, {
-                    disabled: true,
-                    checked: true,
-                    value: 1200,
+                    value: 1300,
                     label: '参数配置'
                 }, {
-                    value: 1300,
-                    label: '转人工配置启动',
-                    disabled: true,
-                }, {
-                    disabled: true,
-                    checked: true,
                     value: 1400,
+                    label: '转人工配置启动'
+                }, {
+                    value: 1500,
                     label: '转人工配置'
                 }]
             }]
@@ -91,7 +81,7 @@ export default class TreeTransfer extends React.Component {
 
     componentDidUpdate(preProps, preState) {
         // 需要更新state的字段
-        const changeProps = ["disabledKeys", "status"];
+        const changeProps = ["checkedKeys", "disabledKeys", "status"];
         changeProps.map(item => {
             if (preProps[item]?.toString() != this.props[item]?.toString()) {
                 this.initTree();
@@ -105,9 +95,10 @@ export default class TreeTransfer extends React.Component {
 
     // 初始化树
     initTree() {
-        const { disabledKeys = [], status, data = [] } = this.props;
+        const { checkedKeys, disabledKeys = [], status, data = [] } = this.props;
         this.setState({
             disabledKeys,
+            cacheCheckedKeys: checkedKeys,
             status,
             list: this.getChildrenList(data)
         });
@@ -161,9 +152,9 @@ export default class TreeTransfer extends React.Component {
         return list.filter(item => { return keys.indexOf(item.value) > -1; });
     }
 
-    handleChangeLeft = (checkedKeys, current) => {
+    handleChangeLeft = (checkedKeys, allCheckedKeys) => {
         this.setState({
-            sourceSelectedKeys: checkedKeys
+            sourceSelectedKeys: checkedKeys // 源数据选中项(过滤了disabled)
         });
     }
 
@@ -201,16 +192,16 @@ export default class TreeTransfer extends React.Component {
 
     // 向右添加
     toRight = () => {
-        const { sourceSelectedKeys = [], targetKeys = [], disabledKeys = [] } = this.state;
+        const { sourceSelectedKeys = [], targetKeys = [], disabledKeys = [], cacheCheckedKeys = [] } = this.state;
         if (sourceSelectedKeys?.length) {
             // 左边的禁止点击，右边的添加
             this.setState({
-                disabledKeys: unique([...disabledKeys, ...sourceSelectedKeys]),
-                targetKeys: unique([...targetKeys, ...sourceSelectedKeys]),
-                saveCheckedKeys: unique([...targetKeys, ...sourceSelectedKeys]),
+                disabledKeys: [...disabledKeys, ...sourceSelectedKeys], // 左边禁用项 = 已有禁用项 + 左边选中项
+                targetKeys: [...targetKeys, ...sourceSelectedKeys], // 右边所有项 = 左边选中项 + 右边已有列表项
+                cacheCheckedKeys: [...disabledKeys.filter(item => cacheCheckedKeys.indexOf(item) > -1), ...sourceSelectedKeys], // 缓存的所有选中项 =禁用和非禁用项中的选中项之和
                 allLeft: false
             }, () => {
-                this.props.toRight && this.props.toRight(sourceSelectedKeys, targetKeys);
+                this.props.toRight && this.props.toRight(sourceSelectedKeys, this.state.targetKeys);
                 this.setState({
                     sourceSelectedKeys: []
                 });
@@ -224,11 +215,11 @@ export default class TreeTransfer extends React.Component {
         if (targetSelectedKeys?.length) {
             // 右边选择的删除，然后左边的对应位置恢复点击
             this.setState({
-                targetKeys: targetKeys.filter(sub => { return targetSelectedKeys.indexOf(sub) == -1; }),
-                disabledKeys: disabledKeys.filter(sub => { return targetSelectedKeys.indexOf(sub) == -1; }),
+                targetKeys: targetKeys.filter(sub => { return targetSelectedKeys.indexOf(sub) == -1; }), // 右边列表项 = 右边已有项 - 右边选中项
+                disabledKeys: disabledKeys.filter(sub => { return targetSelectedKeys.indexOf(sub) == -1; }), // 禁用项 = 已有禁用项 - 右边选中项
                 allRight: false
             }, () => {
-                this.props.toLeft && this.props.toLeft(targetSelectedKeys, targetKeys);
+                this.props.toLeft && this.props.toLeft(targetSelectedKeys, this.state.targetKeys);
                 this.setState({
                     targetSelectedKeys: []
                 });
@@ -237,11 +228,11 @@ export default class TreeTransfer extends React.Component {
     }
 
     render() {
-        const { targetKeys = [], sourceSelectedKeys = [], targetSelectedKeys = [], disabledKeys = [], status, saveCheckedKeys=[] } = this.state;
-        const { checkedKeys, folderKeys, inline, data = [] } = this.props;
+        const { targetKeys = [], sourceSelectedKeys = [], targetSelectedKeys = [], disabledKeys = [], status, cacheCheckedKeys = [] } = this.state;
+        const { folderKeys, inline, data = [] } = this.props;
         // 树列表的props
         const treeProps = {
-            checkedKeys: unique([...checkedKeys, ...saveCheckedKeys]),
+            checkedKeys: cacheCheckedKeys,
             folderKeys: folderKeys,
             disabledKeys: disabledKeys,
             status: status,

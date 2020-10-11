@@ -4,7 +4,7 @@ import TreeNode from './treenode.js';
 import { unique } from "@/utils/array";
 
 /**
- * 树列表: 设计思路，完全由配置化数据控制行为表现
+ * 树列表: 设计思路，完全由配置化数据控制行为表现(父节点的状态由子节点控制)
  * tree参数说明:
  *    checkedKeys: [], // 选中的选项key的数组
  *    folderKeys: [], // 折叠起来的选项key的数组
@@ -12,17 +12,10 @@ import { unique } from "@/utils/array";
  *    status: undefined, // 一共两对全局状态控制： checked和notChecked, disabled和notDisabled
  *    inline: false, // 表示非折叠选项的布局，true表示行内排列，默认false独占一行，优先级最高
  *    data: [] // 树列表的渲染数组
- * 渲染数组的内部字段说明:
- *    checked: true表示选中
- *    disabled: true表示不可选
- *    folder：true表示折叠选项处于折叠状态
- *    inline: true表示折叠选项的子元素布局为行内排列
- *    label: 选项的名
- *    value: 选项的key
  * 回调函数：
  *  onSwitch: 切换折叠状态后的回调: function(folderKeys){ //  folderKeys为所有折叠选项  }
- *  onSelect: 点击选项的回调: function(checkedKeys, currentKeys){ // checkedKeys所有选中点(不包括disabled) currentKeys为当前checked变化选项 }
- *  onChange: 选中项变化的回调: function(checkedKeys, currentKeys){ // checkedKeys所有选中点(不包括disabled) currentKeys为当前checked变化选项}
+ *  onSelect: 点击选项的回调: function(checkedKeys, allCheckedKeys){ // checkedKeys所有选中点(不包括disabled) allCheckedKeys为所有选中项 }
+ *  onChange: 选中项变化的回调: function(checkedKeys, allCheckedKeys){ // checkedKeys所有选中点(不包括disabled) allCheckedKeys为所有选中项 }
  */
 export default class extends React.Component {
     constructor(props) {
@@ -48,19 +41,15 @@ export default class extends React.Component {
                 value: 500,
                 label: '基础信息管理',
                 children: [{
-                    checked: true,
                     value: 600,
                     label: '机器人编辑'
                 }, {
-                    checked: true,
                     value: 700,
                     label: '参数配置'
                 }, {
-                    checked: true,
                     value: 800,
                     label: '转人工配置启动'
                 }, {
-                    checked: true,
                     value: 900,
                     label: '转人工配置'
                 }]
@@ -68,28 +57,20 @@ export default class extends React.Component {
                 value: 1000,
                 label: '基础信息管理',
                 children: [{
-                    checked: true,
                     value: 1100,
                     label: '机器人编辑',
                     children: [{
-                        checked: true,
-                        disabled: true,
-                        value: 11033,
+                        value: 1200,
                         label: '机器人编辑',
                     }]
                 }, {
-                    disabled: true,
-                    checked: true,
-                    value: 1200,
+                    value: 1300,
                     label: '参数配置'
                 }, {
-                    value: 1300,
-                    label: '转人工配置启动',
-                    disabled: true,
-                }, {
-                    disabled: true,
-                    checked: true,
                     value: 1400,
+                    label: '转人工配置启动'
+                }, {
+                    value: 1500,
                     label: '转人工配置'
                 }]
             }]
@@ -112,10 +93,10 @@ export default class extends React.Component {
 
     initTree() {
         const { checkedKeys = [], folderKeys = [], disabledKeys = [], status, inline, data = [] } = this.props;
-        // 合并属性
-        let checkedKeys_result = [...checkedKeys, ...this.getKeysByName('checked', data)];
-        let folderKeys_result = [...folderKeys, ...this.getKeysByName('folder', data)];
-        let disabledKeys_result = [...disabledKeys, ...this.getKeysByName('disabled', data)];
+
+        let checkedKeys_result = [...checkedKeys];
+        let folderKeys_result = [...folderKeys];
+        let disabledKeys_result = [...disabledKeys];
         const allChild = this.getChildrenKeys(data);
 
         // 全选(忽略disabled选项)
@@ -256,8 +237,8 @@ export default class extends React.Component {
         });
 
         // 回调
-        this.props.onSelect && this.props.onSelect(this.filterArray(result, disabledKeys), current);
-        this.props.onChange && this.props.onChange(this.filterArray(result, disabledKeys), current);
+        this.props.onSelect && this.props.onSelect(this.filterArray(result, disabledKeys), result);
+        this.props.onChange && this.props.onChange(this.filterArray(result, disabledKeys), result);
     };
 
     // 父元素的禁用状态
@@ -294,8 +275,8 @@ export default class extends React.Component {
         });
 
         // 回调
-        this.props.onSelect && this.props.onSelect(this.filterArray(checkedKeys, disabledKeys), [item.value]);
-        this.props.onChange && this.props.onChange(this.filterArray(checkedKeys, disabledKeys), [item.value]);
+        this.props.onSelect && this.props.onSelect(this.filterArray(checkedKeys, disabledKeys), checkedKeys);
+        this.props.onChange && this.props.onChange(this.filterArray(checkedKeys, disabledKeys), checkedKeys);
     };
 
     // 子元素的选中状态
