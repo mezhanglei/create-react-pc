@@ -8,6 +8,7 @@ import TreeTransfer from "@/components/transfer/treeTransfer";
 import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
+import Draggable from "@/components/react-draggable/Draggable";
 
 class Home extends React.Component {
     constructor(props) {
@@ -60,6 +61,18 @@ class Home extends React.Component {
                 <CheckBox disabled checked>
                     123131321312
                 </CheckBox>
+                <Draggable
+                    axis="x"
+                    handle=".handle"
+                    defaultPosition={{ x: 10, y: 0 }}
+                    position={null}
+                    // grid={[100, 25]}
+                    scale={1}
+                >
+                    <Button className="handle" type="primary">
+                        时间
+                    </Button>
+                </Draggable>
                 <Button onClick={this.showModal} type="primary">
                     打开1
                 </Button>

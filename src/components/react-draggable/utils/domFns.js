@@ -1,6 +1,6 @@
 // @flow
 import { findInArray, isFunction, int } from './shims';
-import browserPrefix, { browserPrefixToKey } from './getPrefix';
+import { getPrefixStyle } from '@/utils/cssPrefix';
 
 let matchesSelectorFunc = '';
 export function matchesSelector(el, selector) {
@@ -113,7 +113,7 @@ export function offsetXYFromParent(evt, offsetParent, scale) {
 // 设置css的transform
 export function createCSSTransform(controlPos, positionOffset) {
     const translation = getTranslation(controlPos, positionOffset, 'px');
-    return { [browserPrefixToKey('transform', browserPrefix)]: translation };
+    return { [getPrefixStyle('transform')]: translation };
 }
 
 // 设置svg的transform
