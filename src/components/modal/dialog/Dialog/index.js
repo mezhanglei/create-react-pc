@@ -6,7 +6,6 @@ import { isContains } from '@/utils/dom';
 import Mask from './Mask';
 import { getMotionName, getUUID } from '../utils/common';
 import Content from './Content';
-import "./index.less";
 
 export default function Dialog(props) {
     const {

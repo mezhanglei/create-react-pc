@@ -3,13 +3,14 @@ import { useRef } from 'react';
 import classNames from 'classnames';
 import CSSMotion from 'rc-motion';
 import { getPositionInPage } from '@/utils/dom';
+import "./Content.less";
 
 const sentinelStyle = { width: 0, height: 0, overflow: 'hidden', outline: 'none' };
 
 const Content = React.forwardRef((props, ref) => {
     const {
         closable,
-        prefixCls,
+        prefixCls = "ant-modal",
         width,
         height,
         footer,

@@ -1,3 +1,5 @@
+@prefixCls: ant-modal;
+
 .@{prefixCls} {
     &-mask {
         position: fixed;
@@ -36,16 +38,16 @@
 
     &-fade-enter&-fade-enter-active,
     &-fade-appear&-fade-appear-active {
-        animation-name: rcDialogFadeIn;
+        animation-name: DialogFadeIn;
         animation-play-state: running;
     }
 
     &-fade-leave&-fade-leave-active {
-        animation-name: rcDialogFadeOut;
+        animation-name: DialogFadeOut;
         animation-play-state: running;
     }
 
-    @keyframes rcDialogFadeIn {
+    @keyframes DialogFadeIn {
         0% {
             opacity: 0;
         }
@@ -55,7 +57,7 @@
         }
     }
 
-    @keyframes rcDialogFadeOut {
+    @keyframes DialogFadeOut {
         0% {
             opacity: 1;
         }

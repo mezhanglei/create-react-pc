@@ -3,9 +3,7 @@ import * as ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Modal, { destroyFns } from './Modal';
 import ActionButton from './actionButton';
-//import { getConfirmLocale } from './locale';
-
-const IS_REACT_16 = !!ReactDOM.createPortal;
+import "./confirmModal.less";
 
 // 确认框封装
 const ConfirmModal = (props) => {

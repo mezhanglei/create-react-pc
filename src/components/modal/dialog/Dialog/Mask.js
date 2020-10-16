@@ -1,9 +1,16 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import CSSMotion from 'rc-motion';
+import "./Mask.less";
 
 export default function Mask(props) {
-    const { prefixCls, style, visible, maskProps, motionName } = props;
+    const {
+        prefixCls = "ant-modal",
+        style,
+        visible,
+        maskProps,
+        motionName
+    } = props;
 
     return (
         <CSSMotion

@@ -30,7 +30,7 @@ const Modal = props => {
 
     let {
         width = 520,
-        prefixCls = "rc-dialog",
+        prefixCls = "ant-modal",
         onCancel,
         onOk,
         autoFocus = "cancel",

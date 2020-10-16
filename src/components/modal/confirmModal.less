@@ -1,0 +1,101 @@
+@prefixCls: 'ant-modal';
+@confirm-prefix-cls: ~'@{prefixCls}-confirm';
+@iconfont-css-prefix: anticon;
+
+.clearfix() {
+    &::before {
+        display: table;
+        content: '';
+    }
+
+    &::after {
+        display: table;
+        clear: both;
+        content: '';
+    }
+}
+
+.reset-component() {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: fade(#000, 65%);
+    font-size: 12px;
+    font-variant: tabular-nums;
+    line-height: 1.66667;
+    list-style: none;
+    font-feature-settings: 'tnum';
+  }
+
+.@{confirm-prefix-cls} {
+    .@{prefixCls}-header {
+        display: none;
+    }
+
+    .@{prefixCls}-close {
+        display: none;
+    }
+
+    .@{prefixCls}-body {
+        padding: 24px 24px 16px;
+    }
+
+    &-body-wrapper {
+        .clearfix();
+    }
+
+    &-body {
+        .@{confirm-prefix-cls}-title {
+            display: block;
+            overflow: hidden;
+            color: fade(#000, 85%);
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .@{confirm-prefix-cls}-content {
+            margin-top: 8px;
+            color: fade(#000, 65%);
+            font-size: 12px;
+        }
+
+        >.@{iconfont-css-prefix} {
+            float: left;
+            margin-right: 16px;
+            font-size: 22px;
+
+            // `content` after `icon` should set marginLeft
+            +.@{confirm-prefix-cls}-title+.@{confirm-prefix-cls}-content {
+                margin-left: 38px;
+            }
+        }
+    }
+
+    .@{confirm-prefix-cls}-btns {
+        float: right;
+        margin-top: 24px;
+
+        button+button {
+            margin-bottom: 0;
+            margin-left: 8px;
+        }
+    }
+
+    &-error &-body>.@{iconfont-css-prefix} {
+        color: #FF4040;
+    }
+
+    &-warning &-body>.@{iconfont-css-prefix},
+    &-confirm &-body>.@{iconfont-css-prefix} {
+        color: #FAAD14;
+    }
+
+    &-info &-body>.@{iconfont-css-prefix} {
+        color: #1FB860;
+    }
+
+    &-success &-body>.@{iconfont-css-prefix} {
+        color: #4DC332;
+    }
+}
