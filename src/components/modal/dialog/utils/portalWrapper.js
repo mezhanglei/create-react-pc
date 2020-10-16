@@ -82,7 +82,7 @@ class PortalWrapper extends React.Component {
         };
     }
 
-    // 添加一个节点
+    // 给子元素再包裹一个div添加进父节点
     appendContainer = () => {
         if (!supportDom) {
             return null;
