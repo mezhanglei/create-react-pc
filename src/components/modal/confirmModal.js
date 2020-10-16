@@ -31,6 +31,8 @@ const ConfirmModal = (props) => {
         autoFocus = "cancel", // 焦点
         transitionName = "zoom", // 弹窗切换动画
         maskTransitionName = "fade", // mask遮罩切换动画
+        className,
+        style
     } = props;
 
 
@@ -78,7 +80,7 @@ const ConfirmModal = (props) => {
 
     // 图标
     const IconNode = icon;
-
+    
     return (
         <Modal
             prefixCls={prefixCls}

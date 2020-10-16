@@ -52,7 +52,12 @@ class Home extends React.Component {
     }
 
     showModal = () => {
-        this.setState({ visible: true });
+        // this.setState({ visible: true });
+        Modal.confirm({
+            title: '1111',
+            content: 11111,
+            onCancel: function(){},
+        })
     }
 
     handleOk = () => {
