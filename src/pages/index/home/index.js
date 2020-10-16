@@ -9,6 +9,7 @@ import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
 import Draggable from "@/components/react-draggable/Draggable";
+import raf from "@/utils/requestAnimationFrame";
 
 class Home extends React.Component {
     constructor(props) {
@@ -26,6 +27,18 @@ class Home extends React.Component {
             url: "/list",
             data: {}
         });
+        raf.setAnimation(this.handler);
+    }
+
+    handler = (time) => {
+        const timeCount = 3000;
+        const distance = 1500;
+        let divEle = document.getElementById("div");
+        if (time > timeCount) {
+            time = timeCount;
+        }
+        divEle.style.left = time * distance / timeCount + 'px';
+        raf.setAnimation(this.handler);
     }
 
     onSubmit = () => {
@@ -88,6 +101,8 @@ class Home extends React.Component {
                     <p>Some contents...</p>
                     <p>Some contents...</p>
                 </Modal>
+                <div id="div" style={{ width: '100px', height: '100px', backgroundColor: '#000', position: "absolute", left: 0, top: 0 }}>
+                </div>
             </div>
         );
     }

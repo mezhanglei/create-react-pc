@@ -22,6 +22,8 @@ body {
   background: #F5F5F5;
   height: 100vh;
   width: 100%;
+  // 动态计算向右移动一个滚动条宽度，防止出现滚动条时body内容抖动
+  margin-right: calc(-1 * (100vw - 100%));
 }
 
 body,

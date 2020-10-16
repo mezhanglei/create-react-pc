@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "./tree.less";
+import "./tree.less";
 import TreeNode from './treenode.js';
 import { unique } from "@/utils/array";
 
@@ -294,7 +294,7 @@ export default class extends React.Component {
     render() {
         const { data = [] } = this.props;
         return (
-            <ul className={styles["tree-list-box"]}>
+            <ul className="tree-list-box">
                 {this.renderTree(data)}
             </ul>
         );
@@ -306,17 +306,17 @@ export default class extends React.Component {
             if (item && item.children && item.children.length > 0) {
                 return (
                     <li key={item.value}>
-                        <div className={styles["tree-menu-title"]}>
+                        <div className="tree-menu-title">
                             <TreeNode switch={() => this.switchParent(item)} onCheck={() => this.chooseParent(item)} type="drop" folder={this.parentFolder(item) === 'folder'} disabled={this.parentDisabled(item)} indeterminate={this.parentChecked(item) === "indeterminate"} checked={this.parentChecked(item) === "checked"}>{item.label}</TreeNode>
                         </div>
-                        <ul style={{ paddingLeft: 13 + 'px' }} className={this.parentFolder(item) === 'folder' ? styles["tree-menu-drop"] : styles["tree-menu-open-show"]}>
+                        <ul style={{ paddingLeft: 13 + 'px' }} className={this.parentFolder(item) === 'folder' ? "tree-menu-drop" : "tree-menu-open-show"}>
                             {this.renderTree(item.children, num + 1)}
                         </ul>
                     </li>
                 );
             } else if (item) {
                 return (
-                    <li key={item.value} ref={ref => this.clickItem = ref} className={inline ? styles["tree-node-inline"] : undefined}>
+                    <li key={item.value} ref={ref => this.clickItem = ref} className={inline ? "tree-node-inline" : undefined}>
                         <TreeNode onCheck={() => this.chooseChild(item)} disabled={this.childDisabled(item)} checked={this.childChecked(item)}>{item.label}</TreeNode>
                     </li>
                 );

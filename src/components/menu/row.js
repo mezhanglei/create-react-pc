@@ -1,4 +1,4 @@
-import styles from './row.less';
+import './row.less';
 
 /**
  * 横向导航demo
@@ -78,13 +78,13 @@ class RowMenu extends React.Component {
         // 下拉菜单左边偏移量
 
         return (
-            <li key={index} className={this.chooseRule(item, index) ? `${styles['underline']} ${styles['top-list-li']}` : styles['top-list-li']}>
-                <div className={styles['pointer']}>
+            <li key={index} className={this.chooseRule(item, index) ? 'underline top-list-li' : 'top-list-li'}>
+                <div className='pointer'>
                     <span>{item.name}</span>
-                    <img className={styles['down-icon']} src={require('static/images/select-down.png')} alt="" />
+                    <img className='down-icon' src={require('static/images/select-down.png')} alt="" />
                 </div>
-                <div className={styles['nav-bottom-list']}>
-                    <ul ref={node => this.childrenMenu[index] = node} style={{ marginLeft: this.state.instance[index] + 'px' }} className={styles['second-menu']}>
+                <div className='nav-bottom-list'>
+                    <ul ref={node => this.childrenMenu[index] = node} style={{ marginLeft: this.state.instance[index] + 'px' }} className='second-menu'>
                         {
                             item.children && item.children.map((sub, num) => {
                                 return this.secondMenu(sub, num, item);
@@ -99,8 +99,8 @@ class RowMenu extends React.Component {
     // 一级不带下拉的选项
     menuItem = (item, index) => {
         return (
-            <li key={index} className={this.chooseRule(item, index) ? `${styles['underline']} ${styles['top-list-li']}` : styles['top-list-li']}>
-                <div onClick={(e) => { this.onClick(item); }} className={styles['pointer']}>
+            <li key={index} className={this.chooseRule(item, index) ? 'underline top-list-li' : 'top-list-li'}>
+                <div onClick={(e) => { this.onClick(item); }} className='pointer'>
                     <span>{item.name}</span>
                 </div>
             </li>
@@ -110,10 +110,10 @@ class RowMenu extends React.Component {
     // 二级选项
     secondMenu = (sub, num, parent) => {
         return (
-            <li key={num} className={styles['second-menu-li']}>
-                <div className={styles['pointer']}>
+            <li key={num} className='second-menu-li'>
+                <div className='pointer'>
                     <span onClick={(e) => { this.onClick(sub, parent); }}>{sub.name}</span>
-                    {sub.children && sub.children.length && <img className={styles['down-icon']} src={require('static/images/select-down.png')} alt="" />}
+                    {sub.children && sub.children.length && <img className='down-icon' src={require('static/images/select-down.png')} alt="" />}
                 </div>
             </li>
         );
@@ -140,11 +140,11 @@ class RowMenu extends React.Component {
         const { menuData = [] } = this.props;
 
         return (
-            <div className={styles['menu-outside']}>
-                <div className={styles['menu-outside-fixed']}>
-                    <div className={styles['menu-container']}>
-                        <div className={styles.navLeft}>
-                            <ul ref={node => this.navRef = node} className={styles.menu}>
+            <div className='menu-outside'>
+                <div className='menu-outside-fixed'>
+                    <div className='menu-container'>
+                        <div className='navLeft'>
+                            <ul ref={node => this.navRef = node} className='menu'>
                                 {
                                     menuData.map((item, index) => {
                                         if (item && item.children && item.children.length) {
@@ -156,7 +156,7 @@ class RowMenu extends React.Component {
                                 }
                             </ul>
                         </div>
-                        <div className={styles.navRight}>
+                        <div className='navRight'>
                             {this.props.right}
                         </div>
                     </div>

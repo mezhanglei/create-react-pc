@@ -1,16 +1,11 @@
 import * as React from 'react';
-import raf from './raf';
-import Portal from './Portal';
-import switchScrollingEffect from './switchScrollingEffect';
-import setStyle from './setStyle';
-import canUseDom from './Dom/canUseDom';
+import { canUseDom } from '@/utils/dom';
 
+// 计算打开弹窗个数
 let openCount = 0;
 const supportDom = canUseDom();
 
-let cacheOverflow = {};
-
-// 获取指定的父节点
+// 根据传值解析出父元素
 const getParent = (getContainer) => {
     if (!supportDom) {
         return null;
@@ -34,11 +29,10 @@ const getParent = (getContainer) => {
 
 class PortalWrapper extends React.Component {
 
-    componentRef = React.createRef();
-
     constructor(props) {
         super(props);
         const { visible, getContainer } = props;
+        // 计算打开的弹窗个数
         if (supportDom && getParent(getContainer) === document.body) {
             openCount = visible ? openCount + 1 : openCount;
         }
@@ -47,50 +41,38 @@ class PortalWrapper extends React.Component {
         };
     }
 
-    componentDidMount() {
-        if (!this.attachToParent()) {
-            this.rafId = raf(() => {
-                this.forceUpdate();
-            });
-        }
-    }
-
     componentDidUpdate() {
         this.setWrapperClassName();
-        this.attachToParent();
     }
 
     componentWillUnmount() {
         const { visible, getContainer } = this.props;
+        // 计算个数
         if (supportDom && getParent(getContainer) === document.body) {
-            // 离开时不会 render， 导到离开时数值不变，改用 func 。。
             openCount = visible && openCount ? openCount - 1 : openCount;
         }
+        // 移除节点
         this.removeCurrentContainer();
-        raf.cancel(this.rafId);
     }
 
+    // 切换弹窗则计算次数或者更换节点则移除节点
     static getDerivedStateFromProps(props, { prevProps, _self }) {
         const { visible, getContainer } = props;
         if (prevProps) {
-            const {
-                visible: prevVisible,
-                getContainer: prevGetContainer,
-            } = prevProps;
             if (
-                visible !== prevVisible &&
+                visible !== prevProps.visible &&
                 supportDom &&
                 getParent(getContainer) === document.body
             ) {
-                openCount = visible && !prevVisible ? openCount + 1 : openCount - 1;
+                openCount = visible && !prevProps.visible ? openCount + 1 : openCount - 1;
             }
             const getContainerIsFunc =
                 typeof getContainer === 'function' &&
-                typeof prevGetContainer === 'function';
+                typeof prevProps.getContainer === 'function';
             if (
                 getContainerIsFunc
-                    ? getContainer.toString() !== prevGetContainer.toString()
-                    : getContainer !== prevGetContainer
+                    ? getContainer.toString() !== prevProps.getContainer.toString()
+                    : getContainer !== prevProps.getContainer
             ) {
                 _self.removeCurrentContainer();
             }
@@ -100,31 +82,19 @@ class PortalWrapper extends React.Component {
         };
     }
 
-    attachToParent = (force = false) => {
-        if (force || (this.container && !this.container.parentNode)) {
-            const parent = getParent(this.props.getContainer);
-            if (parent) {
-                parent.appendChild(this.container);
-                return true;
-            }
-
-            return false;
-        }
-
-        return true;
-    };
-
-    getContainer = () => {
+    // 添加一个节点
+    appendContainer = () => {
         if (!supportDom) {
             return null;
         }
-        if (!this.container) {
+        const parent = getParent(this.props.getContainer);
+        if (!this.container && parent) {
             this.container = document.createElement('div');
-            this.attachToParent(true);
+            parent.appendChild(this.container);
         }
         this.setWrapperClassName();
         return this.container;
-    };
+    }
 
     setWrapperClassName = () => {
         const { wrapperClassName } = this.props;
@@ -137,52 +107,23 @@ class PortalWrapper extends React.Component {
         }
     };
 
-    // 移除自身
+    // 移除
     removeCurrentContainer = () => {
         this.container?.parentNode?.removeChild(this.container);
     };
 
-    /**
-     * Enhance ./switchScrollingEffect
-     * 1. Simulate document body scroll bar with
-     * 2. Record body has overflow style and recover when all of PortalWrapper invisible
-     * 3. Disable body scroll when PortalWrapper has open
-     *
-     * @memberof PortalWrapper
-     */
-    switchScrollingEffect = () => {
-        if (openCount === 1 && !Object.keys(cacheOverflow).length) {
-            switchScrollingEffect();
-            // Must be set after switchScrollingEffect
-            cacheOverflow = setStyle({
-                overflow: 'hidden',
-                overflowX: 'hidden',
-                overflowY: 'hidden',
-            });
-        } else if (!openCount) {
-            setStyle(cacheOverflow);
-            cacheOverflow = {};
-            switchScrollingEffect(true);
-        }
-    };
-
     render() {
-        const { children, forceRender, visible } = this.props;
-        let portal = null;
+        const { children, visible } = this.props;
+        const root = this.appendContainer();
         const childProps = {
             getOpenCount: () => openCount,
-            getContainer: this.getContainer,
-            switchScrollingEffect: this.switchScrollingEffect,
+            appendContainer: this.appendContainer
         };
 
-        if (forceRender || visible || this.componentRef.current) {
-            portal = (
-                <Portal getContainer={this.getContainer} ref={this.componentRef}>
-                    {children(childProps)}
-                </Portal>
-            );
+        if (visible && root) {
+            return ReactDOM.createPortal(children(childProps), root);
         }
-        return portal;
+        return null;
     }
 }
 

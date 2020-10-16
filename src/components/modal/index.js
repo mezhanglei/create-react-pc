@@ -42,6 +42,7 @@ Modal.confirm = (props) => {
     return confirm(config);
 };
 
+// 关闭所有的confirmDialog
 Modal.destroyAll = () => {
     while (destroyFns.length) {
         const close = destroyFns.pop();

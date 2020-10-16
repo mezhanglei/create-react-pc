@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./app.less";
+import "./app.less";
 // 引入路由组件
 import RouteComponent from "@/routes/index/index.js";
 import NotFound from "@/components/default/not-found";
@@ -38,7 +38,7 @@ class App extends React.Component {
         //     return (<NotFound />);
         // }
         return (
-            <div className={styles["app"]}>
+            <div className="app">
                 {/* <header>头部</header> */}
                 <MyRoutes />
                 {/* <footer>尾部</footer> */}

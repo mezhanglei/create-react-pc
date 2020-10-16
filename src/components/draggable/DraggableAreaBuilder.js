@@ -1,8 +1,7 @@
 import React from 'react';
 // immutable一般用于不可变对象, 不会被其他地方的对象改变(ie存在兼容问题)
 import { List } from 'immutable';
-
-import styles from './style.less';
+import './style.less';
 import { isTouch } from "@/utils/reg";
 
 // 拖拽时的样式类
@@ -116,8 +115,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 // 判断是否禁止拖拽
                 if (this.props.forbidDrag) {
                     // closest: 触发点的最近的含该类名的祖先元素
-                    const canDrag = e.target.closest(`.${styles[dragClassName]}`);
-                    const notDrag = e.target.closest(`.${styles[excludedInDragClassName]}`);
+                    const canDrag = e.target.closest(`.${dragClassName}`);
+                    const notDrag = e.target.closest(`.${excludedInDragClassName}`);
 
                     if (!canDrag) return;
                     if (canDrag.contains(notDrag)) return;
@@ -527,14 +526,14 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             const tags = this.state.tags.toJS().map((tag, index) => (
                 <div
                     key={tag.id}
-                    className={`${styles['DraggableTags-tag']} ${(tag.undraggable || forbidDrag) ? styles[excludedInDragClassName] : styles[dragClassName]}`}
+                    className={`'DraggableTags-tag' ${(tag.undraggable || forbidDrag) ? excludedInDragClassName : dragClassName}`}
                     ref={(target) => {
                         this.tagEles[tag.id] = target;
                     }}
                     style={isList ? { display: 'block', ...tagStyle } : tagStyle}
                 >
                     <div
-                        className={styles["DraggableTags-tag-drag"]}
+                        className="DraggableTags-tag-drag"
                         ref={(target) => this.draggableTagEles[tag.id] = target}
                     >
                         {render({ tag, index, deleteThis: this.buildDeleteTagFunc(tag) })}
@@ -547,7 +546,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             return (
                 <div
                     ref={r => this.container = r}
-                    className={`${styles['DraggableTags']} ${className || ''}`}
+                    className={`DraggableTags ${className || ''}`}
                     style={isTouch() ? { overflowY: 'auto', ...style } : style}
                 >
                     {

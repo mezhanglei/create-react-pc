@@ -1,5 +1,5 @@
 
-import styles from "./treeTransfer.less";
+import "./treeTransfer.less";
 import Tree from "@/components/tree/tree";
 import TreeNode from "@/components/tree/treenode";
 import { unique } from "@/utils/array";
@@ -176,11 +176,11 @@ export default class TreeTransfer extends React.Component {
         const { targetKeys = [], targetSelectedKeys = [] } = this.state;
         const list = this.getListByKeys(targetKeys);
         return (
-            <div className={styles["show-list"]}>
+            <div className="show-list">
                 {
                     list.map((item, index) => {
                         return (
-                            <div key={index} className={styles["list-item"]}>
+                            <div key={index} className="list-item">
                                 <TreeNode checked={targetSelectedKeys.indexOf(item.value) > -1} onCheck={(checked) => this.handleSelectRight(item, checked)}>{item.label}</TreeNode>
                             </div>
                         );
@@ -241,40 +241,40 @@ export default class TreeTransfer extends React.Component {
         };
 
         return (
-            <div className={styles["tree-transfer"]}>
-                <div className={styles["transfer-base"]}>
-                    <div className={styles["transfer-list-header"]}>
+            <div className={"min-tree-transfer"}>
+                <div className="transfer-base">
+                    <div className="transfer-list-header">
                         <TreeNode checked={this.state.allLeft} onCheck={this.switchLeft}>全选/反选</TreeNode>
                     </div>
-                    <div className={styles["transfer-list-body"]}>
-                        <div className={styles['body-search']}>
+                    <div className="transfer-list-body">
+                        <div className='body-search'>
                         </div>
-                        <div className={styles["body-content"]}>
+                        <div className="body-content">
                             <Tree key="left" {...treeProps} onChange={this.handleChangeLeft} />
                         </div>
                     </div>
-                    <div className={styles["transfer-list-footer"]}>
+                    <div className="transfer-list-footer">
                         {this.props.footer}
                     </div>
                 </div>
-                <div className={styles["transfer-middle"]}>
-                    <Button disabled={!sourceSelectedKeys?.length} onClick={this.toRight} className={styles['to-right']}>
+                <div className="transfer-middle">
+                    <Button disabled={!sourceSelectedKeys?.length} onClick={this.toRight} className='to-right'>
                         right
                     </Button>
-                    <Button disabled={!targetSelectedKeys?.length} onClick={this.toLeft} className={styles['to-left']}>
+                    <Button disabled={!targetSelectedKeys?.length} onClick={this.toLeft} className='to-left'>
                         left
                     </Button>
                 </div>
-                <div className={styles["transfer-base"]}>
-                    <div className={styles["transfer-list-header"]}>
+                <div className="transfer-base">
+                    <div className="transfer-list-header">
                         <TreeNode checked={this.state.allRight} onCheck={this.switchRight}>全选/反选</TreeNode>
                     </div>
-                    <div className={styles["transfer-list-body"]}>
-                        <div className={styles["body-content"]}>
+                    <div className="transfer-list-body">
+                        <div className="body-content">
                             {targetKeys?.length ? this.rightEle() : ""}
                         </div>
                     </div>
-                    <div className={styles["transfer-list-footer"]}>
+                    <div className="transfer-list-footer">
                         {this.props.footer}
                     </div>
                 </div>

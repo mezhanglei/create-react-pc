@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './treenode.less';
+import './treenode.less';
 import CheckBox from "@/components/checkbox/index";
 import classNames from "classnames";
 
@@ -60,18 +60,18 @@ export default class extends React.Component {
         const { folder } = this.state;
         const { prefixCls, disabled, checked, className, indeterminate } = this.props;
 
-        const boxClass = classNames(styles[prefixCls], className, {
-            [styles[`${prefixCls}-disabled`]]: disabled
+        const boxClass = classNames(prefixCls, className, {
+            [`${prefixCls}-disabled`]: disabled
         });
 
-        const iconClass = classNames(styles['folder-icon-down'], {
-            [styles[`folder-icon-transition`]]: folder
+        const iconClass = classNames('folder-icon-down', {
+            [`folder-icon-transition`]: folder
         });
 
         return (
             <div className={boxClass}>
                 <i onClick={() => this.switchIcon()} className={iconClass}></i>
-                <span className={styles['content']}>
+                <span className='content'>
                     <CheckBox indeterminate={indeterminate} checked={checked} disabled={disabled} onChange={this.changeCheck.bind(this)}>{this.props.children}</CheckBox>
                 </span>
             </div>

@@ -1,6 +1,6 @@
 import * as React from 'react';
-// import Dialog from './dialog/index';
-import Dialog from 'rc-dialog';
+import Dialog from './dialog/index';
+// import Dialog from 'rc-dialog';
 import classNames from 'classnames';
 import Button from '@/components/button/index';
 
@@ -30,7 +30,7 @@ const Modal = props => {
 
     let {
         width = 520,
-        prefixCls = "ant-modal",
+        prefixCls = "rc-dialog",
         onCancel,
         onOk,
         autoFocus = "cancel",
@@ -103,7 +103,7 @@ const Modal = props => {
             {...rest}
             getContainer={getContainer === undefined ? document.body : getContainer}
             prefixCls={prefixCls}
-            wrapClassName={classNames(wrapClassName,{ [`${prefixCls}-centered`]: !!centered })}
+            wrapClassName={classNames(wrapClassName, { [`${prefixCls}-centered`]: !!centered })}
             footer={footer === undefined ? renderFooter() : footer}
             visible={visible}
             mousePosition={mousePosition}
