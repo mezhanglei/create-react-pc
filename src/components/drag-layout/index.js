@@ -44,8 +44,8 @@ class DragResize extends Component {
         const x = this.getEventPosition(e).x;
         const y = this.getEventPosition(e).y;
         return {
-            positionX: x - element.getBoundingClientRect().x,
-            positionY: y - element.getBoundingClientRect().y
+            x: x - element.getBoundingClientRect().x,
+            y: y - element.getBoundingClientRect().y
         };
     }
 
@@ -61,16 +61,16 @@ class DragResize extends Component {
     // 获取鼠标的位置
     getMousePosition = (e, element) => {
         let positions = '';
-        const { positionX, positionY } = this.getPosition(e, element);
+        const { x, y } = this.getPosition(e, element);
         const distance = 10;
         // 上边
-        if (positionY < distance && positionY > -distance) positions += 'n';
+        if (y < distance && y > -distance) positions += 'n';
         // 下边
-        else if (positionY > element.offsetHeight - distance && positionY < element.offsetHeight + distance) positions += 's';
+        else if (y > element.offsetHeight - distance && y < element.offsetHeight + distance) positions += 's';
         // 左边
-        if (positionX < distance && positionX > -distance) positions += 'w';
+        if (x < distance && x > -distance) positions += 'w';
         // 右边
-        else if (positionX > element.offsetWidth - distance && positionX < element.offsetWidth + distance) positions += 'e';
+        else if (x > element.offsetWidth - distance && x < element.offsetWidth + distance) positions += 'e';
         // 否则返回空字符串表示不在边缘
         return positions;
     };

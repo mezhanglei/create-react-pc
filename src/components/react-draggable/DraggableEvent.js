@@ -32,17 +32,17 @@ export default class DraggableEvent extends React.Component {
     static displayName = 'DraggableEvent';
 
     static defaultProps = {
-        allowAnyClick: false, // true表示允许非鼠标左键单击拖动
-        cancel: null, // 不允许拖拽的类选择器
-        disabled: false, // true禁止拖拽
-        enableUserSelectHack: true, // true添加选中样式
-        offsetParent: null, // 提供定位父元素
-        handle: null, // 拖拽所在的类选择器
-        grid: null, // 跳跃幅度, 例如: [25, 25]表示x, y轴25移动距离跳跃一次
-        transform: null, // 
-        onStart: function () { }, // 返回false则停止事件
-        onDrag: function () { }, // 返回false则停止事件
-        onStop: function () { }, // 返回false则停止事件
+        allowAnyClick: false,
+        cancel: null,
+        disabled: false,
+        enableUserSelectHack: true,
+        offsetParent: null,
+        handle: null,
+        grid: null,
+        transform: null,
+        onStart: function () { },
+        onDrag: function () { },
+        onStop: function () { },
         onMouseDown: function () { },
         scale: 1,
     };

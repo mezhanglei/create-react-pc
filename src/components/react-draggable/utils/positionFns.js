@@ -48,7 +48,7 @@ export function getBoundPosition(draggable, x, y) {
     return [x, y];
 }
 
-// 计算拖拽的距离,当拖拽距离小于设定值则四舍五入返回0
+// 实时计算拖拽的距离,当拖拽距离小于设定值则四舍五入返回0
 export function snapToGrid(grid, pendingX, pendingY) {
     const x = Math.round(pendingX / grid[0]) * grid[0];
     const y = Math.round(pendingY / grid[1]) * grid[1];

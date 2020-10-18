@@ -71,22 +71,22 @@ export function getPositionInPage(el) {
  * @param {*} style 样式对象
  * @param {*} options {element: HTMLElement 默认document.body}
  */
-export function setStyle(style,options) {
+export function setStyle(style, options = {}) {
     const { element = document.body } = options;
     const oldStyle = {};
-  
+
     const styleKeys = Object.keys(style);
-  
+
     styleKeys.forEach(key => {
-      oldStyle[key] = element.style[key];
+        oldStyle[key] = element.style[key];
     });
-  
+
     styleKeys.forEach(key => {
-      element.style[key] = style[key];
+        element.style[key] = style[key];
     });
-  
+
     return oldStyle;
-  }
+}
 
 /**
  * 判断目标元素内部是否可以滚动
@@ -115,13 +115,6 @@ export function isBodyOverflowing() {
         (window.innerHeight || document.documentElement.clientHeight) &&
         window.innerWidth > document.body.offsetWidth
     );
-}
-
-// 给节点设置目标样式
-export function setStyle(style = {}, el = document.body) {
-    Object.keys(style).forEach(key => {
-        el.style[key] = style[key];
-    });
 }
 
 // 是否可以使用dom

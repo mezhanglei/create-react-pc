@@ -122,9 +122,11 @@ class Home extends React.Component {
                     // grid={[100, 25]}
                     scale={1}
                 >
-                    <Button className="handle" type="primary">
-                        时间
-                    </Button>
+                    <div style={{display: 'inline-block'}}>
+                        <Button className="handle" type="primary">
+                            拖拽元素
+                        </Button>
+                    </div>
                 </Draggable>
                 <Button onClick={this.showModal} type="primary">
                     打开1

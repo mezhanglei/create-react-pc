@@ -6,7 +6,32 @@ import { canDragX, canDragY, createDraggableData, getBoundPosition } from './uti
 import DraggableEvent from './DraggableEvent';
 import log from './utils/log';
 
-// 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
+/**
+ * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
+ * allowAnyClick:  boolean true表示允许非鼠标左键单击拖动
+ * disabled: boolean true禁止拖拽
+ * enableUserSelectHack: boolean 允许添加选中样式
+ * offsetParent: HTMLElement | function 提供定位父元素
+ * grid: [number, number] 跳跃幅度, 例如: [25, 25]表示x, y轴25移动距离跳跃一次
+ * handle: string 拖拽子元素所在的类选择器
+ * cancel: string 不允许拖拽的类选择器
+ * nodeRef: ref 拖拽组件的ref
+ * onStart: function(e, coreEvent) { } 拖拽开始事件, 返回false终止, coreEvent: {node: 节点,deltaX: x方向移动一次的距离, deltaY: y方向移动一次的距离, lastX: x方向移动前位置, lastY: y方向移动前位置, x: x位置, y: y位置}
+ * onDrag: function(e, coreEvent) { } 拖拽进行事件, 返回false终止, coreEvent: {node: 节点,deltaX: x方向移动一次的距离, deltaY: y方向移动一次的距离, lastX: x方向移动前位置, lastY: y方向移动前位置, x: x位置, y: y位置}
+ * onStop: function(e, coreEvent) { } 拖拽结束事件, 返回false终止, coreEvent: {node: 节点,deltaX: x方向移动一次的距离, deltaY: y方向移动一次的距离, lastX: x方向移动前位置, lastY: y方向移动前位置, x: x位置, y: y位置}
+ * scale: 1 拖拽比例
+ * style: object 包裹的子元素样式, 需要在子元素上设置
+ * transform: object 包裹的子元素的tansform样式, 需要在子元素上设置
+ * className: string 类名,需要在子元素上设置
+ * 
+ * axis: 'both' | 'x' | 'y' | 'none' 设置拖拽轴
+ * bounds: object | string  当为object时: {left?: number, top?: number, right?: number, bottom?: number}表示边界,相对于定位父元素的位置范围, 当为string时表示定位父元素类选择器
+ * defaultClassNameDragging: string 默认拖拽进行中会添加上的类名
+ * defaultClassNameDragged: string 默认拖拽过的元素会添加上的类名
+ * defaultPosition: object 默认拖拽元素所在的位置, 如{x:number, y: number}
+ * position: object 设置拖拽元素所在的位置, 如{x:number, y: number}
+ * positionOffset: object transform的位置增量,如{x:number, y: number}
+ */
 class Draggable extends React.Component {
 
     static displayName = 'Draggable';
@@ -14,10 +39,10 @@ class Draggable extends React.Component {
     static defaultProps = {
         ...DraggableEvent.defaultProps,
         axis: 'both',
-        bounds: false, // 边界,相对于定位父元素的位置范围: {left?: number, top?: number, right?: number, bottom?: number}或者定位父元素类选择器
+        bounds: false,
         defaultClassName: 'react-draggable',
-        defaultClassNameDragging: 'react-draggable-dragging', // 拖拽过程中标记的类名
-        defaultClassNameDragged: 'react-draggable-dragged', // 拖拽过标记的类名
+        defaultClassNameDragging: 'react-draggable-dragging',
+        defaultClassNameDragged: 'react-draggable-dragged',
         defaultPosition: { x: 0, y: 0 },
         position: null,
         scale: 1
