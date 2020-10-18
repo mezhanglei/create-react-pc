@@ -1,4 +1,5 @@
 @prefixCls: ant-modal;
+@maskTransitionName: fade;
 
 .@{prefixCls} {
     &-mask {
@@ -24,25 +25,25 @@
         animation-timing-function: cubic-bezier(0.55, 0, 0.55, 0.2);
     }
 
-    &-fade-enter,
-    &-fade-appear {
+    &-@{maskTransitionName}-enter,
+    &-@{maskTransitionName}-appear {
         opacity: 0;
         .fade-effect();
         animation-play-state: paused;
     }
 
-    &-fade-leave {
+    &-@{maskTransitionName}-leave {
         .fade-effect();
         animation-play-state: paused;
     }
 
-    &-fade-enter&-fade-enter-active,
-    &-fade-appear&-fade-appear-active {
+    &-@{maskTransitionName}-enter&-@{maskTransitionName}-enter-active,
+    &-@{maskTransitionName}-appear&-@{maskTransitionName}-appear-active {
         animation-name: DialogFadeIn;
         animation-play-state: running;
     }
 
-    &-fade-leave&-fade-leave-active {
+    &-@{maskTransitionName}-leave&-@{maskTransitionName}-leave-active {
         animation-name: DialogFadeOut;
         animation-play-state: running;
     }

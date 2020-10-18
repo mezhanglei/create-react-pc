@@ -8,6 +8,7 @@ import TreeTransfer from "@/components/transfer/treeTransfer";
 import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
+// import { Modal } from "antd";
 import Draggable from "@/components/react-draggable/Draggable";
 import raf from "@/utils/requestAnimationFrame";
 import DragResize from "@/components/drag-layout";
@@ -73,12 +74,13 @@ class Home extends React.Component {
     }
 
     showModal = () => {
-        // this.setState({ visible: true });
-        Modal.confirm({
-            title: '1111',
-            content: 11111,
-            onCancel: function(){},
-        })
+        this.setState({ visible: true });
+        // Modal.confirm({
+        //     title: '1111',
+        //     content: 11111,
+        //     maskClosable:true,
+        //     onCancel: function () { },
+        // })
     }
 
     handleOk = () => {
@@ -86,7 +88,7 @@ class Home extends React.Component {
     }
 
     handleCancel = () => {
-
+        this.setState({ visible: false });
     }
 
     renderItem = ({ style, index }) => {

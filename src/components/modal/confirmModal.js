@@ -22,7 +22,7 @@ const ConfirmModal = (props) => {
         getContainer, // false表示挂载当前组件根节点，默认为document.body
         maskStyle, // 遮罩样式
         mask = true, // 是否展示遮罩层 false时不展示
-        maskClosable = true, // 是否点击遮罩层关闭  默认true,关闭
+        maskClosable = false, // 是否点击遮罩层关闭  默认true,关闭
         okButtonProps, // ok按钮的props
         cancelButtonProps, // cancel按钮的props
         icon, // 提示标题的icon
@@ -80,7 +80,7 @@ const ConfirmModal = (props) => {
 
     // 图标
     const IconNode = icon;
-    
+
     return (
         <Modal
             prefixCls={prefixCls}
@@ -125,14 +125,14 @@ export default function confirm(config) {
     let currentConfig = { ...config, close, visible: true };
 
     // 异步实例化
-    const render = (props) => {
+    function render(props) {
         setTimeout(() => {
             ReactDOM.render(<ConfirmModal {...props} />, div);
         });
     };
 
     // 关闭
-    const close = (...args) => {
+    function close(...args) {
         currentConfig = {
             ...currentConfig,
             visible: false,
@@ -142,7 +142,7 @@ export default function confirm(config) {
     };
 
     // 更新
-    const update = (newConfig) => {
+    function update(newConfig) {
         currentConfig = {
             ...currentConfig,
             ...newConfig,
@@ -151,7 +151,7 @@ export default function confirm(config) {
     };
 
     // 销毁(关闭并移出节点)
-    const destroy = (...args) => {
+    function destroy(...args) {
         // 销毁节点并移除插入节点
         const unmountResult = ReactDOM.unmountComponentAtNode(div);
         if (unmountResult && div.parentNode) {

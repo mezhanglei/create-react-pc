@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { canUseDom } from '@/utils/dom';
+import { canUseDom, setStyle } from '@/utils/dom';
 
 // 计算打开弹窗个数
 let openCount = 0;
 const supportDom = canUseDom();
+
+let cacheOverflow = {};
 
 // 根据传值解析出父元素
 const getParent = (getContainer) => {
@@ -96,6 +98,20 @@ class PortalWrapper extends React.Component {
         return this.container;
     }
 
+    // 切换弹窗同时要切换滚动状态
+    switchScrollingEffect = () => {
+        if (openCount === 1 && !Object.keys(cacheOverflow).length) {
+            cacheOverflow = setStyle({
+                overflow: 'hidden',
+                overflowX: 'hidden',
+                overflowY: 'hidden',
+            });
+        } else if (!openCount) {
+            setStyle(cacheOverflow);
+            cacheOverflow = {};
+        }
+    };
+
     setWrapperClassName = () => {
         const { wrapperClassName } = this.props;
         if (
@@ -117,11 +133,13 @@ class PortalWrapper extends React.Component {
         const root = this.appendContainer();
         const childProps = {
             getOpenCount: () => openCount,
-            appendContainer: this.appendContainer
+            // appendContainer: this.appendContainer,
+            switchScrollingEffect: this.switchScrollingEffect
         };
 
-        if (visible && root) {
-            return ReactDOM.createPortal(children(childProps), root);
+        if ((visible || this.modalComponent) && root) {
+            this.modalComponent = ReactDOM.createPortal(children(childProps), root);
+            return this.modalComponent;
         }
         return null;
     }

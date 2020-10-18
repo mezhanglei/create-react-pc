@@ -9,12 +9,12 @@ import Content from './Content';
 
 export default function Dialog(props) {
     const {
-        prefixCls = 'rc-dialog',
+        prefixCls = 'ant-modal',
         zIndex,
         visible = false,
         keyboard = true,
         focusTriggerAfterClose = true,
-        switchScrollingEffect = () => { },
+        switchScrollingEffect,
 
         // Wrapper
         title,
@@ -33,7 +33,7 @@ export default function Dialog(props) {
         mask = true,
         maskTransitionName,
         maskAnimation,
-        maskClosable = true,
+        maskClosable = false,
         maskStyle,
         maskProps,
     } = props;
@@ -59,10 +59,8 @@ export default function Dialog(props) {
                 contentRef.current?.focus();
             }
         } else {
-            // Clean up scroll bar & focus back
             setAnimatedVisible(false);
             switchScrollingEffect();
-
             if (mask && lastOutSideActiveElementRef.current && focusTriggerAfterClose) {
                 try {
                     lastOutSideActiveElementRef.current.focus({ preventScroll: true });

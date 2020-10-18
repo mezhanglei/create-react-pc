@@ -61,6 +61,7 @@ const Modal = props => {
     };
 
     const closeIconToRender = (
+        closeIcon &&
         <span className={`${prefixCls}-close-x`}>
             {closeIcon}
         </span>

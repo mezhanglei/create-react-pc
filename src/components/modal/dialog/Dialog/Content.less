@@ -1,4 +1,5 @@
 @prefixCls: ant-modal;
+@transitionName: zoom;
 
 .reset-component() {
   box-sizing: border-box;
@@ -45,12 +46,12 @@
 
   &-content {
     position: relative;
-    background-color:#fff;
+    background-color: #fff;
     background-clip: padding-box;
     border: 0;
     border-radius: 2px;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.48), 0 6px 16px 0 rgba(0, 0, 0, 0.32),
-    0 9px 28px 8px rgba(0, 0, 0, 0.2);
+      0 9px 28px 8px rgba(0, 0, 0, 0.2);
     pointer-events: auto;
   }
 
@@ -76,7 +77,7 @@
       height: 44px;
       font-size: 14px;
       font-style: normal;
-      line-height:44px;
+      line-height: 44px;
       text-align: center;
       text-transform: none;
       text-rendering: auto;
@@ -111,14 +112,14 @@
     border-top: 1px solid hsv(0, 0, 94%);
     border-radius: 0 0 2px 2px;
 
-    button + button {
+    button+button {
       margin-bottom: 0;
       margin-left: 8px;
     }
   }
 
-  &.zoom-enter,
-  &.zoom-appear {
+  &.@{transitionName}-enter,
+  &.@{transitionName}-appear {
     transform: none;
     opacity: 0;
     animation-duration: 0.3s;
@@ -148,6 +149,7 @@
 
 .@{prefixCls}-centered {
   text-align: center;
+
   &::before {
     display: inline-block;
     width: 0;
@@ -155,6 +157,7 @@
     vertical-align: middle;
     content: '';
   }
+
   .@{prefixCls} {
     top: 0;
     display: inline-block;
@@ -168,6 +171,7 @@
     max-width: calc(100vw - 16px);
     margin: 8px auto;
   }
+
   .@{prefixCls}-centered {
     .@{prefixCls} {
       flex: 1;
