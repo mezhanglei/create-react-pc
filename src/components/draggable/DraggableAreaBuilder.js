@@ -526,7 +526,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             const tags = this.state.tags.toJS().map((tag, index) => (
                 <div
                     key={tag.id}
-                    className={`'DraggableTags-tag' ${((tag.undraggable || forbidDrag) ? excludedInDragClassName : dragClassName)}`}
+                    className={`DraggableTags-tag ${((tag.undraggable || forbidDrag) ? excludedInDragClassName : dragClassName)}`}
                     ref={(target) => {
                         this.tagEles[tag.id] = target;
                     }}

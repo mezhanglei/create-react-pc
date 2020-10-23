@@ -4,22 +4,23 @@ import { ALIGNMENT } from './constants';
 export default class SizeAndPositionManager {
 
     constructor({ itemCount, itemSizeGetter, estimatedItemSize }) {
+        // 获取尺寸的函数
         this.itemSizeGetter = itemSizeGetter;
+        // 懒加载最大条数
         this.itemCount = itemCount;
+        // 尺寸
         this.estimatedItemSize = estimatedItemSize;
 
-        // Cache of size and position data for items, mapped by item index.
+        // 选项大小和位置的缓存
         this.itemSizeAndPositionData = {};
 
-        // Measurements for items up to this index can be trusted; items afterward should be estimated.
+        // 计算索引项大小和位置时的最后一个序号
         this.lastMeasuredIndex = -1;
     }
 
-    updateConfig({
-        itemCount,
-        itemSizeGetter,
-        estimatedItemSize,
-    }) {
+
+    // 更新尺寸
+    updateConfig({ itemCount, itemSizeGetter, estimatedItemSize }) {
         if (itemCount != null) {
             this.itemCount = itemCount;
         }
@@ -37,10 +38,7 @@ export default class SizeAndPositionManager {
         return this.lastMeasuredIndex;
     }
 
-    /**
- * This method returns the size and position for the item at the specified index.
- * It just-in-time calculates (or used cached values) for items leading up to the index.
- */
+    // 实时计算指定索引项的大小和位置，如果该项已经加载过，则直接从缓存里取
     getSizeAndPositionForIndex(index) {
         if (index < 0 || index >= this.itemCount) {
             throw Error(
@@ -48,6 +46,7 @@ export default class SizeAndPositionManager {
             );
         }
 
+        // 如果是未知项，则从已知的最后一项到未知项之间所有的元素的位置和大小都缓存起来
         if (index > this.lastMeasuredIndex) {
             const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
             let offset =
@@ -74,17 +73,14 @@ export default class SizeAndPositionManager {
         return this.itemSizeAndPositionData[index];
     }
 
+    // 已知的最后一项的位置和大小
     getSizeAndPositionOfLastMeasuredItem() {
         return this.lastMeasuredIndex >= 0
             ? this.itemSizeAndPositionData[this.lastMeasuredIndex]
             : { offset: 0, size: 0 };
     }
 
-    /**
- * Total size of all items being measured.
- * This value will be completedly estimated initially.
- * As items as measured the estimate will be updated.
- */
+    // 估算项目的总尺寸 = 
     getTotalSize() {
         const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
 
@@ -172,7 +168,7 @@ export default class SizeAndPositionManager {
 
         return {
             start,
-            stop,
+            stop
         };
     }
 

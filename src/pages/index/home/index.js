@@ -100,7 +100,7 @@ class Home extends React.Component {
     };
 
     renderOn = (start, stop) => {
-        console.log(start, stop)
+        console.log(start, stop);
     }
 
     render() {
@@ -122,7 +122,7 @@ class Home extends React.Component {
                     // grid={[100, 25]}
                     scale={1}
                 >
-                    <div style={{display: 'inline-block'}}>
+                    <div style={{ display: 'inline-block' }}>
                         <Button className="handle" type="primary">
                             拖拽元素
                         </Button>
@@ -136,6 +136,7 @@ class Home extends React.Component {
                     visible={this.state.visible}
                     centered
                     maskClosable
+                    destroyOnClose
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                 >

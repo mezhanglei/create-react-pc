@@ -36,10 +36,10 @@ const STYLE_STICKY_ITEM = {
 };
 
 /**
- * estimatedItemSize: number 实际渲染的总高度(宽度)
+ * estimatedItemSize: number 列表元素实际渲染的高度(宽度)
  * width和height: number | string 列表区域的宽高
  * itemCount: number  懒加载的最大条数
- * itemSize: number | array | function() {} 列表元素在scrollDirection方向上的尺寸大小
+ * itemSize: number | array | function(index) {} 列表元素的高度（宽度）
  * onScroll: function(scrollTop, e) {} 滚动触发的函数
  * onItemsRendered: function({startIndex: number, stopIndex: number}) {} 加载新的数据时触发的函数
  * overscanCount: number 提前加载的列表条数
@@ -49,7 +49,7 @@ const STYLE_STICKY_ITEM = {
  * scrollToAlignment: 'start' | 'center' | 'end' | 'auto' 控制渲染总列表的区域 start起始区域 center中间区域 end尾部区域 auto自动显示scrollToIndex位置所在区域
  * scrollDirection: 'vertical' | 'horizontal' 设置列表的滚动方向
  * stickyIndices: Number[]	如[0,1,2] 控制目标index的数据实现吸顶粘性
- * style: object 渲染数据的样式
+ * style: object 组件样式
  */
 export default class VirtualList extends React.PureComponent {
     static defaultProps = {
@@ -58,9 +58,22 @@ export default class VirtualList extends React.PureComponent {
         width: '100%',
     };
 
-    itemSizeGetter = (itemSize) => {
-        return index => this.getSize(index, itemSize);
+    // 获取列表元素指定选项的尺寸的函数
+    itemSizeGetter = (itemSize) => (index) => {
+        if (typeof itemSize === 'function') {
+            return itemSize(index);
+        }
+        return Array.isArray(itemSize) ? itemSize[index] : itemSize;
     };
+
+    // 列表元素的尺寸大小
+    getEstimatedItemSize(props = this.props) {
+        return (
+            props.estimatedItemSize ||
+            (typeof props.itemSize === 'number' && props.itemSize) ||
+            50
+        );
+    }
 
     sizeAndPositionManager = new SizeAndPositionManager({
         itemCount: this.props.itemCount,
@@ -220,22 +233,6 @@ export default class VirtualList extends React.PureComponent {
         const { scrollDirection = DIRECTION.VERTICAL } = this.props;
 
         return this.rootNode[scrollProp[scrollDirection]];
-    }
-
-    getEstimatedItemSize(props = this.props) {
-        return (
-            props.estimatedItemSize ||
-            (typeof props.itemSize === 'number' && props.itemSize) ||
-            50
-        );
-    }
-
-    getSize(index, itemSize) {
-        if (typeof itemSize === 'function') {
-            return itemSize(index);
-        }
-
-        return Array.isArray(itemSize) ? itemSize[index] : itemSize;
     }
 
     getStyle(index, sticky) {

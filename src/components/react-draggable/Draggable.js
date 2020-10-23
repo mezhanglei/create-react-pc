@@ -229,6 +229,9 @@ class Draggable extends React.Component {
         } else {
             style = createCSSTransform(transformOpts, positionOffset);
         }
+        //  else {
+        //     console.error("'inline' type of children is not support");
+        // }
 
         // 注意: 自定义className需要在子元素children上面设置
         const className = classNames((children.props.className || ''), defaultClassName, {
