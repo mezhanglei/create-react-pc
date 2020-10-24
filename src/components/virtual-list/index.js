@@ -36,17 +36,18 @@ const STYLE_STICKY_ITEM = {
 };
 
 /**
- * estimatedItemSize: number 列表元素实际渲染的高度(宽度)
- * width和height: number | string 列表区域的宽高
+ * 虚拟列表(暂时模式是不缓存,只渲染可视区域)
+ * estimatedItemSize: number 列表元素估算的大小(滚动方向上的)
+ * width和height: number | string 列表区域的大小(滚动方向上的)
  * itemCount: number  懒加载的最大条数
  * itemSize: number | array | function(index) {} 列表元素的高度（宽度）
  * onScroll: function(scrollTop, e) {} 滚动触发的函数
- * onItemsRendered: function({startIndex: number, stopIndex: number}) {} 加载新的数据时触发的函数
- * overscanCount: number 提前加载的列表条数
+ * onItemsRendered: function({startIndex: number, stopIndex: number}) {} 加载新的数据时触发的函数, startIndex, stopIndex为渲染的起始和终点索引
+ * overscanCount: number 预览的元素个数(默认前后各三个)
  * renderItem: function({index: number, style: Object}) {} 返回渲染的单元
  * scrollOffset: number 设置滚动到哪个位置
  * scrollToIndex: number 设置滚动到哪一条数据
- * scrollToAlignment: 'start' | 'center' | 'end' | 'auto' 控制渲染总列表的区域 start起始区域 center中间区域 end尾部区域 auto自动显示scrollToIndex位置所在区域
+ * scrollToAlignment: 'start' | 'center' | 'end' | 'auto' 与结合使用scrollToIndex, 指定索引项在可见区域的位置 start起始区域 center中间区域 end尾部区域 auto自动显示scrollToIndex位置所在区域
  * scrollDirection: 'vertical' | 'horizontal' 设置列表的滚动方向
  * stickyIndices: Number[]	如[0,1,2] 控制目标index的数据实现吸顶粘性
  * style: object 组件样式
@@ -66,7 +67,7 @@ export default class VirtualList extends React.PureComponent {
         return Array.isArray(itemSize) ? itemSize[index] : itemSize;
     };
 
-    // 列表元素的尺寸大小
+    // 列表元素的估算尺寸
     getEstimatedItemSize(props = this.props) {
         return (
             props.estimatedItemSize ||
@@ -194,7 +195,7 @@ export default class VirtualList extends React.PureComponent {
             index = 0;
         }
 
-        return this.sizeAndPositionManager.getUpdatedOffsetForIndex({
+        return this.sizeAndPositionManager.getUpdatedScrollForIndex({
             align: scrollToAlignment,
             containerSize: this.props[sizeProp[scrollDirection]],
             currentOffset: (this.state && this.state.offset) || 0,

@@ -100,7 +100,7 @@ class Home extends React.Component {
     };
 
     renderOn = (start, stop) => {
-        console.log(start, stop);
+        console.log(start,stop)
     }
 
     render() {
@@ -189,6 +189,8 @@ class Home extends React.Component {
                 <CaptchaImg />
                 <VirtualList
                     width="auto"
+                    // scrollToAlignment="start"
+                    scrollToIndex={40}
                     height={400}
                     itemCount={50}
                     renderItem={this.renderItem}

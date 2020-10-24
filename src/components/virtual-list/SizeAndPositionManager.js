@@ -8,7 +8,7 @@ export default class SizeAndPositionManager {
         this.itemSizeGetter = itemSizeGetter;
         // 懒加载最大条数
         this.itemCount = itemCount;
-        // 尺寸
+        // 估算的元素尺寸
         this.estimatedItemSize = estimatedItemSize;
 
         // 选项大小和位置的缓存
@@ -80,7 +80,7 @@ export default class SizeAndPositionManager {
             : { offset: 0, size: 0 };
     }
 
-    // 估算项目的总尺寸 = 
+    // 估算项目的总尺寸 = 已渲染的最后元素位置 + 最后元素尺寸 + 估算的元素尺寸
     getTotalSize() {
         const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
 
@@ -92,58 +92,59 @@ export default class SizeAndPositionManager {
     }
 
     /**
- * Determines a new offset that ensures a certain item is visible, given the alignment.
- *
- * @param align Desired alignment within container; one of "start" (default), "center", or "end"
- * @param containerSize Size (width or height) of the container viewport
- * @return Offset to use to ensure the specified item is visible
- */
-    getUpdatedOffsetForIndex({
-        align = ALIGNMENT.START,
-        containerSize,
-        currentOffset,
-        targetIndex,
-    }) {
+     * 指定渲染的索引项返回滚动的距离
+     * align: 'auto' | 'start' | 'center' | 'end' 设定区域
+     * containerSize: 可见区域的尺寸
+     * currentOffset: 当前项的位置
+     * targetIndex: 索引项
+     */
+    getUpdatedScrollForIndex({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
         if (containerSize <= 0) {
             return 0;
         }
 
-        const datum = this.getSizeAndPositionForIndex(targetIndex);
-        const maxOffset = datum.offset;
-        const minOffset = maxOffset - containerSize + datum.size;
+        const sizeAndPosition = this.getSizeAndPositionForIndex(targetIndex);
+        // 滚动最大值
+        const maxScroll = sizeAndPosition.offset;
+        // 滚动最小值
+        const minScroll = maxScroll - containerSize + sizeAndPosition.size;
 
-        let idealOffset;
+        let expectScroll;
 
         switch (align) {
             case ALIGNMENT.END:
-                idealOffset = minOffset;
+                expectScroll = minScroll;
                 break;
             case ALIGNMENT.CENTER:
-                idealOffset = maxOffset - (containerSize - datum.size) / 2;
+                expectScroll = maxScroll - (containerSize - sizeAndPosition.size) / 2;
                 break;
             case ALIGNMENT.START:
-                idealOffset = maxOffset;
+                expectScroll = maxScroll;
                 break;
             default:
-                idealOffset = Math.max(minOffset, Math.min(maxOffset, currentOffset));
+                // 默认滚动距离为范围内的优先当前项的位置
+                expectScroll = Math.max(minScroll, Math.min(maxScroll, currentOffset));
         }
 
         const totalSize = this.getTotalSize();
 
-        return Math.max(0, Math.min(totalSize - containerSize, idealOffset));
+        return Math.max(0, Math.min(totalSize - containerSize, expectScroll));
     }
 
-    getVisibleRange({
-        containerSize,
-        offset,
-        overscanCount,
-    }) {
+    /**
+     * 根据滚动距离返回渲染的起始点和终点索引
+     * containerSize: 可视区域尺寸
+     * offset: 滚动距离
+     * overscanCount: 预览的元素个数(默认前后各三个元素)
+     */
+    getVisibleRange({ containerSize, offset, overscanCount }) {
         const totalSize = this.getTotalSize();
 
         if (totalSize === 0) {
             return {};
         }
 
+        // 最大滚动距离
         const maxOffset = offset + containerSize;
         let start = this.findNearestItem(offset);
 
@@ -172,44 +173,32 @@ export default class SizeAndPositionManager {
         };
     }
 
-    /**
- * Clear all cached values for items after the specified index.
- * This method should be called for any item that has changed its size.
- * It will not immediately perform any calculations; they'll be performed the next time getSizeAndPositionForIndex() is called.
- */
+    // 清除指定索引后项的所有缓存值。如果元素选项改变了大小则用此方法决定是否清除缓存项
     resetItem(index) {
         this.lastMeasuredIndex = Math.min(this.lastMeasuredIndex, index - 1);
     }
 
-    /**
- * Searches for the item (index) nearest the specified offset.
- *
- * If no exact match is found the next lowest item index will be returned.
- * This allows partially visible items (with offsets just before/above the fold) to be visible.
- */
+    // 根据滚动距离返回可视区域上方的接近索引项, 找不到则匹配为0
     findNearestItem(offset) {
         if (isNaN(offset)) {
             throw Error(`Invalid offset ${offset} specified`);
         }
 
-        // Our search algorithms find the nearest match at or below the specified offset.
-        // So make sure the offset is at least 0 or no match will be found.
         offset = Math.max(0, offset);
 
+        // 最后一项
         const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
         const lastMeasuredIndex = Math.max(0, this.lastMeasuredIndex);
 
         if (lastMeasuredSizeAndPosition.offset >= offset) {
-            // If we've already measured items within this range just use a binary search as it's faster.
+            // 二分查找
             return this.binarySearch({
                 high: lastMeasuredIndex,
                 low: 0,
                 offset,
             });
         } else {
-            // If we haven't yet measured this high, fallback to an exponential search with an inner binary search.
-            // The exponential search avoids pre-computing sizes for the full set of items as a binary search would.
-            // The overall complexity for this approach is O(log n).
+            // 如果滚动过快导致还没测量到值则进行指数搜素
             return this.exponentialSearch({
                 index: lastMeasuredIndex,
                 offset,
@@ -217,11 +206,8 @@ export default class SizeAndPositionManager {
         }
     }
 
-    binarySearch({
-        low,
-        high,
-        offset,
-    }) {
+    // 二分搜索
+    binarySearch({low,high, offset}) {
         let middle = 0;
         let currentOffset = 0;
 
@@ -245,6 +231,7 @@ export default class SizeAndPositionManager {
         return 0;
     }
 
+    // 指数搜索
     exponentialSearch({ index, offset }) {
         let interval = 1;
 
