@@ -190,7 +190,7 @@ class Home extends React.Component {
                 <VirtualList
                     width="auto"
                     // scrollToAlignment="start"
-                    scrollToIndex={40}
+                    scrollToIndex={30}
                     height={400}
                     itemCount={50}
                     renderItem={this.renderItem}

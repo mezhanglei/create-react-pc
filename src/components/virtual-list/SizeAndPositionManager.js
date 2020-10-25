@@ -14,7 +14,7 @@ export default class SizeAndPositionManager {
         // 选项大小和位置的缓存
         this.itemSizeAndPositionData = {};
 
-        // 计算索引项大小和位置时的最后一个序号
+        // 已经缓存计算的最大索引项
         this.lastMeasuredIndex = -1;
     }
 
@@ -134,10 +134,10 @@ export default class SizeAndPositionManager {
     /**
      * 根据滚动距离返回渲染的起始点和终点索引
      * containerSize: 可视区域尺寸
-     * offset: 滚动距离
+     * scrollSize: 滚动距离
      * overscanCount: 预览的元素个数(默认前后各三个元素)
      */
-    getVisibleRange({ containerSize, offset, overscanCount }) {
+    getVisibleRange({ containerSize, scrollSize, overscanCount }) {
         const totalSize = this.getTotalSize();
 
         if (totalSize === 0) {
@@ -145,21 +145,21 @@ export default class SizeAndPositionManager {
         }
 
         // 最大滚动距离
-        const maxOffset = offset + containerSize;
-        let start = this.findNearestItem(offset);
+        const maxOffset = scrollSize + containerSize;
+        let start = this.findNearestItem(scrollSize);
 
         if (typeof start === 'undefined') {
-            throw Error(`Invalid offset ${offset} specified`);
+            throw Error(`Invalid scrollSize ${scrollSize} specified`);
         }
 
         const datum = this.getSizeAndPositionForIndex(start);
-        offset = datum.offset + datum.size;
+        scrollSize = datum.offset + datum.size;
 
         let stop = start;
 
-        while (offset < maxOffset && stop < this.itemCount - 1) {
+        while (scrollSize < maxOffset && stop < this.itemCount - 1) {
             stop++;
-            offset += this.getSizeAndPositionForIndex(stop).size;
+            scrollSize += this.getSizeAndPositionForIndex(stop).size;
         }
 
         if (overscanCount) {
@@ -173,41 +173,40 @@ export default class SizeAndPositionManager {
         };
     }
 
-    // 清除指定索引后项的所有缓存值。如果元素选项改变了大小则用此方法决定是否清除缓存项
+    // 重置计算索引项及对应的缓存
     resetItem(index) {
         this.lastMeasuredIndex = Math.min(this.lastMeasuredIndex, index - 1);
     }
 
-    // 根据滚动距离返回可视区域上方的接近索引项, 找不到则匹配为0
-    findNearestItem(offset) {
-        if (isNaN(offset)) {
-            throw Error(`Invalid offset ${offset} specified`);
+    // 根据滚动距离返回可视区域起始点的接近索引项, 找不到则匹配为0
+    findNearestItem(scrollSize) {
+        if (isNaN(scrollSize)) {
+            throw Error(`Invalid scrollSize ${scrollSize} specified`);
         }
 
-        offset = Math.max(0, offset);
+        scrollSize = Math.max(0, scrollSize);
 
-        // 最后一项
         const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
         const lastMeasuredIndex = Math.max(0, this.lastMeasuredIndex);
 
-        if (lastMeasuredSizeAndPosition.offset >= offset) {
+        if (lastMeasuredSizeAndPosition.offset >= scrollSize) {
             // 二分查找
             return this.binarySearch({
                 high: lastMeasuredIndex,
                 low: 0,
-                offset,
+                scrollSize,
             });
         } else {
             // 如果滚动过快导致还没测量到值则进行指数搜素
             return this.exponentialSearch({
                 index: lastMeasuredIndex,
-                offset,
+                scrollSize,
             });
         }
     }
 
     // 二分搜索
-    binarySearch({low,high, offset}) {
+    binarySearch({low,high, scrollSize}) {
         let middle = 0;
         let currentOffset = 0;
 
@@ -215,11 +214,11 @@ export default class SizeAndPositionManager {
             middle = low + Math.floor((high - low) / 2);
             currentOffset = this.getSizeAndPositionForIndex(middle).offset;
 
-            if (currentOffset === offset) {
+            if (currentOffset === scrollSize) {
                 return middle;
-            } else if (currentOffset < offset) {
+            } else if (currentOffset < scrollSize) {
                 low = middle + 1;
-            } else if (currentOffset > offset) {
+            } else if (currentOffset > scrollSize) {
                 high = middle - 1;
             }
         }
@@ -231,13 +230,13 @@ export default class SizeAndPositionManager {
         return 0;
     }
 
-    // 指数搜索
-    exponentialSearch({ index, offset }) {
+    // 指数搜索和二分搜索
+    exponentialSearch({ index, scrollSize }) {
         let interval = 1;
 
         while (
             index < this.itemCount &&
-            this.getSizeAndPositionForIndex(index).offset < offset
+            this.getSizeAndPositionForIndex(index).offset < scrollSize
         ) {
             index += interval;
             interval *= 2;
@@ -246,7 +245,7 @@ export default class SizeAndPositionManager {
         return this.binarySearch({
             high: Math.min(index, this.itemCount - 1),
             low: Math.floor(index / 2),
-            offset,
+            scrollSize,
         });
     }
 }
