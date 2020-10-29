@@ -1,4 +1,4 @@
-/* Forked from react-virtualized 💖 */
+/* Forked from react-virtualized and react-tiny-virtrual-list */
 import { ALIGNMENT } from './constants';
 
 export default class SizeAndPositionManager {

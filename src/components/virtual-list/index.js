@@ -55,6 +55,7 @@ export default class VirtualList extends React.PureComponent {
     static defaultProps = {
         overscanCount: 3,
         scrollDirection: DIRECTION.VERTICAL,
+        estimatedItemSize: 50,
         width: '100%',
     };
 
@@ -66,20 +67,11 @@ export default class VirtualList extends React.PureComponent {
         return Array.isArray(itemSize) ? itemSize[index] : itemSize;
     };
 
-    // 列表元素的估算尺寸
-    getEstimatedItemSize(props = this.props) {
-        return (
-            props.estimatedItemSize ||
-            (typeof props.itemSize === 'number' && props.itemSize) ||
-            50
-        );
-    }
-
     sizeAndPositionManager = new SizeAndPositionManager({
         limit: this.props.limit,
         dataSource: this.props.dataSource,
         itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
-        estimatedItemSize: this.getEstimatedItemSize(),
+        estimatedItemSize: this.props.estimatedItemSize,
     });
 
     state = {
@@ -131,7 +123,7 @@ export default class VirtualList extends React.PureComponent {
                 _self.sizeAndPositionManager.updateConfig({
                     limit: nextProps.limit,
                     dataSource: nextProps.dataSource,
-                    estimatedItemSize: _self.getEstimatedItemSize(nextProps),
+                    estimatedItemSize: nextProps.estimatedItemSize,
                 });
             }
 
