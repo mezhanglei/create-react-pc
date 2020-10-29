@@ -1,5 +1,6 @@
 import * as React from 'react';
 import SizeAndPositionManager from './SizeAndPositionManager';
+import { isArray } from "@/utils/type";
 import {
     DIRECTION,
     SCROLL_CHANGE_REASON,
@@ -29,19 +30,16 @@ const STYLE_ITEM = {
     width: '100%',
 };
 
-const STYLE_STICKY_ITEM = {
-    ...STYLE_ITEM,
-    position: 'sticky'
-};
-
 /**
- * 虚拟列表
- * 特点: 1. 暂时只支持可视区域内的渲染,可视区域外的将会被卸载
- *       2. 必须要指定加载的总条数
- *       3. 只支持静态数据
+ * 虚拟列表:
+ *    实现原理：在数据渲染之前根据设定的尺寸进行计算需要渲染的索引项，然后开始渲染
+ *    适用场景: 一次性加载巨量数据时使用 
+ *    特点: 1. 暂时只支持可视区域内的渲染,可视区域外的将会被卸载
+ *          2. 支持自定义渲染数据
+ *          3. 支持横向和竖向的滚动
  * estimatedItemSize: number 列表元素估算的大小(滚动方向上的)
  * width和height: number | string 列表区域的大小(滚动方向上的)
- * itemCount: number  懒加载的最大条数
+ * limit: number  懒加载的最大条数
  * itemSize: number | array | function(index) {} 列表元素的高度（宽度）
  * onScroll: function(scrollTop, e) {} 滚动触发的函数
  * onItemsRendered: function({startIndex: number, stopIndex: number}) {} 加载新的数据时触发的函数, startIndex, stopIndex为渲染的起始和终点索引
@@ -51,7 +49,6 @@ const STYLE_STICKY_ITEM = {
  * scrollToIndex: number 设置滚动到哪一条数据
  * scrollToAlignment: 'start' | 'center' | 'end' | 'auto' 与结合使用scrollToIndex, 指定索引项在可见区域的位置 start起始区域 center中间区域 end尾部区域 auto自动显示scrollToIndex位置所在区域
  * scrollDirection: 'vertical' | 'horizontal' 设置列表的滚动方向
- * stickyIndices: Number[]	如[0,1,2] 控制目标index的数据实现吸顶粘性
  * style: object 组件样式
  */
 export default class VirtualList extends React.PureComponent {
@@ -79,7 +76,8 @@ export default class VirtualList extends React.PureComponent {
     }
 
     sizeAndPositionManager = new SizeAndPositionManager({
-        itemCount: this.props.itemCount,
+        limit: this.props.limit,
+        dataSource: this.props.dataSource,
         itemSizeGetter: this.itemSizeGetter(this.props.itemSize),
         estimatedItemSize: this.getEstimatedItemSize(),
     });
@@ -96,76 +94,71 @@ export default class VirtualList extends React.PureComponent {
 
     styleCache = {}
 
-    componentDidMount() {
-        const { scrollOffset, scrollToIndex } = this.props;
-        this.rootNode.addEventListener('scroll', this.handleScroll, {
-            passive: true, // 不阻止默认行为
-        });
-
-        // 初始化滚动位置
-        if (scrollOffset != null) {
-            this.scrollTo(scrollOffset);
-        } else if (scrollToIndex != null) {
-            this.scrollTo(this.getScrollForIndex(scrollToIndex));
-        }
-    }
-
     // props变化时(优点: 可以对于比较频繁的props变化只执行一次render)
     static getDerivedStateFromProps(nextProps, prevState) {
         const { prevProps, _self } = prevState;
         if (prevProps) {
             const {
                 estimatedItemSize,
-                itemCount,
+                limit,
+                dataSource,
                 itemSize,
                 scrollOffset,
                 scrollToAlignment,
                 scrollToIndex,
             } = prevProps;
 
-            const scrollPropsHaveChanged =
-                nextProps.scrollToIndex !== scrollToIndex ||
-                nextProps.scrollToAlignment !== scrollToAlignment;
+            // 列表是否变化
             const itemPropsHaveChanged =
-                nextProps.itemCount !== itemCount ||
+                nextProps.limit !== limit ||
+                nextProps.dataSource?.toString() != dataSource?.toString() ||
                 nextProps.itemSize !== itemSize ||
                 nextProps.estimatedItemSize !== estimatedItemSize;
 
+            // 尺寸，更新sizeAndPositionManager类的尺寸
             if (nextProps.itemSize !== itemSize) {
                 _self.sizeAndPositionManager.updateConfig({
                     itemSizeGetter: _self.itemSizeGetter(nextProps.itemSize),
                 });
             }
 
+            // 列表项变化引起更新sizeAndPositionManager类
             if (
-                nextProps.itemCount !== itemCount ||
+                nextProps.limit !== limit ||
+                nextProps.dataSource?.toString() != dataSource?.toString() ||
                 nextProps.estimatedItemSize !== estimatedItemSize
             ) {
                 _self.sizeAndPositionManager.updateConfig({
-                    itemCount: nextProps.itemCount,
+                    limit: nextProps.limit,
+                    dataSource: nextProps.dataSource,
                     estimatedItemSize: _self.getEstimatedItemSize(nextProps),
                 });
             }
 
+            // 列表变化就重置和清空缓存
             if (itemPropsHaveChanged) {
                 _self.recomputeSizes();
             }
 
-            if (nextProps.scrollOffset !== scrollOffset) {
+            // scrollOffset和列表prop变化时
+            if (typeof nextProps.scrollOffset === 'number' &&
+                (nextProps.scrollToAlignment !== scrollToAlignment || nextProps.scrollOffset !== scrollOffset || itemPropsHaveChanged)) {
                 return {
                     scrollSize: nextProps.scrollOffset || 0,
                     scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
                     prevProps: nextProps
                 };
+                // scrollToIndex和列表prop变化时
             } else if (
                 typeof nextProps.scrollToIndex === 'number' &&
-                (scrollPropsHaveChanged || itemPropsHaveChanged)
+                (nextProps.scrollToAlignment !== scrollToAlignment || nextProps.scrollToIndex !== scrollToIndex || itemPropsHaveChanged)
             ) {
                 return {
                     scrollSize: _self.getScrollForIndex(
                         nextProps.scrollToIndex,
                         nextProps.scrollToAlignment,
-                        nextProps.itemCount,
+                        nextProps.limit,
+                        nextProps.dataSource
                     ),
                     scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
                     prevProps: nextProps
@@ -177,11 +170,22 @@ export default class VirtualList extends React.PureComponent {
         };
     }
 
-    componentDidUpdate(_, prevState) {
-        const { scrollSize, scrollChangeReason } = this.state;
+    componentDidMount() {
+        this.rootNode.addEventListener('scroll', this.handleScroll, {
+            passive: true, // 不阻止默认行为
+        });
 
+        // 初始化位置
+        const { scrollSize } = this.state;
+        this.scrollTo(scrollSize);
+    }
+
+    componentDidUpdate(prePros, prevState) {
+        const { scrollSize, scrollChangeReason } = this.state;
+        const { dataSource } = this.props;
         if (
-            prevState.scrollSize !== scrollSize &&
+            (prevState.scrollSize !== scrollSize ||
+                prePros?.dataSource?.toString() != dataSource?.toString()) &&
             scrollChangeReason === SCROLL_CHANGE_REASON.REQUESTED
         ) {
             this.scrollTo(scrollSize);
@@ -194,7 +198,7 @@ export default class VirtualList extends React.PureComponent {
 
     // 滚动到目标距离
     scrollTo(value) {
-        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
+        const { scrollDirection } = this.props;
 
         this.rootNode[scrollProp[scrollDirection]] = value;
     }
@@ -203,11 +207,12 @@ export default class VirtualList extends React.PureComponent {
     getScrollForIndex(
         index,
         scrollToAlignment = this.props.scrollToAlignment,
-        itemCount = this.props.itemCount,
+        limit = this.props.limit,
+        dataSource = this.props.dataSource
     ) {
-        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
-
-        if (index < 0 || index >= itemCount) {
+        const { scrollDirection } = this.props;
+        limit = limit > dataSource?.length ? dataSource?.length : limit;
+        if (index < 0 || index >= limit) {
             index = 0;
         }
 
@@ -250,13 +255,13 @@ export default class VirtualList extends React.PureComponent {
 
     // 获取节点滚动距离
     getNodeScrollOffset() {
-        const { scrollDirection = DIRECTION.VERTICAL } = this.props;
+        const { scrollDirection } = this.props;
 
         return this.rootNode[scrollProp[scrollDirection]];
     }
 
     // 需要设置在目标序号上的样式
-    getStyle(index, sticky) {
+    getStyle(index) {
         const style = this.styleCache[index];
 
         if (style) {
@@ -269,84 +274,62 @@ export default class VirtualList extends React.PureComponent {
             offset,
         } = this.sizeAndPositionManager.getSizeAndPositionForIndex(index);
 
-        return (this.styleCache[index] = sticky
-            ? {
-                ...STYLE_STICKY_ITEM,
-                [sizeProp[scrollDirection]]: size,
-                [marginProp[scrollDirection]]: offset,
-                [oppositeMarginProp[scrollDirection]]: -(offset + size),
-                zIndex: 1,
-            }
-            : {
-                ...STYLE_ITEM,
-                [sizeProp[scrollDirection]]: size,
-                [positionProp[scrollDirection]]: offset,
-            });
+        return (this.styleCache[index] = {
+            ...STYLE_ITEM,
+            [sizeProp[scrollDirection]]: size,
+            [positionProp[scrollDirection]]: offset,
+        });
     }
 
     render() {
         const {
-            estimatedItemSize,
-            height,
             overscanCount,
             renderItem,
-            itemCount,
-            itemSize,
+            dataSource,
             onItemsRendered,
-            onScroll,
             scrollDirection,
-            scrollOffset,
-            scrollToIndex,
-            scrollToAlignment,
-            stickyIndices,
             style,
             width,
-            ...props
+            height,
+            className
         } = this.props;
-        const { scrollSize } = this.state;
+
+        // 计算需要显示的列表序号范围
         const { start, stop } = this.sizeAndPositionManager.getVisibleRange({
             containerSize: this.props[sizeProp[scrollDirection]] || 0,
-            scrollSize,
+            scrollSize: this.state.scrollSize,
             overscanCount,
         });
-        const items = [];
+
         const wrapperStyle = { ...STYLE_WRAPPER, ...style, height, width };
         const innerStyle = {
             ...STYLE_INNER,
             [sizeProp[scrollDirection]]: this.sizeAndPositionManager.getTotalSize(),
         };
 
-        // 针对stickyIndices中指定的index的选项设置sticky
-        if (stickyIndices != null && stickyIndices.length !== 0) {
-            stickyIndices.forEach((index) => {
-                items.push(
-                    renderItem({
-                        index,
-                        style: this.getStyle(index, true),
-                    }),
-                );
-            });
-
-            if (scrollDirection === DIRECTION.HORIZONTAL) {
-                innerStyle.display = 'flex';
-            }
+        // 设置display
+        if (scrollDirection === DIRECTION.HORIZONTAL) {
+            innerStyle.display = 'flex';
         }
 
-        // stickyIndices没有的元素则设置sticky为false
-        if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
-            for (let index = start; index <= stop; index++) {
-                if (stickyIndices != null && stickyIndices.includes(index)) {
-                    continue;
+        // 子元素
+        const items = isArray(dataSource) && dataSource.length && dataSource.map((item, index) => {
+            if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
+                if (index >= start && index <= stop) {
+                    const itemComponent = renderItem({
+                        item,
+                        index
+                    });
+                    const itemStyle = this.getStyle(index);
+                    return React.cloneElement(React.Children.only(itemComponent), {
+                        style: { ...itemComponent.props.style, ...itemStyle }
+                    });
                 }
-
-                items.push(
-                    renderItem({
-                        index,
-                        style: this.getStyle(index, false),
-                    }),
-                );
             }
+        }) || [];
 
+        // 当加载新数据时触发的回调函数
+        if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
             if (typeof onItemsRendered === 'function') {
                 onItemsRendered({
                     startIndex: start,
@@ -356,7 +339,7 @@ export default class VirtualList extends React.PureComponent {
         }
 
         return (
-            <div ref={node => this.rootNode = node} {...props} style={wrapperStyle}>
+            <div ref={node => this.rootNode = node} className={className} style={wrapperStyle}>
                 <div style={innerStyle}>{items}</div>
             </div>
         );

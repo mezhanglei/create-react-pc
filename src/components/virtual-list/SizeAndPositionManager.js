@@ -3,11 +3,11 @@ import { ALIGNMENT } from './constants';
 
 export default class SizeAndPositionManager {
 
-    constructor({ itemCount, itemSizeGetter, estimatedItemSize }) {
+    constructor({ limit, dataSource, itemSizeGetter, estimatedItemSize }) {
         // 获取尺寸的函数
         this.itemSizeGetter = itemSizeGetter;
         // 懒加载最大条数
-        this.itemCount = itemCount;
+        this.limit = Math.min(limit, dataSource?.length || 0);
         // 估算的元素尺寸
         this.estimatedItemSize = estimatedItemSize;
 
@@ -18,11 +18,10 @@ export default class SizeAndPositionManager {
         this.lastMeasuredIndex = -1;
     }
 
-
     // 更新尺寸
-    updateConfig({ itemCount, itemSizeGetter, estimatedItemSize }) {
-        if (itemCount != null) {
-            this.itemCount = itemCount;
+    updateConfig({ limit, itemSizeGetter, dataSource, estimatedItemSize }) {
+        if (limit != null) {
+            this.limit = Math.min(limit, dataSource?.length || 0);
         }
 
         if (estimatedItemSize != null) {
@@ -40,13 +39,15 @@ export default class SizeAndPositionManager {
 
     // 实时计算指定索引项的大小和位置，如果该项已经加载过，则直接从缓存里取
     getSizeAndPositionForIndex(index) {
-        if (index < 0 || index >= this.itemCount) {
-            throw Error(
-                `Requested index ${index} is outside of range 0..${this.itemCount}`,
-            );
+        if (index < 0 || index >= this.limit) {
+            // throw Error(
+            //     `Requested index ${index} is outside of range 0..${this.limit}`,
+            // );
+            console.warn(`Requested index ${index} is outside of range [0, ${this.limit}]`);
+            return { offset: 0, size: 0 };
         }
 
-        // 如果是未知项，则从已知的最后一项到未知项之间所有的元素的位置和大小都缓存起来
+        // 如果未加载项，则从已知的最后一项到未加载项之间所有的元素的位置和大小都缓存起来
         if (index > this.lastMeasuredIndex) {
             const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
             let offset =
@@ -83,11 +84,10 @@ export default class SizeAndPositionManager {
     // 估算项目的总尺寸 = 已渲染的最后元素位置 + 最后元素尺寸 + 估算的元素尺寸
     getTotalSize() {
         const lastMeasuredSizeAndPosition = this.getSizeAndPositionOfLastMeasuredItem();
-
         return (
             lastMeasuredSizeAndPosition.offset +
             lastMeasuredSizeAndPosition.size +
-            (this.itemCount - this.lastMeasuredIndex - 1) * this.estimatedItemSize
+            (this.limit - this.lastMeasuredIndex - 1) * this.estimatedItemSize
         );
     }
 
@@ -99,7 +99,7 @@ export default class SizeAndPositionManager {
      * targetIndex: 索引项
      */
     getUpdatedScrollForIndex({ align = ALIGNMENT.START, containerSize, currentOffset, targetIndex }) {
-        if (containerSize <= 0) {
+        if (containerSize <= 0 || this.limit <= 0) {
             return 0;
         }
 
@@ -140,31 +140,30 @@ export default class SizeAndPositionManager {
     getVisibleRange({ containerSize, scrollSize, overscanCount }) {
         const totalSize = this.getTotalSize();
 
-        if (totalSize === 0) {
+        if (totalSize === 0 || this.limit <= 0) {
             return {};
         }
 
         // 最大滚动距离
         const maxOffset = scrollSize + containerSize;
+        // 起始点索引
         let start = this.findNearestItem(scrollSize);
 
         if (typeof start === 'undefined') {
             throw Error(`Invalid scrollSize ${scrollSize} specified`);
         }
 
-        const datum = this.getSizeAndPositionForIndex(start);
-        scrollSize = datum.offset + datum.size;
-
+        // 循环搜索终点索引
         let stop = start;
-
-        while (scrollSize < maxOffset && stop < this.itemCount - 1) {
+        scrollSize = this.getSizeAndPositionForIndex(start).size + scrollSize;
+        while (scrollSize < maxOffset && stop < this.limit - 1) {
             stop++;
             scrollSize += this.getSizeAndPositionForIndex(stop).size;
         }
 
         if (overscanCount) {
             start = Math.max(0, start - overscanCount);
-            stop = Math.min(stop + overscanCount, this.itemCount - 1);
+            stop = Math.min(stop + overscanCount, this.limit - 1);
         }
 
         return {
@@ -206,7 +205,7 @@ export default class SizeAndPositionManager {
     }
 
     // 二分搜索
-    binarySearch({low,high, scrollSize}) {
+    binarySearch({ low, high, scrollSize }) {
         let middle = 0;
         let currentOffset = 0;
 
@@ -235,7 +234,7 @@ export default class SizeAndPositionManager {
         let interval = 1;
 
         while (
-            index < this.itemCount &&
+            index < this.limit &&
             this.getSizeAndPositionForIndex(index).offset < scrollSize
         ) {
             index += interval;
@@ -243,7 +242,7 @@ export default class SizeAndPositionManager {
         }
 
         return this.binarySearch({
-            high: Math.min(index, this.itemCount - 1),
+            high: Math.min(index, this.limit - 1),
             low: Math.floor(index / 2),
             scrollSize,
         });

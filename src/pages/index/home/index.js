@@ -50,6 +50,11 @@ class Home extends React.Component {
             data: {}
         });
         raf.setAnimation(this.handler);
+
+        // 生成dataSource数据
+        this.setState({
+            dataSource: [...new Array(100).keys()]
+        });
     }
 
     handler = (time) => {
@@ -91,16 +96,16 @@ class Home extends React.Component {
         this.setState({ visible: false });
     }
 
-    renderItem = ({ style, index }) => {
+    renderItem = ({ item, index }) => {
         return (
-            <div className="Row" style={style} key={index}>
-                Row #{index}
+            <div className="Row" key={index}>
+                Row #{item}
             </div>
         );
     };
 
-    renderOn = (start, stop) => {
-        console.log(start,stop)
+    renderOn = ({ startIndex, stopIndex }) => {
+        // console.log(startIndex, stopIndex);
     }
 
     render() {
@@ -190,9 +195,11 @@ class Home extends React.Component {
                 <VirtualList
                     width="auto"
                     // scrollToAlignment="start"
-                    scrollToIndex={30}
+                    // scrollToIndex={30}
+                    scrollOffset={500}
                     height={400}
-                    itemCount={50}
+                    limit={200}
+                    dataSource={this.state.dataSource}
                     renderItem={this.renderItem}
                     onItemsRendered={this.renderOn}
                     itemSize={50}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'antd';
+import Button from '@/components/button/index';
 // import PropTypes from 'prop-types';
 
 /**
