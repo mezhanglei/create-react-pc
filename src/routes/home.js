@@ -1,6 +1,6 @@
 import loadable from "@/components/lazy";
 
-export const Home = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/index/home/index.js') });
+export const Home = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/home/index.js') });
 
 // 首页
 export const HomeRoutes = [

@@ -21,8 +21,8 @@ const lessPath = path.join(root, 'less');
 const outputPath = path.join(root, "dist");
 // 预编译文件输出目录
 const dllOutputPath = path.join(staticPath, 'dll');
-// 单/多页面的入口所在目录
-const pagesRoot = path.join(srcPath, 'pages');
+// 页面所在的根目录
+const htmlPages = path.join(root, 'public');
 // 资源访问的公共绝对路径, 默认为/不能为空(格式如: /publicPath/)
 const publicPath = '/';
 
@@ -48,18 +48,12 @@ const baseConfig = {
         ReactRouterDOM: "react-router-dom",
     },
     // babel的配置文件路径
-    babelPath: path.join(root, './.babelrc')
+    babelPath: path.join(root, './.babelrc'),
+    // 入口文件
+    entry: {
+        index: `${srcPath}/pages/index.js`
+    }
 };
-
-// script引入的公共js文件
-const commonJs = [
-    // 预编译文件
-    // publicPath + 'static/dll/base_dll.js'
-];
-// link引入的公共css文件
-const commonCSS = [
-    // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
-];
 
 // 项目全局自定义变量
 const globalDefine = {
@@ -70,82 +64,6 @@ const globalDefine = {
         PUBLIC_PATH: JSON.stringify(publicPath || '/'),
     }
 };
-
-// 页面配置信息
-const pages = [
-    // name: src/pages下的页面目录名, 数组的第一个项为启动页，index目录不建议改名，其他目录可以任意命名
-    // 访问多页面的方式： 域名 + 端口 + 入口的名.html
-    { name: "index", title: "第一个页面", favicon: "" },
-    { name: "second", title: "第二个页面", favicon: "" }
-];
-
-
-// 动态获取所有入口js文件返回对象(规则: 页面所在目录名作为入口js的键)
-const entries = (function () {
-    let obj = {};
-    // 遍历路径数组用正则匹配页面所在的文件名
-    pages.map((item) => {
-        // 页面所在目录名作为入口的键
-        obj[item.name] = [path.join(pagesRoot, 'index.js'), path.join(pagesRoot, item.name, 'index.js')];
-    });
-    return obj;
-})();
-
-
-// 动态生成单/多页面的html的配置数组(针对htmlwebpackplugin的配置)
-const htmlConfigs = (function () {
-    const pluginConfigs = pages.map((item, index) => {
-        return {
-            // title: '生成的html文档的标题',
-            // 指定输出的html文档
-            filename: `${item.name}.html`,
-            // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
-            template: path.join(pagesRoot, 'index.html'),
-            // 不能与template共存，也可以指定html字符串
-            // templateContent: string|function,
-            // 默认script一次性引用所有的chunk(chunk的name)
-            chunks: ["vendors", "common", `runtime~${item.name}`, item.name],
-            // 跳过一个块
-            // excludeChunks: [],
-            // 注入静态资源的位置:
-            //    1. true或者body：所有JavaScript资源插入到body元素的底部
-            //    2. head： 所有JavaScript资源插入到head元素中
-            //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
-            inject: true,
-            // 图标的所在路径，最终会被打包到到输出目录
-            // favicon: item.favicon,
-            // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
-            // meta: {},
-            // 注入base标签。例如base: "https://example.com/path/page.html
-            // base: false,
-            minify: {
-                // 根据html5规范输入 默认true
-                html5: true,
-                // 是否对大小写敏感 默认false
-                caseSensitive: false,
-                // 去除属性引用
-                removeAttributeQuotes: process.env.NODE_ENV === "development" ? false : true,
-                // 删除空格换行 默认false
-                collapseWhitespace: process.env.NODE_ENV === "development" ? false : true,
-                // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
-                preserveLineBreaks: false,
-                // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
-                minifyCSS: false,
-                // 压缩script内联的本地js文件 默认false,为true需要和teserwebpackplugin一起使用
-                minifyJS: true,
-                // 移除html中的注释 默认false
-                removeComments: true
-            },
-            // 如果为true则为所有的script引入和css引入添加唯一的hash值
-            // hash: false,
-            // 错误详细信息将写入html
-            // showErrors: true,
-            commonJs: commonJs,
-            commonCSS: commonCSS
-        };
-    });
-    return pluginConfigs;
-})();
 
 // 开发环境配置
 const devConfig = {
@@ -162,11 +80,9 @@ const devConfig = {
     // stylelint的检查匹配路径
     checkStylePath: ["src/**/*.{css,sass,scss,less}"],
     // 启动页的html位置(相对于ouput的路径, 默认为第一个页面)
-    indexHtml: htmlConfigs[0] && htmlConfigs[0].filename,
+    indexHtml: 'index.html',
     // url访问页面的启动页的公共路径(不能以'/'开头)
     openPage: /^\//.test(publicPath) ? publicPath.replace(/^\/+/, '') : publicPath,
-    // mock文件夹位置
-    mock: path.join(srcPath, 'mock')
 };
 
 // 生产环境配置
@@ -184,6 +100,16 @@ const prodConfig = {
     staticOutPath: path.join(outputPath, 'static')
 };
 
+// script引入的公共js文件
+const commonJs = [
+    // 预编译文件
+    publicPath + 'static/dll/base_dll.js'
+];
+// link引入的公共css文件
+const commonCSS = [
+    // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
+];
+
 // 预编译文件配置
 const dllConfig = {
     // 预编译之后输出的文件
@@ -192,16 +118,16 @@ const dllConfig = {
 
 // 合并为一个对象输出
 module.exports = {
-    entries,
     globalDefine,
-    htmlConfigs,
     root,
+    htmlPages,
     srcPath,
     staticPath,
     outputPath,
     dllOutputPath,
-    pagesRoot,
     publicPath,
+    commonJs,
+    commonCSS,
     ...baseConfig,
     ...devConfig,
     ...prodConfig,

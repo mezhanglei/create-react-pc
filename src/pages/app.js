@@ -1,7 +1,7 @@
 import React from "react";
 import "./app.less";
 // 引入路由组件
-import RouteComponent from "@/routes/index/index.js";
+import RouteComponent from "@/routes/index.js";
 import NotFound from "@/components/default/not-found";
 import ToTop from "@/components/top/top";
 

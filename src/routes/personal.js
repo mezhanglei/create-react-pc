@@ -1,6 +1,6 @@
 import loadable from "@/components/lazy";
 
-const Personal = loadable({ loader: () => import(/* webpackChunkName: "personal" */ '@/pages/index/personal/index.js') });
+const Personal = loadable({ loader: () => import(/* webpackChunkName: "personal" */ '@/pages/personal/index.js') });
 
 
 // 个人中心模块

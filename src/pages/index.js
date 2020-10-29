@@ -1,5 +1,11 @@
-// 在多页面中需要全局引入的文件可以放在这里(非npm包引入在配置文件中配置路径)
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import App from "./app.js";
+import store from "@/store/index.js";
 
+// 引入全局样式
+import "less/index.less";
 
 // 只在开发环境下引入
 // if (process.env.NODE_ENV === 'development') {
@@ -25,3 +31,13 @@ const event = new DefineEvent({
     }
 });
 event.addEvent();
+
+// 处理点击移动端事件
+import FastClick from "fastclick";
+FastClick.attach(document.body);
+ReactDOM.render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById("root")
+);

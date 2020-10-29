@@ -89,7 +89,6 @@
     "immutable": "^4.0.0-rc.12",
     "jsencrypt": "^3.0.0-rc.1",
     "object-fit-images": "^3.2.4",
-    "rc-dialog": "^8.4.0",
     "rc-motion": "^2.3.2",
     "react": "^16.9.0",
     "react-awesome-swiper": "^1.4.10",

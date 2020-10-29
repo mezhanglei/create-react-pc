@@ -39,12 +39,6 @@ const configs = require('./configs.js');
 
 // === webpack的plugins扩展(plugins中不允许空值存在) === //
 
-// 生成html的plugin配置,返回HtmlWebpackPlugin数组
-const HtmlPlugins = () => {
-    return configs.htmlConfigs.map(item => {
-        return new HtmlWebpackPlugin(item);
-    });
-};
 
 // webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包(这里循环是为了当有多个dll文件时进行循环操作)
 const dllArr = configs.manifestPathArr.map((path) => {
@@ -63,7 +57,7 @@ const bundleAnalyze = configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [];
 const webpackConfig = {
     // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件
     // 2. 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
-    entry: configs.entries,
+    entry: configs.entry,
     // 解析的起点, 默认为项目的根目录
     context: configs.root,
     // 输出(默认只能打包js文件,如果需要打包其他文件,需要借助相对应的loader)
@@ -309,7 +303,55 @@ const webpackConfig = {
                 // ignore: ['.*']
             },
         ]),
-        ...HtmlPlugins(),
+        // htmlplugin
+        new HtmlWebpackPlugin({
+            // title: '生成的html文档的标题',
+            // 指定输出的html文档
+            filename: `index.html`,
+            // html模板所在的位置，默认支持html和ejs模板语法，处理文件后缀为html的模板会与html-loader冲突
+            template: path.join(configs.htmlPages, 'index.html'),
+            // 不能与template共存，也可以指定html字符串
+            // templateContent: string|function,
+            // 默认script一次性引用所有的chunk(chunk的name)
+            chunks: ["vendors", "common", `runtime~index`, 'index'],
+            // 跳过一个块
+            // excludeChunks: [],
+            // 注入静态资源的位置:
+            //    1. true或者body：所有JavaScript资源插入到body元素的底部
+            //    2. head： 所有JavaScript资源插入到head元素中
+            //    3. false：所有静态资源css和JavaScript都不会注入到模板文件中
+            inject: true,
+            // 图标的所在路径，最终会被打包到到输出目录
+            // favicon: item.favicon,
+            // 注入meta标签，例如{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
+            // meta: {},
+            // 注入base标签。例如base: "https://example.com/path/page.html
+            // base: false,
+            minify: {
+                // 根据html5规范输入 默认true
+                html5: true,
+                // 是否对大小写敏感 默认false
+                caseSensitive: false,
+                // 去除属性引用
+                removeAttributeQuotes: process.env.NODE_ENV === "development" ? false : true,
+                // 删除空格换行 默认false
+                collapseWhitespace: process.env.NODE_ENV === "development" ? false : true,
+                // 当标记之间的空格包含换行符时，始终折叠为1换行符（从不完全删除它）。collapseWhitespace=true, 默认false
+                preserveLineBreaks: false,
+                // 压缩link进来的本地css文件 默认false,需要和clean-css一起使用
+                minifyCSS: false,
+                // 压缩script内联的本地js文件 默认false,为true需要和teserwebpackplugin一起使用
+                minifyJS: true,
+                // 移除html中的注释 默认false
+                removeComments: true
+            },
+            // 如果为true则为所有的script引入和css引入添加唯一的hash值
+            // hash: false,
+            // 错误详细信息将写入html
+            // showErrors: true,
+            commonJs: configs.commonJs,
+            commonCSS: configs.commonCSS
+        }),
         ...dllArr,
         ...bundleAnalyze
     ],

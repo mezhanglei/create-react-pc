@@ -24,8 +24,8 @@ npm run csslint 检查css规范
 
 ### 脚手架功能说明(mddir)
 ```
-1. 支持单或多页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
-2. 可在configs中自定义不同使用场景,比如添加publicPath, 添加多页面,更改目录, 项目的一些配置开关等等
+1. 单页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
+2. 可在configs中自定义不同使用场景,比如添加publicPath, 更改目录, 项目的一些配置开关等等
 3. 支持typescript开发
 ```
 
@@ -70,6 +70,7 @@ npm run csslint 检查css规范
     |   |-- constants // 公共的less常量
     |   |-- pages  // 页面业务相关的公共类
     |       |-- index.less
+    |-- public // html模板
     |-- src
     |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
     |   |-- common // 公共的业务代码都放在这里(公共的接口,公共的业务文件,兼容处理等等放在这里)
@@ -80,14 +81,9 @@ npm run csslint 检查css规范
     |   |   |-- jsonpRequest.js
     |   |   |-- request.js
     |   |-- mock // mock数据文件夹(看上面使用说明)
-    |   |-- pages // 页面代码所在文件夹
-    |   |   |-- index.html // 公用的html模板
-    |   |   |-- index.js // 多页面公用的js文件
-    |   |   |-- index // 多页面第一个入口
-    |   |   |-- second // 多页面中第二入口
-    |   |       |-- index.js
-    |   |-- routes // 路由所在文件夹，其下的子文件夹名必须为各个多页入口名
-    |   |   |-- index // 目前只有一个单页index
+    |   |-- pages // 单页面代码所在文件夹
+    |   |   |-- index.js // 入口js文件
+    |   |-- routes // 路由所在文件夹
     |   |-- store    // redux仓库
     |   |-- utils   // js工具方法
     |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效
