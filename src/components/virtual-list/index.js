@@ -45,6 +45,7 @@ const STYLE_ITEM = {
  * onItemsRendered: function({startIndex: number, stopIndex: number}) {} 加载新的数据时触发的函数, startIndex, stopIndex为渲染的起始和终点索引
  * overscanCount: number 预加载的元素个数(默认前后各三个)
  * renderItem: function({index: number, style: Object}) {} 返回渲染的单元
+ * dataSource: array 要自定义渲染的数据源
  * scrollOffset: number 设置滚动到哪个位置
  * scrollToIndex: number 设置滚动到哪一条数据
  * scrollToAlignment: 'start' | 'center' | 'end' | 'auto' 与结合使用scrollToIndex, 指定索引项在可见区域的位置 start起始区域 center中间区域 end尾部区域 auto自动显示scrollToIndex位置所在区域
