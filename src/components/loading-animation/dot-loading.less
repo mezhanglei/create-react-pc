@@ -1,0 +1,49 @@
+.dot-loading {
+    width: 150px;
+    height: 15px;
+    display: inline-block;
+
+    span {
+        display: inline-block;
+        width: 15px;
+        height: 100%;
+        margin-right: 5px;
+        border-radius: 50%;
+        background: lightgreen;
+        animation: dotLoad 1.2s ease infinite;
+
+        &:last-child {
+            margin-right: 0px;
+        }
+
+        &:nth-child(1) {
+            animation-delay: 0.13s;
+        }
+
+        &:nth-child(2) {
+            animation-delay: 0.29s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.45s;
+        }
+
+        &:nth-child(4) {
+            animation-delay: 0.61s;
+        }
+
+        &:nth-child(5) {
+            animation-delay: 0.77s;
+        }
+    }
+}
+
+@-webkit-keyframes dotLoad {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
