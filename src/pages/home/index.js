@@ -16,7 +16,6 @@ import CaptchaImg from "@/components/captcha-img/index";
 import VirtualList from '@/components/virtual-list/index';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import DotLoading from "@/components/loading-animation/dot-loading";
-import ScrollView from "@/components/infinite-list/index";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -109,56 +108,6 @@ class Home extends React.Component {
     renderOn = ({ startIndex, stopIndex }) => {
         // console.log(startIndex, stopIndex);
     }
-
-    pullDown = () => {
-        const { listData } = this.state;
-        const self = this;
-        console.log('pullDown');
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const newList = self.createTestData(0, true, []);
-                self.setState({ listData: newList });
-                console.log('pullDown resolve');
-                resolve(false);
-            }, 1000);
-        });
-    };
-
-    pullUp = () => {
-        const { listData=[] } = this.state;
-        console.log(1111)
-        const self = this;
-        console.log('pullUp');
-        if (listData.length >= 30) return new Promise(resolve => resolve(true));
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const newList = self.createTestData(6, false, listData);
-                self.setState({ listData: newList });
-                resolve(false);
-                console.log('pullUp resolve');
-            }, 1000);
-        });
-    };
-
-    createTestData = (count, isReset, oldData) => {
-        let counts;
-        if (isReset) {
-            counts = 0;
-        }
-        counts = count || 0;
-
-        let res = [];
-        const dateStr = new Date().toLocaleString();
-
-        for (let i = 0; i < counts; i++) {
-            res.push({
-                date: dateStr
-            });
-        }
-        oldData && (res = oldData.concat(res));
-
-        return res;
-    };
 
     render() {
         return (
@@ -258,23 +207,6 @@ class Home extends React.Component {
                     className="VirtualList"
                 />
                 <DotLoading />
-                <ScrollView
-                    isUseBodyScroll
-                    pullDown={this.pullDown}
-                    pullUp={this.pullUp}
-                    up={{ offset: 0 }}
-                    throttle
-                    throttleTime={100}
-                >
-                    <ul className="data-list">
-                        {this.state.listData?.map((item, index) => (
-                            <li key={index}>
-                                <h3>测试第【{index + 1}】条新闻标题</h3>
-                                <span>{item.date}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </ScrollView>
             </div>
         );
     }

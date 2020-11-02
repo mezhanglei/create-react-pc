@@ -42,7 +42,7 @@ class App extends React.Component {
                 {/* <header>头部</header> */}
                 <MyRoutes />
                 {/* <footer>尾部</footer> */}
-                <ToTop scrollDom={this.state.scrollDom} />
+                {/* <ToTop scrollDom={this.state.scrollDom} /> */}
             </div>
         );
     }
