@@ -4,7 +4,7 @@
  */
 let lastTime = 0;
 
-let setAnimation = (callback) => {
+let setRaf = (callback) => {
     const currTime = new Date().getTime();
     const timeInterval = Math.max(0, 16.7 - (currTime - lastTime));
     const id = window.setTimeout(() => {
@@ -14,18 +14,18 @@ let setAnimation = (callback) => {
     return id;
 };
 
-let cancelAnimation = (id) => {
+let cancelRaf = (id) => {
     return clearTimeout(id);
 };
 
 if (typeof window !== 'undefined' && 'requestAnimationFrame' in window) {
-    setAnimation = (callback) => {
+    setRaf = (callback) => {
         return window.requestAnimationFrame(callback);
     };
 
-    cancelAnimation = (id) => {
+    cancelRaf = (id) => {
         return window.cancelAnimationFrame(id);
     };
 }
 
-export default { setAnimation, cancelAnimation };
+export default { setRaf, cancelRaf };

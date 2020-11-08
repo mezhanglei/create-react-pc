@@ -10,12 +10,12 @@ import Button from "@/components/button/index";
 import Modal from "@/components/modal";
 // import { Modal } from "antd";
 import Draggable from "@/components/react-draggable/Draggable";
-import raf from "@/utils/requestAnimationFrame";
 import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
 import VirtualList from '@/components/virtual-list/index';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import DotLoading from "@/components/loading-animation/dot-loading";
+import InfiniteScroll from "@/components/infinite-scroll";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -30,6 +30,8 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            items: Array.from({ length: 20 }),
+            hasMore: true,
             data: [],
             leftTags: [
                 { id: 11, content: 'apple', undraggable: true }, { id: 22, content: 'olive' }, { id: 33, content: 'banana' },
@@ -50,7 +52,6 @@ class Home extends React.Component {
             url: "/list",
             data: {}
         });
-        raf.setAnimation(this.handler);
 
         // 生成dataSource数据
         this.setState({
@@ -66,7 +67,6 @@ class Home extends React.Component {
             time = timeCount;
         }
         divEle.style.left = time * distance / timeCount + 'px';
-        raf.setAnimation(this.handler);
     }
 
     onSubmit = () => {
@@ -108,6 +108,20 @@ class Home extends React.Component {
     renderOn = ({ startIndex, stopIndex }) => {
         // console.log(startIndex, stopIndex);
     }
+
+    fetchMoreData = () => {
+        if (this.state.items.length >= 500) {
+            this.setState({ hasMore: false });
+            return;
+        }
+        // a fake async api call like which sends
+        // 20 more records in .5 secs
+        setTimeout(() => {
+            this.setState({
+                items: this.state.items.concat(Array.from({ length: 20 })),
+            });
+        }, 500);
+    };
 
     render() {
         return (
@@ -207,6 +221,33 @@ class Home extends React.Component {
                     className="VirtualList"
                 />
                 <DotLoading />
+                <InfiniteScroll
+                    dataLength={this.state.items?.length}
+                    next={this.fetchMoreData}
+                    hasMore={this.state.hasMore}
+                    loader={<h4>Loading...</h4>}
+                    // pullDownToRefreshContent={
+                    //     <h3 style={{ textAlign: 'center' }}>
+                    //         &#8595; Pull down to refresh
+                    //     </h3>
+                    // }
+                    // releaseToRefreshContent={
+                    //     <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+                    // }
+                    // refreshFunction={this.fetchMoreData}
+                    height={400}
+                    endMessage={
+                        <p style={{ textAlign: 'center' }}>
+                            <b>Yay! You have seen it all</b>
+                        </p>
+                    }
+                >
+                    {this.state.items.map((_, index) => (
+                        <div style={{ height: 30, border: '1px solid green', margin: 6, padding: 8 }} key={index} >
+                            div - #{index}
+                        </div>
+                    ))}
+                </InfiniteScroll>
             </div>
         );
     }

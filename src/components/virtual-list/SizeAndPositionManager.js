@@ -57,7 +57,8 @@ export default class SizeAndPositionManager {
                 const size = this.itemSizeGetter(i);
 
                 if (size == null || isNaN(size)) {
-                    throw Error(`Invalid size returned for index ${i} of value ${size}`);
+                    return;
+                    // throw Error(`Invalid size returned for index ${i} of value ${size}`);
                 }
 
                 this.itemSizeAndPositionData[i] = {

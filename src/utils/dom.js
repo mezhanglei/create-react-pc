@@ -125,3 +125,32 @@ export function canUseDom() {
         window.document.createElement
     );
 }
+
+// 添加事件监听
+export function addEvent(el, event, handler, inputOptions) {
+    if (!el) return;
+    // captrue: true事件捕获 once: true只调用一次,然后销毁 passive: true不调用preventDefault
+    const options = { capture: false, once: false, passive: false, ...inputOptions };
+    if (el.addEventListener) {
+        el.addEventListener(event, handler, options);
+    } else if (el.attachEvent) {
+        el.attachEvent('on' + event, handler);
+    } else {
+        // $FlowIgnore: Doesn't think elements are indexable
+        el['on' + event] = handler;
+    }
+}
+
+// 移除事件监听
+export function removeEvent(el, event, handler, inputOptions) {
+    if (!el) return;
+    const options = { capture: false, once: false, passive: false, ...inputOptions };
+    if (el.removeEventListener) {
+        el.removeEventListener(event, handler, options);
+    } else if (el.detachEvent) {
+        el.detachEvent('on' + event, handler);
+    } else {
+        // $FlowIgnore: Doesn't think elements are indexable
+        el['on' + event] = null;
+    }
+}
