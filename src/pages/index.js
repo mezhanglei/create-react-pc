@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import App from "./app.js";
 import store from "@/store/index.js";
+import { ConfigProvider } from 'antd';
+import antdConfigs from "@/core/antd-configs";
 
 // 引入全局样式
 import "less/index.less";
@@ -37,7 +39,9 @@ import FastClick from "fastclick";
 FastClick.attach(document.body);
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <ConfigProvider {...antdConfigs}>
+            <App />
+        </ConfigProvider>
     </Provider>,
     document.getElementById("root")
 );

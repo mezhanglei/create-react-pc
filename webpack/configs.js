@@ -21,10 +21,10 @@ const lessPath = path.join(root, 'less');
 const outputPath = path.join(root, "dist");
 // 预编译文件输出目录
 const dllOutputPath = path.join(staticPath, 'dll');
-// 页面所在的根目录
+// 页面模板所在的根目录
 const htmlPages = path.join(root, 'public');
-// 资源访问的公共绝对路径, 默认为/不能为空(格式如: /publicPath/)
-const publicPath = '/';
+// 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
+const publicPath = '/public/';
 
 // 公共配置(开发/生产均使用)
 const baseConfig = {
@@ -33,7 +33,7 @@ const baseConfig = {
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
     resolve: {
         // 后缀，引入时可以默认不写
-        extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less", ".less.module"],
+        extensions: [".ts", ".tsx", ".js", "jsx", ".json", ".less"],
         alias: {
             "@": `${srcPath}`,
             "src": `${srcPath}`,
@@ -103,11 +103,11 @@ const prodConfig = {
 // script引入的公共js文件
 const commonJs = [
     // 预编译文件
-    publicPath + 'static/dll/base_dll.js'
+    // 'static/dll/base_dll.js'
 ];
 // link引入的公共css文件
 const commonCSS = [
-    // publicPath + `static/fonts/iconfont.css?time=${new Date().getTime()}`
+    // `static/fonts/iconfont.css?time=${new Date().getTime()}`
 ];
 
 // 预编译文件配置

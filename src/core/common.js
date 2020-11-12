@@ -4,7 +4,7 @@
 
 import { myStorage, mySession } from "@/utils/cache.js";
 import { TOKEN, USER_INFO } from "@/constants/account/index";
-import { LOGIN_PATH } from "@/constants/common_link";
+import { LOGIN_PATH } from "@/constants/account/index";
 import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg.js";
 
 // 清空账户信息

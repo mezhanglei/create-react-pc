@@ -135,6 +135,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
+                exclude: /(\.module\.less)$/,
                 use: [
                     "style-loader",
                     "css-loader",
@@ -157,7 +158,7 @@ module.exports = {
                 ]
             },
             {
-                test: /(\.less\.module)$/,
+                test: /(\.module\.less)$/,
                 use: [
                     "style-loader",
                     {
@@ -283,7 +284,7 @@ module.exports = {
         // 在哪个url路径下首次访问启动页
         openPage: configs.openPage,
         // 有时无法访问可能是端口被占用
-        port: 8091,
+        port: 8033,
         // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
         host: getNetworkIp(),
         // 开启热更新
@@ -301,7 +302,7 @@ module.exports = {
                 // 正则匹配路由
                 from: new RegExp(".*"),
                 // 重定向的目标页面(必须/开头)
-                to: (configs.publicPath + '/').replace(/\/+/g, '/') +  'index.html'
+                to: (configs.publicPath + '/').replace(/\/+/g, '/') + 'index.html'
             }
         },
         // webpack 使用文件系统(file system)获取文件改动的通知, 但是当在远程进行操作时有可能会出问题,所以需要轮询
