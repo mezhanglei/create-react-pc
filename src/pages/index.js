@@ -5,6 +5,9 @@ import App from "./app.js";
 import store from "@/store/index.js";
 import { ConfigProvider } from 'antd';
 import antdConfigs from "@/core/antd-configs";
+import objectFitImages from 'object-fit-images';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // 引入全局样式
 import "less/index.less";
@@ -33,6 +36,10 @@ const event = new DefineEvent({
     }
 });
 event.addEvent();
+
+setTimeout(() => {
+    objectFitImages();
+}, 100);
 
 // 处理点击移动端事件
 import FastClick from "fastclick";

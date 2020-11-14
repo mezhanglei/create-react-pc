@@ -5,6 +5,7 @@ import { myStorage } from "@/utils/cache.js";
 import { loginOut, getToken } from "@/core/common.js";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
+import { myBrowser } from "@/utils/brower";
 
 // 开始loading
 export function startLoading() {
@@ -67,11 +68,15 @@ http.interceptors.request.use(
         Object.keys(headers).map(item => {
             config.headers[item] = headers[item];
         });
-        
+
         // 请求参数处理
         if (!config.noTrim) {
             if (config.params) {
                 config.params = Object.assign({}, trimParams(config.params), defaults);
+                if (myBrowser() == "IE") {
+                    // ie下get请求会缓存
+                    config.params = { ...config.params, rand: Math.random() };
+                }
             } else if (config.data) {
                 config.data = Object.assign({}, trimParams(config.data), defaults);
             }
