@@ -3,6 +3,7 @@ import * as React from 'react';
 import { List } from 'immutable';
 import './style.less';
 import { isTouch } from "@/utils/reg";
+import { getPositionInPage } from "@/utils/dom";
 
 // 拖拽时的样式类
 const dragClassName = 'move';
@@ -68,15 +69,6 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
             return index;
         }
 
-        // 获取事件对象的位置
-        getEventPosition = (e) => {
-            e = e || window.event;
-            return {
-                x: isTouch() ? e.touches[0].clientX : e.clientX,
-                y: isTouch() ? e.touches[0].clientY : e.clientY
-            };
-        }
-
         // 获取最外层的可拖拽元素
         getDragElement = (dragEle) => {
             let dragParent = dragEle.parentElement;
@@ -127,8 +119,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 window.dragMouseDown = true;
 
                 // 事件对象的触发位置
-                preInfo.prevX = this.getEventPosition(e).x;
-                preInfo.prevY = this.getEventPosition(e).y;
+                preInfo.prevX = getPositionInPage(e).x;
+                preInfo.prevY = getPositionInPage(e).y;
 
                 // 增加拖拽元素的层级
                 elmnt.style.zIndex = preInfo.zIndex;
@@ -154,8 +146,8 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 e.type === 'touchmove' && e.preventDefault();
 
                 // 计算拖拽元素的移动距离
-                let nowX = this.getEventPosition(e).x;
-                let nowY = this.getEventPosition(e).y;
+                let nowX = getPositionInPage(e).x;
+                let nowY = getPositionInPage(e).y;
                 let movedX = nowX - preInfo.prevX;
                 let movedY = nowY - preInfo.prevY;
                 // 重新赋值

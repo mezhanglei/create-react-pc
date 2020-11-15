@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { isTouch } from "@/utils/reg";
+import { getPositionInPage } from "@/utils/dom";
 /**
  * 拖拽缩放组件
  * 实现原理：通过改变宽高来实现缩放，所以只支持右边框和下边框点击拖拽缩放
@@ -41,20 +41,11 @@ class DragResize extends Component {
     // 获取事件触发点在目标盒子内的位置 = 触发点可视化区域位置 - 盒子边框可视化区域位置
     getPosition = (e, element) => {
         e = e || window.event;
-        const x = this.getEventPosition(e).x;
-        const y = this.getEventPosition(e).y;
+        const x = getPositionInPage(e).x;
+        const y = getPositionInPage(e).y;
         return {
             x: x - element.getBoundingClientRect().left,
             y: y - element.getBoundingClientRect().top
-        };
-    }
-
-    // 获取事件对象的位置
-    getEventPosition = (e) => {
-        e = e || window.event;
-        return {
-            x: isTouch() ? e.touches[0].clientX : e.clientX,
-            y: isTouch() ? e.touches[0].clientY : e.clientY
         };
     }
 
@@ -90,8 +81,8 @@ class DragResize extends Component {
         // 存储拖拽前的信息
         this.setState({
             positions: positions,
-            preEventX: this.getEventPosition(e).x,
-            preEventY: this.getEventPosition(e).y,
+            preEventX: getPositionInPage(e).x,
+            preEventY: getPositionInPage(e).y,
             preWidth: element.offsetWidth,
             preHeight: element.offsetHeight
         });
@@ -144,8 +135,8 @@ class DragResize extends Component {
         // 最小宽度和最小高度
         const minWidth = this.props.minWidth || 0;
         const minHeight = this.props.minHeight || 0;
-        const x = this.getEventPosition(e).x;
-        const y = this.getEventPosition(e).y;
+        const x = getPositionInPage(e).x;
+        const y = getPositionInPage(e).y;
         // 计算对应的style属性
         const rules = {
             e: {
