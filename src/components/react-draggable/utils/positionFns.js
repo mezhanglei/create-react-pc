@@ -1,6 +1,7 @@
 // @flow
 import { isNum, int } from './shims';
 import { getTouch, innerWidth, innerHeight, offsetXYFromParent, outerWidth, outerHeight } from './domFns';
+import { isDom } from "@/utils/type";
 
 // 边界处理
 export function getBoundPosition(draggable, x, y) {
@@ -21,7 +22,7 @@ export function getBoundPosition(draggable, x, y) {
         } else {
             boundNode = ownerDocument.querySelector(bounds);
         }
-        if (!(boundNode instanceof ownerWindow.HTMLElement)) {
+        if (!(isDom(boundNode))) {
             throw new Error('Bounds selector "' + bounds + '" could not find an element.');
         }
         const nodeStyle = ownerWindow.getComputedStyle(node);

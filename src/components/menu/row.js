@@ -53,13 +53,13 @@ class RowMenu extends React.Component {
         setTimeout(() => {
             if (this.navRef.children) {
                 let keys = Object.keys(this.navRef.children);
-                let minLeft = this.navRef.getBoundingClientRect().x;
+                let minLeft = this.navRef.getBoundingClientRect().left;
                 keys.map((item) => {
                     let { instance } = this.state;
                     const children = this.navRef.children[item];
                     const childrenMenu = this.childrenMenu[item];
                     const halfChildrenMenu = childrenMenu && (childrenMenu.offsetWidth / 2);
-                    const childrenLeft = children.getBoundingClientRect().x;
+                    const childrenLeft = children.getBoundingClientRect().left;
                     const childrenWidth = children && (children.offsetWidth);
                     const leftMargin = childrenLeft - halfChildrenMenu + childrenWidth;
                     let result = leftMargin < minLeft ? minLeft : leftMargin;

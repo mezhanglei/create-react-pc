@@ -44,8 +44,8 @@ class DragResize extends Component {
         const x = this.getEventPosition(e).x;
         const y = this.getEventPosition(e).y;
         return {
-            x: x - element.getBoundingClientRect().x,
-            y: y - element.getBoundingClientRect().y
+            x: x - element.getBoundingClientRect().left,
+            y: y - element.getBoundingClientRect().top
         };
     }
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { canUseDom, setStyle } from '@/utils/dom';
+import { isDom } from "@/utils/type";
 
 // 计算打开弹窗个数
 let openCount = 0;
@@ -21,7 +22,7 @@ const getParent = (getContainer) => {
         }
         if (
             typeof getContainer === 'object' &&
-            getContainer instanceof window.HTMLElement
+            isDom(getContainer)
         ) {
             return getContainer;
         }
