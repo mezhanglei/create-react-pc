@@ -64,13 +64,13 @@ http.interceptors.request.use(
         // 请求参数处理
         if (!config.noTrim) {
             if (config.params) {
-                config.params = Object.assign({}, trimParams(config.params), defaults);
+                config.params = Object.assign(trimParams(config.params), defaults);
                 if (myBrowser() == "IE") {
                     // ie下get请求会缓存
                     config.params = { ...config.params, rand: Math.random() };
                 }
             } else if (config.data) {
-                config.data = Object.assign({}, trimParams(config.data), defaults);
+                config.data = Object.assign(trimParams(config.data), defaults);
             }
         }
 
