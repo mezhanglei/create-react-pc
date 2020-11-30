@@ -160,13 +160,42 @@ export function eleCanScroll(ele) {
         return true;
     } else {
         ele.scrollTop++;
-        // 元素不能滚动的话，scrollTop 设置不会生效，还会置为 0
         const top = ele.scrollTop;
-        // 重置滚动位置
-        top && (ele.scrollTop = 0);
         return top > 0;
     }
 }
+
+/**
+ * 获取目标元素的可滚动父元素
+ * @param {*} target 目标元素
+ * @param {*} step 遍历层数，设置可以限制向上冒泡查找的层数
+ */
+export function getScrollParent(target, step) {
+    const root = [document.body, document.documentElement];
+    if (root.indexOf(target) > -1) {
+        return document.body || document.documentElement;
+    };
+
+    let scrollParent = target.parentNode;
+
+    if (step) {
+        while (root.indexOf(scrollParent) == -1 && step > 0) {
+            if (eleCanScroll(scrollParent)) {
+                return scrollParent;
+            }
+            scrollParent = scrollParent.parentNode;
+            step--;
+        }
+    } else {
+        while (root.indexOf(scrollParent) == -1) {
+            if (eleCanScroll(scrollParent)) {
+                return scrollParent;
+            }
+            scrollParent = scrollParent.parentNode;
+        }
+    }
+    return document.body || document.documentElement;
+};
 
 // 是否可以使用dom
 export function canUseDom() {

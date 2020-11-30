@@ -3,7 +3,6 @@ import styles from "./index.module.less";
 import http from "@/http/request.js";
 import { connect } from "react-redux";
 import { isNumber, isString, isUndefined } from "@/utils/type";
-import { getDateDiff } from "@/utils/date/format";
 
 class Category extends React.Component {
     constructor(props) {
@@ -53,7 +52,7 @@ class Category extends React.Component {
         const { current, arr } = this.state;
         return (
             <div>
-                <div points="woshihaoren" className={styles["home"]}>首页{getDateDiff('2020-8-25 23:20:22')}</div>
+                <div points="woshihaoren" className={styles["home"]}>首页</div>
                 <div event-name="handle-point" onClick={this.show}>当前：{current}</div>
                 {
                     arr.map((item, index) => {
