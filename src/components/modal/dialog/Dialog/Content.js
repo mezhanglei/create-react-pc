@@ -117,8 +117,8 @@ const Content = React.forwardRef((props, ref) => {
             visible={visible}
             onVisibleChanged={onVisibleChanged} // 当visible改变时都会触发
             onAppearPrepare={onPrepare} // 
-            onEnterPrepare={onPrepare}
-            motionName={motionName}
+            onEnterPrepare={onPrepare} // 
+            motionName={motionName} // 需要添加的动画
             removeOnLeave={destroyOnClose} // true隐藏时销毁弹窗内容
             forceRender={!destroyOnClose} // true隐藏时使用display:none缓存内容
             ref={dialogRef}

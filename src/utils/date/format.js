@@ -111,7 +111,6 @@ export function getDateFormat(time) {
     // 日期差距(年或月下的日期差距，非绝对差距)
     const diffDate = newDate.getDate() - oldDate.getDate();
 
-    if (diffMs < 0) { return; }
     if (diffMs < 1000) { return "刚刚"; }
 
     if (diffYear >= 1) {
