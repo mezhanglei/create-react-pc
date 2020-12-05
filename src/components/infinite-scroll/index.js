@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState, useRef } from 'react';
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
 import { getScroll, getClient, getPositionInPage, getScrollParent } from "@/utils/dom";
-// import { useMutationObserver } from "@/utils/mutationObserve";
 import { isDom } from "@/utils/type";
 
 /**
@@ -29,178 +28,160 @@ import { isDom } from "@/utils/type";
  * containerStyle: object 组件内部的style样式
  */
 
-export default class InfiniteScroll extends Component {
-    static defaultProps = {
-    }
-    constructor(props) {
-        super(props);
+const InfiniteScroll = (props) => {
 
-        this.state = {
-            loading: false,
-            isError: false,
-            showRelease: false,
-            pullAreaHeight: 0,
-            _self: this
-        };
-        this.throttledOnScrollListener = throttle(this.onScrollListener).bind(this);
-        this.onStart = this.onStart.bind(this);
-        this.onMove = this.onMove.bind(this);
-        this.onEnd = this.onEnd.bind(this);
-    }
+    const {
+        height,
+        containerStyle,
+        children,
+        pullDownToRefresh,
+        releaseToRefreshContent,
+        pullDownToRefreshContent,
+        endMessage,
+        loader,
+        hasMore,
+        errorMsg,
+        className,
+        onScroll,
+        inverse,
+        thresholdValue,
+        forbidTrigger,
+        next,
+        refreshFunction,
+        minPullDown,
+        maxPullDown,
+        initialScrollY
+    } = props;
 
-    lastScrollTop = 0;
-    dragging = false;
-    finishTrigger = false;
+    const [pullAreaHeight, setPullAreaHeight] = useState(0);
+    const [showRelease, setShowRelease] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [finishTrigger, setFinishTrigger] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [startY, setStartY] = useState(0);
+    const [preStartY, setPreStartY] = useState(0);
 
-    // 初始化绑定事件(滚动节点可能是异步也可能是同步)
-    initDom = () => {
-        if (this.props.forbidTrigger) return;
-        const {
-            initialScrollY,
-            pullDownToRefresh
-        } = this.props;
-
-        // 用来自动获取滚动父节点
-        this.scrollParent = this.getScrollableTarget();
-        // 滚动父节点绑定事件(文档根节点不能绑定事件)
-        this.el = this.scrollParent === (document.body || document.documentElement) ? (document || window) : this.scrollParent;
-        if (this.el) {
-            this.el.addEventListener('scroll', this
-                .throttledOnScrollListener);
-        }
-
-        if (
-            typeof initialScrollY === 'number' &&
-            this.el &&
-            isDom(this.el) &&
-            this.el.scrollHeight > initialScrollY
-        ) {
-            this.el.scrollTo(0, initialScrollY);
-        }
-
-        if (pullDownToRefresh && this.el) {
-            this.el.addEventListener('touchstart', this.onStart);
-            this.el.addEventListener('touchmove', this.onMove);
-            this.el.addEventListener('touchend', this.onEnd);
-
-            this.el.addEventListener('mousedown', this.onStart);
-            this.el.addEventListener('mousemove', this.onMove);
-            document.addEventListener('mouseup', this.onEnd);
-            // 下拉区域的原始高度
-            this.setState({
-                pullAreaHeight: this.pullArea?.firstChild?.getBoundingClientRect()?.height || 0
-            });
-        }
-    }
-
-    componentDidMount() {
-        this.initDom();
-    }
-
-    componentDidUpdate(preProps, preState) {
-        const { scrollableParent } = this.state;
-        if (preState.scrollableParent != scrollableParent) {
-            this.initDom();
-        }
-    }
-
-    componentWillUnmount() {
-        const { pullDownToRefresh } = this.props;
-        if (this.el) {
-            this.el.removeEventListener('scroll', this
-                .throttledOnScrollListener);
-
-            if (pullDownToRefresh) {
-                this.el.removeEventListener('touchstart', this.onStart);
-                this.el.removeEventListener('touchmove', this.onMove);
-                this.el.removeEventListener('touchend', this.onEnd);
-
-                this.el.removeEventListener('mousedown', this.onStart);
-                this.el.removeEventListener('mousemove', this.onMove);
-                document.removeEventListener('mouseup', this.onEnd);
-                // 取消raf
-                Raf.cancelRaf(this.resetDrag);
-            }
-        }
-    }
-
-    static getDerivedStateFromProps(nextProps, preState) {
-        const { preProps, _self } = preState;
-        if (!preProps) {
-            return {
-                preProps: nextProps
-            };
-        }
-
-        // 异步scrollableParent
-        if (preState.scrollableParent != nextProps.scrollableParent) {
-            return {
-                scrollableParent: nextProps.scrollableParent,
-                preProps: nextProps
-            };
-        }
-
-        if (preProps.isError != nextProps.isError) {
-            return {
-                isError: nextProps.isError,
-                preProps: nextProps
-            };
-        }
-
-        if (React.Children.count(preProps.children) != React.Children.count(nextProps.children)) {
-            _self.finishTrigger = false;
-            return {
-                isError: false,
-                loading: false,
-                preProps: nextProps
-            };
-        }
-        return null;
-    }
+    const scrollContainerRef = useRef();
+    const pullAreaRef = useRef();
+    const scrollableRef = useRef();
+    const eventRef = useRef();
+    let dragging = false;
+    let lastScrollTop = 0;
 
     // 获取滚动的父节点
-    getScrollableTarget = () => {
-        const { height } = this.props;
-        const { scrollableParent } = this.state;
-
+    const getScrollableTarget = () => {
+        const scrollContainerDom = scrollContainerRef.current;
+        const scrollableParent = props.scrollableParent;
         if (isDom(scrollableParent)) {
             return scrollableParent;
         } else if (typeof scrollableParent === 'string') {
             return document.querySelector(scrollableParent);
         } else if (height) {
-            return this.scrollContainer;
+            return scrollContainerDom;
         } else {
-            const target = getScrollParent(this.scrollContainer)
+            const target = getScrollParent(scrollContainerDom)
             return target;
         }
     };
 
-    onStart = (evt) => {
-        if (this.lastScrollTop > 10) return;
+    useEffect(() => {
+        setFinishTrigger(false);
+        setIsError(false);
+        setLoading(false);
+    }, [React.Children.count(children)]);
 
-        this.dragging = true;
+    useEffect(() => {
+        setIsError(props.isError);
+    }, [props.isError]);
 
-        this.setState({
-            preStartY: getPositionInPage(evt).y
-        });
+    useEffect(() => {
+        const target = getScrollableTarget();
+        scrollableRef.current = target;
+        if (target) {
+            initDom(target);
+        }
 
-        if (this.scrollContainer) {
-            this.scrollContainer.style.willChange = 'transform';
-            this.scrollContainer.style.transition = `transform 0.2s cubic-bezier(0,0,0.31,1)`;
+        return () => {
+            removeEvent();
+        };
+    }, [props.scrollableParent]);
+
+
+    // 初始化绑定事件(滚动节点可能是异步也可能是同步)
+    const initDom = (scrollableParent) => {
+        if (forbidTrigger) return;
+        // 滚动父节点绑定事件(文档根节点不能绑定事件)
+        const el = scrollableParent === (document.body || document.documentElement) ? (document || window) : scrollableParent;
+        eventRef.current = el;
+
+        if (el) {
+            const throttledOnScrollListener = throttle(onScrollListener);
+            el.addEventListener('scroll', throttledOnScrollListener);
+        }
+
+        if (
+            typeof initialScrollY === 'number' &&
+            el &&
+            isDom(el) &&
+            el.scrollHeight > initialScrollY
+        ) {
+            el.scrollTo(0, initialScrollY);
+        }
+
+        if (pullDownToRefresh && el) {
+            el.addEventListener('touchstart', onStart);
+            el.addEventListener('touchmove', onMove);
+            el.addEventListener('touchend', onEnd);
+
+            el.addEventListener('mousedown', onStart);
+            el.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            // 下拉区域的原始高度
+            const pullAreaDom = pullAreaRef.current;
+            setPullAreaHeight(pullAreaDom?.firstChild?.getBoundingClientRect()?.height || 0);
         }
     };
 
-    onMove = (evt) => {
+    const removeEvent = () => {
+        const el = eventRef.current;
+        if (el) {
+            const throttledOnScrollListener = throttle(onScrollListener);
+            el.removeEventListener('scroll', throttledOnScrollListener);
+
+            if (pullDownToRefresh) {
+                el.removeEventListener('touchstart', onStart);
+                el.removeEventListener('touchmove', onMove);
+                el.removeEventListener('touchend', onEnd);
+
+                el.removeEventListener('mousedown', onStart);
+                el.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                // 取消raf
+                Raf.cancelRaf(resetDrag);
+            }
+        }
+    };
+
+    const onStart = (evt) => {
+        if (lastScrollTop > 10) return;
+        dragging = true;
+        setPreStartY(getPositionInPage(evt).y);
+        const scrollContainerDom = scrollContainerRef.current;
+        if (scrollContainerDom) {
+            scrollContainerDom.style.willChange = 'transform';
+            scrollContainerDom.style.transition = `transform 0.2s cubic-bezier(0,0,0.31,1)`;
+        }
+    };
+
+    const onMove = (evt) => {
         evt.preventDefault();
-        if (!this.dragging) return;
+        if (!dragging) return;
 
         const startY = getPositionInPage(evt).y;
-        const { preStartY, pullAreaHeight } = this.state;
-        let { minPullDown, maxPullDown } = this.props;
         if (startY < preStartY) return;
         if (minPullDown > maxPullDown) {
             console.warn(`"minPullDown" is large than "maxPullDown", please set "maxPullDown" and "maxPullDown" should large than "minPullDown"`);
-            minPullDown = 0;
+            return;
         }
 
         if (minPullDown >= pullAreaHeight) {
@@ -212,55 +193,48 @@ export default class InfiniteScroll extends Component {
         const maxHeight = maxPullDown || (pullAreaHeight);
         if (startY - preStartY > (maxHeight)) return;
         if (startY - preStartY >= minHeight) {
-            this.setState({
-                showRelease: true
-            });
+            setShowRelease(true);
         }
-        this.setDrag(startY, preStartY);
+        setDrag(startY, preStartY);
     };
 
-    onEnd = () => {
-        const {
-            refreshFunction
-        } = this.props;
+    const onEnd = () => {
         if (typeof refreshFunction !== 'function') {
             throw new Error(`"refreshFunction" is not function or missing`);
         }
 
-        if (this.state.showRelease) {
+        if (showRelease) {
             refreshFunction && refreshFunction();
-            this.setState({
-                showRelease: false,
-            });
+            setShowRelease(false);
         }
 
-        Raf.setRaf(this.resetDrag);
-        this.setState({
-            startY: 0,
-            preStartY: 0
-        });
-        this.dragging = false;
+        Raf.setRaf(resetDrag);
+        setStartY(0);
+        setPreStartY(0);
+        dragging = false;
     };
 
-    // 重置样式
-    resetDrag = () => {
-        if (this.scrollContainer) {
-            this.scrollContainer.style.overflow = 'auto';
-            this.scrollContainer.style.transform = 'none';
-            this.scrollContainer.style.willChange = 'none';
-            this.scrollContainer.style.paddingBottom = '0px';
+    const resetDrag = () => {
+        const scrollContainerDom = scrollContainerRef.current;
+        if (scrollContainerDom) {
+            scrollContainerDom.style.overflow = 'auto';
+            scrollContainerDom.style.transform = 'none';
+            scrollContainerDom.style.willChange = 'none';
+            scrollContainerDom.style.paddingBottom = '0px';
         }
-    }
+    };
 
-    setDrag = (startY, preStartY) => {
-        if (this.scrollContainer) {
-            this.scrollContainer.style.overflow = 'visible';
-            this.scrollContainer.style.transform = `translate3d(0px, ${startY - preStartY}px, 0px)`;
-            this.scrollContainer.style.paddingBottom = `${startY - preStartY}px`;
+    const setDrag = (startY, preStartY) => {
+        const scrollContainerDom = scrollContainerRef.current;
+        if (scrollContainerDom) {
+            scrollContainerDom.style.overflow = 'visible';
+            scrollContainerDom.style.transform = `translate3d(0px, ${startY - preStartY}px, 0px)`;
+            scrollContainerDom.style.paddingBottom = `${startY - preStartY}px`;
         }
-    }
+    };
 
-    isElementAtTop(target, thresholdValue = 0.8) {
+    // 是否在顶部
+    const isElementAtTop = (target, thresholdValue = 0.8) => {
         const clientHeight = getClient(target).y;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
@@ -278,9 +252,10 @@ export default class InfiniteScroll extends Component {
             threshold.value / 100 + clientHeight - target.scrollHeight + 1 ||
             scrollTop === 0
         );
-    }
+    };
 
-    isElementAtBottom(target, thresholdValue = 0.8) {
+    // 是否在底部
+    const isElementAtBottom = (target, thresholdValue = 0.8) => {
         const clientHeight = getClient(target).y;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
@@ -295,113 +270,86 @@ export default class InfiniteScroll extends Component {
             scrollTop + clientHeight >=
             (threshold.value / 100) * target.scrollHeight
         );
-    }
+    };
 
-    onScrollListener = (event) => {
-        const {
-            onScroll,
-            inverse,
-            thresholdValue,
-            hasMore,
-            forbidTrigger,
-            next
-        } = this.props;
+    const onScrollListener = (event) => {
 
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
+        
+        if (finishTrigger || forbidTrigger) return;
 
-        if (this.finishTrigger || forbidTrigger) return;
+        const target = scrollableRef.current;
 
-        const target = this.scrollParent;
         const atBottom = inverse
-            ? this.isElementAtTop(target, thresholdValue)
-            : this.isElementAtBottom(target, thresholdValue);
+            ? isElementAtTop(target, thresholdValue)
+            : isElementAtBottom(target, thresholdValue);
 
         // 加载数据
         if (atBottom && hasMore) {
-            this.finishTrigger = true;
-            this.setState({ loading: true });
+            setFinishTrigger(true);
+            setLoading(true);
             next && next();
         }
 
-        this.lastScrollTop = target.scrollTop;
+        lastScrollTop = target.scrollTop;
     };
 
-    render() {
-        const {
-            height,
-            containerStyle,
-            children,
-            pullDownToRefresh,
-            releaseToRefreshContent,
-            pullDownToRefreshContent,
-            endMessage,
-            loader,
-            hasMore,
-            errorMsg,
-            className
-        } = this.props;
+    const hasChildren = !!(
+        children &&
+        children instanceof Array &&
+        children.length
+    );
 
-        const { scrollableParent, pullAreaHeight, isError } = this.state;
+    // 当设置了滚动固定高度, 下拉刷新时阻止元素溢出到外面显示
+    const outerDivStyle = pullDownToRefresh && height
+        ? { overflow: 'hidden' }
+        : {};
 
-        const hasChildren = !!(
-            children &&
-            children instanceof Array &&
-            children.length
-        );
+    // 当组件滚动的容器在外部（即设置了scrollableParent），则设置overflow: visible, 以免组件内部出现滚动条
+    const insideStyle = {
+        height: height || 'auto',
+        overflow: scrollableRef.current ? 'visible' : "auto",
+        WebkitOverflowScrolling: 'touch',
+        paddingBottom: "16px",
+        ...containerStyle,
+    };
 
-        // 当设置了滚动固定高度, 下拉刷新时阻止元素溢出到外面显示
-        const outerDivStyle = pullDownToRefresh && height
-            ? { overflow: 'hidden' }
-            : {};
-
-        // 当组件滚动的容器在外部（即设置了scrollableParent），则设置overflow: visible, 以免组件内部出现滚动条
-        const insideStyle = {
-            height: height || 'auto',
-            overflow: scrollableParent ? 'visible' : "auto",
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: "16px",
-            ...containerStyle,
-        };
-
-        return (
+    return (
+        <div
+            style={outerDivStyle}
+            className="infinite-scroll-component__outerdiv"
+        >
             <div
-                style={outerDivStyle}
-                className="infinite-scroll-component__outerdiv"
+                className={`infinite-scroll-component ${className || ''}`}
+                ref={scrollContainerRef}
+                style={insideStyle}
             >
-                <div
-                    className={`infinite-scroll-component ${className || ''}`}
-                    ref={(node) => (this.scrollContainer = node)}
-                    style={insideStyle}
-                >
-                    {pullDownToRefresh && (
+                {pullDownToRefresh && (
+                    <div
+                        style={{ position: 'relative' }}
+                        ref={pullAreaRef}
+                    >
                         <div
-                            style={{ position: 'relative' }}
-                            ref={(node) => (this.pullArea = node)}
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                top: `${-1 * pullAreaHeight}px`,
+                            }}
                         >
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    top: `${-1 * pullAreaHeight}px`,
-                                }}
-                            >
-                                {
-                                    this.state.showRelease
-                                        ? releaseToRefreshContent
-                                        : pullDownToRefreshContent
-                                }
-                            </div>
+                            {showRelease ? releaseToRefreshContent : pullDownToRefreshContent}
                         </div>
-                    )}
-                    {children}
-                    {(this.state.loading || (!this.state.loading && !hasChildren)) && hasMore && !isError && loader}
-                    {isError && errorMsg}
-                    {!hasMore && !isError && endMessage}
-                </div>
+                    </div>
+                )}
+                {children}
+                {(loading || (!loading && !hasChildren)) && hasMore && !isError && loader}
+                {isError && errorMsg}
+                {!hasMore && !isError && endMessage}
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
+
+export default InfiniteScroll;

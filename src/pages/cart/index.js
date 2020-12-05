@@ -1,14 +1,13 @@
 import React, { Component, useState, useEffect } from 'react';
 import "./index.less";
 import InfiniteScroll from "@/components/infinite-scroll";
-import ImageCropper from "@/components/img-cropper";
 
 class Cart extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             hasMore: true,
-            total: 10000
+            total: 1000
         };
     }
 
@@ -84,6 +83,10 @@ class Cart extends React.Component {
                     next={this.fetchMoreData}
                     scrollableParent={document.querySelector(".cart-index")}
                     hasMore={hasMore}
+                    pullDownToRefresh
+                    refreshFunction={this.fetchMoreData}
+                    releaseToRefreshContent={2222222}
+                    pullDownToRefreshContent={111111}
                     isError={isError}
                     loader={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
                     errorMsg={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={this.reload}>重新加载</a></span></div>}
