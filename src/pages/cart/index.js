@@ -7,7 +7,7 @@ class Cart extends React.Component {
         super(props);
         this.state = {
             hasMore: true,
-            total: 1000
+            total: 600
         };
     }
 
@@ -40,9 +40,9 @@ class Cart extends React.Component {
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 // creat a fake 'error' ,so not Use this in real life ;
-                // if (list.length >= 300 && !this.state.isError) {
-                //     reject();
-                // };
+                if (list.length >= 100 && !this.state.isError) {
+                    reject();
+                };
 
                 resolve(list.concat(Array.from({ length: 20 })))
             }, 500);
@@ -76,17 +76,19 @@ class Cart extends React.Component {
 
     render() {
         const { hasMore, isError, list = [], maxLength } = this.state;
+
         return (
             <div className="cart-index">
                 <InfiniteScroll
+                    inverse
                     containerStyle={{ overflow: "hidden" }}
                     next={this.fetchMoreData}
                     scrollableParent={document.querySelector(".cart-index")}
                     hasMore={hasMore}
                     pullDownToRefresh
                     refreshFunction={this.fetchMoreData}
-                    releaseToRefreshContent={2222222}
-                    pullDownToRefreshContent={111111}
+                    releaseToRefreshContent={<div style={{ height: "100px", background: "green" }}>end</div>}
+                    pullDownToRefreshContent={<div style={{ height: "100px", background: "red" }}>start</div>}
                     isError={isError}
                     loader={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
                     errorMsg={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={this.reload}>重新加载</a></span></div>}
