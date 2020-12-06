@@ -81,13 +81,30 @@ const InfiniteScroll = (props) => {
         } else if (height) {
             return scrollContainerDom;
         } else {
-            const target = getScrollParent(scrollContainerDom)
+            const target = getScrollParent(scrollContainerDom);
             return target;
         }
     };
 
-    // 当加载数目变化时, 重置一些状态
+    // 当列表加载完成时, 再监听事件并重置一些状态
     useEffect(() => {
+        // 绑定事件
+        const target = getScrollableTarget();
+        scrollableRef.current = target;
+        if (target) {
+            initDom(target);
+            // 节点设置警告
+            if (target == scrollContainerRef.current && props.height) {
+                console.error(`"scrollableParent" and "height" only need one`);
+            }
+
+            // 设置警告
+            if (props.height && props.containerStyle?.overflow == "hidden") {
+                console.error(`the "containerStyle" can't be "hidden", because "height" is setted`);
+            };
+        }
+
+        // 加载下一个列表时重置状态
         if (React.Children.count(children)) {
             if (loadNumRef.current > 1) {
                 setFinishTrigger(false);
@@ -97,6 +114,10 @@ const InfiniteScroll = (props) => {
             }
             loadNumRef.current = loadNumRef.current + 1;
         }
+
+        return () => {
+            removeEvent();
+        };
     }, [React.Children.count(children)]);
 
     // 实时监听状态isError
@@ -106,20 +127,6 @@ const InfiniteScroll = (props) => {
         // 更新视图
         setIsError(props.isError);
     }, [props.isError]);
-
-    // 在监听事件里获取不到最新的state值
-    useEffect(() => {
-        const target = getScrollableTarget();
-        scrollableRef.current = target;
-        if (target) {
-            initDom(target);
-        }
-
-        return () => {
-            removeEvent();
-        };
-    }, [props.scrollableParent]);
-
 
     const onScrollListener = (event) => {
         if (typeof onScroll === 'function') {
@@ -316,10 +323,10 @@ const InfiniteScroll = (props) => {
         ? { overflow: 'hidden' }
         : {};
 
-    // 当组件滚动的容器在外部（即设置了scrollableParent），则设置overflow: visible, 以免组件内部出现滚动条
+    // 当组件滚动的容器在外部（即设置了scrollableParent），则设置overflow: hidden, 以免组件内部出现滚动条
     const insideStyle = {
         height: height || 'auto',
-        overflow: scrollableRef.current ? 'visible' : "auto",
+        overflow: props.height ? 'auto' : "hidden",
         WebkitOverflowScrolling: 'touch',
         paddingBottom: "16px",
         ...containerStyle,

@@ -54,7 +54,7 @@ class Cart extends React.Component {
             this.setState({
                 isError: true
             });
-        })
+        });
     };
 
     reload = () => {
@@ -71,24 +71,23 @@ class Cart extends React.Component {
             this.setState({
                 isError: true
             });
-        })
+        });
     }
 
     render() {
         const { hasMore, isError, list = [], maxLength } = this.state;
-
+        
         return (
-            <div className="cart-index">
+            <div>
                 <InfiniteScroll
-                    inverse
-                    containerStyle={{ overflow: "hidden" }}
                     next={this.fetchMoreData}
-                    scrollableParent={document.querySelector(".cart-index")}
+                    // scrollableParent={document.querySelector(".cart-index")}
+                    height={500}
                     hasMore={hasMore}
                     pullDownToRefresh
                     refreshFunction={this.fetchMoreData}
-                    releaseToRefreshContent={<div style={{ height: "100px", background: "green" }}>end</div>}
-                    pullDownToRefreshContent={<div style={{ height: "100px", background: "red" }}>start</div>}
+                    releaseToRefreshContent={<div style={{height: "100px", background: "green"}}>end</div>}
+                    pullDownToRefreshContent={<div style={{height: "100px", background: "red"}}>start</div>}
                     isError={isError}
                     loader={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
                     errorMsg={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={this.reload}>重新加载</a></span></div>}
