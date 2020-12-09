@@ -18,6 +18,8 @@ class Cart extends React.Component {
             this.setState({
                 list: res,
                 hasMore: res?.length < this.state.total
+            }, () => {
+                this.node.scrollTo(0, 100)
             });
         }, 100);
     }
@@ -44,7 +46,7 @@ class Cart extends React.Component {
                     reject();
                 };
 
-                resolve(list.concat(Array.from({ length: 20 })))
+                resolve([1, 2, 3, 4, 5].concat(list))
             }, 500);
         }).then(res => {
             this.setState({
@@ -57,13 +59,14 @@ class Cart extends React.Component {
         });
     };
 
-    reload = () => {
+    reload = (e) => {
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 const { list = [] } = this.state;
-                resolve(list.concat(Array.from({ length: 20 })))
+                resolve([11324234, 22324234, 33242343, 43242344].concat(list))
             }, 500);
         }).then(res => {
+            console.log(res)
             this.setState({
                 list: res
             });
@@ -76,22 +79,26 @@ class Cart extends React.Component {
 
     render() {
         const { hasMore, isError, list = [], maxLength } = this.state;
-        
+
         return (
             <div>
                 <InfiniteScroll
+                    inverse
+                    ref={node => this.node = node}
                     next={this.fetchMoreData}
                     // scrollableParent={document.querySelector(".cart-index")}
                     height={500}
                     hasMore={hasMore}
                     pullDownToRefresh
                     refreshFunction={this.fetchMoreData}
-                    releaseToRefreshContent={<div style={{height: "100px", background: "green"}}>end</div>}
-                    pullDownToRefreshContent={<div style={{height: "100px", background: "red"}}>start</div>}
+                    pullDownComponent={<div style={{ height: "50px", background: "green" }}>下拉</div>}
+                    releaseComponent={<div style={{ height: "50px", background: "red" }}>释放</div>}
+                    refreshingComponent={<div style={{ height: "50px", background: "green" }}>加载中</div>}
+                    refreshEndComponent={<div style={{ height: "50px", background: "red" }}>加载完成</div>}
                     isError={isError}
-                    loader={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
-                    errorMsg={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={this.reload}>重新加载</a></span></div>}
-                    endMessage={
+                    loadingComponent={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
+                    errorComponent={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={() => this.reload()}>重新加载</a></span></div>}
+                    endComponent={
                         (list?.length && !maxLength) ?
                             <div style={{ textAlign: 'center', fontWeight: 'normal', color: '#999' }}>
                                 <span>没有更多内容了</span>
@@ -100,7 +107,7 @@ class Cart extends React.Component {
                 >
                     {list.map((_, index) => (
                         <div style={{ height: 30, border: '1px solid green', margin: 6, padding: 8 }} key={index} >
-                            div - #{index}
+                            div - #{index}{_}
                         </div>
                     ))}
                 </InfiniteScroll>
