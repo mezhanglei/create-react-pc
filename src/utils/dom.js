@@ -45,6 +45,21 @@ export function isContains(root, child) {
     return root.contains(child);
 };
 
+// 滚动的兼容
+export function setScroll(ele, x, y) {
+    if (ele === document.body) {
+        if (document.documentElement) {
+            document.documentElement.scrollTop = y || 0;
+            document.documentElement.scrollLeft = y || 0;
+        } else if (window) {
+            window.scrollTo(x || 0, y || 0);
+        }
+    } else {
+        ele.scrollTop = y || 0;
+        ele.scrollLeft = x || 0;
+    }
+};
+
 // 获取页面或元素的卷曲滚动(兼容写法)
 export function getScroll(el = (document.body || document.documentElement)) {
     if (!isDom(el)) {

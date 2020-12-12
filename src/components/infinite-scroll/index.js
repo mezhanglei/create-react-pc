@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState, useRef, useMemo } from 'react';
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
-import { getScroll, getClient, getPositionInPage, getScrollParent } from "@/utils/dom";
+import { setScroll, getScroll, getClient, getPositionInPage, getScrollParent } from "@/utils/dom";
 import { isDom } from "@/utils/type";
 
 /**
@@ -64,6 +64,8 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     const [loading, setLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [prevScrollHeight, setPrevScrollHeight] = useState(0);
+    const [pullDistance, setPullDistance] = useState(0);
+    const [firstLoading, setFirstLoading] = useState(true);
 
     const scrollContainerRef = useRef();
     const pullAreaRef = useRef();
@@ -80,9 +82,15 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     // ref转发实例方法
     React.useImperativeHandle(ref, () => ({
         scrollTo: (x, y) => {
-            getScrollableTarget().scrollTop = y || 0;
-            getScrollableTarget().scrollLeft = x || 0;
-        }
+            if (scrollableRef.current == document.body) {
+                document.documentElement.scrollTop = y || 0;
+                document.documentElement.scrollLeft = x || 0;
+            } else {
+                scrollableRef.current.scrollTop = y || 0;
+                scrollableRef.current.scrollLeft = x || 0;
+            }
+        },
+        getScrollRef: () => (scrollableRef)
     }));
 
     // 获取滚动的父节点
@@ -112,11 +120,6 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
             if (props.scrollableParent && props.height) {
                 console.error(`"scrollableParent" and "height" only need one`);
             }
-
-            // 设置警告
-            if (props.height && props.containerStyle?.overflow == "hidden") {
-                console.error(`the "containerStyle" can't be "hidden", because "height" is setted`);
-            };
         }
 
         // 加载下一个列表时重置状态
@@ -124,12 +127,13 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
             if (loadNumRef.current > 0) {
                 // 反向加载的时候需要重置滚动高度
                 if (inverse && loading) {
-                    target.scrollTop = prevScrollHeight ? target.scrollHeight - prevScrollHeight : 0;
+                    setScroll(target, 0, prevScrollHeight ? target.scrollHeight - prevScrollHeight : 0);
                 }
                 finishTriggerRef.current = false;
                 setLoading(false);
                 errorRef.current = false;
                 setIsError(false);
+                setFirstLoading(false);
             }
             loadNumRef.current = loadNumRef.current + 1;
         }
@@ -159,7 +163,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
 
-        if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current) return;
+        if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current || firstLoading) return;
 
         const target = scrollableRef.current;
 
@@ -232,7 +236,8 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
 
     const onStart = (evt) => {
         evt.preventDefault();
-        const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue)
+        setPullDistance(0);
+        const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue);
         if (condition) return;
         mouseDown = true;
         preStartYRef.current = getPositionInPage(evt).y;
@@ -261,8 +266,10 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
 
         const startY = getPositionInPage(evt).y;
         const deltaY = startY - preStartYRef.current;
+        setPullDistance(Math.min(Math.abs(deltaY), maxHeight));
+
         // 最小判断边界
-        if (deltaY >= minHeight) {
+        if (Math.abs(deltaY) >= minHeight) {
             setRefreshType("release");
         } else {
             setRefreshType("pullDown");
@@ -271,6 +278,8 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         // 执行偏移
         if (inverse) {
             Raf.setRaf(() => setDrag(Math.max(deltaY, -maxHeight)));
+            // 向上偏移时同步scroll
+            height && setScroll(scrollableRef.current, 0, getScroll(scrollableRef.current).y - Math.max(deltaY, -maxHeight));
         } else {
             Raf.setRaf(() => setDrag(Math.min(deltaY, maxHeight)));
         }
@@ -283,7 +292,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         }
 
         mouseDown = false;
-        setRefreshType("refreshing")
+        setRefreshType("refreshing");
         setTimeout(() => {
             if (mouseDragging) {
                 refreshFunction && refreshFunction();
@@ -291,6 +300,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
                 setRefreshType("refreshEnd");
                 Raf.setRaf(resetDrag);
                 preStartYRef.current = 0;
+                setPullDistance(0);
             }
         }, 1000);
     };
@@ -298,7 +308,6 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     const resetDrag = () => {
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
-            scrollContainerDom.style.overflow = 'auto';
             scrollContainerDom.style.transform = 'none';
             scrollContainerDom.style.willChange = 'none';
         }
@@ -307,7 +316,6 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     const setDrag = (move) => {
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
-            scrollContainerDom.style.overflow = 'auto';
             scrollContainerDom.style.transition = `transform 0.3s`;
             scrollContainerDom.style.transform = `translate3d(0px, ${move}px, 0px)`;
         }
@@ -321,16 +329,12 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
 
         if (threshold.unit === ThresholdUnits.Pixel) {
             return (
-                scrollTop <=
-                threshold.value + clientHeight - target.scrollHeight + 1 ||
-                scrollTop === 0
+                scrollTop <= threshold.value
             );
         }
 
         return (
-            scrollTop <=
-            threshold.value / 100 + clientHeight - target.scrollHeight + 1 ||
-            scrollTop === 0
+            scrollTop <= 20
         );
     };
 
@@ -368,7 +372,6 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         height: height || 'auto',
         overflow: props.height ? 'auto' : "hidden",
         WebkitOverflowScrolling: 'touch',
-        [inverse ? "marginBottom" : "marginTop"]: `${-1 * pullAreaHeight}px`,
         ...containerStyle,
     };
 
@@ -387,25 +390,31 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         "release": releaseComponent,
         "refreshing": refreshingComponent,
         "refreshEnd": refreshEndComponent
-    }
+    };
     const refreshComponent =
         pullDownToRefresh && (
+            // <div
+            //     style={{ position: 'relative', height: `${pullDistance}px` }}
+            //     ref={pullAreaRef}
+            // >
+            //     <div
+            //         style={{
+            //             position: 'absolute',
+            //             left: 0,
+            //             right: 0,
+            //             bottom: 0
+            //         }}
+            //     >
+            //         {refreshProps[refreshType]}
+            //     </div>
+            // </div>
             <div
-                style={{ position: 'relative', height: `${pullAreaHeight}px` }}
+                style={{ height: `${pullDistance}px`, overflow: "hidden" }}
                 ref={pullAreaRef}
             >
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0
-                    }}
-                >
-                    {refreshProps[refreshType]}
-                </div>
+                {refreshProps[refreshType]}
             </div>
-        )
+        );
 
     return (
         <div
