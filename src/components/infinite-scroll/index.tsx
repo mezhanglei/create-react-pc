@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef, useMemo } from 'react';
+import React, { Component, useEffect, useState, useRef, ReactNode, CSSProperties } from 'react';
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
@@ -31,9 +31,50 @@ import { isDom } from "@/utils/type";
  * containerStyle: object 组件内部的style样式
  * 实例方法：
  * scrollTo：function(x, y) {} 如果有滚动节点则可以设置滚动到目标位置，x，y代表横轴和竖轴的滚动距离
+ * getScrollRef：function() {} 返回滚动节点
  */
 
-const InfiniteScroll = React.forwardRef((props, ref) => {
+
+interface Ilength {
+    length: number
+}
+
+type fn = () => any;
+type EventType = MouseEvent | TouchEvent;
+
+export interface Props {
+    height?: number,
+    containerStyle?: CSSProperties,
+    children: ReactNode,
+    pullDownToRefresh?: boolean,
+    releaseComponent?: ReactNode,
+    pullDownComponent?: ReactNode,
+    refreshingComponent?: ReactNode,
+    refreshEndComponent?: ReactNode,
+    endComponent?: ReactNode,
+    loadingComponent?: ReactNode,
+    hasMore?: boolean,
+    errorComponent?: ReactNode,
+    className?: string,
+    onScroll?: (e: EventType) => any;
+    inverse?: boolean,
+    thresholdValue?: number | string,
+    next: fn,
+    refreshFunction?: fn,
+    minPullDown?: number | undefined,
+    maxPullDown?: number | undefined,
+    initialScrollY?: number,
+    scrollableParent: HTMLElement,
+    isError?: boolean,
+    forbidTrigger?: boolean
+}
+
+export interface ScrollRef {
+    scrollTo: (x: number, y: number) => void;
+    getScrollRef: () => HTMLElement;
+}
+
+const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => {
 
     const {
         height,
@@ -54,47 +95,40 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         thresholdValue,
         next,
         refreshFunction,
-        minPullDown,
-        maxPullDown,
+        minPullDown = 0,
+        maxPullDown = 0,
         initialScrollY
     } = props;
 
-    const [pullAreaHeight, setPullAreaHeight] = useState(0);
-    const [refreshType, setRefreshType] = useState("pullDown");
-    const [loading, setLoading] = useState(false);
-    const [isError, setIsError] = useState(false);
-    const [prevScrollHeight, setPrevScrollHeight] = useState(0);
-    const [pullDistance, setPullDistance] = useState(0);
-    const [firstLoading, setFirstLoading] = useState(true);
+    const [pullAreaHeight, setPullAreaHeight] = useState<number>(0);
+    const [refreshType, setRefreshType] = useState<string>("pullDown");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean | undefined>(false);
+    const [prevScrollHeight, setPrevScrollHeight] = useState<number>(0);
+    const [pullDistance, setPullDistance] = useState<number>(0);
 
-    const scrollContainerRef = useRef();
-    const pullAreaRef = useRef();
-    const scrollableRef = useRef();
-    const eventRef = useRef();
-    const errorRef = useRef();
-    const loadNumRef = useRef(0);
-    const finishTriggerRef = useRef();
-    const forbidTriggerRef = useRef();
-    const preStartYRef = useRef(0);
-    let mouseDown = false;
-    let mouseDragging = false;
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const pullAreaRef = useRef<HTMLDivElement>(null);
+    const scrollableRef = useRef<any>();
+    const eventRef = useRef<any>();
+    const errorRef = useRef<boolean>();
+    const loadNumRef = useRef<number>(0);
+    const finishTriggerRef = useRef<boolean>();
+    const forbidTriggerRef = useRef<boolean>();
+    const preStartYRef = useRef<number>(0);
+    let mouseDown: boolean = false;
+    let mouseDragging: boolean = false;
 
     // ref转发实例方法
     React.useImperativeHandle(ref, () => ({
-        scrollTo: (x, y) => {
-            if (scrollableRef.current == document.body) {
-                document.documentElement.scrollTop = y || 0;
-                document.documentElement.scrollLeft = x || 0;
-            } else {
-                scrollableRef.current.scrollTop = y || 0;
-                scrollableRef.current.scrollLeft = x || 0;
-            }
+        scrollTo: (x: number, y: number) => {
+            setScroll(scrollableRef.current, x || 0, y || 0);
         },
         getScrollRef: () => (scrollableRef)
     }));
 
     // 获取滚动的父节点
-    const getScrollableTarget = () => {
+    const getScrollableTarget = (): any => {
         const scrollContainerDom = scrollContainerRef.current;
         const scrollableParent = props.scrollableParent;
         if (isDom(scrollableParent)) {
@@ -126,14 +160,13 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         if (React.Children.count(children)) {
             if (loadNumRef.current > 0) {
                 // 反向加载的时候需要重置滚动高度
-                if (inverse && loading) {
+                if (inverse && loading && isElementAtTop(target, thresholdValue)) {
                     setScroll(target, 0, prevScrollHeight ? target.scrollHeight - prevScrollHeight : 0);
                 }
                 finishTriggerRef.current = false;
                 setLoading(false);
                 errorRef.current = false;
                 setIsError(false);
-                setFirstLoading(false);
             }
             loadNumRef.current = loadNumRef.current + 1;
         }
@@ -158,12 +191,12 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
 
 
     // 滚动监听事件中无法获取到最新的state所以需要ref
-    const onScrollListener = (event) => {
+    const onScrollListener = (event: EventType) => {
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
 
-        if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current || firstLoading) return;
+        if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current) return;
 
         const target = scrollableRef.current;
 
@@ -180,10 +213,10 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     };
 
     // 初始化绑定事件(滚动节点可能是异步也可能是同步)
-    const initDom = (scrollableParent) => {
+    const initDom = (scrollableParent: HTMLElement) => {
         if (forbidTriggerRef.current) return;
         // 滚动父节点绑定事件(文档根节点不能绑定事件)
-        const el = scrollableParent === (document.body || document.documentElement) ? (document || window) : scrollableParent;
+        const el: any = scrollableParent === (document.body || document.documentElement) ? (document || window) : scrollableParent;
         eventRef.current = el;
 
         if (el) {
@@ -209,7 +242,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
             el.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onEnd);
             // 下拉区域的原始高度
-            const pullAreaDom = pullAreaRef.current;
+            const pullAreaDom: any = pullAreaRef.current;
             setPullAreaHeight(pullAreaDom?.firstChild?.getBoundingClientRect()?.height || 0);
         }
     };
@@ -234,7 +267,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         }
     };
 
-    const onStart = (evt) => {
+    const onStart = (evt: EventType) => {
         evt.preventDefault();
         setPullDistance(0);
         const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue);
@@ -248,7 +281,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         }
     };
 
-    const onMove = (evt) => {
+    const onMove = (evt: EventType) => {
         evt.preventDefault();
         if (!mouseDown) return;
         if (minPullDown > maxPullDown) {
@@ -286,7 +319,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         mouseDragging = true;
     };
 
-    const onEnd = (evt) => {
+    const onEnd = (evt: EventType) => {
         if (typeof refreshFunction !== 'function') {
             throw new Error(`"refreshFunction" is not function or missing`);
         }
@@ -313,7 +346,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
         }
     };
 
-    const setDrag = (move) => {
+    const setDrag = (move: number) => {
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
             scrollContainerDom.style.transition = `transform 0.3s`;
@@ -322,7 +355,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     };
 
     // 是否在顶部
-    const isElementAtTop = (target, thresholdValue = 0.8) => {
+    const isElementAtTop = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
         const clientHeight = getClient(target).y;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
@@ -339,7 +372,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     };
 
     // 是否在底部
-    const isElementAtBottom = (target, thresholdValue = 0.8) => {
+    const isElementAtBottom = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
         const clientHeight = getClient(target).y;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
@@ -363,12 +396,12 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     );
 
     // 当设置了滚动固定高度, 下拉/上拉刷新时阻止元素溢出到外面显示
-    const outerDivStyle = pullDownToRefresh && height
+    const outerDivStyle: CSSProperties = pullDownToRefresh && height
         ? { overflow: 'hidden' }
         : {};
 
     // 当组件滚动的容器在外部（即设置了scrollableParent），则设置overflow: hidden, 以免组件内部出现滚动条
-    const insideStyle = {
+    const insideStyle: CSSProperties = {
         height: height || 'auto',
         overflow: props.height ? 'auto' : "hidden",
         WebkitOverflowScrolling: 'touch',
@@ -385,7 +418,7 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     );
 
     // 下拉刷新的相关组件
-    const refreshProps = {
+    const refreshProps: any = {
         "pullDown": pullDownComponent,
         "release": releaseComponent,
         "refreshing": refreshingComponent,
@@ -393,21 +426,6 @@ const InfiniteScroll = React.forwardRef((props, ref) => {
     };
     const refreshComponent =
         pullDownToRefresh && (
-            // <div
-            //     style={{ position: 'relative', height: `${pullDistance}px` }}
-            //     ref={pullAreaRef}
-            // >
-            //     <div
-            //         style={{
-            //             position: 'absolute',
-            //             left: 0,
-            //             right: 0,
-            //             bottom: 0
-            //         }}
-            //     >
-            //         {refreshProps[refreshType]}
-            //     </div>
-            // </div>
             <div
                 style={{ height: `${pullDistance}px`, overflow: "hidden" }}
                 ref={pullAreaRef}

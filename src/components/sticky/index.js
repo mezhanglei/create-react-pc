@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IsDOM, IsNodeList } from '@/utils/dom.js';
+import { IsDOM, IsNodeList } from '@/utils/dom';
 
 // 监听的事件类别
 // const EVENTS = [

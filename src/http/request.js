@@ -2,7 +2,7 @@ import axios from "axios";
 import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { message } from "antd";
 import { myStorage } from "@/utils/cache.js";
-import { loginOut, getToken } from "@/core/common.js";
+import { loginOut, getToken } from "@/core/common";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
 import { myBrowser } from "@/utils/brower";
