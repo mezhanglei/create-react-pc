@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef, ReactNode, CSSProperties } from 'react';
+import React, { Component, useEffect, useState, useRef, ReactNode, CSSProperties, useMemo } from 'react';
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
@@ -21,7 +21,6 @@ import { isDom } from "@/utils/type";
  * refreshEndComponent: ReactNode 刷新结束时的提示组件
  * refreshFunction: function 刷新列表的方法
  * endComponent: ReactNode 数据加载完了展示的组件
- * initialScrollY: number 列表初始化加载时滚动到的位置
  * scrollableParent: HtmlElement 不设置则默认自动搜索滚动父元素， 设置在该父元素内滚动，建议设置以节省性能，设置forbidTrigger可以阻止滚动触发
  * forbidTrigger: boolean 禁止滚动加载触发，当页面上有多个滚动列表且滚动父元素相同，则可以通过此api禁止滚动触发加载
  * minPullDown, maxPullDown: 下拉刷新时, 设置最小下拉高度和最大下拉高度
@@ -63,10 +62,11 @@ export interface Props {
     refreshFunction?: fn,
     minPullDown?: number | undefined,
     maxPullDown?: number | undefined,
-    initialScrollY?: number,
     scrollableParent: HTMLElement,
     isError?: boolean,
-    forbidTrigger?: boolean
+    forbidTrigger?: boolean,
+    dataSource?: any[],
+    limit?: number
 }
 
 export interface ScrollRef {
@@ -96,8 +96,7 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         next,
         refreshFunction,
         minPullDown = 0,
-        maxPullDown = 0,
-        initialScrollY
+        maxPullDown = 0
     } = props;
 
     const [pullAreaHeight, setPullAreaHeight] = useState<number>(0);
@@ -189,7 +188,6 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         forbidTriggerRef.current = props.forbidTrigger;
     }, [props.forbidTrigger]);
 
-
     // 滚动监听事件中无法获取到最新的state所以需要ref
     const onScrollListener = (event: EventType) => {
         if (typeof onScroll === 'function') {
@@ -199,7 +197,6 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current) return;
 
         const target = scrollableRef.current;
-
         const atBottom = inverse
             ? isElementAtTop(target, thresholdValue)
             : isElementAtBottom(target, thresholdValue);
@@ -222,15 +219,6 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         if (el) {
             const throttledOnScrollListener = throttle(onScrollListener);
             el.addEventListener('scroll', throttledOnScrollListener);
-        }
-
-        if (
-            typeof initialScrollY === 'number' &&
-            el &&
-            isDom(el) &&
-            el.scrollHeight > initialScrollY
-        ) {
-            el.scrollTo(0, initialScrollY);
         }
 
         if (pullDownToRefresh && el) {
@@ -433,7 +421,7 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
                 {refreshProps[refreshType]}
             </div>
         );
-
+        
     return (
         <div
             style={outerDivStyle}

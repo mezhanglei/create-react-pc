@@ -8,6 +8,7 @@ class Cart extends React.Component {
         super(props);
         this.state = {
             hasMore: true,
+            inverse: false,
             total: 600,
             exampleTree: [{
                 _id: 1,
@@ -78,9 +79,15 @@ class Cart extends React.Component {
                     reject();
                 };
 
-                resolve([1, 2, 3, 4, 5].concat(list));
+                if (this.state.inverse) {
+                    resolve([44331 * Math.random(), 233334, 44443, 55554, 5555].concat(list));
+                } else {
+                    resolve(list.concat([123 * Math.random(), 2444, 3555, 466555, 5545]));
+                }
+
             }, 500);
         }).then(res => {
+            const result = 
             this.setState({
                 list: res
             });
@@ -95,7 +102,7 @@ class Cart extends React.Component {
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 const { list = [] } = this.state;
-                resolve([11324234, 22324234, 33242343, 43242344].concat(list));
+                resolve([11324234 * Math.random(), 22324234, 33242343, 43242344].concat(list));
             }, 500);
         }).then(res => {
             this.setState({
@@ -109,7 +116,7 @@ class Cart extends React.Component {
     }
 
     render() {
-        const { hasMore, isError, list = [], maxLength } = this.state;
+        const { hasMore, isError, inverse, list = [], maxLength } = this.state;
 
         return (
             <>
@@ -118,7 +125,8 @@ class Cart extends React.Component {
                 </div>
                 <div style={{ height: "300px", overflow: "auto" }}>
                     <InfiniteScroll
-                        inverse
+                        inverse={inverse}
+                        dataSource={list}
                         // height={200}
                         ref={node => this.node = node}
                         next={this.fetchMoreData}
