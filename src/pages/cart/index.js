@@ -47,7 +47,7 @@ class Cart extends React.Component {
     componentDidMount() {
         // first loading
         setTimeout(() => {
-            const res = Array.from({ length: 100 });
+            const res = Array.from({ length: 50 });
             this.setState({
                 list: res,
                 hasMore: res?.length < this.state.total
@@ -87,10 +87,10 @@ class Cart extends React.Component {
 
             }, 500);
         }).then(res => {
-            const result = 
-            this.setState({
-                list: res
-            });
+            const result =
+                this.setState({
+                    list: res
+                });
         }).catch(err => {
             this.setState({
                 isError: true
@@ -123,8 +123,9 @@ class Cart extends React.Component {
                 <div style={{ height: "100px" }}>
                     标题组件
                 </div>
-                <div style={{ height: "300px", overflow: "auto" }}>
+                <div style={{ height: "100px", overflow: "auto" }}>
                     <InfiniteScroll
+                        limit={30}
                         inverse={inverse}
                         dataSource={list}
                         // height={200}
