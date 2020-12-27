@@ -163,6 +163,10 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
             if (props.scrollableParent && props.height) {
                 console.error(`"scrollableParent" and "height" only need one`);
             }
+
+            if(limit && !dataSource) {
+                console.error(`you should set the "dataSource"`);
+            }
         }
 
         // 缓存控制更新索引
