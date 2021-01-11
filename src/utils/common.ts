@@ -69,3 +69,16 @@ export function throttle(fn: any, time: number = 500): any {
         }
     };
 };
+
+/**
+ * 生成GUID(全局唯一标识符32位，UUID的一种)
+ * 其中4表示UUID生成算法版本
+ */
+export const getGUID = () => {
+    let str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    return str.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}

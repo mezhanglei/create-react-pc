@@ -1,0 +1,24 @@
+.editable-cell-value-wrap {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 11px;
+  height: 32px;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  &:hover {
+    cursor: pointer;
+    border-color: @primary-color;
+  }
+  &-disabled {
+    background: rgba(0, 0, 0, 0.05);
+    &:hover {
+      cursor: not-allowed;
+      border-color: #d9d9d9;
+    }
+  }
+  .placeholder-txt {
+    color: #d9d9d9;
+  }
+}
