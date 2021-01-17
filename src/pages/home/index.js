@@ -16,6 +16,7 @@ import VirtualList from '@/components/virtual-list/index';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import DotLoading from "@/components/loading-animation/dot-loading";
 import InfiniteScroll from "@/components/infinite-scroll";
+import { deepClone } from "@/utils/common";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);

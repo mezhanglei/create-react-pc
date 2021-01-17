@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Dialog from './dialog/index';
-// import Dialog from 'rc-dialog';
 import classNames from 'classnames';
 import Button from '@/components/button/index';
 

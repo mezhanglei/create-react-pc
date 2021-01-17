@@ -82,7 +82,7 @@ export default function Dialog(props) {
     const contentClickRef = useRef(false);
     const contentTimeoutRef = useRef();
 
-    // We need record content click incase content popup out of dialog
+    // 点击content
     const onContentClick = () => {
         clearTimeout(contentTimeoutRef.current);
         contentClickRef.current = true;
@@ -92,8 +92,7 @@ export default function Dialog(props) {
         });
     };
 
-    // >>> Wrapper
-    // Close only when element not on dialog
+    // 点击不在content则关闭弹窗
     let onWrapperClick = null;
     if (maskClosable) {
         onWrapperClick = (e) => {
@@ -174,6 +173,18 @@ export default function Dialog(props) {
                     onVisibleChanged={onDialogVisibleChanged}
                     motionName={getMotionName(prefixCls, transitionName, animation)}
                 />
+                {/* <ContentBei
+                    {...props}
+                    onClose={onInternalClose}
+                    visible={visible}
+                    prefixCls={prefixCls}
+                    onClick={onContentClick}
+                    ref={contentRef}
+                    closable={closable}
+                    ariaId={ariaIdRef.current}
+                    onVisibleChanged={onDialogVisibleChanged}
+                    transitionName={transitionName}
+                /> */}
             </div>
         </div>
     );

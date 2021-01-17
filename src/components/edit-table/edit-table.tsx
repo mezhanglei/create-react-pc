@@ -2,12 +2,12 @@ import { Form, Table } from 'antd';
 import React, { useEffect, useState, useRef, useContext, ReactNode } from 'react';
 import styles from './edit-table.module.less';
 import classnames from 'classnames';
-import { isBoolean, isFunction, isEmpty } from '@/utils/type';
+import { isBoolean, isFunction, isObject } from '@/utils/type';
 import { getGUID } from '@/utils/common';
 
 /**
- * 可编辑表格组件：支持表格嵌入外来输入控件，只需要将props.save方法暴露给控件.
- * 使用方式：跟antd的table一样的用法，同时支持了拓展参数和方法
+ * 可编辑表格组件：支持表格嵌入外来输入控件，只需要将props.save方法暴露给输入控件使用.输入控件需要遵循antd的form控件标准（onChange输出，value引入）
+ * 使用方式：继承antd的table的一切方法，同时支持了拓展参数和方法
  */
 
 // table组件的props
@@ -40,7 +40,7 @@ export interface ColumnProps {
   record: RecordInterface; // 行的数据
   handleSave: (record: RecordInterface) => void; // 更新保存
   renderEditCell: (props: any, inputRef: any) => any; // 渲染编辑框组件
-  rules: any[]; // 校验规则, 格式为antd的form校验格式
+  rules: any[]; // 校验规则, 格式为antd的form的rules校验格式
   editStyle: object; // 编辑区域容器的样式
   disabled: boolean | ((props: any) => boolean); // 是否禁止点击
   extra: (props: any) => any; // 单元格内额外的组件
@@ -85,6 +85,7 @@ const EditTable: React.FC<EditTableProps> = React.forwardRef((props: EditTablePr
     // 本地删除
     const newDataSource = [...dataSource]?.filter((item) => item.key !== record.key);
     setDataSource(newDataSource);
+    onChange && onChange(newDataSource, record);
     onDelete && onDelete(newDataSource, record);
   };
 
@@ -147,7 +148,7 @@ const EditableContext = React.createContext<any>(null);
 
 export interface RecordInterface {
   key: string;
-  originValues: object;
+  fullData: object; // 完整的数据
   [propName: string]: any;
 }
 
@@ -195,26 +196,26 @@ const EditableCell: React.FC<ColumnProps> = (props) => {
     }
   }, [editing]);
 
-  // 切换编辑态
-  const toggleEdit = () => {
+  // 切换到编辑状态
+  const switchEdit = () => {
     if (isDisabled) {
       return;
     }
     setEditing(!editing);
+    // 切换到输入框将值设到表单里
     form.setFieldsValue({ [dataIndex]: record[dataIndex] });
   };
 
-  // 保存结果(select控件需要处理数据)
-  const save = async (e: any) => {
+  // 保存当前cell结果(select控件需要处理数据)
+  const save = async (value: string | { label: string }) => {
     try {
-      const values = await form.validateFields();
-      // 将select的完整数据以map形式存放起来
-      const { originValues = {} } = record;
-      (originValues as any)[dataIndex] = values[dataIndex];
-      // 仅仅用来表格显示的数据
-      values[dataIndex] = values[dataIndex]?.label;
-      toggleEdit();
-      handleSave({ ...record, ...values, originValues });
+      // 将完整数据存储起来
+      const { fullData = {} } = record;
+      (fullData as any)[dataIndex] = value;
+      // 仅仅用来表格显示的数据(传给handleSave修改dataSource)
+      record[dataIndex] = isObject(value) ? (value as { label: string })?.label : value;
+      handleSave({ ...record, fullData });
+      switchEdit();
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -228,10 +229,10 @@ const EditableCell: React.FC<ColumnProps> = (props) => {
         name={dataIndex}
         rules={rules}
       >
-        {renderEditCell && renderEditCell({ ...props, save }, inputRef)}
+        {renderEditCell && renderEditCell({ ...props, save, switchEdit, form }, inputRef)}
       </Form.Item>
     );
-  }
+  };
 
   // 切换编辑后的组件
   const switchNode = () => {
@@ -240,16 +241,17 @@ const EditableCell: React.FC<ColumnProps> = (props) => {
       [styles[`${prefix}-disabled`]]: isDisabled
     });
 
+    // 默认的render选项
     const childrenList = children?.filter((child: ReactNode) => !!child);
     return (
-      <div className={cls} style={{ ...editStyle }} onClick={toggleEdit} title={childrenList}>
+      <div className={cls} style={{ ...editStyle }} onClick={switchEdit} title={childrenList}>
         {childrenList?.length ? childrenList : <span className={styles['placeholder-txt']}>请选择</span>}
       </div>
     );
-  }
+  };
 
   // 额外的组件
-  const extraNode = extra && extra({ ...props, save });
+  const extraNode = extra && extra({ ...props });
 
   return (
     <td {...restProps}>

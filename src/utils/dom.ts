@@ -140,11 +140,11 @@ export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, p
  * @param {*} options {element: HTMLElement 默认document.body}
  */
 interface OptionsType {
-    element: HTMLElement,
+    element?: HTMLElement,
     [propName: string]: any;
 }
 
-export function setStyle(style: any, options: OptionsType) {
+export function setStyle(style: any, options: OptionsType = {}) {
     const { element = document.body } = options;
     const oldStyle: any = {};
 
@@ -223,7 +223,7 @@ export function canUseDom() {
 interface InputOptionsType {
     captrue?: boolean,
     once?: boolean,
-    passive?: boolean 
+    passive?: boolean
 }
 export function addEvent(el: any, event: MouseEvent | TouchEvent, handler: () => any, inputOptions?: InputOptionsType) {
     if (!el) return;

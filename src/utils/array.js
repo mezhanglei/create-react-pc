@@ -2,9 +2,6 @@
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
 
-// 简单深拷贝
-const simpleClone = function (val) { return JSON.parse(JSON.stringify(val)); };
-
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
  * @param {Array} data 数组
