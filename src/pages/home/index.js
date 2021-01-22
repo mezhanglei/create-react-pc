@@ -1,10 +1,8 @@
 import React, { Component, useState, useEffect } from 'react';
 import "./index.less";
-import http from "@/http/request.js";
+import http from "@/http/request";
 import { connect } from "react-redux";
-import Tree from "@/components/tree/tree";
 import SendCode from "@/components/sendCode/sendcode";
-import TreeTransfer from "@/components/transfer/treeTransfer";
 import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
@@ -17,6 +15,7 @@ import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import DotLoading from "@/components/loading-animation/dot-loading";
 import InfiniteScroll from "@/components/infinite-scroll";
 import { deepClone } from "@/utils/common";
+import Toast from "@/components/toast/index";
 
 const group = new DraggableAreasGroup();
 const DraggableArea1 = group.addArea(111);
@@ -49,15 +48,16 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        http.post({
-            url: "/list",
-            data: {}
-        });
+        // http.post({
+        //     url: "/list",
+        //     data: {}
+        // });
 
         // 生成dataSource数据
         this.setState({
             dataSource: [...new Array(100).keys()]
         });
+        Toast.info("111111");
     }
 
     handler = (time) => {
@@ -124,13 +124,15 @@ class Home extends React.Component {
         }, 500);
     };
 
+    clickToast = () => {
+        Toast.info("111111");
+    }
+
     render() {
         return (
             <div>
                 <div className="home">首页
-                    <Tree inline={true} />
                     <SendCode isSend={true} handle={this.handle} />
-                    <TreeTransfer />
                 </div>
                 <div style={{ width: '500px' }}>
                     <InfiniteScroll
@@ -176,7 +178,7 @@ class Home extends React.Component {
                     scale={1}
                 >
                     <div style={{ display: 'inline-block' }}>
-                        <Button className="handle" type="primary">
+                        <Button className="handle" type="default" onClick={this.clickToast}>
                             拖拽元素
                         </Button>
                     </div>

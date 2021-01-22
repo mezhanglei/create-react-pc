@@ -26,8 +26,8 @@ const ConfirmModal = (props) => {
         okButtonProps, // ok按钮的props
         cancelButtonProps, // cancel按钮的props
         icon, // 提示标题的icon
-        okButton, //  为false时确认按钮表示隐藏
-        cancelButton, // 为false时取消按钮表示隐藏
+        okButton = true, //  为false时确认按钮表示隐藏
+        cancelButton = true, // 为false时取消按钮表示隐藏
         autoFocus = "cancel", // 焦点
         transitionName = "zoom", // 弹窗切换动画
         maskTransitionName = "fade", // mask遮罩切换动画

@@ -4,8 +4,6 @@ import { isArray } from "@/utils/type";
 import {
     DIRECTION,
     SCROLL_CHANGE_REASON,
-    marginProp,
-    oppositeMarginProp,
     positionProp,
     scrollProp,
     sizeProp,

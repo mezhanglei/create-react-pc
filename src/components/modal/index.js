@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Modal, { destroyFns } from './Modal';
-import confirm from './confirmModal.js';
+import confirm from './confirmModal';
 
 Modal.info = (props) => {
     const config = {

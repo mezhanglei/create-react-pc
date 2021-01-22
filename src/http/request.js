@@ -1,7 +1,7 @@
 import axios from "axios";
 import { STATUS_ERROR, CODE_ERROR } from "./config";
 import { message } from "antd";
-import { myStorage } from "@/utils/cache.js";
+import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/common";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";

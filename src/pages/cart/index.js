@@ -115,6 +115,14 @@ class Cart extends React.Component {
         });
     }
 
+    renderItem = (_, index) => {
+        return (
+            <div style={{ height: 30, border: '1px solid green', margin: 6, padding: 8 }} key={index} >
+                div - #{index}{_}
+            </div>
+        );
+    }
+
     render() {
         const { hasMore, isError, inverse, list = [], maxLength } = this.state;
 
@@ -125,9 +133,9 @@ class Cart extends React.Component {
                 </div>
                 <div style={{ height: "100px", overflow: "auto" }}>
                     <InfiniteScroll
-                        limit={30}
                         inverse={inverse}
                         dataSource={list}
+                        renderItem={this.renderItem}
                         // height={200}
                         ref={node => this.node = node}
                         next={this.fetchMoreData}
@@ -149,11 +157,6 @@ class Cart extends React.Component {
                                 </div> : null
                         }
                     >
-                        {list.map((_, index) => (
-                            <div style={{ height: 30, border: '1px solid green', margin: 6, padding: 8 }} key={index} >
-                                div - #{index}{_}
-                            </div>
-                        ))}
                     </InfiniteScroll>
                 </div>
             </>

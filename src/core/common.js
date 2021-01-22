@@ -2,10 +2,10 @@
  * 公共的业务方法放到这里
  */
 
-import { myStorage, mySession } from "@/utils/cache.js";
+import { myStorage, mySession } from "@/utils/cache";
 import { TOKEN, USER_INFO } from "@/constants/account/index";
 import { LOGIN_PATH } from "@/constants/account/index";
-import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg.js";
+import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg";
 
 // 清空账户信息
 export function clearUserInfo() {

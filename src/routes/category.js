@@ -1,7 +1,7 @@
 import loadable from "@/components/lazy";
 
-const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/category/index.js') });
-export const CategoryInfo = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/category/info.js') });
+const Category = loadable({ loader: () => import(/* webpackChunkName: "category" */ '@/pages/category/index') });
+export const CategoryInfo = loadable({ loader: () => import(/* webpackChunkName: "home" */ '@/pages/category/info') });
 export const CategoryRoutes = [
     {
         path: "/category",
@@ -10,7 +10,7 @@ export const CategoryRoutes = [
         meta: {
             title: "分类",
         }
-    },{
+    }, {
         path: "/category/info/:id",
         component: CategoryInfo
     },

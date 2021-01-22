@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from 'react';
 import styles from "./index.module.less";
-import http from "@/http/request.js";
+import http from "@/http/request";
 import { connect } from "react-redux";
 import { isNumber, isString, isUndefined } from "@/utils/type";
 

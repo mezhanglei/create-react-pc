@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Button from '@/components/button/index';
-// import PropTypes from 'prop-types';
 
 /**
  * 验证码倒计时组件：
@@ -91,11 +90,5 @@ class SendVerifyCode extends Component {
         );
     }
 }
-
-// SendVerifyCode.propTypes = {
-//     isSend: PropTypes.bool.isRequired,
-//     onhandlePhone: PropTypes.func.isRequired,
-//     onSuccessSend: PropTypes.func.isRequired
-// }
 
 export default SendVerifyCode;

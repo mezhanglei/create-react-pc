@@ -14,116 +14,128 @@
     height: 32px;
     padding: 4px 15px;
     border-radius: 2px;
-    color: rgba(0, 0, 0, .85);
-    background: #fff;
     border: 1px solid #d9d9d9;
-}
 
-.mine-button:not([disabled]):active {
-    outline: 0;
-    box-shadow: none;
-}
+    // 非禁用
+    &:not([disabled]) {
 
-.mine-button:not([disabled]):hover {
-    text-decoration: none;
-}
+        // 激发态
+        &:active {
+            outline: 0;
+            box-shadow: none;
+        }
 
-.mine-button[disabled],
-.mine-button[disabled]:active,
-.mine-button[disabled]:focus,
-.mine-button[disabled]:hover {
-    color: rgba(0, 0, 0, .25);
-    background: #f5f5f5;
-    border-color: #d9d9d9;
-    text-shadow: none;
-    box-shadow: none;
-    cursor: not-allowed;
-}
+        // hover
+        &:hover {
+            text-decoration: none;
+        }
+    }
 
-// primary
-.mine-button-primary {
-    color: #fff;
-    background: #1890ff;
-    border-color: #1890ff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
-}
+    // 禁用
+    &[disabled],
+    &[disabled]:active,
+    &[disabled]:focus,
+    &[disabled]:hover {
+        color: rgba(0, 0, 0, .25);
+        background: #f5f5f5;
+        border-color: #d9d9d9;
+        text-shadow: none;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
 
-.mine-button-primary:active {
-    color: #fff;
-    background: #096dd9;
-    border-color: #096dd9;
-}
+    // 默认
+    &-default {
+        color: rgba(0, 0, 0, .85);
+        background: #fff;
+    }
 
-.mine-button-primary:focus,
-.mine-button-primary:hover {
-    color: #fff;
-    background: #40a9ff;
-    border-color: #40a9ff;
-}
+    // 正常
+    &-primary {
+        color: #fff;
+        background: #1890ff;
+        border-color: #1890ff;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
 
-.mine-button-primary[disabled],
-.mine-button-primary[disabled]:active,
-.mine-button-primary[disabled]:focus,
-.mine-button-primary[disabled]:hover {
-    color: rgba(0, 0, 0, .25);
-    background: #f5f5f5;
-    border-color: #d9d9d9;
-    text-shadow: none;
-    box-shadow: none;
-}
+        &:active {
+            color: #fff;
+            background: #096dd9;
+            border-color: #096dd9;
+        }
 
-// danger
-.mine-button-dangerous {
-    color: #fff;
-    background: #ff4d4f;
-    border-color: #ff4d4f;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
-}
+        &:focus,
+        &:hover {
+            color: #fff;
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
 
-.mine-button-dangerous:active {
-    color: #fff;
-    background: #d9363e;
-    border-color: #d9363e;
-}
+        &[disabled],
+        &[disabled]:active,
+        &[disabled]:focus,
+        &[disabled]:hover {
+            color: rgba(0, 0, 0, .25);
+            background: #f5f5f5;
+            border-color: #d9d9d9;
+            text-shadow: none;
+            box-shadow: none;
+        }
 
-.mine-button-dangerous:focus,
-.mine-button-dangerous:hover {
-    color: #fff;
-    background: #ff7875;
-    border-color: #ff7875;
-}
+    }
 
-// dashed
-.mine-button-dashed {
-    color: rgba(0, 0, 0, .85);
-    background: #fff;
-    border-color: #d9d9d9;
-    border-style: dashed;
-}
+    // 警告按钮
+    &-dangerous {
+        color: #fff;
+        background: #ff4d4f;
+        border-color: #ff4d4f;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, .12);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, .045);
 
-// 大尺寸
-.mine-button-large {
-    height: 40px;
-    padding: 6.4px 15px;
-    font-size: 16px;
-    border-radius: 2px;
-}
+        &:active {
+            color: #fff;
+            background: #d9363e;
+            border-color: #d9363e;
+        }
 
-// 小尺寸
-.mine-button-small {
-    height: 24px;
-    padding: 0 7px;
-    font-size: 14px;
-    border-radius: 2px;
-}
+        &:focus,
+        &:hover {
+            color: #fff;
+            background: #ff7875;
+            border-color: #ff7875;
+        }
+    }
 
-// 形状-圆
-.mine-button-circle {
-    min-width: 32px;
-    padding-right: 0;
-    padding-left: 0;
-    text-align: center;
-    border-radius: 50%;
+    // 虚线
+    &-dashed {
+        color: rgba(0, 0, 0, .85);
+        background: #fff;
+        border-color: #d9d9d9;
+        border-style: dashed;
+    }
+
+    // 大尺寸
+    &-large {
+        height: 40px;
+        padding: 6.4px 15px;
+        font-size: 16px;
+        border-radius: 2px;
+    }
+
+    // 小尺寸
+    &-small {
+        height: 24px;
+        padding: 0 7px;
+        font-size: 14px;
+        border-radius: 2px;
+    }
+
+    // 形状-圆
+    &-circle {
+        min-width: 32px;
+        padding-right: 0;
+        padding-left: 0;
+        text-align: center;
+        border-radius: 50%;
+    }
 }

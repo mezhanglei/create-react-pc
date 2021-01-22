@@ -10,6 +10,10 @@ import { DefaultRoutes } from "./default";
 import { initWX } from "@/core/wx";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
+import TransitionRoute from "./transitionRoute";
+import Modal from "@/components/modal/index";
+import { HashHistory, BrowserHistory } from "./history";
+import CustomPrompt from "@/components/prompt";
 
 /**
  * 页面路由配置
@@ -45,18 +49,6 @@ function beforeRouter(props, item) {
 }
 
 /**
- * 离开当前路由页面之前触发的方法(需要实例化路由拦截组件Prompt)
- * @param {*} message Prompt组件的提示信息
- * @param {*} callback 控制当前路由跳转或者不跳转
- */
-function getConfirmation(message, callback) {
-    // alert(message);
-    callback(true);
-    // callback(true) 表示离开当前路由
-    // callback(false) 表示留在当前路由
-};
-
-/**
  * 渲染路由组件(根据需要修改)
  * Router是所有路由组件共用的底层接口组件，它是路由规则制定的最外层的容器。
    Route路由规则匹配，并显示当前的规则对应的组件。
@@ -64,7 +56,6 @@ function getConfirmation(message, callback) {
  * history路由模式Router的参数
  * 1.basename  类型string, 路由访问基准
  * 2.forceRefresh:bool true则表示导航时刷新页面.
- * 3.keyLength location.key的长度, 点击同一个链接时，每次该路由下的 location.key都会改变，可以通过key的变化来刷新页面(hash不支持)。
  * 4.children:node 要渲染的子元素。
  * Route的参数(可传函数或组件, 值为函数时都会接受所有由route传入的所有参数):
  * 1.component: 使用React.createElement创建组件, 每次更新和渲染都会重新创建新组件, 卸载旧组件, 挂载新组件
@@ -76,7 +67,7 @@ export default function RouteComponent() {
     const basename = Router.name == "BrowserRouter" ? process.env.PUBLIC_PATH : "";
 
     return (
-        <Router basename={basename} getUserConfirmation={getConfirmation}>
+        <Router basename={basename} history={history}>
             <Switch>
                 {routes.map((item, index) => {
                     return <Route
@@ -90,8 +81,8 @@ export default function RouteComponent() {
                             } else {
                                 return (
                                     <React.Fragment>
-                                        <Prompt message={`是否确定离开当前路由？${location.href}`} />
-                                        <item.component {...props} data={item}></item.component>
+                                        <CustomPrompt isPrompt={true} />
+                                        <item.component key={item.path} {...props}></item.component>
                                     </React.Fragment>
                                 );
                             }
@@ -99,6 +90,7 @@ export default function RouteComponent() {
                     />;
                 })}
             </Switch>
+            <TransitionRoute />
         </Router>
     );
 }
