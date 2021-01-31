@@ -54,7 +54,7 @@ class Cart extends React.Component {
             });
         }, 100);
 
-        console.log(findLeaves(this.state.exampleTree[0]));
+        console.log(findPath("_id", "10", this.state.exampleTree[0]));
     }
 
     // loading more

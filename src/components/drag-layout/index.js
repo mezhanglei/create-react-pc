@@ -168,7 +168,7 @@ class DragResize extends Component {
 
     render() {
         return (
-            <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid red', padding: '1px' }} ref={(node) => { this.draggableDom = node; }}>
+            <div style={{ display: 'flex', border: '1px solid red', padding: '1px' }} ref={(node) => { this.draggableDom = node; }}>
                 {this.props.children}
             </div>
         );

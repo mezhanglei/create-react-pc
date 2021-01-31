@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { ToastsPosition, ToastProps } from "./type";
 
 // toast容器
-const ToastsContainer = React.forwardRef((props: ToastProps, ref) => {
+const ToastsContainer = React.forwardRef<{}, ToastProps>((props, ref) => {
 
     const {
         prefixCls = "mine-toast",
@@ -115,7 +115,7 @@ const ToastsContainer = React.forwardRef((props: ToastProps, ref) => {
     const toastCls = (toast: ToastProps) => {
         const baseCls = `${toast.prefixCls}-child`;
         const toastClass = classNames(baseCls, toast.className, {
-            [`${baseCls}-${toast.status}`]: toast.status
+            [`${baseCls}-${toast.type}`]: toast.type
         });
         return toastClass;
     };
@@ -135,7 +135,7 @@ const ToastsContainer = React.forwardRef((props: ToastProps, ref) => {
                         return (
                             <div key={toast.id}
                                 className={toastCls(toast)}
-                                style={toastStyle[toast.status]}>
+                                style={toastStyle[toast.type]}>
                                 {toast.message}
                             </div>
                         );

@@ -124,7 +124,8 @@ class Home extends React.Component {
         }, 500);
     };
 
-    clickToast = () => {
+    clickToast = (e) => {
+        e.stop;
         Toast.info("111111");
     }
 
@@ -200,6 +201,20 @@ class Home extends React.Component {
                     <p>Some contents...</p>
                 </Modal>
                 <div id="div" style={{ width: '100px', height: '100px', backgroundColor: '#000', position: "absolute", left: 0, top: 0 }}>
+                </div>
+                <div className="Simple">
+                    <DraggableArea
+                        tags={initialTags}
+                        withHotspot={true}
+                        render={({ tag, index }) => (
+                            <DragResize>
+                                <div className="tag">
+                                    {tag.content}
+                                </div>
+                            </DragResize>
+                        )}
+                    // onChange={tags => console.log(tags)}
+                    />
                 </div>
                 <div className="Simple">
                     <DraggableArea

@@ -1,11 +1,10 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import {
-    matchesSelectorAndParentsTo, addEvent, removeEvent, addUserSelectStyles, getTouchIdentifier,
-    removeUserSelectStyles
-} from './utils/domFns';
-import { createCoreData, getControlPosition, snapToGrid } from './utils/positionFns';
 import log from './utils/log';
+import { matchParent, addEvent, removeEvent, getTouchIdentifier, getPositionInParent } from "@/utils/dom";
+import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
+import { isNumber } from "@/utils/type";
+import { isTouch } from "@/utils/reg";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -21,8 +20,8 @@ const eventsFor = {
     }
 };
 
-// Default to mouse events.
-let dragEventFor = eventsFor.mouse;
+// 根据当前设备看是否触发
+let dragEventFor = isTouch() ? eventsFor.touch : eventsFor.mouse;
 
 
 // 拖拽组件-事件处理
@@ -43,7 +42,6 @@ export default class DraggableEvent extends React.Component {
         onStart: function () { },
         onDrag: function () { },
         onStop: function () { },
-        onMouseDown: function () { },
         scale: 1,
     };
 
@@ -61,7 +59,7 @@ export default class DraggableEvent extends React.Component {
         const thisNode = this.findDOMNode();
         if (thisNode) {
             // 监听touch事件时,不阻止默认行为
-            addEvent(thisNode, eventsFor.touch.start, this.onTouchStart, { passive: false });
+            addEvent(thisNode, dragEventFor.start, this.onTouchStart, { passive: false });
         }
     }
 
@@ -71,11 +69,9 @@ export default class DraggableEvent extends React.Component {
         const thisNode = this.findDOMNode();
         if (thisNode) {
             const { ownerDocument } = thisNode;
-            removeEvent(ownerDocument, eventsFor.mouse.move, this.handleDrag);
-            removeEvent(ownerDocument, eventsFor.touch.move, this.handleDrag);
-            removeEvent(ownerDocument, eventsFor.mouse.stop, this.handleDragStop);
-            removeEvent(ownerDocument, eventsFor.touch.stop, this.handleDragStop);
-            removeEvent(thisNode, eventsFor.touch.start, this.onTouchStart, { passive: false });
+            removeEvent(ownerDocument, dragEventFor.move, this.handleDrag);
+            removeEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
+            removeEvent(thisNode, dragEventFor.start, this.onTouchStart, { passive: false });
             // 移除选中样式
             if (this.props.enableUserSelectHack) removeUserSelectStyles(ownerDocument);
         }
@@ -86,9 +82,31 @@ export default class DraggableEvent extends React.Component {
         return this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
     }
 
+    // 返回拖拽位置信息
+    createCoreData(x, y) {
+        const { lastX, lastY } = this.state;
+        const node = this.findDOMNode();
+
+        if (isNumber(lastX)) {
+            return {
+                node,
+                // x,y方向移动一次的距离
+                deltaX: x - lastX, deltaY: y - lastY,
+                // 拖拽前位置
+                lastX: lastX, lastY: lastY,
+                x, y,
+            };
+        } else {
+            return {
+                node,
+                deltaX: 0, deltaY: 0,
+                lastX: x, lastY: y,
+                x, y,
+            };
+        }
+    }
+
     handleDragStart = (e) => {
-        // Make it possible to attach event handlers on top of this one.
-        this.props.onMouseDown(e);
 
         // 不是鼠标左键且不开启allowAnyClick则不生效
         if (!this.props.allowAnyClick && typeof e.button === 'number' && e.button !== 0) return false;
@@ -103,8 +121,8 @@ export default class DraggableEvent extends React.Component {
         // props控制是否拖拽
         if (this.props.disabled ||
             (!(e.target instanceof ownerDocument.defaultView.Node)) ||
-            (this.props.handle && !matchesSelectorAndParentsTo(e.target, this.props.handle, thisNode)) ||
-            (this.props.cancel && matchesSelectorAndParentsTo(e.target, this.props.cancel, thisNode))) {
+            (this.props.handle && !matchParent(e.target, this.props.handle, thisNode)) ||
+            (this.props.cancel && matchParent(e.target, this.props.cancel, thisNode))) {
             return;
         }
 
@@ -115,18 +133,15 @@ export default class DraggableEvent extends React.Component {
         const touchIdentifier = getTouchIdentifier(e);
         this.setState({ touchIdentifier });
 
-        // 获取当前事件对象的相对于定位父元素的位置
-        const position = getControlPosition(e, touchIdentifier, this);
+        // 获取在指定父元素内的位置
+        const parent = this.props.offsetParent || thisNode.offsetParent || thisNode.ownerDocument.body;
+        const position = getPositionInParent(e, parent);
         if (position == null) return; // not possible but satisfies flow
         const { x, y } = position;
 
         // 返回事件对象相关的位置信息
-        const coreEvent = createCoreData(this, x, y);
+        const coreEvent = this.createCoreData(x, y);
 
-        log('DraggableEvent: handleDragStart: %j', coreEvent);
-
-        // Call event handler. If it returns explicit false, cancel.
-        log('calling', this.props.onStart);
         // 如果没有完成渲染或者返回false则禁止拖拽
         const shouldUpdate = this.props.onStart(e, coreEvent);
         if (shouldUpdate === false || this.mounted === false) return;
@@ -146,8 +161,10 @@ export default class DraggableEvent extends React.Component {
 
     handleDrag = (e) => {
 
-        // 获取当前事件对象的相对于定位父元素的位置
-        const position = getControlPosition(e, this.state.touchIdentifier, this);
+        // 获取在指定父元素内的位置
+        const thisNode = this.findDOMNode();
+        const parent = this.props.offsetParent || thisNode.offsetParent || thisNode.ownerDocument.body;
+        const position = getPositionInParent(e, parent);
         if (position == null) return;
         let { x, y } = position;
 
@@ -160,9 +177,7 @@ export default class DraggableEvent extends React.Component {
         }
 
         // 返回事件对象相关的位置信息
-        const coreEvent = createCoreData(this, x, y);
-
-        log('DraggableEvent: handleDrag: %j', coreEvent);
+        const coreEvent = this.createCoreData(x, y);
 
         // 返回false则禁止拖拽并初始化鼠标事件
         const shouldUpdate = this.props.onDrag(e, coreEvent);
@@ -187,22 +202,22 @@ export default class DraggableEvent extends React.Component {
     handleDragStop = (e) => {
         if (!this.state.dragging) return;
 
-        const position = getControlPosition(e, this.state.touchIdentifier, this);
+        // 获取在指定父元素内的位置
+        const thisNode = this.findDOMNode();
+        const parent = this.props.offsetParent || thisNode.offsetParent || thisNode.ownerDocument.body;
+        const position = getPositionInParent(e, parent);
         if (position == null) return;
         const { x, y } = position;
-        const coreEvent = createCoreData(this, x, y);
+        const coreEvent = this.createCoreData(x, y);
 
         const shouldContinue = this.props.onStop(e, coreEvent);
         if (shouldContinue === false || this.mounted === false) return false;
 
         // 移除文本因滚动造成的显示
-        const thisNode = this.findDOMNode();
         if (thisNode) {
             // Remove user-select hack
             if (this.props.enableUserSelectHack) removeUserSelectStyles(thisNode.ownerDocument);
         }
-
-        log('DraggableEvent: handleDragStop: %j', coreEvent);
 
         // 重置
         this.setState({
@@ -212,43 +227,18 @@ export default class DraggableEvent extends React.Component {
         });
 
         if (thisNode) {
-            // Remove event handlers
-            log('DraggableEvent: Removing handlers');
             removeEvent(thisNode.ownerDocument, dragEventFor.move, this.handleDrag);
             removeEvent(thisNode.ownerDocument, dragEventFor.stop, this.handleDragStop);
         }
     };
 
-    onMouseDown = (e) => {
-        dragEventFor = eventsFor.mouse; // on touchscreen laptops we could switch back to mouse
-
-        return this.handleDragStart(e);
-    };
-
-    onMouseUp = (e) => {
-        dragEventFor = eventsFor.mouse;
-
-        return this.handleDragStop(e);
-    };
-
-    onTouchStart = (e) => {
-        dragEventFor = eventsFor.touch;
-
-        return this.handleDragStart(e);
-    };
-
-    onTouchEnd = (e) => {
-        dragEventFor = eventsFor.touch;
-
-        return this.handleDragStop(e);
-    };
-
     render() {
         // 注意使用时, 子元素最好用闭合标签包裹, 以防出现props带来的问题(例如style样式中的transition和transform, 以及事件)
         return React.cloneElement(React.Children.only(this.props.children), {
-            onMouseDown: this.onMouseDown,
-            onMouseUp: this.onMouseUp,
-            onTouchEnd: this.onTouchEnd
+            onMouseDown: this.handleDragStart,
+            onTouchStart: this.handleDragStart,
+            onMouseUp: this.handleDragStop,
+            onTouchEnd: this.handleDragStop
         });
     }
 }

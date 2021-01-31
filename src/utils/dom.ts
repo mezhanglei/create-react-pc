@@ -1,13 +1,14 @@
 import { CSSProperties } from "react";
 import { isDom } from "./type";
+import { findInArray } from "./array";
 /**
  * 返回目标元素相对于定位父元素的位置
  * @param {*} ele 元素
  * @param {*} target 指定的定位父元素
  */
-export function getElementXY(ele: HTMLElement, target: HTMLElement | null = null): any {
+export function getElementXY(ele: any, target: HTMLElement | null = null): any {
     let pos = [ele.offsetLeft, ele.offsetTop];
-    let parentNode = ele.offsetParent as HTMLElement;
+    let parentNode = ele.offsetParent;
     let flag = true;
     if (parentNode != ele) {
         while (parentNode && flag) {
@@ -19,7 +20,7 @@ export function getElementXY(ele: HTMLElement, target: HTMLElement | null = null
                 flag = false;
                 // 目标不为空则继续寻找
             } else {
-                parentNode = parentNode.offsetParent as HTMLElement;
+                parentNode = parentNode.offsetParent;
             }
         }
     }
@@ -32,11 +33,40 @@ export function getElementXY(ele: HTMLElement, target: HTMLElement | null = null
  * @param {*} child 目标元素
  */
 export function isContains(root: HTMLElement, child: HTMLElement): boolean {
-    if (!root) {
-        return false;
-    }
+    if (!root || root === child) return false;
     return root.contains(child);
 };
+
+/**
+ * 判断根元素内触发点在不在目标元素内
+ * @param el 触发点
+ * @param selector 目标元素选择器（querySelector）字符串
+ * @param rootNode 根元素
+ */
+export function matchParent(el: any, selector: string, rootNode: any) {
+    let node = el;
+    do {
+        if (node === document.querySelector(selector)) return true;
+        if (node === rootNode) return false;
+        node = node.parentNode;
+    } while (node);
+
+    return false;
+}
+
+/**
+ * 获取屏幕触摸标识
+ * @param e 触摸事件对象
+ * @param identifier 触摸标识
+ */
+export function getTouchIdentifier(e: TouchEvent, identifier?: number) {
+    if (identifier) {
+        return (e?.targetTouches && findInArray(e?.targetTouches, item => identifier === item?.identifier)) ||
+            (e?.changedTouches && findInArray(e?.changedTouches, item => identifier === item?.identifier));
+    } else {
+        return (e?.targetTouches && e?.targetTouches[0]?.identifier) || (e?.changedTouches && e?.changedTouches[0]?.identifier)
+    }
+}
 
 // 滚动的兼容
 export function setScroll(ele: HTMLElement, x: number, y: number): void {
@@ -225,7 +255,7 @@ interface InputOptionsType {
     once?: boolean,
     passive?: boolean
 }
-export function addEvent(el: any, event: MouseEvent | TouchEvent, handler: () => any, inputOptions?: InputOptionsType) {
+export function addEvent(el: any, event: MouseEvent | TouchEvent, handler: (...rest: any[]) => any, inputOptions?: InputOptionsType) {
     if (!el) return;
     // captrue: true事件捕获 once: true只调用一次,然后销毁 passive: true不调用preventDefault
     const options = { capture: false, once: false, passive: false, ...inputOptions };
@@ -240,7 +270,7 @@ export function addEvent(el: any, event: MouseEvent | TouchEvent, handler: () =>
 }
 
 // 移除事件监听
-export function removeEvent(el: any, event: MouseEvent | TouchEvent, handler: () => any, inputOptions?: InputOptionsType) {
+export function removeEvent(el: any, event: MouseEvent | TouchEvent, handler: (...rest: any[]) => any, inputOptions?: InputOptionsType) {
     if (!el) return;
     const options = { capture: false, once: false, passive: false, ...inputOptions };
     if (el.removeEventListener) {

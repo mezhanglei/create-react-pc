@@ -20,15 +20,15 @@ const renderToast = (props: ToastProps) => {
 // toast
 export default {
     success: (message: any, config?: ToastProps) => {
-        renderToast({ ...config, status: ToastType.SUCCESS, message });
+        renderToast({ ...config, type: ToastType.SUCCESS, message });
     },
     info: (message: any, config?: ToastProps) => {
-        renderToast({ ...config, status: ToastType.INFO, message });
+        renderToast({ ...config, type: ToastType.INFO, message });
     },
     warning: (message: any, config?: ToastProps) => {
-        renderToast({ ...config, status: ToastType.WARNING, message });
+        renderToast({ ...config, type: ToastType.WARNING, message });
     },
     error: (message: any, config?: ToastProps) => {
-        renderToast({ ...config, status: ToastType.ERROR, message });
+        renderToast({ ...config, type: ToastType.ERROR, message });
     }
 };

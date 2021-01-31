@@ -136,3 +136,12 @@ export function isTouch() {
         return false;
     }
 }
+
+// 判断是否为触摸屏设备
+export function isEventTouch(e) {
+    if (e?.targetTouches || e?.targetTouches || e?.changedTouches) {
+        return true;
+    } else {
+        return false;
+    }
+}

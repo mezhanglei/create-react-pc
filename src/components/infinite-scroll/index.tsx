@@ -52,7 +52,7 @@ export interface ScrollRef {
 }
 
 // 滚动加载列表组件
-const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => {
+const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     const {
         height,
@@ -126,7 +126,6 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         // 绑定事件
         const target = getScrollableTarget();
         scrollableRef.current = target;
-        console.log()
         if (target) {
             initDom(target);
             // 节点设置警告
@@ -163,13 +162,13 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         setLoading(false);
         // 结束error状态
         errorChange(false);
-    }
+    };
 
     // error状态change
     const errorChange = (value: boolean = false) => {
         errorRef.current = value;
         setIsError(value);
-    }
+    };
 
     // 实时监听状态isError
     useEffect(() => {
@@ -186,7 +185,7 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
-       
+
         if (finishTriggerRef.current || forbidTriggerRef.current || errorRef.current) return;
 
         const target = scrollableRef.current;
@@ -418,8 +417,8 @@ const InfiniteScroll: React.FC<Props> = React.forwardRef((props: Props, ref) => 
         );
 
     const renderChildren = (dataSource: any[] = []): any[] => {
-        return dataSource?.map((item: any, index: number) => (renderItem(item, index)))
-    }
+        return dataSource?.map((item: any, index: number) => (renderItem(item, index)));
+    };
 
     return (
         <div

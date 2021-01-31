@@ -27,7 +27,7 @@ export enum ToastsPosition {
 
 // props
 export interface ToastProps {
-    status: string;
+    type: string;
     message: any;
     timer?: number;
     className?: string;

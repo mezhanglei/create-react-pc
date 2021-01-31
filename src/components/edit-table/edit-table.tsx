@@ -24,11 +24,9 @@ export interface EditTableProps {
 
 // table实例方法
 export interface EditTableRef {
-  current: {
-    updateCell: (record: any, col?: any) => any; // 更新
-    deleteTableRow: (record: any) => any; // 删除
-    addTableRow: () => any; // 新增
-  };
+  updateCell: (record: any, col?: any) => any; // 更新
+  deleteTableRow: (record: any) => any; // 删除
+  addTableRow: () => any; // 新增
 }
 
 // column渲染可传的参数
@@ -47,7 +45,7 @@ export interface ColumnProps {
   [propName: string]: any;
 }
 
-const EditTable: React.FC<EditTableProps> = React.forwardRef((props: EditTableProps, ref) => {
+const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) => {
   const { onChange, onSave, onDelete, value, columns, className, ...restProps } = props;
 
   const [dataSource, setDataSource] = useState<any[]>([]);
