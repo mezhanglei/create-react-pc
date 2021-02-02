@@ -60,16 +60,6 @@ class Home extends React.Component {
         Toast.info("111111");
     }
 
-    handler = (time) => {
-        const timeCount = 3000;
-        const distance = 1500;
-        let divEle = document.getElementById("div");
-        if (time > timeCount) {
-            time = timeCount;
-        }
-        divEle.style.left = time * distance / timeCount + 'px';
-    }
-
     onSubmit = () => {
 
     }
@@ -170,20 +160,23 @@ class Home extends React.Component {
                 <CheckBox disabled checked>
                     123131321312
                 </CheckBox>
-                <Draggable
-                    axis="x"
-                    handle=".handle"
-                    defaultPosition={{ x: 10, y: 0 }}
-                    position={null}
-                    // grid={[100, 25]}
-                    scale={1}
-                >
-                    <div style={{ display: 'inline-block' }}>
-                        <Button className="handle" type="default" onClick={this.clickToast}>
-                            拖拽元素
-                        </Button>
-                    </div>
-                </Draggable>
+                <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
+                    <Draggable
+                        axis="both"
+                        boundsParent=".boxs"
+                        handle=".handle"
+                        defaultPosition={{ x: 10, y: 0 }}
+                        position={null}
+                        // grid={[100, 25]}
+                        scale={1}
+                    >
+                        <div>
+                            <Button className="handle" type="default" onClick={this.clickToast}>
+                                拖拽元素
+                            </Button>
+                        </div>
+                    </Draggable>
+                </div>
                 <Button onClick={this.showModal} type="primary">
                     打开1
                 </Button>
@@ -200,8 +193,6 @@ class Home extends React.Component {
                     <p>Some contents...</p>
                     <p>Some contents...</p>
                 </Modal>
-                <div id="div" style={{ width: '100px', height: '100px', backgroundColor: '#000', position: "absolute", left: 0, top: 0 }}>
-                </div>
                 <div className="Simple">
                     <DraggableArea
                         tags={initialTags}

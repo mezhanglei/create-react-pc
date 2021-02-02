@@ -1,17 +1,15 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import { createCSSTransform, createSVGTransform } from './utils/domFns';
-import { canDragX, canDragY, createDraggableData, getBoundPosition } from './utils/positionFns';
+import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
 import DraggableEvent from './DraggableEvent';
-import log from './utils/log';
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
  * allowAnyClick:  boolean true表示允许非鼠标左键单击拖动
  * disabled: boolean true禁止拖拽
  * enableUserSelectHack: boolean 允许添加选中样式
- * offsetParent: HTMLElement | function 提供定位父元素
+ * boundsParent: HTMLElement | function 限制父元素
  * grid: [number, number] 跳跃幅度, 例如: [25, 25]表示x, y轴25移动距离跳跃一次
  * handle: string 拖拽子元素所在的类选择器
  * cancel: string 不允许拖拽的类选择器
@@ -58,7 +56,6 @@ class Draggable extends React.Component {
                 position.x !== prevPropsPosition.x || position.y !== prevPropsPosition.y
             )
         ) {
-            log('Draggable: getDerivedStateFromProps %j', { position, prevPropsPosition });
             return {
                 x: position.x,
                 y: position.y,
@@ -102,16 +99,37 @@ class Draggable extends React.Component {
         this.setState({ dragging: false }); // prevents invariant if unmounted while dragging
     }
 
+    canDragX = () => {
+        return this.props.axis === 'both' || this.props.axis === 'x';
+    }
+
+    canDragY = () => {
+        return this.props.axis === 'both' || this.props.axis === 'y';
+    }
+
+    createDraggableData = (eventData) => {
+        const scale = this.props.scale;
+        const { x, y } = this.state;
+        return {
+            node: eventData.node,
+            x: x + (eventData.deltaX / scale),
+            y: y + (eventData.deltaY / scale),
+            deltaX: (eventData.deltaX / scale),
+            deltaY: (eventData.deltaY / scale),
+            lastX: x,
+            lastY: y
+        };
+    }
+
     // 节点
     findDOMNode() {
         return this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
     }
 
     onDragStart = (e, data) => {
-        log('Draggable: onDragStart: %j', data);
 
         // 如果onStart函数返回false则禁止拖拽
-        const shouldStart = this.props.onStart(e, createDraggableData(this, data));
+        const shouldStart = this.props.onStart && this.props.onStart(e, this.createDraggableData(data));
         if (shouldStart === false) return false;
 
         this.setState({ dragging: true, dragged: true });
@@ -119,10 +137,9 @@ class Draggable extends React.Component {
 
     onDrag = (e, data) => {
         if (!this.state.dragging) return false;
-        log('Draggable: onDrag: %j', data);
 
         // 拖拽生成的位置信息
-        const uiData = createDraggableData(this, data);
+        const uiData = this.createDraggableData(data);
 
         const newState = {
             x: uiData.x,
@@ -130,7 +147,7 @@ class Draggable extends React.Component {
         };
 
         // 运动边界限制
-        if (this.props.bounds) {
+        if (this.props.bounds || this.props.boundsParent) {
             // Save original x and y.
             const { x, y } = newState;
 
@@ -139,9 +156,12 @@ class Draggable extends React.Component {
             newState.y += this.state.slackY;
 
             // 边界处理
-            const [newStateX, newStateY] = getBoundPosition(this, newState.x, newState.y);
-            newState.x = newStateX;
-            newState.y = newStateY;
+            const node = document.querySelector(this.props.handle);
+            const parent = this.props.boundsParent || this.findDOMNode().ownerDocument.body;
+
+            const newPosition = getPositionByBounds(node, parent, newState, this.props.bounds);
+            newState.x = newPosition.x;
+            newState.y = newPosition.y;
 
             // 重新计算越界补偿
             newState.slackX = this.state.slackX + (x - newState.x);
@@ -155,7 +175,7 @@ class Draggable extends React.Component {
         }
 
 
-        const shouldUpdate = this.props.onDrag(e, uiData);
+        const shouldUpdate = this.props.onDrag && this.props.onDrag(e, uiData);
         if (shouldUpdate === false) return false;
 
         this.setState(newState);
@@ -165,10 +185,8 @@ class Draggable extends React.Component {
         if (!this.state.dragging) return false;
 
         // Short-circuit if user's callback killed it.
-        const shouldContinue = this.props.onStop(e, createDraggableData(this, data));
+        const shouldContinue = this.props.onStop && this.props.onStop(e, this.createDraggableData(data));
         if (shouldContinue === false) return false;
-
-        log('Draggable: onDragStop: %j', data);
 
         const newState = {
             dragging: false,
@@ -212,12 +230,12 @@ class Draggable extends React.Component {
         const validPosition = position || defaultPosition;
         const transformOpts = {
             // Set left if horizontal drag is enabled
-            x: canDragX(this) && draggable ?
+            x: this.canDragX() && draggable ?
                 this.state.x :
                 validPosition.x,
 
             // Set top if vertical drag is enabled
-            y: canDragY(this) && draggable ?
+            y: this.canDragY() && draggable ?
                 this.state.y :
                 validPosition.y
         };

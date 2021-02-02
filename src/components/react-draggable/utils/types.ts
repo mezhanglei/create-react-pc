@@ -19,11 +19,11 @@ export interface DraggableEventProps {
     onStop?: (e: EventType, position: PositionInterface) => boolean; // 拖拽结束事件
     allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
     disabled?: boolean; // 禁止拖拽
-    handle: string; // 拖拽元素的类选择器
-    cancel?: string; // 不允许拖拽的选择器
+    handle: string | HTMLElement; // 拖拽元素的类选择器
+    cancel?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack: boolean; // 允许添加选中样式
     grid: [number, number]; // 设置幅度，多少幅度移动一次目标
-    offsetParent: HTMLElement; // 定位父元素，用来设置
+    boundsParent?: string | HTMLElement; // 定位父元素，用来设置
 }
 
 export type EventHandler<T> = (e: T) => void | false;

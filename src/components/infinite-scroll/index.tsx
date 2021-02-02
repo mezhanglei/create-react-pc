@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState, useRef, ReactNode, CSSProperties
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
-import { setScroll, getScroll, getClient, getPositionInPage, getScrollParent } from "@/utils/dom";
+import { setScroll, getScroll, getClientWH, getPositionInPage, getScrollParent } from "@/utils/dom";
 import { isDom } from "@/utils/type";
 
 interface Ilength {
@@ -336,7 +336,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 是否在顶部
     const isElementAtTop = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
-        const clientHeight = getClient(target).y;
+        const clientHeight = getClientWH(target).width;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
 
@@ -353,7 +353,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 是否在底部
     const isElementAtBottom = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
-        const clientHeight = getClient(target).y;
+        const clientHeight = getClientWH(target).height;
         const scrollTop = getScroll(target).y;
         const threshold = parseThreshold(thresholdValue);
 
