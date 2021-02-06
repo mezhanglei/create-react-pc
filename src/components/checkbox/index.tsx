@@ -11,12 +11,11 @@ export interface CheckboxProps {
     children: ReactNode;
     className?: string;
     onChange: (checked: boolean) => void;
-    ref: any;
     [propsName: string]: any;
 }
 
 // checkBox组件
-const CheckBox: React.FC<CheckboxProps> = (props: CheckboxProps) => {
+const CheckBox = React.forwardRef<any, CheckboxProps>((props: CheckboxProps, ref) => {
 
     const {
         prefixCls = "mine-checkbox-wrapper",
@@ -25,11 +24,10 @@ const CheckBox: React.FC<CheckboxProps> = (props: CheckboxProps) => {
         children,
         className,
         onChange,
-        ref,
         ...rest
     } = props;
 
-    const checkboxRef = ref || React.createRef();
+    const checkboxRef = useRef<any>();
     let [checked, setChecked] = useState<boolean>(false);
 
     useEffect(() => {
@@ -64,6 +62,7 @@ const CheckBox: React.FC<CheckboxProps> = (props: CheckboxProps) => {
 
     return (
         <label
+            ref={ref}
             {...rest}
             className={classString}
         >
@@ -74,6 +73,6 @@ const CheckBox: React.FC<CheckboxProps> = (props: CheckboxProps) => {
             {children !== undefined && <span>{children}</span>}
         </label>
     );
-};
+});
 
 export default CheckBox;

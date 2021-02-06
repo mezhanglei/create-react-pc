@@ -5,7 +5,7 @@
 import { myStorage, mySession } from "@/utils/cache";
 import { TOKEN, USER_INFO } from "@/constants/account/index";
 import { LOGIN_PATH } from "@/constants/account/index";
-import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/reg";
+import { isIOS, isAndroid, isInWeChat, isQQ } from "@/utils/verify";
 
 // 清空账户信息
 export function clearUserInfo() {

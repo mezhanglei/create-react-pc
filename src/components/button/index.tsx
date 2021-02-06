@@ -41,12 +41,11 @@ export interface ButtonProps {
     disabled?: boolean; // 禁用
     onClick?: (e: any) => any;
     className?: string;
-    ref: any;
 }
 
 const reg = /^[\u4e00-\u9fa5]{2}$/;
 const isTwoCNChar = reg.test.bind(reg);
-const Button: React.FC<ButtonProps> = (props) => {
+const Button = React.forwardRef<any, ButtonProps>((props, ref) => {
 
     const {
         prefixCls = "mine-button",
@@ -58,11 +57,8 @@ const Button: React.FC<ButtonProps> = (props) => {
         disabled,
         onClick,
         className,
-        ref,
         ...rest
     } = props;
-
-    const buttonRef = ref || React.createRef();
 
     const classes = classNames(prefixCls, className, {
         [`${prefixCls}-${type}`]: type,
@@ -95,11 +91,11 @@ const Button: React.FC<ButtonProps> = (props) => {
             type={htmlType}
             className={classes}
             onClick={handleClick}
-            ref={buttonRef}
+            ref={ref}
         >
             {kids}
         </button>
     );
-};
+});
 
 export default Button;

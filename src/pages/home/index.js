@@ -7,7 +7,7 @@ import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
 // import { Modal } from "antd";
-import Draggable from "@/components/react-draggable/Draggable";
+import Draggable from "@/components/react-free-draggable/Draggable";
 import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
 import VirtualList from '@/components/virtual-list/index';
@@ -164,13 +164,12 @@ class Home extends React.Component {
                     <Draggable
                         axis="both"
                         boundsParent=".boxs"
-                        handle=".handle"
-                        defaultPosition={{ x: 10, y: 0 }}
-                        position={null}
+                        // dragNode=".handle"
+                        position={{ x: 10, y: 0 }}
                         // grid={[100, 25]}
                         scale={1}
                     >
-                        <div>
+                        <div style={{ display: "inline-block" }}>
                             <Button className="handle" type="default" onClick={this.clickToast}>
                                 拖拽元素
                             </Button>

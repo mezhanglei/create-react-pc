@@ -1,11 +1,11 @@
 import { getPrefixStyle } from "@/utils/cssPrefix";
 import { isDom, isNumber, isString } from "@/utils/type";
-import { isContains } from "@/utils/dom";
+import { isContains, findElement } from "@/utils/dom";
 import { CSSProperties } from "react";
-
+import { BoundsInterface } from "./types";
 
 // 添加选中类和样式
-export function addUserSelectStyles(doc: any): void {
+export const addUserSelectStyles = (doc: any): any => {
     if (!doc) return;
     let styleEl = doc.getElementById('react-draggable-style-el');
     if (!styleEl) {
@@ -17,7 +17,7 @@ export function addUserSelectStyles(doc: any): void {
         doc.getElementsByTagName('head')[0].appendChild(styleEl);
     }
     if (doc.body) addClassName(doc.body, 'react-draggable-transparent-selection');
-}
+};
 
 // 移除选中样式和选中区域
 export function removeUserSelectStyles(doc: any): void {
@@ -73,40 +73,33 @@ export interface PositionInterface {
     x: number,
     y: number
 }
-// 返回tranform的变形属性值
-export function getTranslation(current: PositionInterface, newValue: PositionInterface, unit: string): string {
+// 接收增量位置，返回新的transform值
+export function getTranslation(current: PositionInterface, positionOffset: PositionInterface | undefined, unit: string): string {
     let translation = `translate(${current.x}${unit},${current.y}${unit})`;
-    if (newValue) {
-        const defaultX = `${(typeof newValue.x === 'string') ? newValue.x : newValue.x + unit}`;
-        const defaultY = `${(typeof newValue.y === 'string') ? newValue.y : newValue.y + unit}`;
+    if (positionOffset) {
+        const defaultX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
+        const defaultY = `${(typeof positionOffset.y === 'string') ? positionOffset.y : positionOffset.y + unit}`;
         translation = `translate(${defaultX}, ${defaultY})` + translation;
     }
     return translation;
 }
 
 // 设置css的transform
-export function createCSSTransform(current: PositionInterface, newValue: PositionInterface): CSSProperties {
-    const translation = getTranslation(current, newValue, 'px');
+export function createCSSTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): CSSProperties {
+    const translation = getTranslation(current, positionOffset, 'px');
     return { [getPrefixStyle('transform')]: translation };
 }
 
 // 设置svg的transform
-export function createSVGTransform(current: PositionInterface, newValue: PositionInterface): string {
-    const translation = getTranslation(current, newValue, '');
+export function createSVGTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): string {
+    const translation = getTranslation(current, positionOffset, '');
     return translation;
 }
 
-
-export interface BoundsInterface {
-    xStart: number;
-    xEnd: number;
-    yStart: number;
-    yEnd: number;
-}
 // 返回目标元素相对于父元素内的视口范围
 export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterface | undefined {
     // 限制父元素
-    const boundsParent = isString(parent) ? document.querySelector(parent) : parent;
+    const boundsParent: HTMLElement = findElement(parent);
 
     if (!isDom(node) || !isDom(boundsParent)) {
         return;
@@ -139,7 +132,7 @@ export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterfa
 export function getPositionByBounds(node: HTMLElement, parent: any, position: PositionInterface, bounds: BoundsInterface | {} = {}): PositionInterface {
 
     // 限制父元素
-    const boundsParent = isString(parent) ? document.querySelector(parent) : parent;
+    const boundsParent: HTMLElement = findElement(parent);
 
     if (!isDom(node) || !isDom(boundsParent) || !getBoundsInParent(node, boundsParent) || !isContains(boundsParent, node)) {
         return position;

@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef, ReactNode, CSSProperties, useMemo } from 'react';
+import React, { useEffect, useState, useRef, ReactNode, CSSProperties } from 'react';
 import { throttle } from '@/utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
@@ -48,7 +48,7 @@ export interface Props {
 
 export interface ScrollRef {
     scrollTo: (x: number, y: number) => void;
-    getScrollRef: () => HTMLElement;
+    getScrollRef: () => any;
 }
 
 // 滚动加载列表组件
@@ -253,7 +253,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue);
         if (condition) return;
         mouseDown = true;
-        preStartYRef.current = getPositionInPage(evt).y;
+        preStartYRef.current = getPositionInPage(evt)?.y || 0;
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
             scrollContainerDom.style.willChange = 'transform';
@@ -277,7 +277,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         const minHeight = minPullDown || (pullAreaHeight * 0.6);
         const maxHeight = maxPullDown || (pullAreaHeight);
 
-        const startY = getPositionInPage(evt).y;
+        const startY = getPositionInPage(evt)?.y || 0;
         const deltaY = startY - preStartYRef.current;
         setPullDistance(Math.min(Math.abs(deltaY), maxHeight));
 
@@ -291,8 +291,9 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         // 执行偏移
         if (inverse) {
             Raf.setRaf(() => setDrag(Math.max(deltaY, -maxHeight)));
-            // 向上偏移时同步scroll
-            height && setScroll(scrollableRef.current, 0, getScroll(scrollableRef.current).y - Math.max(deltaY, -maxHeight));
+            // 当设置了height，此时上拉刷新需要将加载显示组件显示出来
+            const scrollY = getScroll(scrollableRef.current)?.y || 0;
+            height && setScroll(scrollableRef.current, 0, scrollY - Math.max(deltaY, -maxHeight));
         } else {
             Raf.setRaf(() => setDrag(Math.min(deltaY, maxHeight)));
         }
@@ -336,8 +337,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 是否在顶部
     const isElementAtTop = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
-        const clientHeight = getClientWH(target).width;
-        const scrollTop = getScroll(target).y;
+        const clientHeight = getClientWH(target)?.width;
+        const scrollTop = getScroll(target)?.y;
         const threshold = parseThreshold(thresholdValue);
 
         if (threshold.unit === ThresholdUnits.Pixel) {
@@ -346,9 +347,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
             );
         }
 
-        return (
-            scrollTop <= 20
-        );
+        return scrollTop <= 20;
     };
 
     // 是否在底部

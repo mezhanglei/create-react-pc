@@ -8,7 +8,7 @@ class Cart extends React.Component {
         super(props);
         this.state = {
             hasMore: true,
-            inverse: false,
+            inverse: true,
             total: 600,
             exampleTree: [{
                 _id: 1,
@@ -131,12 +131,12 @@ class Cart extends React.Component {
                 <div style={{ height: "100px" }}>
                     标题组件
                 </div>
-                <div style={{ height: "100px", overflow: "auto" }}>
+                <div style={{ height: "500px", overflow: "auto" }}>
                     <InfiniteScroll
                         inverse={inverse}
                         dataSource={list}
                         renderItem={this.renderItem}
-                        // height={200}
+                        height={200}
                         ref={node => this.node = node}
                         next={this.fetchMoreData}
                         // scrollableParent={document.querySelector(".cart-index")}

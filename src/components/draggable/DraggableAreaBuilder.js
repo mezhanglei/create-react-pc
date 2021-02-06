@@ -2,7 +2,7 @@ import * as React from 'react';
 // immutable一般用于不可变对象, 不会被其他地方的对象改变(ie存在兼容问题)
 import { List } from 'immutable';
 import './style.less';
-import { isTouch } from "@/utils/reg";
+import { isMobile } from "@/utils/verify";
 import { getPositionInPage } from "@/utils/dom";
 
 // 拖拽时的样式类
@@ -141,7 +141,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
             // 拖拽过程中
             const elementDrag = (e) => {
-                if (isTouch()) this.container.style.overflowY = 'visible';
+                if (isMobile()) this.container.style.overflowY = 'visible';
                 // 阻止默认行为
                 e.type === 'touchmove' && e.preventDefault();
 
@@ -298,7 +298,7 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
 
             // 拖拽结束后
             const closeDragElement = (e) => {
-                if (isTouch()) this.container.style.overflowY = 'auto';
+                if (isMobile()) this.container.style.overflowY = 'auto';
 
                 document.removeEventListener("mouseup", closeDragElement, false);
                 document.removeEventListener("mousemove", elementDrag, false);
@@ -539,11 +539,11 @@ export default function buildDraggableArea({ triggerAddFunc = () => { }, listenA
                 <div
                     ref={r => this.container = r}
                     className={`DraggableTags ${className || ''}`}
-                    style={isTouch() ? { overflowY: 'auto', ...style } : style}
+                    style={isMobile() ? { overflowY: 'auto', ...style } : style}
                 >
                     {
                         // 高度设置超出是为了防止拖拽时滚动
-                        isTouch() ? (<div style={{ height: '101%' }}>{tags}</div>) : tags
+                        isMobile() ? (<div style={{ height: '101%' }}>{tags}</div>) : tags
                     }
                 </div>
             );
