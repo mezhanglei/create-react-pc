@@ -23,7 +23,7 @@ export interface DraggableEventProps {
     dragNode?: string | HTMLElement; // 拖拽元素的类选择器
     disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack: boolean; // 允许添加选中样式
-    grid: [number, number]; // 设置幅度，多少幅度移动一次目标
+    grid: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
     boundsParent?: string | HTMLElement; // 限制拖拽的父元素，默认body
 }
 
@@ -53,7 +53,7 @@ export interface BoundsInterface {
 export interface DraggableProps extends DraggableEventProps {
     scale: number; // 拖拽灵敏度
     position?: PositionType; // 拖拽元素在父元素内的位置
-    axis: AxisType; // 运动轴
+    axis: AxisType; // 限制拖拽的方向
     positionOffset?: PositionType; // transform的位置增量
     bounds?: BoundsInterface; // 在boundsParent元素内部范围的限制拖拽范围
 }

@@ -7,7 +7,7 @@ import CheckBox from '@/components/checkbox/index';
 import Button from "@/components/button/index";
 import Modal from "@/components/modal";
 // import { Modal } from "antd";
-import Draggable from "@/components/react-free-draggable/Draggable";
+import Draggable from "@/components/react-free-draggable";
 import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
 import VirtualList from '@/components/virtual-list/index';
