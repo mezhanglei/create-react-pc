@@ -6,8 +6,8 @@ import store from "@/store/index";
 import { ConfigProvider } from 'antd';
 import antdConfigs from "@/core/antd-configs";
 import objectFitImages from 'object-fit-images';
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // 引入全局样式
 import "less/index.less";
@@ -24,7 +24,7 @@ import DefineEvent from "@/utils/event";
 // 实例化一个节流类，自定义属性event-name="throttle"的标签上的click事件将被进行节流操作
 const event = new DefineEvent({
     eventName: "throttle",
-    eventFn: function (e) {
+    eventFn: function (e: MouseEvent | TouchEvent) {
         if (!this.timer) {
             this.timer = setTimeout(() => {
                 e.cancelBubble = false;
@@ -41,12 +41,10 @@ setTimeout(() => {
     objectFitImages();
 }, 100);
 
-// 处理点击移动端事件
-import FastClick from "fastclick";
-FastClick.attach(document.body);
+
 ReactDOM.render(
-    <Provider store={store}>
-        <ConfigProvider {...antdConfigs}>
+    <Provider store={store} >
+        <ConfigProvider {...antdConfigs} >
             <App />
         </ConfigProvider>
     </Provider>,

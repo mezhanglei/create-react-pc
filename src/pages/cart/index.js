@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from 'react';
 import "./index.less";
-import InfiniteScroll from "@/components/infinite-scroll";
+import InfiniteScroll from "@/components/react-awesome-infinite-scroll";
 import { findPath, findLeaves } from "@/utils/array";
 
 class Cart extends React.Component {

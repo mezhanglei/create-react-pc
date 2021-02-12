@@ -11,9 +11,6 @@ import { RouterConfig } from './RouteConfig';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Location, State } from "history";
 
-/**
- * 过渡动画切换路由组件，注意切换的两个路由组件必须有同一个父元素
- */
 export interface RouteConfigInterface {
     path: string;
     component: any;
@@ -34,6 +31,10 @@ const getAnimationConfig = (location: Location<State>) => {
     return (matchedRoute && matchedRoute.animationConfig) || DEFAULT_SCENE_CONFIG;
 };
 
+
+/**
+ * 过渡动画切换路由组件，注意切换的两个路由组件必须有同一个父元素
+ */
 let oldLocation: Location<State> | null = null;
 const Routes = withRouter(({ location, history }) => {
 

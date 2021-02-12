@@ -39,6 +39,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
     let draggingRef = useRef<boolean>(false);
     let lastXRef = useRef<number>(NaN);
     let lastYRef = useRef<number>(NaN);
+    let eventDataRef = useRef<PositionInterface>();
     const nodeRef = useRef<any>();
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
@@ -132,12 +133,11 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
 
         // 获取在指定父元素内的位置
         const { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
-
         // 返回事件对象相关的位置信息
-        const eventData = createEventData(x, y);
+        eventDataRef.current = createEventData(x, y);
 
         // 如果没有完成渲染或者返回false则禁止拖拽
-        const shouldUpdate = onStart && onStart(e, eventData);
+        const shouldUpdate = onStart && onStart(e, eventDataRef.current);
         if (shouldUpdate === false) return;
 
         // 滚动过程中选中文本被添加样式
@@ -166,13 +166,13 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
         }
 
         // 返回事件对象相关的位置信息
-        const eventData = createEventData(x, y);
+        eventDataRef.current = createEventData(x, y);
 
         // 返回false则禁止拖拽并初始化鼠标事件
-        const shouldUpdate = onDrag && onDrag(e, eventData);
+        const shouldUpdate = onDrag && onDrag(e, eventDataRef.current);
         if (shouldUpdate === false) {
             try {
-                handleDragStop(new MouseEvent('mouseup'));
+                handleDragStop(new MouseEvent(e?.type));
             } catch (err) {
                 // 兼容废弃版本
                 const event = document.createEvent('MouseEvents');
@@ -189,13 +189,9 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
     const handleDragStop: EventHandler<EventType> = (e) => {
         if (!draggingRef.current) return;
         e.preventDefault();
-        const boundsParent = findBoundsParent();
         const ownerDocument = findOwnerDocument();
-        // 获取在指定父元素内的位置
-        const { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
-        const eventData = createEventData(x, y);
 
-        const shouldContinue = onStop && onStop(e, eventData);
+        const shouldContinue = onStop && onStop(e, eventDataRef.current);
         if (shouldContinue === false) return false;
 
         // 移除文本因滚动造成的显示

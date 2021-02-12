@@ -10,10 +10,10 @@ import Modal from "@/components/modal";
 import Draggable from "@/components/react-free-draggable";
 import DragResize from "@/components/drag-layout";
 import CaptchaImg from "@/components/captcha-img/index";
-import VirtualList from '@/components/virtual-list/index';
+import VirtualList from '@/components/react-mini-virtual-list/index';
 import { DraggableArea, DraggableAreasGroup } from "@/components/draggable";
 import DotLoading from "@/components/loading-animation/dot-loading";
-import InfiniteScroll from "@/components/infinite-scroll";
+import InfiniteScroll from "@/components/react-awesome-infinite-scroll";
 import { deepClone } from "@/utils/common";
 import Toast from "@/components/toast/index";
 
@@ -88,7 +88,7 @@ class Home extends React.Component {
         this.setState({ visible: false });
     }
 
-    renderItem = ({ item, index }) => {
+    renderItem = (item, index) => {
         return (
             <div className="Row" key={index}>
                 Row #{item}
@@ -96,8 +96,8 @@ class Home extends React.Component {
         );
     };
 
-    renderOn = ({ startIndex, stopIndex }) => {
-        // console.log(startIndex, stopIndex);
+    renderOn = (startIndex, stopIndex) => {
+        console.log(startIndex, stopIndex);
     }
 
     fetchMoreData = () => {
@@ -164,9 +164,9 @@ class Home extends React.Component {
                     <Draggable
                         axis="both"
                         boundsParent=".boxs"
-                        // dragNode=".handle"
+                        dragNode=".handle"
                         position={{ x: 10, y: 0 }}
-                        // grid={[100, 25]}
+                        grid={[100, 25]}
                         scale={1}
                     >
                         <div style={{ display: "inline-block" }}>
@@ -250,8 +250,8 @@ class Home extends React.Component {
                 <VirtualList
                     width="auto"
                     // scrollToAlignment="start"
-                    // scrollToIndex={30}
-                    scrollOffset={500}
+                    scrollToIndex={30}
+                    // scrollOffset={500}
                     height={400}
                     limit={200}
                     dataSource={this.state.dataSource}

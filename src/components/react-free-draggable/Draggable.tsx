@@ -54,14 +54,15 @@ const Draggable: React.FC<DraggableProps> = (props) => {
     const xChange = (value: number) => {
         xRef.current = value;
         setX(value);
-    }
+    };
 
     const yChange = (value: number) => {
         yRef.current = value;
         setY(value);
-    }
+    };
 
-    const createDraggableData = (eventData: PositionInterface): PositionInterface => {
+    const createDraggableData = (eventData?: PositionInterface): PositionInterface | undefined => {
+        if (!eventData) return;
         return {
             node: eventData.node,
             x: xRef.current + (eventData.deltaX / scale),
@@ -88,6 +89,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
 
         // 拖拽生成的位置信息
         const initData = createDraggableData(data);
+        if (!initData) return;
 
         let nowX = initData?.x;
         let nowY = initData?.y;
@@ -120,6 +122,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
 
         const shouldUpdate = props.onDrag && props.onDrag(e, initData);
         if (shouldUpdate === false) return false;
+
         xChange(nowX);
         yChange(nowY);
     };
@@ -130,12 +133,6 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         // Short-circuit if user's callback killed it.
         const shouldContinue = props.onStop && props.onStop(e, createDraggableData(data));
         if (shouldContinue === false) return false;
-
-        // 如果是受控组件,则需要重置位置为最近一次的position
-        if (position) {
-            xRef.current = position?.x;
-            yRef.current = position?.y;
-        }
 
         draggingRef.current = false;
         slackXRef.current = 0;

@@ -12,21 +12,6 @@ export interface PositionInterface {
     y: number; // 当前位置y
 }
 
-// DraggableEvent的props的类型
-export interface DraggableEventProps {
-    children: any;
-    onStart?: (e: EventType, position: PositionInterface) => void | boolean; // 拖拽开始事件
-    onDrag?: (e: EventType, position: PositionInterface) => void | boolean; // 拖拽进行事件
-    onStop?: (e: EventType, position: PositionInterface) => void | boolean; // 拖拽结束事件
-    allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
-    disabled?: boolean; // 禁止拖拽
-    dragNode?: string | HTMLElement; // 拖拽元素的类选择器
-    disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
-    enableUserSelectHack: boolean; // 允许添加选中样式
-    grid: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-    boundsParent?: string | HTMLElement; // 限制拖拽的父元素，默认body
-}
-
 // 位置类型
 export interface PositionType {
     x: number;
@@ -34,12 +19,8 @@ export interface PositionType {
 }
 
 // 轴的类型
-export enum AxisType {
-    BOTH = "both",
-    X = "x",
-    Y = "y",
-    NONE = "none"
-}
+// 轴的类型
+export type AxisType = "both" | "x" | "y" | "none";
 
 // 限制范围的类型
 export interface BoundsInterface {
@@ -47,6 +28,21 @@ export interface BoundsInterface {
     xEnd: number;
     yStart: number;
     yEnd: number;
+}
+
+// DraggableEvent的props的类型
+export interface DraggableEventProps {
+    children: any;
+    onStart?: (e: EventType, position?: PositionInterface) => void | boolean; // 拖拽开始事件
+    onDrag?: (e: EventType, position?: PositionInterface) => void | boolean; // 拖拽进行事件
+    onStop?: (e: EventType, position?: PositionInterface) => void | boolean; // 拖拽结束事件
+    allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
+    disabled?: boolean; // 禁止拖拽
+    dragNode?: string | HTMLElement; // 拖拽元素的类选择器
+    disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
+    enableUserSelectHack?: boolean; // 允许添加选中样式
+    grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
+    boundsParent?: string | HTMLElement; // 限制拖拽的父元素，默认body
 }
 
 // Draggable的props的类型
@@ -61,4 +57,4 @@ export interface DraggableProps extends DraggableEventProps {
 // 事件处理函数的type
 export type EventHandler<T> = (e: T) => void | boolean;
 // 拖拽处理函数的type
-export type DragHandler<T> = (e: T, data: PositionInterface) => void | boolean;
+export type DragHandler<T> = (e: T, data?: PositionInterface) => void | boolean;

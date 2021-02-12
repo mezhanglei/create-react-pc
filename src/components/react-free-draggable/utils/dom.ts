@@ -1,5 +1,5 @@
 import { getPrefixStyle } from "@/utils/cssPrefix";
-import { isDom, isNumber, isString } from "@/utils/type";
+import { isDom, isNumber } from "@/utils/type";
 import { isContains, findElement } from "@/utils/dom";
 import { CSSProperties } from "react";
 import { BoundsInterface } from "./types";
@@ -128,7 +128,7 @@ export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterfa
     };
 }
 
-// 返回限制下的纠正后的在父元素中的视口位置
+// 元素在父元素限制范围下的位置
 export function getPositionByBounds(node: HTMLElement, parent: any, position: PositionInterface, bounds: BoundsInterface | {} = {}): PositionInterface {
 
     // 限制父元素
