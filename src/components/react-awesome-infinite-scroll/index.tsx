@@ -20,35 +20,40 @@ export enum COMPONENT_TYPE {
 }
 
 export interface Props {
-    height?: number, // 设置固定高度滚动
-    containerStyle?: CSSProperties, // 组件内部的style样式
+    height?: number; // 设置固定高度滚动
+    containerStyle?: CSSProperties; // 组件内部的style样式
     renderItem: (item: any, index: number) => any; // 渲染item
-    pullDownToRefresh?: boolean, // 是否下拉刷新
-    releaseComponent?: ReactNode, // 释放下拉时的提示组件
-    pullDownComponent?: ReactNode, // 下拉时的提示组件
-    refreshingComponent?: ReactNode, // 刷新中的提示组件
-    refreshEndComponent?: ReactNode, // 刷新结束时的提示组件
-    endComponent?: ReactNode, // 数据加载完了展示的组件
-    loadingComponent?: ReactNode, // 加载时的展示组件
-    hasMore?: boolean, // 控制是否还进行加载
-    errorComponent?: ReactNode, // 加载出错时的展示组件
-    className?: string, // 
+    pullDownToRefresh?: boolean; // 是否下拉刷新
+    releaseComponent?: ReactNode; // 释放下拉时的提示组件
+    pullDownComponent?: ReactNode; // 下拉时的提示组件
+    refreshingComponent?: ReactNode; // 刷新中的提示组件
+    refreshEndComponent?: ReactNode; // 刷新结束时的提示组件
+    endComponent?: ReactNode; // 数据加载完了展示的组件
+    loadingComponent?: ReactNode; // 加载时的展示组件
+    hasMore?: boolean; // 控制是否还进行加载
+    errorComponent?: ReactNode; // 加载出错时的展示组件
+    className?: string; // 
     onScroll?: (e: EventType) => any; // 滚动监听函数
-    inverse?: boolean, // 反向滚动加载
-    thresholdValue?: number | string, // 阈值,用来控制滚动到什么程度(距离)触发加载
-    next: fn, // 加载新数据时函数
-    refreshFunction?: fn, // 刷新列表的方法
-    minPullDown?: number | undefined, // 下拉刷新时, 最小下拉高度
-    maxPullDown?: number | undefined, // 下拉刷新时, 最大下拉高度
-    scrollableParent: HTMLElement | Element | null, // 不设置则默认自动搜索滚动父元素， 设置在该父元素内滚动，建议设置以节省性能，设置forbidTrigger可以阻止滚动触发
-    isError?: boolean, // 是否加载出错
-    forbidTrigger?: boolean, // 禁止滚动加载触发，当页面上有多个滚动列表且滚动父元素相同，则可以通过此api禁止滚动触发加载
-    dataSource: any[], // 数据源
+    inverse?: boolean; // 反向滚动加载
+    thresholdValue?: number | string; // 阈值,用来控制滚动到什么程度(距离)触发加载
+    next: fn; // 加载新数据时函数
+    refreshFunction?: fn; // 刷新列表的方法
+    minPullDown?: number | undefined; // 下拉刷新时, 最小下拉高度
+    maxPullDown?: number | undefined; // 下拉刷新时, 最大下拉高度
+    scrollableParent: HTMLElement | Element | null; // 不设置则默认自动搜索滚动父元素， 设置在该父元素内滚动，建议设置以节省性能，设置forbidTrigger可以阻止滚动触发
+    isError?: boolean; // 是否加载出错
+    forbidTrigger?: boolean; // 禁止滚动加载触发，当页面上有多个滚动列表且滚动父元素相同，则可以通过此api禁止滚动触发加载
+    dataSource: any[]; // 数据源
 }
 
 export interface ScrollRef {
     scrollTo: (x: number, y: number) => void;
     getScrollRef: () => any;
+}
+
+export enum ScrollDirection {
+    UP = "up",
+    DOWN = "down"
 }
 
 // 滚动加载列表组件
@@ -94,6 +99,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     const finishTriggerRef = useRef<boolean>();
     const forbidTriggerRef = useRef<boolean>();
     const preStartYRef = useRef<number>(0);
+
     let mouseDown: boolean = false;
     let mouseDragging: boolean = false;
 
@@ -337,8 +343,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 是否在顶部
     const isElementAtTop = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
-        const clientHeight = getClientWH(target)?.width;
-        const scrollTop = getScroll(target)?.y;
+        const scrollTop = getScroll(target)?.y || 0;
         const threshold = parseThreshold(thresholdValue);
 
         if (threshold.unit === ThresholdUnits.Pixel) {
@@ -352,8 +357,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 是否在底部
     const isElementAtBottom = (target: HTMLElement, thresholdValue: number | string = 0.8) => {
-        const clientHeight = getClientWH(target).height;
-        const scrollTop = getScroll(target).y;
+        const clientHeight = getClientWH(target)?.height || 0;
+        const scrollTop = getScroll(target)?.y || 0;
         const threshold = parseThreshold(thresholdValue);
 
         if (threshold.unit === ThresholdUnits.Pixel) {

@@ -135,6 +135,7 @@ class Cart extends React.Component {
                     <InfiniteScroll
                         inverse={inverse}
                         dataSource={list}
+                        limit={55}
                         renderItem={this.renderItem}
                         height={200}
                         ref={node => this.node = node}
