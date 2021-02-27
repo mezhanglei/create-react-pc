@@ -1,12 +1,10 @@
 import React, { ReactNode } from "react";
 import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
-import { HomeRoutes, Home } from "./home";
-import { CategoryRoutes } from "./category";
-import { CartRoutes } from "./cart";
-import { PersonalRoutes } from "./personal";
-import NotFound from "@/components/default/not-found";
+import { Demo1Route } from "./demo1";
+import { Demo2Route } from "./demo2";
 import { DefaultRoutes } from "./default";
+import NotFound from "@/components/default/not-found";
 import { initWX } from "@/core/wx";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
@@ -22,16 +20,8 @@ export interface MyRouteProps extends RouteProps {
 
 // 路由配置
 const routes = [
-    {
-        path: "/",
-        component: Home,
-        // 路由为/时必须设置exact为true
-        exact: true
-    },
-    ...HomeRoutes,
-    ...CategoryRoutes,
-    ...CartRoutes,
-    ...PersonalRoutes,
+    ...Demo1Route,
+    ...Demo2Route,
     ...DefaultRoutes,
     // {
     //     path: '*',

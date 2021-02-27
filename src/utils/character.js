@@ -23,6 +23,12 @@ export function formatFloat(value, n = 2) {
     return strValue;
 }
 
+// 自动补充0
+export function prefixZero(num, len) {
+    if (String(num).length > len) return num;
+    return (Array(len).join(0) + num).slice(-len);
+}
+
 // 将数字或数字字符串转成百分比
 export function numberToRate(value, n = 2) {
     if (value === undefined || value === '') {
