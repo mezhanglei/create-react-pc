@@ -142,5 +142,29 @@ export const deepClone = (obj: any) => {
     return clone;
 };
 
+/**
+ * timeout模拟轮询
+ * @param fn 要轮询的函数方法
+ * @param validate 返回值决定是否结束轮询
+ * @param interval 间隔
+ */
+export async function poll<T>(fn: () => T, validate: (arg: any) => boolean, interval = 2500): Promise<T> {
+    const resolver = async (resolve: any, reject: any) => {
+        try { // catch any error thrown by the "fn" function
+            const result = await fn(); // fn does not need to be asynchronous or return promise
+            // call validator to see if the data is at the state to stop the polling
+            const valid = validate(result);
+            if (valid === true) {
+                resolve(result);
+            } else if (valid === false) {
+                setTimeout(resolver, interval, resolve, reject);
+            }
+        } catch (e) {
+            // if validator returns anything other than "true" or "false" it stops polling
+            reject(e);
+        }
+    };
+    return new Promise(resolver);
+}
 
 
