@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+    <title> </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta charset="utf-8" />
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <style>
+        #canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="300"></canvas>
+    <br />
+    <pre>
+    </pre>
+    <script>
+        var cvs = document.getElementById("canvas");
+        var ctx = cvs.getContext("2d");
+        var cvsH = cvs.height;
+        var cvsW = cvs.width;
+        var beginX, beginY;
+        var LT = { x: 30, y: 30 };//图片初始载入左上角坐标
+        var PO;
+        var Selected_Round_R = 12;
+        var now_rotate_radian = 0;//记录图片的旋转角度 初始为0
+        var isDown = false;
+        var moveAble = false, rotateAble = false;
+        var imgH, imgW;
+        var img = new Image();
+        img.src = "../../../static/images/no-data.png";
+        img.onload = function () {
+            imgH = img.height;
+            imgW = img.width;
+            PO = { x: LT.x + imgW / 2, y: LT.y + imgH / 2 };
+            onDraw();
+        }
+        function imgIsDown(x, y) {
+            var P = { x: x, y: y };
+            var A = { x: PO.x - imgW / 2, y: PO.y - imgH / 2 };
+            var B = { x: PO.x + imgW / 2, y: PO.y - imgH / 2 };
+            var C = { x: PO.x + imgW / 2, y: PO.y + imgH / 2 };
+            var D = { x: PO.x - imgW / 2, y: PO.y + imgH / 2 };
+            A = getRotatedPoint(A, PO, now_rotate_radian);
+            B = getRotatedPoint(B, PO, now_rotate_radian);
+            C = getRotatedPoint(C, PO, now_rotate_radian);
+            D = getRotatedPoint(D, PO, now_rotate_radian);
+            var APB = getRadian(A, P, B);
+            var BPC = getRadian(B, P, C);
+            var CPD = getRadian(C, P, D);
+            var DPA = getRadian(D, P, A);
+            var sum = (APB + BPC + CPD + DPA).toFixed(5);//某点与矩形四顶点夹角之和=360那么判断点在矩形内
+            return (sum == (2 * Math.PI).toFixed(5));
+        }
+        function RTIsDown(x, y) {
+            var RT = { x: PO.x, y: PO.y - imgH / 2 - Selected_Round_R };
+            var rotate_top = getRotatedPoint(RT, PO, now_rotate_radian);
+            var bool = (x - rotate_top.x) * (x - rotate_top.x) + (y - rotate_top.y) * (y - rotate_top.y) <= Selected_Round_R * Selected_Round_R;
+            return bool;
+        }
+        function onDraw() {
+            ctx.clearRect(0, 0, cvsW, cvsH);
+            ctx.save();
+            ctx.translate(PO.x, PO.y);//坐标原点移动到图片中心点
+            ctx.rotate(now_rotate_radian);//旋转画布 在屏幕坐标系基础上旋转 now_rotate_radian
+            ctx.drawImage(img, -imgW / 2, -imgH / 2);
+            drawRotateCtrl();
+            ctx.restore();//还原画布坐标系
+        }
+        function drawRotateCtrl() {
+            var rotate_top = { x: 0, y: -imgH / 2 - Selected_Round_R };
+            ctx.beginPath();
+            ctx.arc(rotate_top.x, rotate_top.y, Selected_Round_R, 0, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#0000ff";
+            ctx.stroke();
+        }
+        cvs.addEventListener("mousedown", startMove, false);
+        cvs.addEventListener("mousemove", moving, false);
+        cvs.addEventListener("mouseup", endMove, false);
+        cvs.addEventListener("mouseout", endMove, false);
+        function startMove() {
+            preventDefault();
+            isDown = true;
+            var loc = getEvtLoc();
+            var x = loc.x, y = loc.y;
+            beginX = x, beginY = y;
+            moveAble = imgIsDown(x, y);
+            rotateAble = RTIsDown(x, y);
+            if (moveAble) cvs.style.cursor = "move";
+            if (rotateAble) cvs.style.cursor = "crosshair";
+        }
+        function moving() {
+            preventDefault();
+            if (isDown == false) return;
+            var loc = getEvtLoc();
+            var x = loc.x, y = loc.y;
+            if (moveAble) {
+                var dx = x - beginX, dy = y - beginY;
+                PO.x = PO.x + dx;
+                PO.y = PO.y + dy;
+                onDraw();
+            }
+            if (rotateAble) {
+                var A = { x: beginX - PO.x, y: beginY - PO.y };//转换为以PO为原点的屏幕坐标系 计算鼠标move前后两点与y轴反方向的角度
+                var B = { x: x - PO.x, y: y - PO.y };
+                var a = Math.atan2(A.x, -A.y);
+                var b = Math.atan2(B.x, -B.y);
+                var θ = b - a;
+                now_rotate_radian += θ;
+                onDraw();
+            }
+            beginX = x, beginY = y;
+        }
+        function endMove() {
+            isDown = false;
+            moveAble = rotateAble = false;
+            cvs.style.cursor = "auto";
+        }
+        function getEvtLoc() {
+            return { x: event.offsetX, y: event.offsetY }
+        }
+        //取消浏览器默认事件
+        function preventDefault() {
+            if (event.preventDefault) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;//注意加window
+            }
+        }
+        //获取三点角度
+        function getRadian(A, O, B) {
+            var Xo = O.x, Yo = O.y;
+            var Xa = A.x, Ya = A.y;
+            var Xb = B.x, Yb = B.y;
+            var oa = Math.sqrt((Xo - Xa) * (Xo - Xa) + (Yo - Ya) * (Yo - Ya));
+            var ob = Math.sqrt((Xo - Xb) * (Xo - Xb) + (Yo - Yb) * (Yo - Yb));
+            var ab = Math.sqrt((Xa - Xb) * (Xa - Xb) + (Ya - Yb) * (Ya - Yb));
+            var aob = Math.acos((oa * oa + ob * ob - ab * ab) / (2 * oa * ob)); // 弧度
+            return aob;//
+        }
+        //获取绕点旋转角度后的新点坐标
+        function getRotatedPoint(A, O, α) {
+            var dx = A.x - O.x;
+            var dy = A.y - O.y;
+            var x = Math.cos(α) * dx - Math.sin(α) * dy + O.x;
+            var y = Math.cos(α) * dy + Math.sin(α) * dx + O.y;
+            return { x: x, y: y };
+        }
+
+    </script>
+</body>
+
+</html>

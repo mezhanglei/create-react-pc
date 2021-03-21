@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { matchParent, addEvent, removeEvent, getPositionInParent, findElement } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isNumber } from "@/utils/type";
@@ -23,7 +23,7 @@ const eventsFor = {
 let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 // 拖拽事件组件
-const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
+const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) => {
 
     const {
         children,
@@ -41,6 +41,9 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
     let lastYRef = useRef<number>(NaN);
     let eventDataRef = useRef<PositionInterface>();
     const nodeRef = useRef<any>();
+
+
+    useImperativeHandle(ref, () => (nodeRef.current));
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
     const findOwnerDocument = () => {
@@ -218,6 +221,6 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
         onTouchEnd: handleDragStop,
         ref: nodeRef
     });
-};
+});
 
 export default DraggableEvent;

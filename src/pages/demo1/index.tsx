@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
@@ -6,7 +6,6 @@ import DragResize from '@/components/react-resize-zoom';
 
 
 const Demo1: React.FC<any> = (props) => {
-
     return (
         <>
             <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
@@ -27,7 +26,7 @@ const Demo1: React.FC<any> = (props) => {
             </div>
             <div>
                 大小拖放
-                <DragResize axis='angle'>
+                <DragResize>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放
                     </div>

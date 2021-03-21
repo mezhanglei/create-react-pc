@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
 import { DraggableProps, PositionInterface, DragHandler, EventType } from "./utils/types";
@@ -35,6 +35,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
     const wrapClassNameDragged = "react-draggable-dragged";
+    const nodeRef = useRef<any>();
 
     // 限制范围的父元素
     const findBoundsParent = () => {
@@ -163,7 +164,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
     // React.Children.only限制只能传递一个child
     // 注意使用时, 子元素最好用闭合标签包裹, 以防出现props带来的问题(例如style样式中的transition和transform, 以及事件)
     return (
-        <DraggableEvent {...DraggableEventProps} onStart={onDragStart} onDrag={onDrag} onStop={onDragStop}>
+        <DraggableEvent ref={nodeRef} {...DraggableEventProps} onStart={onDragStart} onDrag={onDrag} onStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
                 style: { ...children.props.style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {}) },
