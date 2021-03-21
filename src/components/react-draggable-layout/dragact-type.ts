@@ -1,5 +1,6 @@
 import { GridItemEvent } from './gridItem';
 
+// 布局中的拖拽元素的属性
 export interface DragactLayoutItem {
     GridX: number
     GridY: number
@@ -14,6 +15,7 @@ export interface DragactLayoutItem {
 }
 
 export interface DragactProps {
+    // 布局的数据来源
     layout: DragactLayoutItem[]
     /** 
      * 宽度切分比 

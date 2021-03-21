@@ -1,5 +1,5 @@
 import * as React from 'react'
-import GridItem, { GridItemEvent } from './GridItem'
+import GridItem, { GridItemEvent } from './gridItem'
 import { compactLayout } from './util/compact'
 import { getMaxContainerHeight } from './util/sort'
 import { layoutCheck } from './util/collison'

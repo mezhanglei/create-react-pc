@@ -73,13 +73,13 @@ export interface PositionInterface {
     x: number,
     y: number
 }
-// 接收增量位置，返回新的transform值
+// 接收偏移位置，返回新的transform值
 export function getTranslation(current: PositionInterface, positionOffset: PositionInterface | undefined, unit: string): string {
     let translation = `translate(${current.x}${unit},${current.y}${unit})`;
     if (positionOffset) {
-        const defaultX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
-        const defaultY = `${(typeof positionOffset.y === 'string') ? positionOffset.y : positionOffset.y + unit}`;
-        translation = `translate(${defaultX}, ${defaultY})` + translation;
+        const offsetX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
+        const offsetY = `${(typeof positionOffset.y === 'string') ? positionOffset.y : positionOffset.y + unit}`;
+        translation = `translate(${offsetX}, ${offsetY})` + translation;
     }
     return translation;
 }

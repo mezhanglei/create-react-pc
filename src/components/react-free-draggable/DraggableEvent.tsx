@@ -213,8 +213,8 @@ const DraggableEvent: React.FC<DraggableEventProps> = (props) => {
 
     return React.cloneElement(React.Children.only(children), {
         onMouseDown: handleDragStart,
-        onTouchStart: handleDragStart,
         onMouseUp: handleDragStop,
+        onTouchStart: handleDragStart,
         onTouchEnd: handleDragStop,
         ref: nodeRef
     });

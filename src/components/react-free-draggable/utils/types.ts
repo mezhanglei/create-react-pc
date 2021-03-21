@@ -48,9 +48,9 @@ export interface DraggableEventProps {
 // Draggable的props的类型
 export interface DraggableProps extends DraggableEventProps {
     scale: number; // 拖拽灵敏度
-    position?: PositionType; // 拖拽元素在父元素内的位置
+    position?: PositionType; // 拖拽元素在父元素内的受控位置（不会受到bounds和boundsParent影响）
     axis: AxisType; // 限制拖拽的方向
-    positionOffset?: PositionType; // transform的位置增量
+    positionOffset?: PositionType; // 接收偏移位置（不受bounds和boundsParent影响）
     bounds?: BoundsInterface; // 在boundsParent元素内部范围的限制拖拽范围
 }
 

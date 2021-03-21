@@ -46,8 +46,8 @@ const Draggable: React.FC<DraggableProps> = (props) => {
 
     useEffect(() => {
         if (position) {
-            xRef.current = position?.x || 0;
-            yRef.current = position?.y || 0;
+            xChange(position?.x || 0);
+            yChange(position?.y || 0);
         }
     }, [position]);
 
@@ -156,10 +156,8 @@ const Draggable: React.FC<DraggableProps> = (props) => {
 
     // 当前位置
     const currentPosition = {
-        // Set left if horizontal drag is enabled
-        x: canDragX() && draggingRef?.current ? x : (position?.x || 0),
-        // Set top if vertical drag is enabled
-        y: canDragY() && draggingRef?.current ? y : (position?.y || 0)
+        x: canDragX() ? x : 0,
+        y: canDragY() ? y : 0
     };
 
     // React.Children.only限制只能传递一个child
