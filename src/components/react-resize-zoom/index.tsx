@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getClientXYInParent, getClientWH } from "@/utils/dom";
 import { EventType, EventHandler, LastEventDataType, EventDataType, Direction, Axis, DragResizeProps } from "./type";
@@ -33,6 +33,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     const lastEventDataRef = useRef<LastEventDataType>();
     const eventDataRef = useRef<EventDataType>();
     const [eventData, setEventData] = useState<EventDataType>();
+
+    useImperativeHandle(ref, () => (nodeRef.current));
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
     const findOwnerDocument = (): Document => {
