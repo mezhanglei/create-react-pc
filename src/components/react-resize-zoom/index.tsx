@@ -99,7 +99,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             return 'row-resize';
         } else if (direction === Direction.E && (canDragX(e, direction) && axis !== Axis.ANGLE || axis === Axis.AUTO)) {
             return 'col-resize';
-        } else if (direction?.length === 2 && axis === Axis.ANGLE) {
+        } else if (direction?.length === 2 && (axis === Axis.ANGLE || axis === Axis.AUTO)) {
             return direction + '-resize';
         } else {
             return 'default';
