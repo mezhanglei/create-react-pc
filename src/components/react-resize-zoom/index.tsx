@@ -136,6 +136,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             y: clientXY?.y,
             width: clientWH?.width,
             height: clientWH?.height,
+            zIndex: 2
         }
         const shouldUpdate = props?.onResizeStart && props?.onResizeStart(e, eventData);
         if (shouldUpdate === false) return;
@@ -175,7 +176,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             x: clientXY?.x,
             y: clientXY?.y,
             width: canDragX(e, lastDir) ? (lastW + deltaX) : lastW,
-            height: canDragY(e, lastDir) ? (lastH + deltaY) : lastH
+            height: canDragY(e, lastDir) ? (lastH + deltaY) : lastH,
+            zIndex: 2
         }
 
         const shouldUpdate = props?.onResizeMoving && props?.onResizeMoving(e, eventData);
@@ -186,11 +188,15 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     const onResizeEnd: EventHandler<EventType> = (e) => {
         if (!isDraggableRef.current) return;
-
-        const shouldContinue = props.onResizeEnd && props.onResizeEnd(e, eventDataRef.current);
+        const eventData = eventDataRef.current && {
+            ...eventDataRef.current,
+            zIndex: 1
+        }
+        const shouldContinue = props.onResizeEnd && props.onResizeEnd(e, eventData);
         if (shouldContinue === false) return false;
 
         isDraggableRef.current = false;
+        eventData && eventDataChange(eventData);
     }
 
     // dragOver事件
@@ -205,7 +211,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         style: {
             ...children.props.style,
             width: eventData?.width ? eventData?.width : children.props.style?.width,
-            height: eventData?.height ? eventData?.height : children.props.style?.height
+            height: eventData?.height ? eventData?.height : children.props.style?.height,
+            zIndex: eventData?.zIndex
         }
     });
 })

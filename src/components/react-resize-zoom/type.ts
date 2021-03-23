@@ -17,6 +17,7 @@ export interface EventDataType extends LastEventDataType {
     y: number;
     width: number;
     height: number;
+    zIndex: number;
 }
 export enum Direction {
     N = "n", // 上边

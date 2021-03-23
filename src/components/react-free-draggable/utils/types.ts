@@ -3,13 +3,14 @@ export type EventType = MouseEvent | TouchEvent;
 
 // 拖拽元素的位置接口
 export interface PositionInterface {
-    node: any; // 节点
+    node?: any; // 节点
     deltaX: number; // x方向移动的距离
     deltaY: number; // y方向移动的距离
     lastX: number; // 上个位置x
     lastY: number; // 上个位置y
     x: number; // 当前位置x
     y: number; // 当前位置y
+    zIndex: number; // 层级
 }
 
 // 位置类型

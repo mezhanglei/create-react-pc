@@ -85,10 +85,10 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
     }, []);
 
     // 返回拖拽位置信息
-    const createEventData = (x: number, y: number): PositionInterface => {
+    const createEventData = (x: number, y: number, zIndex: number): PositionInterface => {
         const dragNode = findDragNode();
 
-        if (isNumber(lastXRef.current)) {
+        if (isNumber(lastXRef.current) && isNumber(lastYRef.current)) {
             return {
                 node: dragNode,
                 // 移动一次的距离
@@ -96,7 +96,8 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
                 deltaY: y - lastYRef.current,
                 // 拖拽前位置
                 lastX: lastXRef.current, lastY: lastYRef.current,
-                x, y
+                x, y,
+                zIndex: zIndex
             };
         } else {
             return {
@@ -105,7 +106,8 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
                 deltaY: 0,
                 lastX: x,
                 lastY: y,
-                x, y
+                x, y,
+                zIndex: 1
             };
         }
     };
@@ -137,7 +139,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         // 获取在指定父元素内的位置
         const { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
         // 返回事件对象相关的位置信息
-        eventDataRef.current = createEventData(x, y);
+        eventDataRef.current = createEventData(x, y, 10);
 
         // 如果没有完成渲染或者返回false则禁止拖拽
         const shouldUpdate = onStart && onStart(e, eventDataRef.current);
@@ -169,7 +171,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
 
         // 返回事件对象相关的位置信息
-        eventDataRef.current = createEventData(x, y);
+        eventDataRef.current = createEventData(x, y, 10);
 
         // 返回false则禁止拖拽并初始化鼠标事件
         const shouldUpdate = onDrag && onDrag(e, eventDataRef.current);
@@ -193,7 +195,10 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         if (!draggingRef.current) return;
         e.preventDefault();
         const ownerDocument = findOwnerDocument();
-
+        eventDataRef.current = eventDataRef.current && {
+            ...eventDataRef.current,
+            zIndex: 1
+        }
         const shouldContinue = onStop && onStop(e, eventDataRef.current);
         if (shouldContinue === false) return false;
 

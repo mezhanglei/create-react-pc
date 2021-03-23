@@ -66,6 +66,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         if (!eventData) return;
         return {
             node: eventData.node,
+            zIndex: eventData.zIndex,
             x: xRef.current + (eventData.deltaX / scale),
             y: yRef.current + (eventData.deltaY / scale),
             deltaX: (eventData.deltaX / scale),
@@ -167,7 +168,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         <DraggableEvent ref={nodeRef} {...DraggableEventProps} onStart={onDragStart} onDrag={onDrag} onStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
-                style: { ...children.props.style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {}) },
+                style: { ...children.props.style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {})},
                 transform: isSVG && createSVGTransform(currentPosition, positionOffset) || "",
             })}
         </DraggableEvent>
