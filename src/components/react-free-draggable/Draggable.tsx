@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, PositionInterface, DragHandler, EventType } from "./utils/types";
+import { DraggableProps, EventData, DragHandler, EventType } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import { findElement } from "@/utils/dom";
 import DraggableEvent from './DraggableEvent';
@@ -18,19 +18,28 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         position,
         positionOffset,
         bounds,
+        zIndexRange = [1, 10],
         ...DraggableEventProps
     } = props;
+
+    const defaultData = {
+        deltaX: 0,
+        deltaY: 0,
+        x: 0, y: 0,
+        lastX: 0,
+        lastY: 0,
+        zIndex: zIndexRange[0]
+    }
 
     let draggingRef = useRef<boolean>(false); // 是否正在拖拽
 
     const [dragged, setDragged] = useState<boolean>(false); // 是否已经拖拽过
     const [isSVG, setIsSVG] = useState<boolean>(false); // 是否为SVG元素
-    const xRef = useRef<number>(0);
-    const yRef = useRef<number>(0);
-    const [x, setX] = useState<number>(0);
-    const [y, setY] = useState<number>(0);
     const slackXRef = useRef<number>(0);
     const slackYRef = useRef<number>(0);
+
+    const [eventData, setEventData] = useState<EventData>(defaultData);
+    const eventDataRef = useRef<EventData>(defaultData);
 
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
@@ -45,40 +54,30 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         return node;
     };
 
+    // 初始化数据
     useEffect(() => {
-        if (position) {
-            xChange(position?.x || 0);
-            yChange(position?.y || 0);
+        const x = position?.x || 0;
+        const y = position?.y || 0;
+        const data = {
+            deltaX: 0,
+            deltaY: 0,
+            x, y,
+            lastX: x,
+            lastY: y,
+            zIndex: zIndexRange[0]
         }
+        eventDataChange(data);
     }, [position]);
 
-    const xChange = (value: number) => {
-        xRef.current = value;
-        setX(value);
-    };
-
-    const yChange = (value: number) => {
-        yRef.current = value;
-        setY(value);
-    };
-
-    const createDraggableData = (eventData?: PositionInterface): PositionInterface | undefined => {
-        if (!eventData) return;
-        return {
-            node: eventData.node,
-            zIndex: eventData.zIndex,
-            x: xRef.current + (eventData.deltaX / scale),
-            y: yRef.current + (eventData.deltaY / scale),
-            deltaX: (eventData.deltaX / scale),
-            deltaY: (eventData.deltaY / scale),
-            lastX: xRef.current,
-            lastY: yRef.current
-        };
-    };
+    const eventDataChange = (value: EventData) => {
+        eventDataRef.current = value;
+        setEventData(value);
+    }
 
     const onDragStart: DragHandler<EventType> = (e, data) => {
+
         // 如果onStart函数返回false则禁止拖拽
-        const shouldStart = props.onStart && props.onStart(e, createDraggableData(data));
+        const shouldStart = props.onStart && props.onStart(e, data);
         if (shouldStart === false) return false;
 
         draggingRef.current = true;
@@ -87,14 +86,24 @@ const Draggable: React.FC<DraggableProps> = (props) => {
     };
 
     const onDrag: DragHandler<EventType> = (e, data) => {
-        if (!draggingRef.current) return false;
+        if (!draggingRef.current || !data) return false;
 
         // 拖拽生成的位置信息
-        const initData = createDraggableData(data);
-        if (!initData) return;
+        const eventData = {
+            node: data.node,
+            zIndex: zIndexRange[1],
+            x: eventDataRef?.current?.x + (data?.deltaX / scale),
+            y: eventDataRef?.current?.y + (data.deltaY / scale),
+            deltaX: (data.deltaX / scale),
+            deltaY: (data.deltaY / scale),
+            lastX: eventDataRef?.current?.x,
+            lastY: eventDataRef?.current?.y
+        };
 
-        let nowX = initData?.x;
-        let nowY = initData?.y;
+        if (!eventData) return;
+
+        let nowX = eventData?.x;
+        let nowY = eventData?.y;
 
         // 运动边界限制
         if (bounds || DraggableEventProps.boundsParent) {
@@ -110,35 +119,41 @@ const Draggable: React.FC<DraggableProps> = (props) => {
             nowY = newPosition.y;
 
             // 重新计算越界补偿
-            const newSlackX = slackXRef.current + (initData.x - nowX);
-            const newSlackY = slackYRef.current + (initData.y - nowY);
+            const newSlackX = slackXRef.current + (eventData.x - nowX);
+            const newSlackY = slackYRef.current + (eventData.y - nowY);
             slackXRef.current = newSlackX;
             slackYRef.current = newSlackY;
 
             // 更新
-            initData.x = nowX;
-            initData.y = nowY;
-            initData.deltaX = nowX - xRef.current;
-            initData.deltaY = nowY - yRef.current;
+            eventData.x = nowX;
+            eventData.y = nowY;
+            eventData.deltaX = nowX - eventDataRef.current?.x;
+            eventData.deltaY = nowY - eventDataRef.current?.y;
         }
 
-        const shouldUpdate = props.onDrag && props.onDrag(e, initData);
+        const shouldUpdate = props.onDrag && props.onDrag(e, eventData);
         if (shouldUpdate === false) return false;
 
-        xChange(nowX);
-        yChange(nowY);
+        eventData && eventDataChange(eventData);
     };
 
-    const onDragStop: DragHandler<EventType> = (e, data) => {
-        if (!draggingRef.current) return false;
+    const onDragStop: DragHandler<EventType> = (e) => {
+        if (!draggingRef.current || !eventDataRef.current) return false;
+
+        eventDataRef.current = {
+            ...eventDataRef.current,
+            zIndex: zIndexRange[0]
+        }
 
         // Short-circuit if user's callback killed it.
-        const shouldContinue = props.onStop && props.onStop(e, createDraggableData(data));
+        const shouldContinue = props.onStop && props.onStop(e, eventDataRef.current);
         if (shouldContinue === false) return false;
 
         draggingRef.current = false;
         slackXRef.current = 0;
         slackYRef.current = 0;
+
+        eventDataRef.current && eventDataChange(eventDataRef.current);
     };
 
 
@@ -158,8 +173,8 @@ const Draggable: React.FC<DraggableProps> = (props) => {
 
     // 当前位置
     const currentPosition = {
-        x: canDragX() ? x : 0,
-        y: canDragY() ? y : 0
+        x: canDragX() && eventData ? eventData.x : 0,
+        y: canDragY() && eventData ? eventData.y : 0
     };
 
     // React.Children.only限制只能传递一个child
@@ -168,7 +183,7 @@ const Draggable: React.FC<DraggableProps> = (props) => {
         <DraggableEvent ref={nodeRef} {...DraggableEventProps} onStart={onDragStart} onDrag={onDrag} onStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
-                style: { ...children.props.style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {})},
+                style: { ...children.props.style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {}), zIndex: eventData?.zIndex },
                 transform: isSVG && createSVGTransform(currentPosition, positionOffset) || "",
             })}
         </DraggableEvent>

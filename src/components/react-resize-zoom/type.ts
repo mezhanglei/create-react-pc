@@ -35,6 +35,7 @@ export interface DragResizeProps {
     axis?: 'auto' | 'x' | 'y' | 'angle';
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差
+    zIndexRange?: [number, number]; // zIndex变化的范围
     onResizeStart?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽开始事件
     onResizeMoving?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽进行中事件
     onResizeEnd?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽结束事件
