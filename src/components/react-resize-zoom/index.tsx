@@ -133,6 +133,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         if (!clientXY || !clientWH) return;
 
         const eventData = {
+            dragNode: nodeRef.current,
             x: clientXY?.x,
             y: clientXY?.y,
             width: clientWH?.width,
@@ -174,6 +175,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         deltaY = clientXY?.y - lastY;
 
         const eventData = {
+            dragNode: nodeRef.current,
             x: clientXY?.x,
             y: clientXY?.y,
             width: canDragX(e, lastDir) ? (lastW + deltaX) : lastW,
@@ -211,9 +213,9 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         ref: nodeRef,
         style: {
             ...children.props.style,
-            width: eventData?.width ? eventData?.width : children.props.style?.width,
-            height: eventData?.height ? eventData?.height : children.props.style?.height,
-            zIndex: eventData?.zIndex
+            width: eventData?.width ?? children.props.style?.width,
+            height: eventData?.height ?? children.props.style?.height,
+            zIndex: eventData?.zIndex ?? children.props.style?.zIndex
         }
     });
 })
