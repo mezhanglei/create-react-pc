@@ -22,7 +22,6 @@ export const Card: (any: any) => any = ({ item, provided }) => {
             className='layout-Item'
             {...provided.props}
             {...provided.dragHandle}
-            {...provided.resizeHandle}
             style={{
                 ...provided.props.style,
                 background: `${provided.isDragging ? '#eaff8f' : 'white'}`
@@ -36,6 +35,7 @@ export const Card: (any: any) => any = ({ item, provided }) => {
                 {item.content}
             </div>
             <span
+                {...provided.resizeHandle}
                 style={{
                     position: 'absolute',
                     width: 10, height: 10, right: 2, bottom: 2, cursor: 'se-resize',

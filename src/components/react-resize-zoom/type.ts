@@ -13,7 +13,6 @@ export interface LastEventDataType {
     lastH?: number;
 }
 export interface EventDataType extends LastEventDataType {
-    dragNode: HTMLElement;
     x: number;
     y: number;
     width: number;

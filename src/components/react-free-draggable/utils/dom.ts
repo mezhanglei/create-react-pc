@@ -129,7 +129,7 @@ export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterfa
 }
 
 // 元素在父元素限制范围下的位置
-export function getPositionByBounds(node: HTMLElement, parent: any, position: PositionInterface, bounds: BoundsInterface | undefined): PositionInterface {
+export function getPositionByBounds(node: HTMLElement, parent: any, position: PositionInterface, bounds: BoundsInterface): PositionInterface {
 
     // 限制父元素
     const boundsParent: HTMLElement = findElement(parent);
