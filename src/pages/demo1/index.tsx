@@ -6,10 +6,17 @@ import DragResize from '@/components/react-resize-zoom';
 
 
 const Demo1: React.FC<any> = (props) => {
+    const nodeRef = useRef<any>();
+    useEffect(() => {
+        console.log(nodeRef.current, 111111111111111111)
+    }, [])
+
+   
     return (
         <>
             <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
                 <Draggable
+                    ref={nodeRef}
                     axis="both"
                     boundsParent=".boxs"
                     dragNode=".handle"

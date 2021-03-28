@@ -26,7 +26,9 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         children,
         axis = Axis.AUTO,
         offset = 10,
-        zIndexRange = [1, 2]
+        zIndexRange = [1, 2],
+        className,
+        style
     } = props;
 
     const nodeRef = useRef<any>();
@@ -208,12 +210,14 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     return React.cloneElement(React.Children.only(children), {
         onMouseDown: onResizeStart,
         onTouchStart: onResizeStart,
+        className: className ?? children.props.className,
         ref: nodeRef,
         style: {
             ...children.props.style,
-            width: eventData?.width ? eventData?.width : children.props.style?.width,
-            height: eventData?.height ? eventData?.height : children.props.style?.height,
-            zIndex: eventData?.zIndex
+            ...style,
+            width: eventData?.width ?? children.props.style?.width,
+            height: eventData?.height ?? children.props.style?.height,
+            zIndex: eventData?.zIndex ?? children.props.style?.zIndex
         }
     });
 })

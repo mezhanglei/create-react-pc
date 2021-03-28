@@ -313,11 +313,11 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
         }, 1)
     }
 
-    getGridItem(child: any, index: number) {
+    getGridItem(item: any, index: number) {
         const { dragType, mapLayout } = this.state
         var { col, padding, rowHeight, margin, width } = this.props
         if (mapLayout) {
-            const renderItem = layoutItemForkey(mapLayout, child.key + '')
+            const renderItem = layoutItemForkey(mapLayout, item.key + '')
             if (!padding) padding = 0
             return (
                 <GridItem
@@ -335,15 +335,15 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
                             ? renderItem.isUserMove
                             : false
                     }
-                    UniqueKey={child.key}
+                    UniqueKey={item.key}
                     onResizing={this.onResizing}
                     onResizeStart={this.onResizeStart}
                     onResizeEnd={this.onResizeEnd}
                     dragType={dragType}
-                    key={child.key}
+                    key={item.key}
                 >
                     {(GridItemProvided, dragHandle, resizeHandle) =>
-                        this.props.children(child, {
+                        this.props.children(item, {
                             isDragging:
                                 renderItem.isUserMove !== void 666
                                     ? renderItem.isUserMove

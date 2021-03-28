@@ -26,9 +26,9 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
     const {
         children,
-        onStart,
+        onDragStart,
         onDrag,
-        onStop,
+        onDragStop,
         allowAnyClick,
         disabled,
         enableUserSelectHack,
@@ -137,7 +137,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         eventDataRef.current = createEventData(x, y);
 
         // 如果没有完成渲染或者返回false则禁止拖拽
-        const shouldUpdate = onStart && onStart(e, eventDataRef.current);
+        const shouldUpdate = onDragStart && onDragStart(e, eventDataRef.current);
         if (shouldUpdate === false) return;
 
         // 滚动过程中选中文本被添加样式
@@ -197,7 +197,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         e.preventDefault();
         const ownerDocument = findOwnerDocument();
        
-        const shouldContinue = onStop && onStop(e, eventDataRef.current);
+        const shouldContinue = onDragStop && onDragStop(e, eventDataRef.current);
         if (shouldContinue === false) return false;
 
         // 移除文本因滚动造成的显示
