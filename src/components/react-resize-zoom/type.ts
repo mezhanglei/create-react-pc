@@ -29,12 +29,13 @@ export enum Axis {
     AUTO = 'auto', // 所有轴
     X = 'x', // x轴
     Y = 'y', // y轴
-    ANGLE = 'angle' // 角
+    ANGLE = 'angle', // 角
+    NONE = 'none'
 }
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis?: 'auto' | 'x' | 'y' | 'angle';
+    axis?: 'auto' | 'x' | 'y' | 'angle' | 'none';
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差
     zIndexRange?: [number, number]; // zIndex变化的范围

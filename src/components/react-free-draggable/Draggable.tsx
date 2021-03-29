@@ -5,6 +5,7 @@ import { DraggableProps, EventData, DragHandler, EventType } from "./utils/types
 import { isElementSVG } from "@/utils/verify";
 import { findElement } from "@/utils/dom";
 import DraggableEvent from './DraggableEvent';
+import { getPrefixStyle } from "@/utils/cssPrefix";
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
@@ -184,8 +185,19 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         <DraggableEvent ref={ref} {...DraggableEventProps} onDragStart={onDragStart} onDrag={onDrag} onDragStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
-                style: { ...children.props.style, ...style, ...(!isSVG && createCSSTransform(currentPosition, positionOffset) || {}), zIndex: eventData?.zIndex },
-                transform: (isSVG && createSVGTransform(currentPosition, positionOffset)) || "",
+                style: {
+                    ...children.props.style,
+                    ...style,
+                    ...(
+                        !isSVG ? createCSSTransform(currentPosition, positionOffset)
+                        :
+                        {
+                            [getPrefixStyle('transform')]: children.props[getPrefixStyle('transform')] || ""
+                        }
+                        ),
+                    zIndex: eventData?.zIndex ?? children.props.zIndex
+                },
+                transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (children.props[getPrefixStyle('transform')] || ""),
             })}
         </DraggableEvent>
     );

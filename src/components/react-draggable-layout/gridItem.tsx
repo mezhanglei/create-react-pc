@@ -247,11 +247,17 @@ import Draggable, { EventType as DragEventType, DraggableProps, DragHandler } fr
 import { ChildrenType } from "./utils/types";
 import classNames from "classnames";
 
+
+export interface ContainerType {
+    width: number;
+    padding: [number, number, number, number];
+    col?: number;
+}
 export interface GridItemProps {
     children: ChildrenType;
     className?: string;
     style?: CSSProperties;
-    margin?: [number, number];
+    container?: ContainerType;
 }
 
 const GridItem: React.FC<GridItemProps> = (props) => {
