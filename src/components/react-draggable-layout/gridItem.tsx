@@ -248,16 +248,19 @@ import { ChildrenType } from "./utils/types";
 import classNames from "classnames";
 
 
-export interface ContainerType {
+export interface ContainerProps {
     width: number;
     padding: [number, number, number, number];
     col?: number;
+}
+export interface ChildProps {
+    
 }
 export interface GridItemProps {
     children: ChildrenType;
     className?: string;
     style?: CSSProperties;
-    container?: ContainerType;
+    container?: ContainerProps;
 }
 
 const GridItem: React.FC<GridItemProps> = (props) => {

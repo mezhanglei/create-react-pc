@@ -47,7 +47,7 @@ const Demo1: React.FC<any> = (props) => {
 
             <div>
                 大小拖放
-                <DragResize axis="none">
+                <DragResize>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放
                     </div>

@@ -100,11 +100,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     // 返回鼠标的样式
     const getMouseCursor = (e: EventType, direction: string): string => {
-        if (direction === Direction.S && (canDragY(e, direction) && axis !== Axis.ANGLE || axis === Axis.AUTO)) {
+        if (direction === Direction.S && ([Axis.AUTO, Axis.Y] as string[]).includes(axis)) {
             return 'row-resize';
-        } else if (direction === Direction.E && (canDragX(e, direction) && axis !== Axis.ANGLE || axis === Axis.AUTO)) {
+        } else if (direction === Direction.E && ([Axis.AUTO, Axis.X] as string[]).includes(axis)) {
             return 'col-resize';
-        } else if (direction?.length === 2 && (axis === Axis.ANGLE || axis === Axis.AUTO)) {
+        } else if (direction?.length === 2 && ([Axis.ANGLE, Axis.AUTO] as string[]).includes(axis)) {
             return direction + '-resize';
         } else {
             return 'default';
@@ -113,11 +113,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
 
     const canDragX = (e: EventType, dir: string): boolean => {
-        return (axis === Axis.AUTO || axis === Axis.ANGLE) && dir.indexOf(Direction.E) > -1 || axis === Axis.X;
+        return ([Axis.AUTO, Axis.ANGLE, Axis.X] as string[]).includes(axis) && dir.indexOf(Direction.E) > -1;
     };
 
     const canDragY = (e: EventType, dir: string): boolean => {
-        return (axis === Axis.AUTO || axis === Axis.ANGLE) && dir.indexOf(Direction.S) > -1 || axis === Axis.Y;
+        return ([Axis.AUTO, Axis.ANGLE, Axis.Y] as string[]).includes(axis) && dir.indexOf(Direction.S) > -1;
     };
 
     const eventDataChange = (value: EventDataType) => {
