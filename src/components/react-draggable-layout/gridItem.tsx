@@ -229,9 +229,6 @@
 //                 h={hPx}
 //                 isUserMove={this.props.isUserMove}
 //                 bounds={bounds}
-//                 handle={handle}
-//                 canDrag={canDrag}
-//                 canResize={canResize}
 //             >
 //                 {(provided, draggerProps, resizerProps) => this.props.children(provided, draggerProps, resizerProps)}
 //             </Dragger>
