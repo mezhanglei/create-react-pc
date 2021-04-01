@@ -116,7 +116,7 @@
 
 
 //     /**给予一个grid的位置，算出元素具体的在容器中位置在哪里，单位是px */
-//     calGridItemPosition(GridX: number, GridY: number) {
+//     calGridToPx(GridX: number, GridY: number) {
 //         var { margin, rowHeight } = this.props
 
 //         if (!margin) margin = [0, 0];
@@ -207,14 +207,12 @@
 //     }
 //     render() {
 //         const { w, h, style, bounds, GridX, GridY, handle, canDrag, canResize } = this.props;
-//         const { x, y } = this.calGridItemPosition(GridX, GridY);
+//         const { x, y } = this.calGridToPx(GridX, GridY);
 //         const { wPx, hPx } = this.calWHtoPx(w, h);
 //         return (
 //             <Dragger
 //                 style={{
 //                     ...style,
-//                     width: wPx,
-//                     height: hPx,
 //                     position: 'absolute',
 //                     transition: this.props.isUserMove ? '' : 'all .2s ease-out',
 //                     zIndex: this.props.isUserMove ? (this.props.dragType === 'drag' ? 10 : 2) : 2
@@ -240,27 +238,57 @@
 //         )
 //     }
 // }
+
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle } from 'react';
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventHandler as ResizeEventHandler, EventType as ResizeEventType } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DraggableProps, DragHandler } from "@/components/react-free-draggable";
+import Draggable, { EventType as DragEventType, EventHandler as DragEventHandler } from "@/components/react-free-draggable";
 import { ChildrenType } from "./utils/types";
 import classNames from "classnames";
 
-
+// 事件对象
+export type EventType = MouseEvent | TouchEvent;
+// 事件处理函数的type
+export type EventHandler<E = EventType, T = GridItemEvent> = (e: E, data?: T) => void | boolean;
+export interface GridItemEvent {
+    event: EventType
+    GridX: number
+    GridY: number
+    w: number
+    h: number
+    UniqueKey: string | number
+}
+export interface SideAttribute {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+}
 export interface ContainerProps {
-    width: number;
-    padding: [number, number, number, number];
-    col?: number;
+    width: number;  // 容器宽度 单位px
+    padding: [number, number]; // 水平竖直的padding
+    col: number; // 横轴分成多少列
 }
 export interface ChildProps {
-    
+    margin?: [number, number]; // 水平，竖直的margin
+    GridX: number; // 横轴坐标
+    GridY: number; // 纵轴坐标
+    rowHeight: number; // 行高
+    w: number; // 宽，单位col
+    h: number; // 高，单位col
 }
 export interface GridItemProps {
     children: ChildrenType;
     className?: string;
     style?: CSSProperties;
-    container?: ContainerProps;
+    containerProps?: ContainerProps;
+    childProps?: ChildProps;
+    onDragStart?: EventHandler;
+    onDrag?: EventHandler;
+    onDragEnd?: EventHandler;
+    onResizeStart?: EventHandler;
+    onResizing?: EventHandler;
+    onResizeEnd?: EventHandler;
 }
 
 const GridItem: React.FC<GridItemProps> = (props) => {
@@ -269,57 +297,81 @@ const GridItem: React.FC<GridItemProps> = (props) => {
         children,
         className,
         style,
-        margin
+        containerProps = {
+            width: 500,
+            col: 12,
+            padding: [0, 0]
+        },
+        childProps = {
+            margin: [0, 0],
+            w: 1,
+            h: 2,
+            rowHeight: 30
+        }
     } = props;
 
     const nodeRef = useRef<any>();
 
-    const onDragStart: DragHandler<DragEventType> = (e, data) => {
+    const onDragStart: DragEventHandler = (e, data) => {
 
     }
 
-    const onDrag: DragHandler<DragEventType> = (e, data) => {
+    const onDrag: DragEventHandler = (e, data) => {
 
     }
 
-    const onDragStop: DragHandler<DragEventType> = (e, data) => {
+    const onDragStop: DragEventHandler = (e, data) => {
 
     }
 
-    const onResizeStart: ResizeEventHandler<ResizeEventType> = (e, data) => {
+    const onResizeStart: ResizeEventHandler = (e, data) => {
 
     }
 
-    const onResizing: ResizeEventHandler<ResizeEventType> = (e, data) => {
+    const onResizing: ResizeEventHandler = (e, data) => {
 
     }
 
-    const onResizeEnd: ResizeEventHandler<ResizeEventType> = (e, data) => {
+    const onResizeEnd: ResizeEventHandler = (e, data) => {
 
     }
 
     // 计算容器的每一个格子多宽
-    const calCellWidth = ():number => {
-        const { containerWidth, col, containerPadding, margin } = this.props;
+    const calColWidth = () => {
+        const { margin = [0, 0] } = childProps;
+        const { col, padding, width } = containerProps;
 
-        if (margin) {
-            return (containerWidth - containerPadding[0] * 2 - margin[0] * (col + 1)) / col
-        }
-        return (containerWidth - containerPadding[0] * 2 - 0 * (col + 1)) / col
+        return (width - padding[0] * 2 - margin[0] * (col + 1)) / col;
     }
 
-    // 计算宽高
+    // 宽高 => px
     const calWHtoPx = (w: number, h: number) => {
+        let { margin = [0, 0], rowHeight } = childProps;
 
-        if (!margin) margin = [0, 0];
-        const wPx = Math.round(w * this.calColWidth() + (w - 1) * margin[0])
-        const hPx = Math.round(h * this.props.rowHeight + (h - 1) * margin[1])
+        const wPx = Math.round(w * calColWidth() + (w - 1) * margin[0])
+        const hPx = Math.round(h * rowHeight + (h - 1) * margin[1])
 
         return { wPx, hPx }
     }
 
+    // Grid位置转化为px位置
+    const calGridToPx = (GridX: number, GridY: number) => {
+        const { margin = [0, 0], rowHeight } = childProps
+
+        let x = Math.round(GridX * calColWidth() + (GridX + 1) * margin[0])
+        let y = Math.round(GridY * rowHeight + margin[1] * (GridY + 1))
+
+        return {
+            x: x,
+            y: y
+        }
+    }
+
     // 包裹元素的className
     const cls = classNames((children.props.className || ''), className);
+
+    const { wPx, hPx } = calWHtoPx(childProps?.w, childProps?.h);
+    const { x, y } = calGridToPx(childProps?.GridX, childProps?.GridY);
 
     return (
         <Draggable
@@ -328,11 +380,15 @@ const GridItem: React.FC<GridItemProps> = (props) => {
             onDragStart={onDragStart}
             onDrag={onDrag}
             onDragStop={onDragStop}
+            x={x}
+            y={y}
         >
             <ResizeZoom
                 onResizeStart={onResizeStart}
                 onResizeMoving={onResizing}
                 onResizeEnd={onResizeEnd}
+                width={wPx}
+                height={hPx}
             >
                 {
                     React.cloneElement(React.Children.only(children), {
@@ -340,7 +396,9 @@ const GridItem: React.FC<GridItemProps> = (props) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            width
+                            position: 'absolute',
+                            // transition:  ? '' : 'all .2s ease-out',
+                            // zIndex:  ? (this.props.dragType === 'drag' ? 10 : 2) : 2
                         }
                     })
                 }

@@ -27,6 +27,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         axis = Axis.AUTO,
         offset = 10,
         zIndexRange = [1, 2],
+        width,
+        height,
         className,
         style
     } = props;
@@ -39,6 +41,21 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     useImperativeHandle(ref, () => (nodeRef.current));
 
+
+    // 更新width
+    useEffect(() => {
+        if (width != undefined && !isDraggableRef?.current) {
+            eventDataUpdate(eventData, { width })
+        }
+    }, [width, eventData?.width]);
+
+    // 更新height
+    useEffect(() => {
+        if (height != undefined && !isDraggableRef?.current) {
+            eventDataUpdate(eventData, { height })
+        }
+    }, [height, eventData?.height]);
+
     // 顶层document对象（有的环境可能删除了document顶层环境）
     const findOwnerDocument = (): Document => {
         const node = nodeRef?.current;
@@ -48,7 +65,6 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         }
         return node?.ownerDocument;
     };
-
 
     useEffect(() => {
         const ownerDocument = findOwnerDocument();
@@ -125,7 +141,13 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         setEventData(value);
     }
 
-    const onResizeStart: EventHandler<EventType> = (e) => {
+    const eventDataUpdate = (eventData: EventDataType | undefined, data: any) => {
+        const value = { ...eventData, ...data };
+        eventDataRef.current = value;
+        setEventData(value);
+    }
+
+    const onResizeStart: EventHandler = (e) => {
         const direction = getDirection(e);
         const mouseCursor = getMouseCursor(e, direction);
         if (mouseCursor === 'default') return;
@@ -159,7 +181,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         eventDataChange(eventData);
     }
 
-    const onMove: EventHandler<EventType> = (e) => {
+    const onMove: EventHandler = (e) => {
         e.preventDefault();
         const direction = getDirection(e);
         const mouseCursor = getMouseCursor(e, direction);
@@ -189,7 +211,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         eventDataChange(eventData);
     }
 
-    const onResizeEnd: EventHandler<EventType> = (e) => {
+    const onResizeEnd: EventHandler = (e) => {
         if (!isDraggableRef.current || !eventDataRef.current) return;
         const eventData = {
             ...eventDataRef.current,
@@ -203,7 +225,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     // dragOver事件
-    const onDragOver: EventHandler<EventType> = (e) => {
+    const onDragOver: EventHandler = (e) => {
         isDraggableRef.current = false;
     }
 

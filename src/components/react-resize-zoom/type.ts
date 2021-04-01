@@ -2,8 +2,6 @@ import { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
 // 事件对象
 export type EventType = MouseEvent | TouchEvent;
 
-// 事件处理函数的type
-export type EventHandler<T> = (e: T, data?: EventDataType) => void | boolean;
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
 export interface LastEventDataType {
     lastDir?: string;
@@ -39,7 +37,11 @@ export interface DragResizeProps {
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差
     zIndexRange?: [number, number]; // zIndex变化的范围
-    onResizeStart?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽开始事件
-    onResizeMoving?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽进行中事件
-    onResizeEnd?: (e: EventType, data?: EventDataType) => void | boolean; // 拖拽结束事件
+    width?: number; // 受控尺寸
+    height?: number; // 受控尺寸
+    onResizeStart?: EventHandler; // 拖拽开始事件
+    onResizeMoving?: EventHandler; // 拖拽进行中事件
+    onResizeEnd?: EventHandler; // 拖拽结束事件
 }
+// 事件处理函数的type
+export type EventHandler<E = EventType, T = EventDataType> = (e: E, data?: T) => void | boolean;

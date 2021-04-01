@@ -38,9 +38,9 @@ export interface BoundsInterface {
 // DraggableEvent的props的类型
 export interface DraggableEventProps {
     children: any;
-    onDragStart?: (e: EventType, position?: EventData) => void | boolean; // 拖拽开始事件
-    onDrag?: (e: EventType, position?: EventData) => void | boolean; // 拖拽进行事件
-    onDragStop?: (e: EventType, position?: EventData) => void | boolean; // 拖拽结束事件
+    onDragStart?: EventHandler; // 拖拽开始事件
+    onDrag?: EventHandler; // 拖拽进行事件
+    onDragStop?: EventHandler; // 拖拽结束事件
     allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
     disabled?: boolean; // 禁止拖拽
     dragNode?: string | HTMLElement; // 拖拽元素的类选择器
@@ -53,7 +53,8 @@ export interface DraggableEventProps {
 // Draggable的props的类型
 export interface DraggableProps extends DraggableEventProps {
     scale?: number; // 拖拽灵敏度
-    position?: PositionType; // 拖拽元素在父元素内的受控位置（不会受到bounds和boundsParent影响）
+    x?: number;
+    y?: number;
     axis: AxisType; // 限制拖拽的方向
     positionOffset?: PositionType; // 接收偏移位置（不受bounds和boundsParent影响）
     bounds?: BoundsInterface; // 在boundsParent元素内部范围的限制拖拽范围
@@ -63,6 +64,4 @@ export interface DraggableProps extends DraggableEventProps {
 }
 
 // 事件处理函数的type
-export type EventHandler<T> = (e: T) => void | boolean;
-// 拖拽处理函数的type
-export type DragHandler<T> = (e: T, data?: EventData) => void | boolean;
+export type EventHandler<E = EventType, T = EventData> = (e: E, data?: T) => void | boolean;

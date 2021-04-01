@@ -2,7 +2,7 @@ import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { matchParent, addEvent, removeEvent, getPositionInParent, findElement } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
-import { DraggableEventProps, EventHandler, EventData, LastEventData, EventType } from "./utils/types";
+import { DraggableEventProps, EventHandler, EventData, LastEventData } from "./utils/types";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -107,7 +107,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
     };
 
-    const handleDragStart: EventHandler<EventType> = (e) => {
+    const handleDragStart: EventHandler = (e) => {
         const dragNode = findDragNode();
         const disabledNode = findDisabledNode();
         const boundsParent = findBoundsParent();
@@ -153,7 +153,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         addEvent(ownerDocument, dragEventFor.stop, handleDragStop);
     };
 
-    const handleDrag: EventHandler<EventType> = (e) => {
+    const handleDrag: EventHandler = (e) => {
         const boundsParent = findBoundsParent();
         e.preventDefault();
         // 获取在指定父元素内的位置
@@ -192,7 +192,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
     };
 
-    const handleDragStop: EventHandler<EventType> = (e) => {
+    const handleDragStop: EventHandler = (e) => {
         if (!draggingRef.current || !eventDataRef.current) return;
         e.preventDefault();
         const ownerDocument = findOwnerDocument();

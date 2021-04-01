@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, EventData, DragHandler, EventType } from "./utils/types";
+import { DraggableProps, EventData, EventHandler } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import { findElement } from "@/utils/dom";
 import DraggableEvent from './DraggableEvent';
@@ -14,9 +14,10 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     const {
         children,
+        x,
+        y,
         scale = 1,
         axis = "both",
-        position,
         positionOffset,
         bounds,
         zIndexRange = [1, 10],
@@ -25,15 +26,6 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         ...DraggableEventProps
     } = props;
 
-    const defaultData = {
-        deltaX: 0,
-        deltaY: 0,
-        x: 0, y: 0,
-        lastX: 0,
-        lastY: 0,
-        zIndex: zIndexRange[0]
-    }
-
     let draggingRef = useRef<boolean>(false); // 是否正在拖拽
 
     const [dragged, setDragged] = useState<boolean>(false); // 是否已经拖拽过
@@ -41,8 +33,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const slackXRef = useRef<number>(0);
     const slackYRef = useRef<number>(0);
 
-    const [eventData, setEventData] = useState<EventData>(defaultData);
-    const eventDataRef = useRef<EventData>(defaultData);
+    const [eventData, setEventData] = useState<EventData>();
+    const eventDataRef = useRef<EventData>();
 
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
@@ -56,27 +48,39 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         return node;
     };
 
-    // 初始化数据
+    // 更新依赖x
     useEffect(() => {
-        const x = position?.x || 0;
-        const y = position?.y || 0;
-        const data = {
-            deltaX: 0,
-            deltaY: 0,
-            x, y,
-            lastX: x,
-            lastY: y,
-            zIndex: zIndexRange[0]
+        if (x != undefined && !draggingRef.current) {
+            eventDataUpdate(eventData, { x: x })
         }
-        eventDataChange(data);
-    }, [position]);
+    }, [x, eventData?.x])
+    // 更新依赖y
+    useEffect(() => {
+        if (y != undefined && !draggingRef.current) {
+            eventDataUpdate(eventData, { y: y })
+        }
+    }, [y, eventData?.y])
 
     const eventDataChange = (value: EventData) => {
         eventDataRef.current = value;
         setEventData(value);
     }
 
-    const onDragStart: DragHandler<EventType> = (e, data) => {
+    const eventDataUpdate = (eventData: EventData | undefined, data: any) => {
+        eventData = eventData || {
+            deltaX: 0,
+            deltaY: 0,
+            x: 0, y: 0,
+            lastX: 0,
+            lastY: 0,
+            zIndex: zIndexRange[0]
+        }
+        const value = { ...eventData, ...data };
+        eventDataRef.current = value;
+        setEventData(value);
+    }
+
+    const onDragStart: EventHandler = (e, data) => {
 
         // 如果onDragStart函数返回false则禁止拖拽
         const shouldStart = props.onDragStart && props.onDragStart(e, data);
@@ -87,19 +91,22 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         setIsSVG(isElementSVG(data?.node));
     };
 
-    const onDrag: DragHandler<EventType> = (e, data) => {
+    const onDrag: EventHandler = (e, data) => {
         if (!draggingRef.current || !data) return false;
+
+        const x = eventDataRef?.current?.x ?? 0;
+        const y = eventDataRef?.current?.y ?? 0;
 
         // 拖拽生成的位置信息
         const eventData = {
             node: data.node,
             zIndex: zIndexRange[1],
-            x: eventDataRef?.current?.x + (data?.deltaX / scale),
-            y: eventDataRef?.current?.y + (data.deltaY / scale),
+            x: x + (data?.deltaX / scale),
+            y: y + (data.deltaY / scale),
             deltaX: (data.deltaX / scale),
             deltaY: (data.deltaY / scale),
-            lastX: eventDataRef?.current?.x,
-            lastY: eventDataRef?.current?.y
+            lastX: x,
+            lastY: y
         };
 
         if (!eventData) return;
@@ -129,8 +136,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             // 更新
             eventData.x = nowX;
             eventData.y = nowY;
-            eventData.deltaX = nowX - eventDataRef.current?.x;
-            eventData.deltaY = nowY - eventDataRef.current?.y;
+            eventData.deltaX = nowX - (eventDataRef.current?.x || 0);
+            eventData.deltaY = nowY - (eventDataRef.current?.y || 0);
         }
 
         const shouldUpdate = props.onDrag && props.onDrag(e, eventData);
@@ -139,7 +146,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         eventData && eventDataChange(eventData);
     };
 
-    const onDragStop: DragHandler<EventType> = (e) => {
+    const onDragStop: EventHandler = (e) => {
         if (!draggingRef.current || !eventDataRef.current) return false;
 
         eventDataRef.current = {
@@ -175,12 +182,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     // 当前位置
     const currentPosition = {
-        x: canDragX() && eventData ? eventData.x : 0,
-        y: canDragY() && eventData ? eventData.y : 0
+        x: canDragX() ? (eventData?.x || 0) : 0,
+        y: canDragY() ? (eventData?.y || 0) : 0
     };
 
     // React.Children.only限制只能传递一个child
-    // 注意使用时, 子元素最好用闭合标签包裹, 以防出现props带来的问题(例如style样式中的transition和transform, 以及事件)
     return (
         <DraggableEvent ref={ref} {...DraggableEventProps} onDragStart={onDragStart} onDrag={onDrag} onDragStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
@@ -190,11 +196,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
                     ...style,
                     ...(
                         !isSVG ? createCSSTransform(currentPosition, positionOffset)
-                        :
-                        {
-                            [getPrefixStyle('transform')]: children.props[getPrefixStyle('transform')] || ""
-                        }
-                        ),
+                            :
+                            {
+                                [getPrefixStyle('transform')]: children.props[getPrefixStyle('transform')] || ""
+                            }
+                    ),
                     zIndex: eventData?.zIndex ?? children.props.zIndex
                 },
                 transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (children.props[getPrefixStyle('transform')] || ""),
