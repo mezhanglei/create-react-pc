@@ -61,6 +61,7 @@ export interface DraggableProps extends DraggableEventProps {
     zIndexRange?: [number, number] // zIndex的变化范围
     className?: string;
     style?: CSSProperties;
+    transform?: string;
 }
 
 // 事件处理函数的type

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getClientXYInParent, getClientWH } from "@/utils/dom";
 import { EventType, EventHandler, LastEventDataType, EventDataType, Direction, Axis, DragResizeProps } from "./type";
+import { filterObject } from "@/utils/object";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -26,7 +27,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         children,
         axis = Axis.AUTO,
         offset = 10,
-        zIndexRange = [1, 2],
+        zIndexRange = [],
         width,
         height,
         className,
@@ -42,19 +43,15 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     useImperativeHandle(ref, () => (nodeRef.current));
 
 
-    // 更新width
+    // 更新
     useEffect(() => {
         if (width != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventData, { width })
+            eventDataUpdate(eventDataRef.current, { width })
         }
-    }, [width, eventData?.width]);
-
-    // 更新height
-    useEffect(() => {
         if (height != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventData, { height })
+            eventDataUpdate(eventDataRef.current, { height })
         }
-    }, [height, eventData?.height]);
+    }, [width, height, eventDataRef.current?.height, eventDataRef.current?.width]);
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
     const findOwnerDocument = (): Document => {
@@ -68,11 +65,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     useEffect(() => {
         const ownerDocument = findOwnerDocument();
+        addEvent(nodeRef.current, dragEventFor.start, onResizeStart);
         addEvent(ownerDocument, dragEventFor.move, onMove);
-        addStopEvents();
         return () => {
+            removeEvent(nodeRef.current, dragEventFor.start, onResizeStart);
             removeEvent(ownerDocument, dragEventFor.move, onMove);
-            removeStopEvents();
         }
     }, []);
 
@@ -150,13 +147,19 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     const onResizeStart: EventHandler = (e) => {
         const direction = getDirection(e);
         const mouseCursor = getMouseCursor(e, direction);
-        if (mouseCursor === 'default') return;
-
+        if (mouseCursor === 'default') {
+            return;
+        } else {
+            e.stopImmediatePropagation();
+        };
+        e.preventDefault();
         const clientXY = getClientXYInParent(e, nodeRef?.current);
         const clientWH = getClientWH(nodeRef.current);
         if (!clientXY || !clientWH) return;
 
         const eventData = {
+            mouseCursor: mouseCursor,
+            dir: direction,
             x: clientXY?.x,
             y: clientXY?.y,
             width: clientWH?.width,
@@ -165,9 +168,6 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         }
         const shouldUpdate = props?.onResizeStart && props?.onResizeStart(e, eventData);
         if (shouldUpdate === false) return;
-
-        e.stopPropagation();
-        e.preventDefault();
         isDraggableRef.current = true;
 
         lastEventDataRef.current = {
@@ -179,6 +179,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         }
 
         eventDataChange(eventData);
+        addStopEvents();
     }
 
     const onMove: EventHandler = (e) => {
@@ -198,6 +199,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         deltaY = clientXY?.y - lastY;
 
         const eventData = {
+            mouseCursor: mouseCursor,
+            dir: direction,
             x: clientXY?.x,
             y: clientXY?.y,
             width: canDragX(e, lastDir) ? (lastW + deltaX) : lastW,
@@ -212,6 +215,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     const onResizeEnd: EventHandler = (e) => {
+        e.preventDefault();
         if (!isDraggableRef.current || !eventDataRef.current) return;
         const eventData = {
             ...eventDataRef.current,
@@ -222,6 +226,10 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
         isDraggableRef.current = false;
         eventData && eventDataChange(eventData);
+        const ownerDocument = findOwnerDocument();
+        removeEvent(ownerDocument, dragEventFor.move, onMove);
+        removeStopEvents();
+        addEvent(ownerDocument, dragEventFor.move, onMove);
     }
 
     // dragOver事件
@@ -230,16 +238,14 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     return React.cloneElement(React.Children.only(children), {
-        onMouseDown: onResizeStart,
-        onTouchStart: onResizeStart,
         className: className ?? children.props.className,
         ref: nodeRef,
         style: {
-            ...children.props.style,
-            ...style,
-            width: eventData?.width ?? children.props.style?.width,
-            height: eventData?.height ?? children.props.style?.height,
-            zIndex: eventData?.zIndex ?? children.props.style?.zIndex
+            ...filterObject(children.props.style, (item) => item != undefined),
+            ...filterObject(style, (item) => item != undefined),
+            width: eventData?.width ?? style?.width ?? children.props.style?.width,
+            height: eventData?.height ?? style?.height ?? children.props.style?.height,
+            zIndex: eventData?.zIndex ?? style?.zIndex ?? children.props.style?.zIndex
         }
     });
 })

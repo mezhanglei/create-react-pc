@@ -11,11 +11,13 @@ export interface LastEventDataType {
     lastH?: number;
 }
 export interface EventDataType extends LastEventDataType {
+    mouseCursor: string;
+    dir: string;
     x: number;
     y: number;
     width: number;
     height: number;
-    zIndex: number;
+    zIndex?: number;
 }
 export enum Direction {
     N = "n", // 上边

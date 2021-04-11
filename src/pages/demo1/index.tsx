@@ -13,7 +13,7 @@ const Demo1: React.FC<any> = (props) => {
     const [y, setY] = useState<any>(10);
 
     const onDragStop = (e, data) => {
-        
+        setX(500)
     }
 
     return (
@@ -35,28 +35,32 @@ const Demo1: React.FC<any> = (props) => {
                         </Button>
                     </div>
                 </Draggable>
-                <Draggable
-                    axis="both"
-                    dragNode=".handles"
-                    x={10}
-                    y={10}
-                    scale={1}
-                >
-                    <div style={{ display: "inline-block" }}>
-                        <Button className="handles" type="default">
-                            拖拽元素2
-                        </Button>
-                    </div>
-                </Draggable>
             </div>
-
-            <div>
-                大小拖放
-                <DragResize width={200}>
+            <Draggable
+                axis="both"
+                scale={1}
+            >
+                <div>
+                    <Button className="handles" type="default">
+                        拖拽元素2
+                    </Button>
+                </div>
+            </Draggable>
+            <Draggable
+                x={x}
+                y={y}
+                axis="both"
+                onDragStop={onDragStop}
+                scale={1}
+            >
+                <DragResize width={width} height={height}>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放
                     </div>
                 </DragResize>
+            </Draggable>
+            <div>
+                大小拖放
                 <DragResize>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放2

@@ -5,7 +5,7 @@ import { DraggableProps, EventData, EventHandler } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import { findElement } from "@/utils/dom";
 import DraggableEvent from './DraggableEvent';
-import { getPrefixStyle } from "@/utils/cssPrefix";
+import { filterObject } from "@/utils/object";
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
@@ -20,7 +20,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         axis = "both",
         positionOffset,
         bounds,
-        zIndexRange = [1, 10],
+        zIndexRange = [],
         className,
         style,
         ...DraggableEventProps
@@ -48,18 +48,15 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         return node;
     };
 
-    // 更新依赖x
+    // 更新
     useEffect(() => {
         if (x != undefined && !draggingRef.current) {
-            eventDataUpdate(eventData, { x: x })
+            eventDataUpdate(eventDataRef.current, { x: x })
         }
-    }, [x, eventData?.x])
-    // 更新依赖y
-    useEffect(() => {
         if (y != undefined && !draggingRef.current) {
-            eventDataUpdate(eventData, { y: y })
+            eventDataUpdate(eventDataRef.current, { y: y })
         }
-    }, [y, eventData?.y])
+    }, [x, y, eventDataRef.current?.x, eventDataRef.current?.y]);
 
     const eventDataChange = (value: EventData) => {
         eventDataRef.current = value;
@@ -72,8 +69,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             deltaY: 0,
             x: 0, y: 0,
             lastX: 0,
-            lastY: 0,
-            zIndex: zIndexRange[0]
+            lastY: 0
         }
         const value = { ...eventData, ...data };
         eventDataRef.current = value;
@@ -81,10 +77,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     }
 
     const onDragStart: EventHandler = (e, data) => {
-
+        e.stopImmediatePropagation();
+        if (!data) return;
         // 如果onDragStart函数返回false则禁止拖拽
         const shouldStart = props.onDragStart && props.onDragStart(e, data);
-        if (shouldStart === false) return false;
+        if (shouldStart === false) return;
 
         draggingRef.current = true;
         setDragged(true);
@@ -92,7 +89,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     };
 
     const onDrag: EventHandler = (e, data) => {
-        if (!draggingRef.current || !data) return false;
+        if (!draggingRef.current || !data) return;
 
         const x = eventDataRef?.current?.x ?? 0;
         const y = eventDataRef?.current?.y ?? 0;
@@ -141,13 +138,12 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         }
 
         const shouldUpdate = props.onDrag && props.onDrag(e, eventData);
-        if (shouldUpdate === false) return false;
-
+        if (shouldUpdate === false) return;
         eventData && eventDataChange(eventData);
     };
 
     const onDragStop: EventHandler = (e) => {
-        if (!draggingRef.current || !eventDataRef.current) return false;
+        if (!draggingRef.current || !eventDataRef.current) return;
 
         eventDataRef.current = {
             ...eventDataRef.current,
@@ -156,7 +152,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
         // Short-circuit if user's callback killed it.
         const shouldContinue = props.onDragStop && props.onDragStop(e, eventDataRef.current);
-        if (shouldContinue === false) return false;
+        if (shouldContinue === false) return;
 
         draggingRef.current = false;
         slackXRef.current = 0;
@@ -185,25 +181,24 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         x: canDragX() ? (eventData?.x || 0) : 0,
         y: canDragY() ? (eventData?.y || 0) : 0
     };
-
     // React.Children.only限制只能传递一个child
     return (
         <DraggableEvent ref={ref} {...DraggableEventProps} onDragStart={onDragStart} onDrag={onDrag} onDragStop={onDragStop}>
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
                 style: {
-                    ...children.props.style,
-                    ...style,
+                    ...filterObject(children.props.style, (item) => item != undefined),
+                    ...filterObject(style, (item) => item != undefined),
                     ...(
                         !isSVG ? createCSSTransform(currentPosition, positionOffset)
                             :
                             {
-                                [getPrefixStyle('transform')]: children.props[getPrefixStyle('transform')] || ""
+                                transform: style?.transform ?? (children.props.style?.transform || "")
                             }
                     ),
-                    zIndex: eventData?.zIndex ?? children.props.zIndex
+                    zIndex: eventData?.zIndex ?? style?.zIndex ?? children.props.style?.zIndex
                 },
-                transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (children.props[getPrefixStyle('transform')] || ""),
+                transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (props?.transform ?? (children.props?.transform || "")),
             })}
         </DraggableEvent>
     );

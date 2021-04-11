@@ -127,21 +127,6 @@ export const asyncSequentializer = (() => {
     }
 })();
 
-/**
- * 深度克隆拷贝
- * @param obj 
- */
-export const deepClone = (obj: any) => {
-    let clone = obj;
-    if (obj && typeof obj === "object") {
-        clone = new obj.constructor();
-        Object.getOwnPropertyNames(obj).forEach(
-            prop => (clone[prop] = deepClone(obj[prop]))
-        );
-    }
-    return clone;
-};
-
 export async function poll(fn: () => any, validate: (val: any) => boolean, interval = 2500) {
     const resolver = async (resolve: (arg0: any) => void, reject: (arg0: any) => void) => {
       try {
