@@ -17,7 +17,6 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         x,
         y,
         scale = 1,
-        axis = "both",
         positionOffset,
         bounds,
         zIndexRange = [],
@@ -36,6 +35,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const [eventData, setEventData] = useState<EventData>();
     const eventDataRef = useRef<EventData>();
 
+    const axisRef = useRef<string>("both");
+
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
     const wrapClassNameDragged = "react-draggable-dragged";
@@ -48,15 +49,20 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         return node;
     };
 
-    // 更新
+    // 更新x,y
     useEffect(() => {
         if (x != undefined && !draggingRef.current) {
-            eventDataUpdate(eventDataRef.current, { x: x })
+            eventDataUpdate(eventDataRef.current, { lastX: x, x: x })
         }
         if (y != undefined && !draggingRef.current) {
-            eventDataUpdate(eventDataRef.current, { y: y })
+            eventDataUpdate(eventDataRef.current, { lastY: y, y: y })
         }
-    }, [x, y, eventDataRef.current?.x, eventDataRef.current?.y]);
+    }, [x, y, draggingRef.current]);
+
+    // 更新axis
+    useEffect(() => {
+        axisRef.current = props?.axis;
+    }, [props?.axis])
 
     const eventDataChange = (value: EventData) => {
         eventDataRef.current = value;
@@ -93,13 +99,15 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
         const x = eventDataRef?.current?.x ?? 0;
         const y = eventDataRef?.current?.y ?? 0;
+        const lastX = eventDataRef?.current?.lastX ?? 0;
+        const lastY = eventDataRef?.current?.lastY ?? 0;
 
         // 拖拽生成的位置信息
         const eventData = {
             node: data.node,
             zIndex: zIndexRange[1],
-            x: x + (data?.deltaX / scale),
-            y: y + (data.deltaY / scale),
+            x: canDragX() ? (x + (data?.deltaX / scale)) : lastX,
+            y: canDragY() ? y + (data.deltaY / scale) : lastY,
             deltaX: (data.deltaX / scale),
             deltaY: (data.deltaY / scale),
             lastX: x,
@@ -124,7 +132,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             nowX = newPosition.x;
             nowY = newPosition.y;
 
-            // 重新计算越界补偿
+            // 重新计算越界补偿, 用来修正越界后鼠标真实的位置变化
             const newSlackX = slackXRef.current + (eventData.x - nowX);
             const newSlackY = slackYRef.current + (eventData.y - nowY);
             slackXRef.current = newSlackX;
@@ -142,7 +150,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         eventData && eventDataChange(eventData);
     };
 
-    const onDragStop: EventHandler = (e) => {
+    const onDragStop: EventHandler = (e, data) => {
         if (!draggingRef.current || !eventDataRef.current) return;
 
         eventDataRef.current = {
@@ -169,18 +177,19 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     });
 
     const canDragX = () => {
-        return axis === 'both' || axis === 'x';
+        return axisRef.current === 'both' || axisRef.current === 'x';
     };
 
     const canDragY = () => {
-        return axis === 'both' || axis === 'y';
+        return axisRef.current === 'both' || axisRef.current === 'y';
     };
 
     // 当前位置
     const currentPosition = {
-        x: canDragX() ? (eventData?.x || 0) : 0,
-        y: canDragY() ? (eventData?.y || 0) : 0
+        x: eventData?.x || 0,
+        y: eventData?.y || 0
     };
+    
     // React.Children.only限制只能传递一个child
     return (
         <DraggableEvent ref={ref} {...DraggableEventProps} onDragStart={onDragStart} onDrag={onDrag} onDragStop={onDragStop}>

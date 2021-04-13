@@ -3,14 +3,13 @@ import { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
 export type EventType = MouseEvent | TouchEvent;
 
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
-export interface LastEventDataType {
+
+export interface EventDataType {
     lastDir?: string;
     lastX?: number;
     lastY?: number;
     lastW?: number;
     lastH?: number;
-}
-export interface EventDataType extends LastEventDataType {
     mouseCursor: string;
     dir: string;
     x: number;

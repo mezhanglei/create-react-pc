@@ -129,6 +129,29 @@ export function getScroll(el: HTMLElement = (document.body || document.documentE
     }
 };
 
+
+export interface ScreenInterface {
+    x: number;
+    y: number;
+}
+export function getScreenXY(e: MouseEvent | TouchEvent): null | ScreenInterface {
+    let pos = null;
+    if ("clientX" in e) {
+        pos = {
+            x: e.screenX,
+            y: e.screenY
+        };
+    } else if ("touches" in e) {
+        if (e.touches[0]) {
+            pos = {
+                x: e.touches[0]?.screenX,
+                y: e.touches[0]?.screenY
+            };
+        }
+    }
+    return pos;
+};
+
 // 获取页面或元素的可视宽高(兼容写法, 不包括工具栏和滚动条)
 export interface ClientInterface {
     width: number;
@@ -178,7 +201,7 @@ export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | S
 }
 
 /**
- * 获取元素或事件对象的相对于页面的真实位置 = 滚动高度 + 可视位置
+ * 获取元素或事件对象的相对于页面的真实位置 = 滚动 + 可视位置
  * @param el 元素或事件对象
  */
 export function getPositionInPage(el: MouseEvent | TouchEvent | HTMLElement): null | SizeInterface {

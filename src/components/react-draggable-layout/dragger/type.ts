@@ -1,9 +1,13 @@
+import { JSXElementConstructor, ReactElement } from "react";
+
 export interface Bound {
     left: number,
     top: number,
     right: number,
     bottom: number
 }
+
+export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
 
 export interface DraggerProps {
 
@@ -66,4 +70,5 @@ export interface DraggerProps {
     canResize?: Boolean;
 
     children: (provided: any, resizeMix: any, dragMix: any) => any;
+    // children: ChildrenType
 }

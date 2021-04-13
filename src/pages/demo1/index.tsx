@@ -8,12 +8,14 @@ import DragResize from '@/components/react-resize-zoom';
 const Demo1: React.FC<any> = (props) => {
     const [width, setWidth] = useState<any>(100);
     const [height, setHeight] = useState<any>(200);
+    const [axis, setAxis] = useState<any>('auto');
 
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
 
     const onDragStop = (e, data) => {
         setX(500)
+        setAxis('none')
     }
 
     return (
@@ -23,10 +25,7 @@ const Demo1: React.FC<any> = (props) => {
                     axis="both"
                     boundsParent=".boxs"
                     dragNode=".handle"
-                    x={x}
-                    y={y}
                     grid={[100, 25]}
-                    onDrag={onDragStop}
                     scale={1}
                 >
                     <div style={{ display: "inline-block" }}>
@@ -53,7 +52,7 @@ const Demo1: React.FC<any> = (props) => {
                 onDragStop={onDragStop}
                 scale={1}
             >
-                <DragResize width={width} height={height}>
+                <DragResize axis={axis} width={width} height={height} onResizeEnd={onDragStop}>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放
                     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getClientXYInParent, getClientWH } from "@/utils/dom";
-import { EventType, EventHandler, LastEventDataType, EventDataType, Direction, Axis, DragResizeProps } from "./type";
+import { EventType, EventHandler, EventDataType, Direction, Axis, DragResizeProps } from "./type";
 import { filterObject } from "@/utils/object";
 
 // Simple abstraction for dragging events names.
@@ -25,7 +25,6 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     const {
         children,
-        axis = Axis.AUTO,
         offset = 10,
         zIndexRange = [],
         width,
@@ -36,22 +35,28 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     const nodeRef = useRef<any>();
     const isDraggableRef = useRef<boolean>(false);
-    const lastEventDataRef = useRef<LastEventDataType>();
     const eventDataRef = useRef<EventDataType>();
     const [eventData, setEventData] = useState<EventDataType>();
+
+    const axisRef = useRef<string>(Axis.AUTO);
 
     useImperativeHandle(ref, () => (nodeRef.current));
 
 
-    // 更新
+    // 更新width,height
     useEffect(() => {
         if (width != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { width })
+            eventDataUpdate(eventDataRef.current, { lastW: width, width })
         }
         if (height != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { height })
+            eventDataUpdate(eventDataRef.current, { lastH: height, height })
         }
-    }, [width, height, eventDataRef.current?.height, eventDataRef.current?.width]);
+    }, [width, height, isDraggableRef?.current]);
+
+    // 更新axis
+    useEffect(() => {
+        if(props?.axis) axisRef.current = props?.axis;
+    }, [props.axis])
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
     const findOwnerDocument = (): Document => {
@@ -112,12 +117,12 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     };
 
     // 返回鼠标的样式
-    const getMouseCursor = (e: EventType, direction: string): string => {
-        if (direction === Direction.S && ([Axis.AUTO, Axis.Y] as string[]).includes(axis)) {
+    const getMouseCursor = (direction: string): string => {
+        if (direction === Direction.S && ([Axis.AUTO, Axis.Y] as string[]).includes(axisRef.current)) {
             return 'row-resize';
-        } else if (direction === Direction.E && ([Axis.AUTO, Axis.X] as string[]).includes(axis)) {
+        } else if (direction === Direction.E && ([Axis.AUTO, Axis.X] as string[]).includes(axisRef.current)) {
             return 'col-resize';
-        } else if (direction?.length === 2 && ([Axis.ANGLE, Axis.AUTO] as string[]).includes(axis)) {
+        } else if (direction?.length === 2 && ([Axis.ANGLE, Axis.AUTO] as string[]).includes(axisRef.current)) {
             return direction + '-resize';
         } else {
             return 'default';
@@ -125,12 +130,12 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
 
-    const canDragX = (e: EventType, dir: string): boolean => {
-        return ([Axis.AUTO, Axis.ANGLE, Axis.X] as string[]).includes(axis) && dir.indexOf(Direction.E) > -1;
+    const canDragX = (dir: string): boolean => {
+        return ([Axis.AUTO, Axis.ANGLE, Axis.X] as string[]).includes(axisRef.current) && dir.indexOf(Direction.E) > -1;
     };
 
-    const canDragY = (e: EventType, dir: string): boolean => {
-        return ([Axis.AUTO, Axis.ANGLE, Axis.Y] as string[]).includes(axis) && dir.indexOf(Direction.S) > -1;
+    const canDragY = (dir: string): boolean => {
+        return ([Axis.AUTO, Axis.ANGLE, Axis.Y] as string[]).includes(axisRef.current) && dir.indexOf(Direction.S) > -1;
     };
 
     const eventDataChange = (value: EventDataType) => {
@@ -146,7 +151,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     const onResizeStart: EventHandler = (e) => {
         const direction = getDirection(e);
-        const mouseCursor = getMouseCursor(e, direction);
+        const mouseCursor = getMouseCursor(direction);
         if (mouseCursor === 'default') {
             return;
         } else {
@@ -164,19 +169,16 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             y: clientXY?.y,
             width: clientWH?.width,
             height: clientWH?.height,
-            zIndex: zIndexRange[1]
-        }
-        const shouldUpdate = props?.onResizeStart && props?.onResizeStart(e, eventData);
-        if (shouldUpdate === false) return;
-        isDraggableRef.current = true;
-
-        lastEventDataRef.current = {
+            zIndex: zIndexRange[1],
             lastDir: direction,
             lastX: clientXY?.x,
             lastY: clientXY?.y,
             lastW: clientWH?.width,
             lastH: clientWH?.height
         }
+        const shouldUpdate = props?.onResizeStart && props?.onResizeStart(e, eventData);
+        if (shouldUpdate === false) return;
+        isDraggableRef.current = true;
 
         eventDataChange(eventData);
         addStopEvents();
@@ -185,26 +187,27 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     const onMove: EventHandler = (e) => {
         e.preventDefault();
         const direction = getDirection(e);
-        const mouseCursor = getMouseCursor(e, direction);
+        const mouseCursor = getMouseCursor(direction);
         nodeRef.current.style.cursor = mouseCursor;
         if (!isDraggableRef.current) return;
 
         const clientXY = getClientXYInParent(e, nodeRef?.current);
         const clientWH = getClientWH(nodeRef.current);
         if (!clientXY || !clientWH) return;
-        const { lastDir = Axis.AUTO, lastX = 0, lastY = 0, lastW = 0, lastH = 0 } = lastEventDataRef.current || {};
+        const { lastDir = Axis.AUTO, lastX = 0, lastY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
 
         let deltaX, deltaY;
         deltaX = clientXY?.x - lastX;
         deltaY = clientXY?.y - lastY;
 
         const eventData = {
+            ...eventDataRef.current,
             mouseCursor: mouseCursor,
             dir: direction,
             x: clientXY?.x,
             y: clientXY?.y,
-            width: canDragX(e, lastDir) ? (lastW + deltaX) : lastW,
-            height: canDragY(e, lastDir) ? (lastH + deltaY) : lastH,
+            width: canDragX(lastDir) ? (lastW + deltaX) : lastW,
+            height: canDragY(lastDir) ? (lastH + deltaY) : lastH,
             zIndex: zIndexRange[1]
         }
 
