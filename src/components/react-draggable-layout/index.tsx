@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useEffect, useState,useImperativeHandle } from 'react'
 import GridItem, { GridItemEvent } from './gridItem'
 import { compactLayout } from './util/compact'
 import { getMaxContainerHeight } from './util/sort'
@@ -6,9 +6,14 @@ import { layoutCheck } from './util/collison'
 import { correctLayout } from './util/correction'
 import { stringJoin } from './utils'
 import { layoutItemForkey, syncLayout } from './util/initiate'
-import { DragactProps, DragactState, DragactLayoutItem } from './dragact-type'
+import { DragactProps, DragactState, DragactLayoutItem, mapLayout } from './dragact-type';
+import { EventType, GridItemHandler } from "./gridItem";
 
-import './style.css'
+import './style.css';
+import classNames from "classnames";
+
+import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
+import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, BoundsInterface } from "@/components/react-free-draggable";
 
 export class Dragact extends React.Component<DragactProps, DragactState> {
     constructor(props: DragactProps) {
@@ -33,8 +38,9 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
         }
     }
 
-    onResizeStart = (layoutItem: GridItemEvent) => {
+    onResizeStart = (e, layoutItem: GridItemEvent) => {
         const { GridX, GridY, w, h } = layoutItem
+        console.log(GridX, GridY)
         if (this.state.mapLayout) {
             const newlayout = syncLayout(this.state.mapLayout, layoutItem)
             this.setState({
@@ -52,7 +58,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
             this.props.onDragStart(layoutItem, this.state.layout)
     }
 
-    onResizing = (layoutItem: GridItemEvent) => {
+    onResizing = (e, layoutItem: GridItemEvent) => {
         const newLayout = layoutCheck(
             this.state.layout,
             layoutItem,
@@ -82,7 +88,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
         })
     }
 
-    onResizeEnd = (layoutItem: GridItemEvent) => {
+    onResizeEnd = (e, layoutItem: GridItemEvent) => {
         const { compacted, mapLayout } = compactLayout(
             this.state.layout,
             undefined,
@@ -102,7 +108,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
         this.props.onDragEnd && this.props.onDragEnd(layoutItem, compacted)
     }
 
-    onDragStart(bundles: GridItemEvent) {
+    onDragStart(e, bundles: GridItemEvent) {
         const { GridX, GridY, w, h } = bundles
         if (this.state.mapLayout) {
             this.setState({
@@ -120,7 +126,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
             this.props.onDragStart(bundles, this.state.layout)
     }
 
-    onDrag(layoutItem: GridItemEvent) {
+    onDrag(e, layoutItem: GridItemEvent) {
         const { GridY, UniqueKey } = layoutItem
         const moving = GridY - this.state.GridYMoving
 
@@ -151,7 +157,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
         this.props.onDrag && this.props.onDrag(layoutItem, compacted)
     }
 
-    onDragEnd(layoutItem: GridItemEvent) {
+    onDragEnd(e, layoutItem: GridItemEvent) {
         const { compacted, mapLayout } = compactLayout(
             this.state.layout,
             undefined,
@@ -204,10 +210,9 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
                 }}
                 isUserMove={!placeholderMoving}
                 dragType={dragType}
-                canDrag={false}
-                canResize={false}
             >
-                {(p: any, resizerProps: any) => <div {...p} />}
+                {/* {(p: any, resizerProps: any) => <div {...p} />} */}
+                <div />
             </GridItem>
         )
     }
@@ -252,11 +257,11 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
                 if (copyed[v.key]) {
                     return {
                         ...v,
-                        GridX:copyed[v.key].GridX,
-                        GridY:copyed[v.key].GridY,
-                        w:copyed[v.key].w,
-                        h:copyed[v.key].h,
-                        key:copyed[v.key].key
+                        GridX: copyed[v.key].GridX,
+                        GridY: copyed[v.key].GridY,
+                        w: copyed[v.key].w,
+                        h: copyed[v.key].h,
+                        key: copyed[v.key].key
                     }
                 }
 
@@ -342,17 +347,7 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
                     dragType={dragType}
                     key={item.key}
                 >
-                    {(GridItemProvided, dragHandle, resizeHandle) =>
-                        this.props.children(item, {
-                            isDragging:
-                                renderItem.isUserMove !== void 666
-                                    ? renderItem.isUserMove
-                                    : false,
-                            props: GridItemProvided,
-                            dragHandle,
-                            resizeHandle
-                        })
-                    }
+                    {this.props.children(item, { isDragging: renderItem.isUserMove !== void 666 ? renderItem.isUserMove : false })}
                 </GridItem>
             )
         }
@@ -385,7 +380,345 @@ export class Dragact extends React.Component<DragactProps, DragactState> {
     getLayout() {
         return this.state.layout
     }
-
-    //api
-    deleteItem(key: any) {}
 }
+
+// export const Dragact = React.forwardRef<any, DragactProps>((props, ref) => {
+
+//     const {
+//         className,
+//         style,
+//         width,
+//         col,
+//         padding = 0,
+//         rowHeight,
+//         margin,
+//         placeholder
+//     } = props;
+
+//     const [containerHeight, setContainerHeight] = useState<number>(500);
+//     const [dragType, setDragType] = useState<'drag' | 'resize'>();
+//     const [mapLayout, setMapLayout] = useState<mapLayout | undefined>();
+//     const [layout, setLayout] = useState<DragactLayoutItem[]>([])
+//     const [GridXMoving, setGridXMoving] = useState<number>(0);
+//     const [GridYMoving, setGridYMoving] = useState<number>(0);
+//     const [wMoving, setWMoving] = useState<number>(0);
+//     const [hMoving, setHMoving] = useState<number>(0);
+//     const [placeholderShow, setPlaceholderShow] = useState<Boolean>();
+//     const [placeholderMoving, setPlaceholderMoving] = useState<Boolean>();
+
+//     useEffect(() => {
+//         setLayout(props?.layout);
+//     }, [props?.layout])
+
+//     useImperativeHandle(ref, () => {
+//         getLayout
+//     });
+
+//     // api
+//     const getLayout = () => {
+//         return layout
+//     }
+
+//     useEffect(() => {
+//         if (layout.length > props.layout.length) {
+//             //remove
+//             const mapLayoutCopy = { ...mapLayout }
+//             props.layout.forEach((child: any) => {
+//                 if ((mapLayoutCopy as any)[child.key + ''] !== void 666)
+//                     delete (mapLayoutCopy as any)[child.key + '']
+//             })
+
+//             const copyed: any = { ...mapLayout }
+//             const newLayout = props.layout.map((item: any) => {
+//                 const { w, h, GridX, GridY, key, ...others } = item
+
+//                 return {
+//                     ...copyed[item.key],
+//                     others
+//                 }
+//             })
+//             const res = compactLayout(
+//                 newLayout,
+//                 undefined,
+//                 mapLayout
+//             )
+
+//             setContainerHeight(getMaxContainerHeight(
+//                 res?.compacted,
+//                 rowHeight,
+//                 margin[1],
+//                 containerHeight
+//             ));
+
+//             setLayout(res?.compacted)
+//             setMapLayout(res?.mapLayout);
+//         } else if (layout.length < props.layout.length) {
+//             //add
+//             const copyed: any = { ...mapLayout }
+//             var newLayout = props.layout.map((v: any) => {
+//                 if (copyed[v.key]) {
+//                     return {
+//                         ...v,
+//                         GridX: copyed[v.key].GridX,
+//                         GridY: copyed[v.key].GridY,
+//                         w: copyed[v.key].w,
+//                         h: copyed[v.key].h,
+//                         key: copyed[v.key].key
+//                     }
+//                 }
+
+//                 return {
+//                     ...v,
+//                     isUserMove: false,
+//                     key: v.key + ''
+//                 }
+//             })
+//             const res = compactLayout(
+//                 newLayout,
+//                 undefined,
+//                mapLayout
+//             );
+//             setContainerHeight(getMaxContainerHeight(
+//                 res?.compacted,
+//                 rowHeight,
+//                 margin[1],
+//                 containerHeight,
+//                 false
+//             ));
+//             setLayout(res?.compacted);
+//             setMapLayout(res?.mapLayout);
+//         } else {
+//             recalculateLayout(props.layout, props?.col)
+//         }
+//     }, [props?.layout, props?.col])
+
+//     const recalculateLayout = (layout: DragactLayoutItem[], col: number) => {
+//         const corrected = correctLayout(layout, col)
+//         const res = compactLayout(
+//             corrected,
+//             undefined,
+//             undefined
+//         )
+
+//         setLayout(res?.compacted);
+//         setMapLayout(res?.mapLayout);
+//         setContainerHeight(getMaxContainerHeight(
+//             res?.compacted,
+//             rowHeight,
+//             margin[1],
+//             containerHeight,
+//             false
+//         ));
+//     }
+
+//     const onDragStart: GridItemHandler = (e, layoutItem) => {
+//         const { GridX, GridY, w, h } = layoutItem;
+//         if (mapLayout) {
+//             setGridXMoving(GridX);
+//             setGridYMoving(GridY);
+//             setWMoving(w);
+//             setHMoving(h);
+//             setPlaceholderShow(true);
+//             setPlaceholderMoving(true);
+//             setMapLayout(syncLayout(mapLayout, layoutItem));
+//             setDragType('drag');
+//         }
+
+//         props.onDragStart && props.onDragStart(layoutItem, layout)
+//     }
+
+//     const onDrag: GridItemHandler = (e, layoutItem) => {
+//         const { GridY, UniqueKey } = layoutItem
+//         const moving = GridY - GridYMoving
+
+//         const newLayout = layoutCheck(
+//             layout,
+//             layoutItem,
+//             UniqueKey + '',
+//             UniqueKey + '' /*用户移动方块的key */,
+//             moving
+//         )
+//         const res = compactLayout(
+//             newLayout,
+//             layoutItem,
+//             mapLayout
+//         );
+
+//         setGridXMoving(layoutItem.GridX);
+//         setGridYMoving(layoutItem.GridY);
+//         setLayout(res?.compacted);
+//         setMapLayout(res?.mapLayout);
+//         setContainerHeight(getMaxContainerHeight(
+//             res?.compacted,
+//             rowHeight,
+//             margin[1],
+//             containerHeight
+//         ));
+//         props.onDrag && props.onDrag(layoutItem, res?.compacted)
+//     }
+
+//     const onDragEnd: GridItemHandler = (e, layoutItem) => {
+//         const res = compactLayout(
+//             layout,
+//             undefined,
+//             mapLayout
+//         );
+
+
+//         setPlaceholderShow(false);
+//         setLayout(res?.compacted);
+//         setMapLayout(res?.mapLayout);
+//         setContainerHeight(getMaxContainerHeight(
+//             res?.compacted,
+//             rowHeight,
+//             margin[1],
+//             containerHeight
+//         ));
+
+//         props.onDragEnd && props.onDragEnd(layoutItem, res?.compacted)
+//     }
+
+//     const onResizing: GridItemHandler = (e, layoutItem) => {
+//         const newLayout = layoutCheck(
+//             layout,
+//             layoutItem,
+//             layoutItem.UniqueKey + '',
+//             layoutItem.UniqueKey + '',
+//             0
+//         )
+
+//         const res = compactLayout(
+//             newLayout,
+//             layoutItem,
+//             mapLayout
+//         );
+
+//         setLayout(res?.compacted);
+//         setWMoving(layoutItem?.w);
+//         setHMoving(layoutItem?.h);
+//         setMapLayout(res?.mapLayout);
+//         setContainerHeight(getMaxContainerHeight(
+//             res?.compacted,
+//             rowHeight,
+//             margin[1],
+//             containerHeight,
+//             false
+//         ));
+//     }
+
+//     const onResizeStart: GridItemHandler = (e, layoutItem) => {
+//         const { GridX, GridY, w, h } = layoutItem
+//         if (mapLayout) {
+//             const newlayout = syncLayout(mapLayout, layoutItem);
+//             setGridXMoving(GridX);
+//             setGridYMoving(GridY);
+//             setWMoving(w);
+//             setHMoving(h);
+//             setPlaceholderShow(true);
+//             setPlaceholderMoving(true);
+//             setMapLayout(newlayout);
+//             setDragType('resize');
+//         }
+//         props.onDragStart && props.onDragStart(layoutItem, layout)
+//     }
+
+//     const onResizeEnd: GridItemHandler = (e, layoutItem) => {
+//         const res = compactLayout(
+//             layout,
+//             undefined,
+//             mapLayout
+//         );
+
+//         setPlaceholderShow(false);
+//         setLayout(res?.compacted);
+//         setMapLayout(res?.mapLayout);
+//         setContainerHeight(getMaxContainerHeight(
+//             res?.compacted,
+//             rowHeight,
+//             margin[1],
+//             containerHeight
+//         ));
+//         props.onDragEnd && props.onDragEnd(layoutItem, res?.compacted)
+//     }
+
+//     const getGridItem = (item: any, index: number) => {
+//         if (mapLayout) {
+//             const renderItem = layoutItemForkey(mapLayout, item.key + '')
+//             return (
+//                 <GridItem
+//                     {...renderItem}
+//                     margin={margin}
+//                     col={col}
+//                     containerWidth={width}
+//                     containerPadding={[padding || 0, padding || 0]}
+//                     rowHeight={rowHeight}
+//                     onDrag={onDrag}
+//                     onDragStart={onDragStart}
+//                     onDragEnd={onDragEnd}
+//                     isUserMove={
+//                         renderItem.isUserMove !== void 666
+//                             ? renderItem.isUserMove
+//                             : false
+//                     }
+//                     UniqueKey={item.key}
+//                     onResizing={onResizing}
+//                     onResizeStart={onResizeStart}
+//                     onResizeEnd={onResizeEnd}
+//                     dragType={dragType}
+//                     key={item.key}
+//                 >
+//                     {props.children(item, { isDragging: renderItem.isUserMove !== void 666 ? renderItem.isUserMove : false })}
+//                 </GridItem>
+//             )
+//         }
+//     }
+
+//     const renderPlaceholder = () => {
+//         if (!placeholderShow) return null
+
+//         if (!placeholder) return null
+
+//         return (
+//             <GridItem
+//                 margin={margin}
+//                 col={col}
+//                 containerWidth={width}
+//                 containerPadding={[padding, padding]}
+//                 rowHeight={rowHeight}
+//                 GridX={GridXMoving}
+//                 GridY={GridYMoving}
+//                 w={wMoving}
+//                 h={hMoving}
+//                 style={{
+//                     background: 'rgba(15,15,15,0.3)',
+//                     zIndex: dragType === 'drag' ? 1 : 10,
+//                     transition: ' all .15s ease-out'
+//                 }}
+//                 isUserMove={!placeholderMoving}
+//                 dragType={dragType}
+//             >
+//                 <div />
+//             </GridItem>
+//         )
+//     }
+
+//     const cls = classNames('DraggerLayout', className)
+
+//     return (
+//         <div
+//             className={cls}
+//             style={{
+//                 ...style,
+//                 left: 100,
+//                 width: width,
+//                 height: containerHeight,
+//                 zIndex: 1
+//             }}
+//         >
+//             {props?.layout.map((item, index) => {
+//                 return getGridItem(item, index)
+//             })}
+//             {renderPlaceholder()}
+//         </div>
+//     )
+// });

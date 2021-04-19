@@ -2,7 +2,7 @@ import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { matchParent, addEvent, removeEvent, getPositionInParent, findElement } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
-import { DraggableEventProps, EventHandler, EventData, LastEventData } from "./utils/types";
+import { DraggableEventProps, EventData, EventType } from "./utils/types";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -37,7 +37,6 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
     let draggingRef = useRef<boolean>(false);
     let eventDataRef = useRef<EventData>();
-    let lastEventDataRef = useRef<LastEventData>();
     const nodeRef = useRef<any>();
 
 
@@ -49,12 +48,12 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         return node?.ownerDocument;
     };
 
-    // 拖拽节点
+    // 拖拽句柄
     const findDragNode = () => {
         const node = props.dragNode && findElement(props.dragNode) || nodeRef?.current;
-        const nodeStyle = node?.ownerDocument?.defaultView?.getComputedStyle(node);
-        if (nodeStyle?.display === "inline") {
-            throw new Error("the style of `props.children` or `dragNode` cannot is `inline`, because `transform` has no effect on Element ");
+        const childStyle = node?.ownerDocument?.defaultView?.getComputedStyle(nodeRef?.current);
+        if (childStyle?.display === "inline") {
+            throw new Error("the style of `props.children` cannot is `inline`, because `transform` has no effect on Element ");
         }
         return node;
     };
@@ -68,7 +67,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
     // 限制范围的父元素
     const findBoundsParent = () => {
         const ownerDocument = findOwnerDocument();
-        const node = (props.boundsParent && findElement(props.boundsParent)) || ownerDocument?.body || ownerDocument?.documentElement;
+        const node = (props.bounds && findElement(props.bounds)) || ownerDocument?.body || ownerDocument?.documentElement;
         return node;
     };
 
@@ -85,32 +84,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         };
     }, []);
 
-    // 返回拖拽位置信息
-    const createEventData = (x: number, y: number): EventData => {
-        const dragNode = findDragNode();
-
-        if (lastEventDataRef.current) {
-            return {
-                ...lastEventDataRef.current,
-                node: dragNode,
-                // 移动一次的距离
-                deltaX: x - lastEventDataRef?.current?.lastX,
-                deltaY: y - lastEventDataRef?.current?.lastY,
-                x, y
-            };
-        } else {
-            return {
-                node: dragNode,
-                deltaX: 0,
-                deltaY: 0,
-                lastX: x,
-                lastY: y,
-                x, y
-            };
-        }
-    };
-
-    const handleDragStart: EventHandler = (e) => {
+    const handleDragStart = (e: EventType) => {
         const dragNode = findDragNode();
         const disabledNode = findDisabledNode();
         const boundsParent = findBoundsParent();
@@ -136,8 +110,19 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
         // 获取在指定父元素内的位置
         const { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
+
         // 返回事件对象相关的位置信息
-        eventDataRef.current = createEventData(x, y);
+        const lastEventX = eventDataRef?.current?.lastEventX ?? x;
+        const lastEventY = eventDataRef?.current?.lastEventY ?? y;
+        eventDataRef.current = {
+            node: dragNode,
+            deltaX: 0,
+            deltaY: 0,
+            lastEventX: lastEventX,
+            lastEventY: lastEventY,
+            eventX: x,
+            eventY: y
+        };
 
         // 如果没有完成渲染或者返回false则禁止拖拽
         const shouldUpdate = onDragStart && onDragStart(e, eventDataRef.current);
@@ -147,34 +132,46 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         if (enableUserSelectHack) addUserSelectStyles(ownerDocument);
 
         draggingRef.current = true;
-        lastEventDataRef.current = {
-            lastX: x,
-            lastY: y
+        eventDataRef.current = {
+            ...eventDataRef.current,
+            lastEventX: x,
+            lastEventY: y
         }
 
         addEvent(ownerDocument, dragEventFor.move, handleDrag);
         addEvent(ownerDocument, dragEventFor.stop, handleDragStop);
     };
 
-    const handleDrag: EventHandler = (e) => {
+    const handleDrag = (e: EventType) => {
         if (!draggingRef.current) return;
         const boundsParent = findBoundsParent();
         e.preventDefault();
         // 获取在指定父元素内的位置
         let { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
-        if (!lastEventDataRef.current) return;
+        if (!eventDataRef.current) return;
 
         // 拖拽跳跃,可设置多少幅度跳跃一次
         if (Array.isArray(grid)) {
-            const { lastX, lastY } = lastEventDataRef.current;
-            let deltaX = x - lastX, deltaY = y - lastY;
+            const { lastEventX, lastEventY } = eventDataRef.current;
+            let deltaX = x - lastEventX, deltaY = y - lastEventY;
             [deltaX, deltaY] = snapToGrid(grid, deltaX, deltaY);
             if (!deltaX && !deltaY) return; // skip useless drag
-            x = lastX + deltaX, y = lastY + deltaY;
+            x = lastEventX + deltaX, y = lastEventY + deltaY;
         }
 
         // 返回事件对象相关的位置信息
-        eventDataRef.current = createEventData(x, y);
+        const lastEventX = eventDataRef?.current?.lastEventX ?? x;
+        const lastEventY = eventDataRef?.current?.lastEventY ?? y;
+        const dragNode = findDragNode();
+        eventDataRef.current = {
+            node: dragNode,
+            deltaX: x - lastEventX,
+            deltaY: y - lastEventY,
+            lastEventX: lastEventX,
+            lastEventY: lastEventY,
+            eventX: x,
+            eventY: y
+        }
 
         // 返回false则禁止拖拽并初始化鼠标事件
         const shouldUpdate = onDrag && onDrag(e, eventDataRef.current);
@@ -190,16 +187,23 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             return;
         }
 
-        lastEventDataRef.current = {
-            lastX: x,
-            lastY: y
+        eventDataRef.current = {
+            ...eventDataRef.current,
+            lastEventX: x,
+            lastEventY: y
         }
     };
 
-    const handleDragStop: EventHandler = (e) => {
+    const handleDragStop = (e: EventType) => {
         if (!draggingRef.current || !eventDataRef.current) return;
         e.preventDefault();
         const ownerDocument = findOwnerDocument();
+
+        eventDataRef.current = {
+            ...eventDataRef.current,
+            deltaX: 0,
+            deltaY: 0
+        }
 
         const shouldContinue = onDragStop && onDragStop(e, eventDataRef.current);
         if (shouldContinue === false) return;
@@ -209,7 +213,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             // Remove user-select hack
             if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
         }
-        
+
         // 重置
         draggingRef.current = false;
 

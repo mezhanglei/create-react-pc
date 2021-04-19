@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getClientXYInParent, getClientWH } from "@/utils/dom";
 import { EventType, EventHandler, EventDataType, Direction, Axis, DragResizeProps } from "./type";
-import { filterObject } from "@/utils/object";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -165,14 +164,14 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         const eventData = {
             mouseCursor: mouseCursor,
             dir: direction,
-            x: clientXY?.x,
-            y: clientXY?.y,
             width: clientWH?.width,
             height: clientWH?.height,
             zIndex: zIndexRange[1],
             lastDir: direction,
-            lastX: clientXY?.x,
-            lastY: clientXY?.y,
+            eventX: clientXY?.x,
+            eventY: clientXY?.y,
+            lastEventX: clientXY?.x,
+            lastEventY: clientXY?.y,
             lastW: clientWH?.width,
             lastH: clientWH?.height
         }
@@ -194,18 +193,18 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         const clientXY = getClientXYInParent(e, nodeRef?.current);
         const clientWH = getClientWH(nodeRef.current);
         if (!clientXY || !clientWH) return;
-        const { lastDir = Axis.AUTO, lastX = 0, lastY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
+        const { lastDir = Axis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
 
         let deltaX, deltaY;
-        deltaX = clientXY?.x - lastX;
-        deltaY = clientXY?.y - lastY;
+        deltaX = clientXY?.x - lastEventX;
+        deltaY = clientXY?.y - lastEventY;
 
         const eventData = {
             ...eventDataRef.current,
             mouseCursor: mouseCursor,
             dir: direction,
-            x: clientXY?.x,
-            y: clientXY?.y,
+            eventX: clientXY?.x,
+            eventY: clientXY?.y,
             width: canDragX(lastDir) ? (lastW + deltaX) : lastW,
             height: canDragY(lastDir) ? (lastH + deltaY) : lastH,
             zIndex: zIndexRange[1]
@@ -244,8 +243,8 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         className: className ?? children.props.className,
         ref: nodeRef,
         style: {
-            ...filterObject(children.props.style, (item) => item != undefined),
-            ...filterObject(style, (item) => item != undefined),
+            ...children.props.style,
+            ...style,
             width: eventData?.width ?? style?.width ?? children.props.style?.width,
             height: eventData?.height ?? style?.height ?? children.props.style?.height,
             zIndex: eventData?.zIndex ?? style?.zIndex ?? children.props.style?.zIndex
@@ -253,7 +252,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     });
 })
 
-export default DragResize;
+export default React.memo(DragResize);
 
 
 

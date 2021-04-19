@@ -14,14 +14,14 @@ const fakeData = () => {
 }
 
 
-const Card: (any: any) => any = ({ item, provided }) => {
+const Card: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
     return (
         <div
             className='layout-Item'
-            {...provided.props}
-            {...provided.dragHandle}
+            ref={ref}
+            {...rest}
             style={{
-                ...provided.props.style,
+                ...style,
                 background: `${provided.isDragging ? '#eaff8f' : 'white'}`
             }}
         >
@@ -34,7 +34,7 @@ const Card: (any: any) => any = ({ item, provided }) => {
             </div>
         </div>
     )
-}
+})
 
 export class Mobile extends React.Component<{}, {}> {
     render() {

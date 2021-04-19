@@ -6,14 +6,14 @@ export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>
 
 export interface EventDataType {
     lastDir?: string;
-    lastX?: number;
-    lastY?: number;
+    lastEventX?: number;
+    lastEventY?: number;
     lastW?: number;
     lastH?: number;
     mouseCursor: string;
     dir: string;
-    x: number;
-    y: number;
+    eventX: number;
+    eventY: number;
     width: number;
     height: number;
     zIndex?: number;

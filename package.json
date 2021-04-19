@@ -91,7 +91,6 @@
     "fastclick": "^1.0.6",
     "fingerprintjs2": "^2.1.0",
     "history": "^5.0.0",
-    "immutable": "^4.0.0-rc.12",
     "jsencrypt": "^3.0.0-rc.1",
     "moment": "^2.29.1",
     "object-fit-images": "^3.2.4",

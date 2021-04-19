@@ -14,15 +14,15 @@ const fakeData = () => {
 }
 
 
-export const Card: (any: any) => any = ({ item, provided }) => {
+export const Card: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
     return (
         <div
             className='layout-Item'
-            {...provided.props}
-            {...provided.dragHandle}
+            ref={ref}
+            {...rest}
             style={{
-                ...provided.props.style,
-                // background: `${provided.isDragging ? '#eaff8f' : 'white'}`
+                ...style,
+                background: `${provided.isDragging ? '#eaff8f' : 'white'}`
             }}
         >
             <div
@@ -33,7 +33,7 @@ export const Card: (any: any) => any = ({ item, provided }) => {
                 {item.content}
             </div>
             <span
-                {...provided.resizeHandle}
+                {...resizeMix}
                 style={{
                     position: 'absolute',
                     width: 10, height: 10, right: 2, bottom: 2, cursor: 'se-resize',
@@ -43,7 +43,7 @@ export const Card: (any: any) => any = ({ item, provided }) => {
             />
         </div>
     )
-}
+})
 
 
 export class HistoryDemo extends React.Component<{}, {}> {

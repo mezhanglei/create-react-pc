@@ -45,8 +45,6 @@ export class Dragger extends React.Component<DraggerProps, {}> {
         originX: 0,
         originY: 0,
 
-        isUserMove: true,
-
         /**已经移动的位移，单位是px */
         lastX: 0,
         lastY: 0,
@@ -190,7 +188,7 @@ export class Dragger extends React.Component<DraggerProps, {}> {
          * Remove Debounce event listeners and add legitimate ones
          * after 10 pixels motion
          */
-        if((Math.abs(deltaX) + Math.abs(deltaY)) > 10) {
+        if ((Math.abs(deltaX) + Math.abs(deltaY)) > 10) {
             // Remove debounce event listeners
             if (event.type.indexOf('mouse') >= 0) {
                 doc.removeEventListener('mousemove', this.moveDebounce)
@@ -431,18 +429,6 @@ export class Dragger extends React.Component<DraggerProps, {}> {
         }
     }
 
-    movePerFrame = (delt: number) => {
-        this.setState({
-            y: this.state.y + delt
-        })
-        this.mQue++
-        if (this.mQue >= 10) {
-            this.mQue = 0
-            return
-        }
-        requestAnimationFrame(() => this.movePerFrame(delt))
-    }
-
     mixin = () => {
         var dragMix = {
             onMouseDown: this.onDragStartDebounce,
@@ -465,15 +451,16 @@ export class Dragger extends React.Component<DraggerProps, {}> {
         var { x, y, w, h } = this.state
         var { style } = this.props
 
-        if (!this.props.isUserMove) {
-            /**当外部设置其props的x,y初始属性的时候，我们在这里设置元素的初始位移 */
-            x = this.props.x ? this.props.x : 0
-            y = this.props.y ? this.props.y : 0
-            if (style) {
-                w = (style as any).width ? (style as any).width : w
-                h = (style as any).height ? (style as any).height : h
-            }
-        }
+        // if (!this.props.isUserMove) {
+        //     /**当外部设置其props的x,y初始属性的时候，我们在这里设置元素的初始位移 */
+        //     x = this.props.x ? this.props.x : 0
+        //     y = this.props.y ? this.props.y : 0
+        //     if (style) {
+        //         w = (style as any).width ? (style as any).width : w
+        //         h = (style as any).height ? (style as any).height : h
+        //     }
+        // }
+
         if (style) {
             //使得初始化的时候，不会有从0-1缩放动画
             w = w === 0 ? (style as any).width : w
@@ -492,11 +479,25 @@ export class Dragger extends React.Component<DraggerProps, {}> {
             ref: (node: any) => (this.Ref = node)
         }
 
-        return this.props.children(provided, dragMix, resizeMix)
+        return React.cloneElement(React.Children.only(this.props.children), {
+            style: {
+                ...this.props.children.props.style,
+                ...style,
+                touchAction: 'none!important',
+                transform: `translate3d(${x}px,${y}px,0px)`,
+                width: w,
+                height: h
+            },
+            ref: (node: any) => (this.Ref = node),
+            onMouseDown: this.onDragStartDebounce,
+            onTouchStart: this.onDragStartDebounce,
+            onTouchEnd: this.onDragEndDebounce,
+            onMouseUp: this.onDragEndDebounce
+        })
     }
 }
 
-// import * as React from 'react'
+// import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 // import {
 //     int,
 //     innerHeight,
@@ -505,13 +506,274 @@ export class Dragger extends React.Component<DraggerProps, {}> {
 //     outerWidth,
 //     parseBounds
 // } from '../utils'
-// import { DraggerProps } from './type'
+// import { DraggerProps, EventType } from './type';
+// import { matchParent, addEvent, removeEvent, getClientXY, findElement } from "@/utils/dom";
+// import { isMobile, isEventTouch } from "@/utils/verify";
+
+// // Simple abstraction for dragging events names.
+// const eventsFor = {
+//     touch: {
+//         start: 'touchstart',
+//         move: 'touchmove',
+//         stop: 'touchend'
+//     },
+//     mouse: {
+//         start: 'mousedown',
+//         move: 'mousemove',
+//         stop: 'mouseup'
+//     }
+// };
+
+// // 根据当前设备看是否触发
+// let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 // const Dragger = React.forwardRef<any, DraggerProps>((props, ref) => {
 //     const {
-//         children
+//         children,
+//         style,
+//         isUserMove = true,
+//         bounds,
+//         grid,
+//         allowX,
+//         allowY
 //     } = props;
 
+//     const [x, setX] = useState<number>(0);
+//     const [y, setY] = useState<number>(0);
+//     const [lastEventX, setLastEventX] = useState<number>(0);
+//     const [lastEventY, setLastEventY] = useState<number>(0);
+//     const [lastX, setLastX] = useState<number>(0);
+//     const [lastY, setLastY] = useState<number>(0);
+//     const [zIndex, setZIndex] = useState<number>(1);
+//     const [w, setW] = useState<number>(0);
+//     const [h, setH] = useState<number>(0);
+//     const [lastW, setLastW] = useState<number>(0);
+//     const [lastH, setLastH] = useState<number>(0);
+//     const [lastEvent, setLastEvent] = useState<EventType>();
 
-//     return children
+//     const nodeRef = useRef<any>();
+//     let parent = useRef<any>()?.current;
+//     let self = useRef<any>()?.current;
+
+//     useImperativeHandle(ref, () => (nodeRef.current));
+
+//     useEffect(() => {
+
+//         if (!isUserMove) {
+//             setX(props.x || 0)
+//             setY(props.y || 0)
+//             setW(props.w || 0)
+//             setH(props.h || 0)
+//             setLastX(props.x || 0)
+//             setLastY(props.y || 0)
+//         }
+
+//     }, [props?.x, props?.y, props?.w, props?.h, isUserMove])
+
+//     // 拖拽句柄
+//     const findDragNode = () => {
+//         const node = props.handle && findElement(props.handle) || nodeRef.current;
+//         const childStyle = node?.ownerDocument?.defaultView?.getComputedStyle(nodeRef?.current);
+//         if (childStyle?.display === "inline") {
+//             throw new Error("the style of `props.children` cannot is `inline`, because `transform` has no effect on Element ");
+//         }
+//         return node;
+//     };
+
+//     // 顶层document对象（有的环境可能删除了document顶层环境）
+//     const findOwnerDocument = () => {
+//         const node = nodeRef?.current;
+//         return node?.ownerDocument;
+//     };
+
+//     useEffect(() => {
+//         const ownerDocument = findOwnerDocument();
+//         const dragNode = findDragNode();
+//         addEvent(dragNode, dragEventFor.start, onDragStartDebounce);
+//         return () => {
+//             removeEvent(dragNode, dragEventFor.start, onDragStartDebounce);
+//             removeEvent(ownerDocument, dragEventFor.move, moveDebounce);
+//             removeEvent(ownerDocument, dragEventFor.stop, onDragEndDebounce);
+//         };
+//     }, []);
+
+//     const onDragStart = (e: EventType) => {
+//         const ownerDocument = findOwnerDocument();
+//         ownerDocument.body.style.userSelect = 'none';
+//         addEvent(ownerDocument, dragEventFor.move, move);
+//         addEvent(ownerDocument, dragEventFor.stop, onDragEnd);
+//         const clientXY = getClientXY(e);
+//         if (!clientXY) return;
+
+//         if (bounds === 'parent' && (typeof parent === 'undefined' || parent === null)) {
+//             parent = (e?.currentTarget as HTMLElement)?.offsetParent //todo
+//             self = e.currentTarget
+//         }
+
+//         props.onDragStart && props.onDragStart(e, { x, y })
+
+//         setLastEventX(clientXY?.x);
+//         setLastEventY(clientXY?.y);
+//         setLastX(x);
+//         setLastY(y);
+//         setZIndex(10);
+//     }
+
+//     const move = (e: any) => {
+//         const clientXY = getClientXY(e);
+//         if (!clientXY) return;
+//         let deltaX = clientXY?.x - lastEventX + lastX;
+//         let deltaY = clientXY?.y - lastEventY + lastY;
+
+//         if (bounds) {
+//             let NewBounds = typeof bounds !== 'string' ? parseBounds(bounds) : bounds
+
+//             /**
+//              * 网格式移动范围设定，永远移动 n 的倍数
+//              * 注意:设定移动范围的时候，一定要在判断bounds之前，否则会造成bounds不对齐
+//              */
+//             if (Array.isArray(grid) && grid.length === 2) {
+//                 deltaX = Math.round(deltaX / grid[0]) * grid[0]
+//                 deltaY = Math.round(deltaY / grid[1]) * grid[1]
+//             }
+
+//             if (bounds === 'parent') {
+//                 NewBounds = {
+//                     left:
+//                         int(parent.style.paddingLeft) +
+//                         int(self.style.marginLeft) -
+//                         self.offsetLeft,
+//                     top:
+//                         int(parent.style.paddingTop) +
+//                         int(self.style.marginTop) -
+//                         self.offsetTop,
+//                     right:
+//                         innerWidth(parent) -
+//                         outerWidth(self) -
+//                         self.offsetLeft +
+//                         int(parent.style.paddingRight) -
+//                         int(self.style.marginRight),
+//                     bottom:
+//                         innerHeight(parent) -
+//                         outerHeight(self) -
+//                         self.offsetTop +
+//                         int(parent.style.paddingBottom) -
+//                         int(self.style.marginBottom)
+//                 }
+//             }
+
+//             /**
+//              * 保证不超出右边界和底部
+//              * keep element right and bot can not cross the bounds
+//              */
+//             if (NewBounds !== 'parent')
+//                 deltaX = Math.min(deltaX, NewBounds.right)
+//             if (NewBounds !== 'parent')
+//                 deltaY = Math.min(deltaY, NewBounds.bottom)
+
+//             /**
+//              * 保证不超出左边和上边
+//              * keep element left and top can not cross the bounds
+//              */
+//             if (NewBounds !== 'parent')
+//                 deltaX = Math.max(deltaX, NewBounds.left)
+//             if (NewBounds !== 'parent') deltaY = Math.max(deltaY, NewBounds.top)
+//         }
+
+//         /**如果设置了x,y限制 */
+//         deltaX = allowX ? deltaX : 0
+//         deltaY = allowY ? deltaY : 0
+
+//         /**
+//          * 调整手感
+//          * 无论是向上移动还是向下移动，全部都是根据重力中心
+//          * */
+//         const height = nodeRef.current?.getClientRects()[0].height
+//         const upNdown = y - deltaY
+//         const fixY = deltaY + (upNdown >= 0 ? 0 : height / 2)
+//         /**移动时回调，用于外部控制 */
+//         props.onMove && props.onMove(e, { x: deltaX, y: fixY })
+//         setX(deltaX);
+//         setY(deltaY);
+//     }
+
+//     const onDragEnd = (e: EventType) => {
+//         const ownerDocument = findOwnerDocument();
+//         ownerDocument.body.style.userSelect = ''
+//         parent = null
+//         self = null
+//         const clientXY = getClientXY(e);
+//         if (!clientXY) return;
+
+//         removeEvent(ownerDocument, dragEventFor.move, move);
+//         removeEvent(ownerDocument, dragEventFor.stop, onDragEnd);
+//         setZIndex(1);
+
+//         props.onDragEnd && props.onDragEnd(e, { x, y })
+//     }
+
+//     const onDragStartDebounce = (e: EventType) => {
+//         e.stopImmediatePropagation();
+//         const ownerDocument = findOwnerDocument();
+//         const clientXY = getClientXY(e);
+//         if (!clientXY) return;
+
+//         setLastEventX(clientXY?.x);
+//         setLastEventY(clientXY?.y);
+//         setLastX(x);
+//         setLastY(y);
+//         setZIndex(10);
+//         setLastEvent(e);
+
+//         addEvent(ownerDocument, dragEventFor.move, moveDebounce);
+//         addEvent(ownerDocument, dragEventFor.stop, onDragEndDebounce);
+//     }
+
+//     const moveDebounce = (e: EventType) => {
+//         const clientXY = getClientXY(e);
+//         const ownerDocument = findOwnerDocument();
+//         if (!clientXY) return;
+//         let deltaX = clientXY?.x - lastEventX + lastX;
+//         let deltaY = clientXY?.y - lastEventY + lastY;
+
+//         /*
+//          * Remove Debounce event listeners and add legitimate ones
+//          * after 10 pixels motion
+//          */
+//         if ((Math.abs(deltaX) + Math.abs(deltaY)) > 10) {
+//             removeEvent(ownerDocument, dragEventFor.move, moveDebounce);
+//             removeEvent(ownerDocument, dragEventFor.stop, onDragEndDebounce);
+//             // Initiate real dragStart with original event
+//             lastEvent && onDragStart(lastEvent);
+
+//             // Trigger real movement with current event");
+//             move(e);
+//         }
+//     }
+
+//     const onDragEndDebounce = (e: EventType) => {
+//         const ownerDocument = findOwnerDocument();
+//         /** 取消用户选择限制，用户可以重新选择 */
+//         ownerDocument.body.style.userSelect = ''
+//         parent = null
+//         self = null
+//         setLastEvent(null);
+//         if (ownerDocument) {
+//             removeEvent(ownerDocument, dragEventFor.move, moveDebounce);
+//             removeEvent(ownerDocument, dragEventFor.stop, onDragEndDebounce);
+//         }
+//     }
+
+
+//     return React.cloneElement(React.Children.only(children), {
+//         style: {
+//             ...children.props.style,
+//             ...style,
+//             touchAction: 'none!important',
+//             transform: `translate3d(${x}px,${y}px,0px)`,
+//             width: w || style?.width,
+//             height: h || style?.height
+//         },
+//         ref: nodeRef
+//     })
 // })

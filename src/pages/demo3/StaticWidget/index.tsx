@@ -19,18 +19,18 @@ const fakeData = () => {
     })
 }
 
-const Cell: (any: any) => any = ({ item, provided }) => {
+const Cell: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
     return (
         <div
-            {...provided.props}
-            {...provided.dragHandle}
+            ref={ref}
+            {...(!item.static && rest)}
             className={`layout-Cell ${item.static ? "static" : ""}`}
-            style={{ ...provided.props.style, background: item.static ? "#e8e8e8" : "" }}
+            style={{ ...style, background: item.static ? "#e8e8e8" : "" }}
         >
             <div style={{ padding: 10, color: '#595959' }}>{item.content}</div>
         </div>
     )
-}
+})
 
 export const SortedTableWithStatic = () => {
     return (

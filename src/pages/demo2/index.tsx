@@ -3,7 +3,7 @@ import "./index.less";
 import InfiniteScroll from '@/components/react-awesome-infinite-scroll';
 
 
-const Home: React.FC<any> = (props) => {
+const demo2: React.FC<any> = (props) => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isError, setIsError] = useState<boolean>(true);
     const isErrorRef = useRef<boolean>(true);

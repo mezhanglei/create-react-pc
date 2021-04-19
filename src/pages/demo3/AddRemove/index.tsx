@@ -9,12 +9,12 @@ const Words = [
     { content: 'I’d rather live with a good question than a bad answer.' }
 ]
 
-const Card = ({ item, provided, onDelete }: any) => {
+const Card = React.forwardRef(({ item, provided, onDelete, resizeMix, ...rest }, ref) => {
     return (
         <div
             className="layout-Item"
-            {...provided.props}
-            {...provided.dragHandle}
+            ref={ref}
+            {...rest}
         >
             <div
                 style={{
@@ -34,7 +34,7 @@ const Card = ({ item, provided, onDelete }: any) => {
             </div>
         </div>
     )
-}
+})
 
 const fakeData = () => {
     var Y = 0

@@ -1,7 +1,5 @@
-import { getPrefixStyle } from "@/utils/cssPrefix";
-import { isDom, isNumber } from "@/utils/type";
+import { isDom, isEmpty, isNumber } from "@/utils/type";
 import { isContains, findElement } from "@/utils/dom";
-import { CSSProperties } from "react";
 import { BoundsInterface } from "./types";
 
 // 添加选中类和样式
@@ -75,19 +73,20 @@ export interface PositionInterface {
 }
 // 接收偏移位置，返回新的transform值
 export function getTranslation(current: PositionInterface, positionOffset: PositionInterface | undefined, unit: string): string {
-    let translation = `translate(${current.x}${unit},${current.y}${unit})`;
+    let translation = `translate3d(${current.x}${unit},${current.y}${unit}, 0)`;
+    
     if (positionOffset) {
         const offsetX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
         const offsetY = `${(typeof positionOffset.y === 'string') ? positionOffset.y : positionOffset.y + unit}`;
-        translation = `translate(${offsetX}, ${offsetY})` + translation;
+        translation = `translate3d(${offsetX},${offsetY}, 0)`; + translation;
     }
     return translation;
 }
 
 // 设置css的transform
-export function createCSSTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): CSSProperties {
+export function createCSSTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): string {
     const translation = getTranslation(current, positionOffset, 'px');
-    return { [getPrefixStyle('transform')]: translation };
+    return translation;
 }
 
 // 设置svg的transform
@@ -129,16 +128,11 @@ export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterfa
 }
 
 // 元素在父元素限制范围下的位置
-export function getPositionByBounds(node: HTMLElement, parent: any, position: PositionInterface, bounds?: BoundsInterface): PositionInterface {
+export function getPositionByBounds(node: HTMLElement, position: PositionInterface, bounds: any): PositionInterface {
 
-    // 限制父元素
-    const boundsParent: HTMLElement = findElement(parent);
-
-    if (!getBoundsInParent(node, boundsParent)) {
-        return position;
-    }
-
-    const resultBounds = { ...getBoundsInParent(node, boundsParent), ...bounds };
+    if(isEmpty(bounds)) return position;
+    
+    const resultBounds = findElement(bounds) ? getBoundsInParent(node, findElement(bounds)) : bounds;
     const { xStart = 0, yStart = 0, xEnd = 0, yEnd = 0 } = resultBounds;
     let { x, y } = position;
 

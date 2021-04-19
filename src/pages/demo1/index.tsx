@@ -8,14 +8,17 @@ import DragResize from '@/components/react-resize-zoom';
 const Demo1: React.FC<any> = (props) => {
     const [width, setWidth] = useState<any>(100);
     const [height, setHeight] = useState<any>(200);
-    const [axis, setAxis] = useState<any>('auto');
+    const [axis, setAxis] = useState<any>('both');
 
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
 
     const onDragStop = (e, data) => {
         setX(500)
-        setAxis('none')
+    }
+
+    const onDrag = (e, data) => {
+        if(data?.x > 900) return false;
     }
 
     return (
@@ -28,7 +31,7 @@ const Demo1: React.FC<any> = (props) => {
                     grid={[100, 25]}
                     scale={1}
                 >
-                    <div style={{ display: "inline-block" }}>
+                    <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
                         <Button className="handle" type="default">
                             拖拽元素1
                         </Button>
@@ -48,11 +51,12 @@ const Demo1: React.FC<any> = (props) => {
             <Draggable
                 x={x}
                 y={y}
-                axis="both"
+                axis={axis}
+                onDrag={onDrag}
                 onDragStop={onDragStop}
                 scale={1}
             >
-                <DragResize axis={axis} width={width} height={height} onResizeEnd={onDragStop}>
+                <DragResize axis="auto" width={width} height={height} onResizeEnd={onDragStop}>
                     <div style={{ width: '50px', height: "50px", background: "red" }}>
                         大小拖放
                     </div>

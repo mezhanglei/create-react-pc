@@ -27,13 +27,13 @@ const fakeData = () => {
     })
 }
 
-const Card: (item: any) => any = ({ item, provided }) => {
+const Card: (item: any) => any = React.forwardRef(({ item, provided, resizeMix, ...rest }, ref) => {
     if (item.key !== '3') {
         return (
             <div
                 className="layout-Item"
-                {...provided.props}
-                {...provided.dragHandle}
+                ref={ref}
+                {...rest}
             >
                 <div
                     style={{
@@ -48,16 +48,16 @@ const Card: (item: any) => any = ({ item, provided }) => {
         )
     }
     return (
-        <div className="layout-Item" {...provided.props}>
+        <div ref={ref} className="layout-Item" {...rest}>
             <div style={{ padding: 5, textAlign: 'center', color: '#595959' }}>
                 {item.content}
-                <div className="card-handle" {...provided.dragHandle}>
+                <div className="card-handle">
                     点我拖动
                 </div>
             </div>
         </div>
     )
-}
+})
 
 export class HandleLayout extends React.Component<{}, {}> {
     render() {
