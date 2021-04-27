@@ -34,11 +34,22 @@ export type ListenAddFuncHandle = (area: ContainerInterface, addTag: AddTagFunc)
 // 包装拖拽容器
 export type DraggableAreaBuilder = (props?: { triggerAddFunc: TriggerAddFuncHandle; listenAddFunc: ListenAddFuncHandle; areaId: string | number }) => any;
 
-// 拖拽容器的类型
+// 拖拽容器props
 export interface DraggableAreaProps {
     className?: string;
-    width?: number;
     style?: CSSProperties;
-    children: (item: TagInterface, provided: {isDragging: Boolean}) => any;
+    children: any;
     placeholder?: boolean;
+}
+
+// palceholder的props
+export interface PlaceholderProps {
+    x: number;
+    y: number;
+    lastX: number;
+    lastY: number;
+    lastW: number;
+    lastH: number;
+    width: number;
+    height: number;
 }

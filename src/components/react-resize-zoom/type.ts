@@ -17,6 +17,7 @@ export interface EventDataType {
     width: number;
     height: number;
     zIndex?: number;
+    node: HTMLElement;
 }
 export enum Direction {
     N = "n", // 上边

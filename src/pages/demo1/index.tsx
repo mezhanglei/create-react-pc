@@ -3,6 +3,7 @@ import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
 import DragResize from '@/components/react-resize-zoom';
+import { DraggableArea, DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 
 
 const Demo1: React.FC<any> = (props) => {
@@ -13,12 +14,8 @@ const Demo1: React.FC<any> = (props) => {
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
 
-    const onDragStop = (e, data) => {
-        setX(500)
-    }
-
     const onDrag = (e, data) => {
-        if(data?.x > 900) return false;
+        // setX(data?.x)
     }
 
     return (
@@ -26,8 +23,11 @@ const Demo1: React.FC<any> = (props) => {
             <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
-                    boundsParent=".boxs"
+                    bounds=".boxs"
                     dragNode=".handle"
+                    x={x}
+                    y={y}
+                    onDrag={onDrag}
                     grid={[100, 25]}
                     scale={1}
                 >
@@ -48,20 +48,20 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <Draggable
-                x={x}
-                y={y}
-                axis={axis}
-                onDrag={onDrag}
-                onDragStop={onDragStop}
-                scale={1}
-            >
-                <DragResize axis="auto" width={width} height={height} onResizeEnd={onDragStop}>
-                    <div style={{ width: '50px', height: "50px", background: "red" }}>
-                        大小拖放
-                    </div>
-                </DragResize>
-            </Draggable>
+            <DraggableArea className="flex-box">
+                {
+                    [1, 2, 3, 5, 6, 7, 8]?.map((item, index) => {
+                        return (
+                            <DraggerItem className="drag-a" key={item} id={item}>
+                                <div>
+                                    大小拖放
+                            </div>
+                            </DraggerItem>
+                        )
+                    })
+                }
+            </DraggableArea>
+
             <div>
                 大小拖放
                 <DragResize>

@@ -6,7 +6,7 @@ import { findInArray } from "./array";
  * 接收类名或节点，返回节点
  * @param target 目标参数
  */
-export const findElement = (target: string | HTMLElement): any => {
+export const findElement = (target: any): any => {
     let result = null;
     if (typeof target === "string") {
         result = document.querySelector(target);
@@ -129,7 +129,7 @@ export function getScroll(el: HTMLElement = (document.body || document.documentE
     }
 };
 
-
+// 事件对象在屏幕的位置
 export interface ScreenInterface {
     x: number;
     y: number;
@@ -152,7 +152,7 @@ export function getScreenXY(e: MouseEvent | TouchEvent): null | ScreenInterface 
     return pos;
 };
 
-// 获取页面或元素的可视宽高(兼容写法, 不包括工具栏和滚动条)
+// 获取页面或元素的可视宽高(兼容写法, 不包括工具栏和滚动条及边框)
 export interface ClientInterface {
     width: number;
     height: number;
@@ -168,6 +168,26 @@ export function getClientWH(el: HTMLElement = (document.body || document.documen
     } else {
         const width = el.clientWidth;
         const height = el.clientHeight;
+        return { width, height };
+    }
+};
+
+// 获取页面或元素的宽高 = 可视宽高 + 滚动条 + 边框
+export interface OffsetInterface {
+    width: number;
+    height: number;
+}
+export function getOffsetWH(el: HTMLElement = (document.body || document.documentElement)): undefined | OffsetInterface {
+    if (!isDom(el)) {
+        return;
+    }
+    if (el === document.body || el === document.documentElement) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        return { width, height };
+    } else {
+        const width = el.offsetWidth;
+        const height = el.offsetHeight;
         return { width, height };
     }
 };

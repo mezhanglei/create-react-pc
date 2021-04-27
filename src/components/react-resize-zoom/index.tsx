@@ -157,11 +157,13 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             e.stopImmediatePropagation();
         };
         e.preventDefault();
-        const clientXY = getClientXYInParent(e, nodeRef?.current);
-        const clientWH = getClientWH(nodeRef.current);
+        const element = nodeRef?.current;
+        const clientXY = getClientXYInParent(e, element);
+        const clientWH = getClientWH(element);
         if (!clientXY || !clientWH) return;
 
         const eventData = {
+            node: element,
             mouseCursor: mouseCursor,
             dir: direction,
             width: clientWH?.width,
@@ -185,13 +187,13 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     const onMove: EventHandler = (e) => {
         e.preventDefault();
+        const element = nodeRef?.current;
         const direction = getDirection(e);
         const mouseCursor = getMouseCursor(direction);
-        nodeRef.current.style.cursor = mouseCursor;
+        element.style.cursor = mouseCursor;
         if (!isDraggableRef.current) return;
-
-        const clientXY = getClientXYInParent(e, nodeRef?.current);
-        const clientWH = getClientWH(nodeRef.current);
+        const clientXY = getClientXYInParent(e, element);
+        const clientWH = getClientWH(element);
         if (!clientXY || !clientWH) return;
         const { lastDir = Axis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
 
@@ -201,6 +203,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
         const eventData = {
             ...eventDataRef.current,
+            node: element,
             mouseCursor: mouseCursor,
             dir: direction,
             eventX: clientXY?.x,
@@ -240,10 +243,10 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     return React.cloneElement(React.Children.only(children), {
-        className: className ?? children.props.className,
+        className: className ?? children.props?.className,
         ref: nodeRef,
         style: {
-            ...children.props.style,
+            ...children.props?.style,
             ...style,
             width: eventData?.width ?? style?.width ?? children.props.style?.width,
             height: eventData?.height ?? style?.height ?? children.props.style?.height,

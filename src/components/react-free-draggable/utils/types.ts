@@ -21,6 +21,8 @@ export interface DragData {
     deltaY: number; // y方向移动的距离
     x: number; // 元素位置x
     y: number; // 元素位置y
+    translateX: number; // 当前x轴的translate
+    translateY: number; // 当前y轴的translate
     zIndex?: number; // 层级
     lastX: number; // 上个位置x
     lastY: number; // 上个位置y

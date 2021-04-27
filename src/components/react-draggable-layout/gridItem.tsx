@@ -447,7 +447,6 @@ const GridItem = React.forwardRef<any, GridItemProps>((props, ref) => {
             x={x}
             y={y}
             bounds={bounds}
-            boundsParent={boundsParent}
         >
             <ResizeZoom
                 // axis={dragType === 'resize' ? "auto" : "none"}
