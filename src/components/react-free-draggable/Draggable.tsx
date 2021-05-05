@@ -118,6 +118,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             x: x, y: y,
             lastX: x,
             lastY: y,
+            zIndex: zIndexRange[1],
             node
         }
 

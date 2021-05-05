@@ -50,15 +50,25 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType('drag');
+            placeholderShowChange(true);
+            placeholderDataChange({
+                x: tag?.x,
+                y: tag?.y,
+                width: tag?.width,
+                height: tag?.height
+            })
         }
 
         const onDrag: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
+            placeholderMovingChange(true);
         }
 
         const onDragEnd: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType('none');
+            placeholderShowChange(false);
+            placeholderMovingChange(false);
         }
 
         const onResizeStart: DraggerItemHandler = (e, tag) => {
@@ -68,7 +78,6 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
 
         const onResizing: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
-
         }
 
         const onResizeEnd: DraggerItemHandler = (e, tag) => {
@@ -76,8 +85,6 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
         }
 
         const renderPlaceholder = () => {
-            // if (!placeholderShowRef.current) return null;
-            // if (!placeholder) return null;
             return (
                 <DraggerItem
                     onDragStart={onDragStart}
@@ -91,6 +98,7 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
                     width={placeholderData?.width}
                     height={placeholderData?.height}
                     id={-1}
+                    zIndexRange={[1, 9]}
                     style={{
                         position: 'absolute',
                         background: 'rgba(15,15,15,0.3)',
@@ -115,16 +123,16 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
             >
                 {
                     React.Children.map(children, (child, index) => {
+                        console.log(child)
                         return React.cloneElement(child, {
-                            ...rest,
                             onDragStart: onDragStart,
                             onDrag: onDrag,
                             onDragEnd: onDragEnd,
                             onResizeStart: onResizeStart,
                             onResizing: onResizing,
                             onResizeEnd: onResizeEnd,
-                            bounds: '.DraggerLayout',
-                            zIndexRange: [1, 2]
+                            // bounds: '.DraggerLayout',
+                            zIndexRange: [2, 10]
                         })
                     })
                 }

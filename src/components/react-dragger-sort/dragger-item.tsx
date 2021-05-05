@@ -4,7 +4,7 @@ import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, BoundsInterface } from "@/components/react-free-draggable";
 import { ChildrenType } from "./types";
 import classNames from "classnames";
-import { findElement,getPositionInParent, getClientWH } from "@/utils/dom";
+import { findElement, getPositionInParent, getClientWH } from "@/utils/dom";
 
 export type EventType = MouseEvent | TouchEvent;
 export type DraggerItemHandler<E = EventType, T = DraggerItemEvent> = (e: E, data: T) => void | boolean;
@@ -34,6 +34,7 @@ export interface DraggerProps {
     x?: number;
     y?: number;
     zIndexRange?: [number, number];
+    dragNode?: string;
 }
 
 // 拖拽及缩放组件
@@ -48,12 +49,21 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         id,
         width,
         height,
-        x,
-        y,
-        zIndexRange
+        zIndexRange,
+        dragNode
     } = props;
 
     const [dragType, setDragType] = useState<'drag' | 'resize' | 'none'>();
+    const [x, setX] = useState<number>();
+    const [y, setY] = useState<number>();
+
+    useEffect(() => {
+        setX(props?.x)
+    }, [props?.x])
+
+    useEffect(() => {
+        setY(props?.y)
+    }, [props?.y])
 
     // 可以拖拽
     const canDrag = () => {
@@ -83,6 +93,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         const clientWH = getClientWH(node);
         if (!clientWH) return false;
+        setX(data?.x)
+        setY(data?.y)
         return props.onDragStart && props.onDragStart(e, {
             width: clientWH?.width,
             height: clientWH?.height,
@@ -114,7 +126,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         const clientWH = getClientWH(node);
         if (!clientWH) return false;
-       return props.onDragEnd && props.onDragEnd(e, {
+        return props.onDragEnd && props.onDragEnd(e, {
             width: clientWH?.width,
             height: clientWH?.height,
             x: data?.x,
@@ -172,7 +184,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     }
 
     const cls = classNames((children?.props?.className || ''), className);
-console.log(x,y)
+
     return (
         <Draggable
             ref={ref}
@@ -181,9 +193,9 @@ console.log(x,y)
             onDrag={onDrag}
             onDragStop={onDragStop}
             bounds={bounds}
+            dragNode={dragNode}
             x={x}
             y={y}
-            zIndexRange={zIndexRange}
         >
             <ResizeZoom
                 onResizeStart={onResizeStart}
@@ -191,7 +203,6 @@ console.log(x,y)
                 onResizeEnd={onResizeEnd}
                 width={width}
                 height={height}
-                zIndexRange={zIndexRange}
             >
                 {
                     React.cloneElement(React.Children.only(children), {
@@ -199,7 +210,7 @@ console.log(x,y)
                             ...children.props.style,
                             ...style,
                             transition: (!dragType || dragType != 'none') && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-                            // zIndex: (!dragType || dragType != 'none') && (canDrag() || canResize()) ? (dragType === 'drag' ? 10 : 2) : 2
+                            zIndex: zIndexRange && ((!dragType || dragType === 'none') ? zIndexRange[0] : zIndexRange[1])
                         }
                     })
                 }

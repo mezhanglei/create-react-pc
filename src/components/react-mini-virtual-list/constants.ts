@@ -11,6 +11,11 @@ export const sizeProp = {
     [DIRECTION.HORIZONTAL]: 'width',
 };
 
+export const clientWH = {
+    [DIRECTION.VERTICAL]: 'clientHeight',
+    [DIRECTION.HORIZONTAL]: 'clientWidth',
+};
+
 export const positionProp = {
     [DIRECTION.VERTICAL]: 'top',
     [DIRECTION.HORIZONTAL]: 'left',

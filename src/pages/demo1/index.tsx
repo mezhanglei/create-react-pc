@@ -4,9 +4,10 @@ import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
 import DragResize from '@/components/react-resize-zoom';
 import { DraggableArea, DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
-
+import VirtualList from '@/components/react-mini-virtual-list';
 
 const Demo1: React.FC<any> = (props) => {
+    const [dataSource, setDataSource] = useState<any>([]);
     const [width, setWidth] = useState<any>(100);
     const [height, setHeight] = useState<any>(200);
     const [axis, setAxis] = useState<any>('both');
@@ -17,6 +18,21 @@ const Demo1: React.FC<any> = (props) => {
     const onDrag = (e, data) => {
         // setX(data?.x)
     }
+
+
+    useEffect(() => {
+        setTimeout(() => {
+          setDataSource([...new Array(100).keys()])  
+        }, 500);
+    }, [])
+
+    const renderItem = (item: any, index: number) => {
+        return (
+            <div className="Row" key={index}>
+                Row #{item}
+            </div>
+        );
+    };
 
     return (
         <>
@@ -55,7 +71,7 @@ const Demo1: React.FC<any> = (props) => {
                             <DraggerItem className="drag-a" key={item} id={item}>
                                 <div>
                                     大小拖放
-                            </div>
+                                </div>
                             </DraggerItem>
                         )
                     })
@@ -70,6 +86,17 @@ const Demo1: React.FC<any> = (props) => {
                     </div>
                 </DragResize>
             </div>
+            <VirtualList
+                width="auto"
+                // scrollToAlignment="start"
+                // scrollToIndex={30}
+                scrollOffset={500}
+                limit={200}
+                dataSource={dataSource}
+                renderItem={renderItem}
+                itemSize={50}
+                className="VirtualList"
+            />
         </>
     );
 }

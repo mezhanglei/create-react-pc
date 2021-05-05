@@ -46,10 +46,10 @@ export interface DraggableAreaProps {
 export interface PlaceholderProps {
     x: number;
     y: number;
-    lastX: number;
-    lastY: number;
-    lastW: number;
-    lastH: number;
+    lastX?: number;
+    lastY?: number;
+    lastW?: number;
+    lastH?: number;
     width: number;
     height: number;
 }

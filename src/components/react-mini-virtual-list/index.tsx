@@ -5,6 +5,7 @@ import {
     positionProp,
     scrollProp,
     sizeProp,
+    clientWH,
     STYLE_WRAPPER,
     STYLE_INNER,
     STYLE_ITEM
@@ -26,8 +27,8 @@ export interface StyleCacheInterface {
 export interface VirtualListProps {
     className?: string; // 外部容器的类名
     style?: object; // 外部容器的样式
-    height: number; // 容器的高度
-    width: string; // 容器的宽度
+    height?: number; // 容器的高度
+    width?: string; // 容器的宽度
     scrollDirection?: DIRECTION; // 滚动的方向
     limit?: number; // 加载最大限制个数
     dataSource: any[]; // 数据源
@@ -51,7 +52,6 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
         width = "100%",
         scrollDirection = DIRECTION.VERTICAL,
         limit,
-        dataSource,
         itemSize,
         estimatedItemSize = 50,
         scrollOffset,
@@ -60,7 +60,8 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
         overscanCount = 3,
         renderItem,
         onItemsRendered,
-        onScroll
+        onScroll,
+        dataSource
     } = props;
 
     const nodeRef = useRef<any>();
@@ -78,7 +79,7 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
 
     useEffect(() => {
         // 初始化manager
-        if (limit && dataSource && itemSize && estimatedItemSize) {
+        if (limit && dataSource?.length && itemSize && estimatedItemSize) {
             const manager = new SizeAndPositionManager({
                 limit: limit,
                 dataSource: dataSource,
@@ -100,67 +101,77 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
         return () => {
             removeEvent(node, "scroll", handleScroll);
         };
-    }, []);
+    }, [dataSource?.length]);
 
     // 更新scrollSize
     useEffect(() => {
-        if (typeof scrollToIndex === "number") {
-            const scrollSize = getScrollForIndex(scrollToIndex);
-            canSetScroll.current = true;
-            scrollSizeChange(scrollSize);
-        } else if (typeof scrollOffset === "number") {
-            canSetScroll.current = true;
-            scrollSizeChange(scrollOffset);
+        if (dataSource?.length) {
+            if (typeof scrollToIndex === "number") {
+                const scrollSize = getScrollForIndex(scrollToIndex);
+                canSetScroll.current = true;
+                scrollSizeChange(scrollSize);
+            } else if (typeof scrollOffset === "number") {
+                canSetScroll.current = true;
+                scrollSizeChange(scrollOffset);
+            }
         }
-    }, [ManagerRef.current, scrollToIndex, scrollOffset, scrollToAlignment, limit, dataSource, itemSize, estimatedItemSize, scrollDirection])
+    }, [ManagerRef.current, scrollToIndex, scrollOffset, scrollToAlignment, limit, dataSource?.length, itemSize, estimatedItemSize, scrollDirection])
 
     // 更新列表选项信息
     useEffect(() => {
-        ManagerRef.current?.updateConfig({
-            limit: limit,
-            dataSource: dataSource,
-            estimatedItemSize: estimatedItemSize,
-        });
-    }, [ManagerRef.current, limit, dataSource, estimatedItemSize])
+        if (dataSource?.length) {
+            ManagerRef.current?.updateConfig({
+                limit: limit,
+                dataSource: dataSource,
+                estimatedItemSize: estimatedItemSize,
+            });
+        }
+    }, [ManagerRef.current, limit, dataSource?.length, estimatedItemSize])
 
     // 更新itemSize
     useEffect(() => {
-        ManagerRef.current?.updateConfig({
-            itemSizeGetter: itemSizeGetter(itemSize)
-        });
-    }, [ManagerRef.current, itemSize])
+        if (dataSource?.length) {
+            ManagerRef.current?.updateConfig({
+                itemSizeGetter: itemSizeGetter(itemSize)
+            });
+        }
+    }, [ManagerRef.current, dataSource?.length, itemSize])
 
     // 列表相关选项变化时重置
     useEffect(() => {
-        recomputeSizes();
-    }, [ManagerRef.current, limit, dataSource, itemSize, estimatedItemSize]);
+        if (dataSource?.length) {
+            recomputeSizes();
+        }
+    }, [ManagerRef.current, limit, dataSource?.length, itemSize, estimatedItemSize]);
 
     // 滚动加载中索引变化时
     useEffect(() => {
-        const range = ManagerRef.current?.getVisibleRange({
-            containerSize: props[sizeProp[scrollDirection]] || 0,
-            scrollSize: scrollSizeRef.current,
-            overscanCount: overscanCount,
-        });
+        if (dataSource?.length) {
+            const range = ManagerRef.current?.getVisibleRange({
+                containerSize: nodeRef.current[clientWH[scrollDirection]] || 0,
+                scrollSize: scrollSizeRef.current,
+                overscanCount: overscanCount,
+            });
 
-        // 当加载新数据时触发的回调函数
-        if (typeof range?.start !== 'undefined' && typeof range?.stop !== 'undefined') {
-            if (typeof onItemsRendered === 'function') {
-                onItemsRendered(range?.start, range?.stop);
+            // 当加载新数据时触发的回调函数
+            if (typeof range?.start !== 'undefined' && typeof range?.stop !== 'undefined') {
+                if (typeof onItemsRendered === 'function') {
+                    onItemsRendered(range?.start, range?.stop);
+                }
             }
-        }
 
-        setStart(range?.start);
-        setStop(range?.stop);
-    }, [nodeRef.current, ManagerRef.current, scrollSizeRef.current, overscanCount, scrollDirection, onItemsRendered]);
+            setStart(range?.start);
+            setStop(range?.stop);
+        }
+    }, [nodeRef.current, ManagerRef.current, scrollSizeRef.current, overscanCount, scrollDirection, dataSource?.length, onItemsRendered]);
 
 
     // 是否主动进行滚动
     useEffect(() => {
-        if (typeof scrollSizeRef.current === "number" && canSetScroll.current) {
+        if (typeof scrollSizeRef.current === "number" && canSetScroll.current && dataSource?.length) {
             scrollTo(scrollSizeRef.current);
         }
-    }, [ManagerRef.current, dataSource, scrollSizeRef.current, canSetScroll.current])
+    }, [ManagerRef.current, dataSource?.length, scrollSizeRef.current, canSetScroll.current])
 
     // 监听滚动
     const handleScroll = (event: Event) => {
@@ -211,14 +222,14 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
 
     // 根据index获取scroll滚动距离
     const getScrollForIndex = (index: number) => {
-        const max = Math.min(dataSource?.length, limit || 0);
+        const max = Math.min(dataSource?.length || 0, limit || 0);
         if (index < 0 || index >= max) {
             index = 0;
         }
 
         return ManagerRef.current?.getUpdatedScrollForIndex({
             align: scrollToAlignment,
-            containerSize: props[sizeProp[scrollDirection]],
+            containerSize: nodeRef.current[clientWH[scrollDirection]] || 0,
             currentOffset: scrollSize || 0,
             targetIndex: index
         });
