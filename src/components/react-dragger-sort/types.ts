@@ -1,11 +1,26 @@
 import React, { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
+import { BoundsInterface } from '@/components/react-free-draggable';
+import { DraggerItemEvent, DraggerItemHandler } from "./dragger-item";
 
 export type EventType = MouseEvent | TouchEvent;
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
 
+// 拖拽子元素集合
+export interface DraggerChildNodes {
+    node: HTMLElement,
+    id: string | number
+}
+
+// 位置的数据类型
+export interface PosInterface {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 // 拖拽tag对象的类型
 export interface TagInterface {
-    index: number; // 当前tag所在的队列序号
     x?: number; // 在容器内的x轴位置
     y?: number; // 在容器内的y轴位置
     width?: number; // 宽度
@@ -30,8 +45,10 @@ export type AddAreaFunc = (tag: TagInterface, e: EventType) => { isIn: boolean; 
 export type TriggerAddFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) => void;
 // 容器监听添加事件的类型
 export type ListenAddFuncHandle = (area: ContainerInterface, addTag: AddTagFunc) => void;
+// 拖拽回调函数
+export type DragMoveHandle = (tag: DraggerItemEvent, coverChild: DraggerChildNodes | undefined, childNodes?: DraggerChildNodes[] | undefined, e?: EventType) => void | boolean;
 
-// 包装拖拽容器
+// 拖拽类
 export type DraggableAreaBuilder = (props?: { triggerAddFunc: TriggerAddFuncHandle; listenAddFunc: ListenAddFuncHandle; areaId: string | number }) => any;
 
 // 拖拽容器props
@@ -40,6 +57,9 @@ export interface DraggableAreaProps {
     style?: CSSProperties;
     children: any;
     placeholder?: boolean;
+    bounds?: string | HTMLElement | BoundsInterface;
+    onDragMove?: DragMoveHandle;
+    onDragMoveEnd?: DragMoveHandle;
 }
 
 // palceholder的props
@@ -52,4 +72,19 @@ export interface PlaceholderProps {
     lastH?: number;
     width: number;
     height: number;
+}
+
+// context
+export interface DraggerContextInterface {
+    onDragStart: DraggerItemHandler;
+    onDrag: DraggerItemHandler;
+    onDragEnd: DraggerItemHandler;
+    onResizeStart: DraggerItemHandler;
+    onResizing: DraggerItemHandler;
+    onResizeEnd: DraggerItemHandler;
+    parentRef?: any;
+    childNodes?: any[];
+    childLayOut: { [key: string]: DraggerItemEvent } | {},
+    zIndexRange: [number, number];
+    bounds?: string | HTMLElement | BoundsInterface;
 }

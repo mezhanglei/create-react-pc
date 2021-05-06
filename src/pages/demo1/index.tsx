@@ -5,12 +5,15 @@ import Button from '@/components/button';
 import DragResize from '@/components/react-resize-zoom';
 import { DraggableArea, DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 import VirtualList from '@/components/react-mini-virtual-list';
+import { DragMoveHandle } from '@/components/react-dragger-sort/types';
 
 const Demo1: React.FC<any> = (props) => {
     const [dataSource, setDataSource] = useState<any>([]);
     const [width, setWidth] = useState<any>(100);
     const [height, setHeight] = useState<any>(200);
     const [axis, setAxis] = useState<any>('both');
+
+    const [arrDrag, setArrDrag] = useState<any>([1, 2, 3, 5, 6, 7, 8])
 
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
@@ -33,6 +36,13 @@ const Demo1: React.FC<any> = (props) => {
             </div>
         );
     };
+
+    const onDragMove: DragMoveHandle = (tag, coverChild, childNodes, e) => {
+        if(coverChild?.id == 3) {
+            // setArrDrag([3, 2, 1, 5, 6, 7, 8])
+            return true;
+        }
+    }
 
     return (
         <>
@@ -64,9 +74,9 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <DraggableArea className="flex-box">
+            <DraggableArea className="flex-box" onDragMove={onDragMove}>
                 {
-                    [1, 2, 3, 5, 6, 7, 8]?.map((item, index) => {
+                    arrDrag?.map((item, index) => {
                         return (
                             <DraggerItem className="drag-a" key={item} id={item}>
                                 <div>

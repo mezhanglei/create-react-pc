@@ -477,8 +477,22 @@ export function getNode(key: string, value: any, tree = []): any {
 };
 
 // 根据某个过滤函数，从遍历器中寻找到复合条件的值
-export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean): any {
+export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean | undefined): any {
     for (let i = 0, length = array.length; i < length; i++) {
         if (callback.apply(callback, [array[i], i, array])) return array[i];
     }
+}
+
+// 转化对象数组为map数据
+export const getArrMap = (arr: any[] = [], valueKey: string = 'value', labelKey?: string) => {
+    const data = {};
+    arr.forEach((item) => data[item[valueKey]] = labelKey ? item[labelKey] : item);
+    return data;
+};
+
+
+// 两个元素交换位置		
+export const changeLocation = (arr: any[], index1: number, index2: number) => {
+    arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+    return arr;
 }

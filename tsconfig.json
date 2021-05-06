@@ -77,6 +77,7 @@
 
     /* Advanced Options */
     "skipLibCheck": false,                     /* 忽略所有库中的声明文件（ *.d.ts）的类型检查。 */
-    "forceConsistentCasingInFileNames": true  /* 强制区分大小写 */
+    "forceConsistentCasingInFileNames": true,  /* 强制区分大小写 */
+    "suppressImplicitAnyIndexErrors": true     /* 阻止对缺少索引签名的索引对象报错 */
   }
 }
