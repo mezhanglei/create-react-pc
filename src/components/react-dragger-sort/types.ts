@@ -11,21 +11,15 @@ export interface DraggerChildNodes {
     id: string | number
 }
 
-// 位置的数据类型
-export interface PosInterface {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-
 // 拖拽tag对象的类型
 export interface TagInterface {
     x?: number; // 在容器内的x轴位置
     y?: number; // 在容器内的y轴位置
     width?: number; // 宽度
     height?: number; // 高度
-    areaId: string | number; // tag所在的area的id
+    areaId?: string | number; // tag所在的area的id
+    translateX?: number;
+    translateY?: number;
     id: string | number; // tag的id
     node: HTMLElement; // tag节点
     [key: string]: any;
@@ -83,7 +77,8 @@ export interface DraggerContextInterface {
     onResizing: DraggerItemHandler;
     onResizeEnd: DraggerItemHandler;
     parentRef?: any;
-    childNodes?: any[];
+    initChild: (value: DraggerChildNodes) => void;
+    dragingTag?: TagInterface,
     childLayOut: { [key: string]: DraggerItemEvent } | {},
     zIndexRange: [number, number];
     bounds?: string | HTMLElement | BoundsInterface;

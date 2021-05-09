@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler } from "./utils/types";
+import { DraggableProps, DragData, EventHandler, PositionType } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getPositionInParent } from '@/utils/dom';
@@ -35,6 +35,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const [eventData, setEventData] = useState<DragData>();
     const eventDataRef = useRef<DragData>();
 
+    const [initPosition, setInitPosition] = useState<PositionType>()
+
     const axisRef = useRef<string>("both");
 
     const wrapClassName = "react-draggable";
@@ -43,24 +45,31 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     useImperativeHandle(ref, () => (nodeRef?.current));
 
-    // 更新x,y
     useEffect(() => {
         const node = nodeRef?.current;
         const parent = findBoundsParent();
         const position = getPositionInParent(node, parent);
-        if (x != undefined && !draggingRef.current && position) {
-            const lastTranslateX = eventDataRef.current?.translateX || 0;
-            const lastX = position?.x;
-            const translateX = x - lastX + lastTranslateX;
-            eventDataUpdate(eventDataRef.current, { lastX: x, x: x, translateX })
+        position && setInitPosition(position);
+    }, [])
+
+    // 更新x,y
+    useEffect(() => {
+
+        if (x != undefined && !draggingRef.current) {
+            const lastX = initPosition?.x || 0;
+            const newX = x || 0;
+            const translateX = newX - lastX;
+            eventDataUpdate(eventDataRef.current, { newX, translateX })
         }
-        if (y != undefined && !draggingRef.current && position) {
-            const lastTranslateY = eventDataRef.current?.translateY || 0;
-            const lastY = position?.y;
-            const translateY = y - lastY + lastTranslateY;
-            eventDataUpdate(eventDataRef.current, { lastY: y, y: y, translateY })
+
+        if (y !== undefined && !draggingRef.current) {
+            const lastY = initPosition?.y || 0;
+            const newY = y || 0;
+            const translateY = newY - lastY;
+            eventDataUpdate(eventDataRef.current, { newY, translateY })
         }
-    }, [x, y, draggingRef.current, nodeRef]);
+
+    }, [x, y, initPosition?.x, initPosition?.y, draggingRef.current]);
 
     // 更新axis
     useEffect(() => {
@@ -134,10 +143,14 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     const onDrag: EventHandler = (e, data) => {
         if (!draggingRef.current || !data) return;
-        const x = eventDataRef?.current?.x ?? 0;
+        let x = eventDataRef?.current?.x ?? 0;
         const y = eventDataRef?.current?.y ?? 0;
-        const translateX = eventDataRef?.current?.translateX ?? 0;
+        let translateX = eventDataRef?.current?.translateX ?? 0;
         const translateY = eventDataRef?.current?.translateY ?? 0;
+
+        const node = nodeRef?.current;
+        const parent = findBoundsParent();
+        const position = getPositionInParent(node, parent);
 
         // 拖拽生成的位置信息
         const eventData = {

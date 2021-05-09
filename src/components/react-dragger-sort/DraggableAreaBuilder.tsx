@@ -16,7 +16,7 @@ import produce from 'immer'
 export const DraggerContext = React.createContext<DraggerContextInterface | null>(null);
 
 // 拖拽容器
-const buildDraggableArea: DraggableAreaBuilder = (props) => {
+const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
     // 拖拽区域
     const DraggableArea = React.forwardRef<any, DraggableAreaProps>((props, ref) => {
@@ -35,6 +35,7 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
         const parentRef = useRef<any>();
         let childNodes = useRef<DraggerChildNodes[]>([])?.current;
         const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
+        const [dragingTag, setDragingTag] = useState<TagInterface>();
 
         const [placeholderData, setPlaceholderData] = useState<PlaceholderProps>();
         const placeholderDataRef = useRef<PlaceholderProps>()
@@ -124,20 +125,20 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
 
         // 交换位置及childNodes
         const exchangePos = (tag: DraggerItemEvent, coverChild: DraggerChildNodes) => {
-            let tagIndex = 0;
-            let coverIndex = 0;
-            childNodes?.map((item, index) => {
-                if (item.id === tag?.id) {
-                    tagIndex = index;
-                }
-                if (item?.id === coverChild?.id) {
-                    coverIndex = index;
-                }
-            });
-            const newArr = produce(childNodes, draft => {
-                changeLocation(draft, tagIndex, coverIndex)
-            })
-            childNodes = newArr;
+            // let tagIndex = 0;
+            // let coverIndex = 0;
+            // childNodes?.map((item, index) => {
+            //     if (item.id === tag?.id) {
+            //         tagIndex = index;
+            //     }
+            //     if (item?.id === coverChild?.id) {
+            //         coverIndex = index;
+            //     }
+            // });
+            // const newArr = produce(childNodes, draft => {
+            //     changeLocation(draft, tagIndex, coverIndex)
+            // })
+            // childNodes = newArr;
             // setChildLayOutFunc(childNodes);
         }
 
@@ -145,6 +146,7 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
             if (!tag) return false;
             setDragType('drag');
             placeholderShowChange(true);
+            // setChildLayOutFunc(childNodes);
             placeholderDataChange({
                 x: tag?.x,
                 y: tag?.y,
@@ -157,6 +159,7 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
             if (!tag) return false;
             placeholderMovingChange(true);
             const coverChild = moveTrigger(tag, childNodes);
+            // setChildLayOutFunc(childNodes);
             const ret = props?.onDragMove && props?.onDragMove(tag, coverChild, childNodes, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
@@ -187,6 +190,10 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
         const onResizeEnd: DraggerItemHandler = (e, tag) => {
             setDragType('none');
             setChildLayOutFunc(childNodes);
+        }
+
+        const initChild = (value: DraggerChildNodes) => {
+            childNodes.push(value);
         }
 
         const renderPlaceholder = () => {
@@ -234,8 +241,9 @@ const buildDraggableArea: DraggableAreaBuilder = (props) => {
                     onResizeStart,
                     onResizing,
                     onResizeEnd,
+                    initChild: initChild,
                     parentRef: parentRef,
-                    childNodes: childNodes,
+                    dragingTag: dragingTag,
                     childLayOut: childLayOut, // 优先级高于子组件的props
                     zIndexRange: [2, 10]
                 }}>

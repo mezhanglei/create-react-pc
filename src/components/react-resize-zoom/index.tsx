@@ -45,10 +45,10 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     // 更新width,height
     useEffect(() => {
         if (width != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { lastW: width, width })
+            eventDataUpdate(eventDataRef.current, { width })
         }
         if (height != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { lastH: height, height })
+            eventDataUpdate(eventDataRef.current, { height })
         }
     }, [width, height, isDraggableRef?.current]);
 

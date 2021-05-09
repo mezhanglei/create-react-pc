@@ -39,14 +39,14 @@ const Demo1: React.FC<any> = (props) => {
 
     const onDragMove: DragMoveHandle = (tag, coverChild, childNodes, e) => {
         if(coverChild?.id == 3) {
-            // setArrDrag([3, 2, 1, 5, 6, 7, 8])
+            setArrDrag([3, 2, 1, 5, 6, 7, 8])
             return true;
         }
     }
 
     return (
         <>
-            <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
+            {/* <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
                     bounds=".boxs"
@@ -73,14 +73,14 @@ const Demo1: React.FC<any> = (props) => {
                         拖拽元素2
                     </Button>
                 </div>
-            </Draggable>
+            </Draggable> */}
             <DraggableArea className="flex-box" onDragMove={onDragMove}>
                 {
                     arrDrag?.map((item, index) => {
                         return (
                             <DraggerItem className="drag-a" key={item} id={item}>
                                 <div>
-                                    大小拖放
+                                    大小拖放{item}
                                 </div>
                             </DraggerItem>
                         )

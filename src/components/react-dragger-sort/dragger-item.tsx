@@ -14,6 +14,8 @@ export interface DraggerItemEvent {
     height: number;
     x: number;
     y: number;
+    translateX?: number;
+    translateY?: number;
     id: string | number;
     node: HTMLElement;
 }
@@ -60,7 +62,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
     const bounds = context?.bounds ?? props?.bounds;
+    const dragingTag = context?.dragingTag;
     const childLayOut = context?.childLayOut && context?.childLayOut[id];
+    const initChild = context?.initChild;
     const nodeRef = useRef<any>();
 
     useImperativeHandle(ref, () => ({
@@ -89,7 +93,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
-        context?.childNodes?.push({node, id});
+        initChild && initChild({node, id});
     }, []);
 
     // 可以拖拽
@@ -123,6 +127,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         return context?.onDragStart && context?.onDragStart(e, {
             width: offsetWH?.width,
             height: offsetWH?.height,
+            translateX: data?.translateX,
+            translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
             id: id,
@@ -138,6 +144,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         return context?.onDrag && context?.onDrag(e, {
             width: offsetWH?.width,
             height: offsetWH?.height,
+            translateX: data?.translateX,
+            translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
             id: id,
@@ -154,6 +162,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         return context?.onDragEnd && context?.onDragEnd(e, {
             width: offsetWH?.width,
             height: offsetWH?.height,
+            translateX: data?.translateX,
+            translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
             id: id,
