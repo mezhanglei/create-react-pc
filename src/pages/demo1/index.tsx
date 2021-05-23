@@ -24,6 +24,13 @@ const Demo1: React.FC<any> = (props) => {
 
 
     useEffect(() => {
+        window.addEventListener('online', () => {
+            console.log('online')
+        })
+        window.addEventListener('offline', () => {
+            console.log('offline')
+        })
+        window.addEventListener("DOMContentLoaded", () => {console.log('DOMContentLoaded') });
         setTimeout(() => {
           setDataSource([...new Array(100).keys()])  
         }, 500);
@@ -37,8 +44,8 @@ const Demo1: React.FC<any> = (props) => {
         );
     };
 
-    const onDragMove: DragMoveHandle = (tag, coverChild, childNodes, e) => {
-        if(coverChild?.id == 3) {
+    const onDragMove: DragMoveHandle = (tag, coverChild, e) => {
+        if(coverChild?.id == 5) {
             setArrDrag([3, 2, 1, 5, 6, 7, 8])
             return true;
         }
@@ -46,7 +53,7 @@ const Demo1: React.FC<any> = (props) => {
 
     return (
         <>
-            {/* <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
+            <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
                     bounds=".boxs"
@@ -73,8 +80,8 @@ const Demo1: React.FC<any> = (props) => {
                         拖拽元素2
                     </Button>
                 </div>
-            </Draggable> */}
-            <DraggableArea className="flex-box" onDragMove={onDragMove}>
+            </Draggable>
+            <DraggableArea className="flex-box" onDragMoveEnd={onDragMove}>
                 {
                     arrDrag?.map((item, index) => {
                         return (

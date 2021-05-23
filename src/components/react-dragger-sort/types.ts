@@ -8,7 +8,11 @@ export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>
 // 拖拽子元素集合
 export interface DraggerChildNodes {
     node: HTMLElement,
-    id: string | number
+    id: string | number,
+    x: number,
+    y: number,
+    width: number,
+    height: number
 }
 
 // 拖拽tag对象的类型
@@ -40,7 +44,7 @@ export type TriggerAddFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: 
 // 容器监听添加事件的类型
 export type ListenAddFuncHandle = (area: ContainerInterface, addTag: AddTagFunc) => void;
 // 拖拽回调函数
-export type DragMoveHandle = (tag: DraggerItemEvent, coverChild: DraggerChildNodes | undefined, childNodes?: DraggerChildNodes[] | undefined, e?: EventType) => void | boolean;
+export type DragMoveHandle = (tag: DraggerItemEvent, coverChild: DraggerChildNodes | undefined, e?: EventType) => void | boolean;
 
 // 拖拽类
 export type DraggableAreaBuilder = (props?: { triggerAddFunc: TriggerAddFuncHandle; listenAddFunc: ListenAddFuncHandle; areaId: string | number }) => any;
@@ -78,7 +82,6 @@ export interface DraggerContextInterface {
     onResizeEnd: DraggerItemHandler;
     parentRef?: any;
     initChild: (value: DraggerChildNodes) => void;
-    dragingTag?: TagInterface,
     childLayOut: { [key: string]: DraggerItemEvent } | {},
     zIndexRange: [number, number];
     bounds?: string | HTMLElement | BoundsInterface;

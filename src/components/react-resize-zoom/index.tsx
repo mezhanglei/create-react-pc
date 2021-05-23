@@ -256,6 +256,3 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 })
 
 export default React.memo(DragResize);
-
-
-

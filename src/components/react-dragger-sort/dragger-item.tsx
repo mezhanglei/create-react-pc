@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, BoundsInterface } from "@/components/react-free-draggable";
+import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, BoundsInterface, DragData } from "@/components/react-free-draggable";
 import { ChildrenType } from "./types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH } from "@/utils/dom";
@@ -38,6 +38,7 @@ export interface DraggerProps {
     y?: number;
     zIndexRange?: [number, number];
     dragNode?: string;
+    parentRef?: any;
 }
 
 // 拖拽及缩放组件
@@ -52,7 +53,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         dragNode
     } = props;
 
-    const [dragType, setDragType] = useState<'drag' | 'resize' | 'none'>();
+    const [dragType, setDragType] = useState<'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd'>();
     const [x, setX] = useState<number>();
     const [y, setY] = useState<number>();
     const [width, setWidth] = useState<number>();
@@ -61,8 +62,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
+    const parentRef = context?.parentRef ?? props?.parentRef;
     const bounds = context?.bounds ?? props?.bounds;
-    const dragingTag = context?.dragingTag;
     const childLayOut = context?.childLayOut && context?.childLayOut[id];
     const initChild = context?.initChild;
     const nodeRef = useRef<any>();
@@ -93,7 +94,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
-        initChild && initChild({node, id});
+        const parent = findBoundsParent();
+        const position = getPositionInParent(node, parent);
+        const offsetWH = getOffsetWH(node);
+        const x = position?.x || 0;
+        const y = position?.y || 0;
+        const width = offsetWH?.width || 0;
+        const height = offsetWH?.height || 0;
+        initChild && initChild({ node, id, x, y, width, height });
     }, []);
 
     // 可以拖拽
@@ -105,7 +113,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const canResize = () => {
         return ['resize', 'both']?.includes(type)
     }
-
 
     const findOwnerDocument = () => {
         return document;
@@ -120,7 +127,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onDragStart: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        setDragType('drag');
+        setDragType('dragStart');
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
@@ -139,6 +146,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const onDrag: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
         const node = data?.node;
+        setDragType('draging');
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
         return context?.onDrag && context?.onDrag(e, {
@@ -155,7 +163,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onDragStop: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        setDragType('none');
+        setDragType('dragEnd');
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
@@ -173,7 +181,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onResizeStart: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        setDragType('resize');
+        setDragType('resizeStart');
         const node = data?.node;
         const parent = findBoundsParent();
         const position = getPositionInParent(node, parent);
@@ -190,6 +198,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const onResizing: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
         const node = data?.node;
+        setDragType('resizing');
         const parent = findBoundsParent();
         const position = getPositionInParent(node, parent);
         return context?.onResizing && context?.onResizing(e, {
@@ -204,7 +213,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onResizeEnd: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        setDragType('none');
+        setDragType('resizeEnd');
         const node = data?.node;
         const parent = findBoundsParent();
         const position = getPositionInParent(node, parent);
@@ -244,8 +253,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            transition: (!dragType || dragType != 'none') && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-                            zIndex: zIndexRange && ((!dragType || dragType === 'none') ? zIndexRange[0] : zIndexRange[1])
+                            transition: (!dragType || dragType !== 'dragEnd' && dragType !== 'resizeEnd') && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
+                            zIndex: zIndexRange && ((!dragType || (dragType === 'resizeEnd' || dragType === 'dragEnd')) ? zIndexRange[0] : zIndexRange[1])
                         }
                     })
                 }

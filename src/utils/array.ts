@@ -478,7 +478,7 @@ export function getNode(key: string, value: any, tree = []): any {
 
 // 根据某个过滤函数，从遍历器中寻找到复合条件的值
 export function findInArray(array: any, callback: (value: any, i?: number, array?: any) => boolean | undefined): any {
-    for (let i = 0, length = array.length; i < length; i++) {
+    for (let i = 0, length = array?.length; i < length; i++) {
         if (callback.apply(callback, [array[i], i, array])) return array[i];
     }
 }

@@ -30,12 +30,11 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             ...rest
         } = props;
 
-        const [dragType, setDragType] = useState<'drag' | 'resize' | 'none'>();
+        const [dragType, setDragType] = useState<'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd'>();
 
         const parentRef = useRef<any>();
         let childNodes = useRef<DraggerChildNodes[]>([])?.current;
         const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
-        const [dragingTag, setDragingTag] = useState<TagInterface>();
 
         const [placeholderData, setPlaceholderData] = useState<PlaceholderProps>();
         const placeholderDataRef = useRef<PlaceholderProps>()
@@ -144,7 +143,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
-            setDragType('drag');
+            setDragType('dragStart');
             placeholderShowChange(true);
             // setChildLayOutFunc(childNodes);
             placeholderDataChange({
@@ -158,9 +157,9 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const onDrag: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             placeholderMovingChange(true);
+            setDragType('draging');
             const coverChild = moveTrigger(tag, childNodes);
-            // setChildLayOutFunc(childNodes);
-            const ret = props?.onDragMove && props?.onDragMove(tag, coverChild, childNodes, e);
+            const ret = props?.onDragMove && props?.onDragMove(tag, coverChild, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
             }
@@ -168,11 +167,11 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const onDragEnd: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
-            setDragType('none');
+            setDragType('dragEnd');
             placeholderShowChange(false);
             placeholderMovingChange(false);
             const coverChild = moveTrigger(tag, childNodes);
-            const ret = props?.onDragMoveEnd && props?.onDragMoveEnd(tag, coverChild, childNodes, e);
+            const ret = props?.onDragMoveEnd && props?.onDragMoveEnd(tag, coverChild, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
             }
@@ -180,15 +179,16 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const onResizeStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
-            setDragType('resize');
+            setDragType('resizeStart');
         }
 
         const onResizing: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
+            setDragType('resizing');
         }
 
         const onResizeEnd: DraggerItemHandler = (e, tag) => {
-            setDragType('none');
+            setDragType('resizeEnd');
             setChildLayOutFunc(childNodes);
         }
 
@@ -243,7 +243,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     onResizeEnd,
                     initChild: initChild,
                     parentRef: parentRef,
-                    dragingTag: dragingTag,
                     childLayOut: childLayOut, // 优先级高于子组件的props
                     zIndexRange: [2, 10]
                 }}>
