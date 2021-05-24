@@ -45,7 +45,7 @@ const Demo1: React.FC<any> = (props) => {
     };
 
     const onDragMove: DragMoveHandle = (tag, coverChild, e) => {
-        if(coverChild?.id == 5) {
+        if(coverChild?.id == 3) {
             setArrDrag([3, 2, 1, 5, 6, 7, 8])
             return true;
         }
@@ -81,7 +81,7 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <DraggableArea className="flex-box" onDragMoveEnd={onDragMove}>
+            <DraggableArea className="flex-box" onDragMove={onDragMove}>
                 {
                     arrDrag?.map((item, index) => {
                         return (

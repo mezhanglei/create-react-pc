@@ -8,11 +8,7 @@ export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>
 // 拖拽子元素集合
 export interface DraggerChildNodes {
     node: HTMLElement,
-    id: string | number,
-    x: number,
-    y: number,
-    width: number,
-    height: number
+    id: string | number
 }
 
 // 拖拽tag对象的类型
@@ -85,4 +81,5 @@ export interface DraggerContextInterface {
     childLayOut: { [key: string]: DraggerItemEvent } | {},
     zIndexRange: [number, number];
     bounds?: string | HTMLElement | BoundsInterface;
+    isReflow?: boolean; // 是否发生重绘
 }

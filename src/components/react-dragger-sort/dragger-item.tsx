@@ -39,6 +39,7 @@ export interface DraggerProps {
     zIndexRange?: [number, number];
     dragNode?: string;
     parentRef?: any;
+    isReflow?: boolean; // 是否发生重绘
 }
 
 // 拖拽及缩放组件
@@ -62,6 +63,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
+    const isReflow = context?.isReflow ?? props?.isReflow;
     const parentRef = context?.parentRef ?? props?.parentRef;
     const bounds = context?.bounds ?? props?.bounds;
     const childLayOut = context?.childLayOut && context?.childLayOut[id];
@@ -94,14 +96,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
-        const parent = findBoundsParent();
-        const position = getPositionInParent(node, parent);
-        const offsetWH = getOffsetWH(node);
-        const x = position?.x || 0;
-        const y = position?.y || 0;
-        const width = offsetWH?.width || 0;
-        const height = offsetWH?.height || 0;
-        initChild && initChild({ node, id, x, y, width, height });
+        initChild && initChild({ node, id });
     }, []);
 
     // 可以拖拽
@@ -238,6 +233,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDragStop={onDragStop}
             bounds={bounds}
             dragNode={dragNode}
+            isReflow={isReflow}
             x={x}
             y={y}
         >

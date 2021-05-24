@@ -213,7 +213,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     zIndexRange={[1, 9]}
                     style={{
                         position: 'absolute',
-                        background: 'rgba(15,15,15,0.3)',
+                        background: 'green',
                         transition: ' all .15s ease-out'
                     }}
                 >
@@ -243,6 +243,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     onResizeEnd,
                     initChild: initChild,
                     parentRef: parentRef,
+                    isReflow: dragType === 'resizing' || dragType === 'resizeEnd' || dragType === 'resizeStart',
                     childLayOut: childLayOut, // 优先级高于子组件的props
                     zIndexRange: [2, 10]
                 }}>
