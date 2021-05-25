@@ -70,16 +70,17 @@ export interface PlaceholderProps {
 
 // context
 export interface DraggerContextInterface {
-    onDragStart: DraggerItemHandler;
-    onDrag: DraggerItemHandler;
-    onDragEnd: DraggerItemHandler;
-    onResizeStart: DraggerItemHandler;
-    onResizing: DraggerItemHandler;
-    onResizeEnd: DraggerItemHandler;
+    onDragStart?: DraggerItemHandler;
+    onDrag?: DraggerItemHandler;
+    onDragEnd?: DraggerItemHandler;
+    onResizeStart?: DraggerItemHandler;
+    onResizing?: DraggerItemHandler;
+    onResizeEnd?: DraggerItemHandler;
     parentRef?: any;
-    initChild: (value: DraggerChildNodes) => void;
-    childLayOut: { [key: string]: DraggerItemEvent } | {},
-    zIndexRange: [number, number];
+    listenChild?: (value: DraggerChildNodes) => void;
+    childLayOut?: { [key: string]: DraggerItemEvent } | {}, // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
+    childNodes?: DraggerChildNodes[], // 拖拽子元素的集合
+    zIndexRange?: [number, number];
     bounds?: string | HTMLElement | BoundsInterface;
     isReflow?: boolean; // 是否发生重绘
 }

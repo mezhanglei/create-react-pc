@@ -6,6 +6,9 @@ import { ChildrenType } from "./types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
+import {
+    DraggerContextInterface
+} from "./types";
 
 export type EventType = MouseEvent | TouchEvent;
 export type DraggerItemHandler<E = EventType, T = DraggerItemEvent> = (e: E, data: T) => void | boolean;
@@ -19,7 +22,7 @@ export interface DraggerItemEvent {
     id: string | number;
     node: HTMLElement;
 }
-export interface DraggerProps {
+export interface DraggerProps extends DraggerContextInterface {
     children: ChildrenType;
     className?: string;
     style?: CSSProperties;
@@ -30,16 +33,12 @@ export interface DraggerProps {
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
     id: string | number;
-    bounds?: string | HTMLElement | BoundsInterface;
     type?: 'drag' | 'resize' | 'both' | 'none'; // 允许操作的类型
     width?: number; // 宽度
     height?: number; // 高度
     x?: number;
     y?: number;
-    zIndexRange?: [number, number];
     dragNode?: string;
-    parentRef?: any;
-    isReflow?: boolean; // 是否发生重绘
 }
 
 // 拖拽及缩放组件
@@ -59,6 +58,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const [y, setY] = useState<number>();
     const [width, setWidth] = useState<number>();
     const [height, setHeight] = useState<number>();
+    const [isOver, setIsOver] = useState<boolean>();
 
     const context = useContext(DraggerContext)
 
@@ -66,8 +66,10 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const isReflow = context?.isReflow ?? props?.isReflow;
     const parentRef = context?.parentRef ?? props?.parentRef;
     const bounds = context?.bounds ?? props?.bounds;
-    const childLayOut = context?.childLayOut && context?.childLayOut[id];
-    const initChild = context?.initChild;
+    const childLayOut = context?.childLayOut ?? props?.childLayOut;
+    const childNodes = context?.childLayOut ?? props?.childNodes;
+    const itemLayOut = childLayOut?.[id];
+    const listenChild = context?.listenChild ?? props?.listenChild;
     const nodeRef = useRef<any>();
 
     useImperativeHandle(ref, () => ({
@@ -75,29 +77,30 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     }));
 
     useEffect(() => {
-        const x = props?.x ?? childLayOut?.x;
+        const x = props?.x ?? itemLayOut?.x;
         x != undefined && setX(x);
-    }, [props?.x, childLayOut?.x])
+    }, [props?.x, itemLayOut?.x])
 
     useEffect(() => {
-        const y = props?.y ?? childLayOut?.y;
+        const y = props?.y ?? itemLayOut?.y;
         y !== undefined && setY(y);
-    }, [props?.y, childLayOut?.y])
+    }, [props?.y, itemLayOut?.y])
 
     useEffect(() => {
-        const width = props?.width ?? childLayOut?.width;
+        const width = props?.width ?? itemLayOut?.width;
         width != undefined && setWidth(width);
-    }, [props?.width, childLayOut?.width])
+    }, [props?.width, itemLayOut?.width])
 
     useEffect(() => {
-        const height = props?.height ?? childLayOut?.height;
+        const height = props?.height ?? itemLayOut?.height;
         height !== undefined && setHeight(height);
-    }, [props?.height, childLayOut?.height]);
+    }, [props?.height, itemLayOut?.height]);
 
+    // 监听children是否重绘从而重新初始化获取node
     useEffect(() => {
         const node = nodeRef.current;
-        initChild && initChild({ node, id });
-    }, []);
+        listenChild && listenChild({ node, id });
+    }, [children]);
 
     // 可以拖拽
     const canDrag = () => {

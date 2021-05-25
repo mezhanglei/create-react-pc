@@ -33,8 +33,9 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const [dragType, setDragType] = useState<'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd'>();
 
         const parentRef = useRef<any>();
-        let childNodes = useRef<DraggerChildNodes[]>([])?.current;
+        const childNodesRef = useRef<DraggerChildNodes[]>([]);
         const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
+        const [dragTag, setDragTag] = useState<DraggerItemEvent>();
 
         const [placeholderData, setPlaceholderData] = useState<PlaceholderProps>();
         const placeholderDataRef = useRef<PlaceholderProps>()
@@ -62,7 +63,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         }
 
         useEffect(() => {
-            setChildLayOutFunc(childNodes);
+            setChildLayOutFunc(childNodesRef.current);
         }, []);
 
         const findOwnerDocument = () => {
@@ -138,14 +139,12 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             //     changeLocation(draft, tagIndex, coverIndex)
             // })
             // childNodes = newArr;
-            // setChildLayOutFunc(childNodes);
         }
 
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType('dragStart');
             placeholderShowChange(true);
-            // setChildLayOutFunc(childNodes);
             placeholderDataChange({
                 x: tag?.x,
                 y: tag?.y,
@@ -158,7 +157,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             if (!tag) return false;
             placeholderMovingChange(true);
             setDragType('draging');
-            const coverChild = moveTrigger(tag, childNodes);
+            setDragTag(tag);
+            const coverChild = moveTrigger(tag, childNodesRef.current);
             const ret = props?.onDragMove && props?.onDragMove(tag, coverChild, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
@@ -170,7 +170,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             setDragType('dragEnd');
             placeholderShowChange(false);
             placeholderMovingChange(false);
-            const coverChild = moveTrigger(tag, childNodes);
+            setDragTag(undefined);
+            const coverChild = moveTrigger(tag, childNodesRef.current);
             const ret = props?.onDragMoveEnd && props?.onDragMoveEnd(tag, coverChild, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
@@ -189,11 +190,17 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const onResizeEnd: DraggerItemHandler = (e, tag) => {
             setDragType('resizeEnd');
-            setChildLayOutFunc(childNodes);
+            setChildLayOutFunc(childNodesRef.current);
         }
 
-        const initChild = (value: DraggerChildNodes) => {
-            childNodes.push(value);
+        // 监听children元素
+        const listenChild = (value: DraggerChildNodes) => {
+            if (childNodesRef.current?.some((item) => item?.id === value?.id)) {
+                childNodesRef.current = [];
+                childNodesRef.current.push(value);
+            } else {
+                childNodesRef.current.push(value);
+            }
         }
 
         const renderPlaceholder = () => {
@@ -241,10 +248,11 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     onResizeStart,
                     onResizing,
                     onResizeEnd,
-                    initChild: initChild,
+                    listenChild: listenChild,
                     parentRef: parentRef,
-                    isReflow: dragType === 'resizing' || dragType === 'resizeEnd' || dragType === 'resizeStart',
-                    childLayOut: childLayOut, // 优先级高于子组件的props
+                    isReflow: !dragType || !['dragStart', 'draging', 'dragEnd']?.includes(dragType),
+                    childLayOut: childLayOut,
+                    childNodes: childNodesRef.current,
                     zIndexRange: [2, 10]
                 }}>
                     {children}

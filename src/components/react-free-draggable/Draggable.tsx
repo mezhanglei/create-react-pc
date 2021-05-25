@@ -268,10 +268,10 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             {React.cloneElement(React.Children.only(children), {
                 className: cls,
                 style: {
-                    ...children.props?.style,
+                    ...children?.props?.style,
                     ...style,
                     transform: !isSVG ? createCSSTransform(currentPosition, positionOffset) : style?.transform ?? (children.props.style?.transform || ""),
-                    zIndex: eventData?.zIndex ?? style?.zIndex ?? children.props.style?.zIndex
+                    zIndex: eventData?.zIndex ?? style?.zIndex ?? children?.props?.style?.zIndex
                 },
                 transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (props?.transform ?? (children.props?.transform || "")),
             })}
