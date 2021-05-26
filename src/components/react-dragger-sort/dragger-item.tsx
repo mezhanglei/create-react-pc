@@ -64,10 +64,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
     const isReflow = context?.isReflow ?? props?.isReflow;
-    const parentRef = context?.parentRef ?? props?.parentRef;
     const bounds = context?.bounds ?? props?.bounds;
     const childLayOut = context?.childLayOut ?? props?.childLayOut;
-    const childNodes = context?.childLayOut ?? props?.childNodes;
+    const coverChild = context?.coverChild ?? props?.coverChild;
     const itemLayOut = childLayOut?.[id];
     const listenChild = context?.listenChild ?? props?.listenChild;
     const nodeRef = useRef<any>();
@@ -101,6 +100,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = nodeRef.current;
         listenChild && listenChild({ node, id });
     }, [children]);
+
+    useEffect(() => {
+        if (coverChild?.id === id) {
+            setIsOver(true)
+        } else {
+            setIsOver(false)
+        }
+    }, [coverChild])
 
     // 可以拖拽
     const canDrag = () => {
@@ -252,6 +259,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
+                            opacity: isOver ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
                             transition: (!dragType || dragType !== 'dragEnd' && dragType !== 'resizeEnd') && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
                             zIndex: zIndexRange && ((!dragType || (dragType === 'resizeEnd' || dragType === 'dragEnd')) ? zIndexRange[0] : zIndexRange[1])
                         }

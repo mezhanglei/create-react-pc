@@ -76,10 +76,9 @@ export interface DraggerContextInterface {
     onResizeStart?: DraggerItemHandler;
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
-    parentRef?: any;
     listenChild?: (value: DraggerChildNodes) => void;
-    childLayOut?: { [key: string]: DraggerItemEvent } | {}, // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
-    childNodes?: DraggerChildNodes[], // 拖拽子元素的集合
+    childLayOut?: { [key: string]: DraggerItemEvent } | {}; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
+    coverChild?: DraggerChildNodes; // 当前被选中的元素
     zIndexRange?: [number, number];
     bounds?: string | HTMLElement | BoundsInterface;
     isReflow?: boolean; // 是否发生重绘

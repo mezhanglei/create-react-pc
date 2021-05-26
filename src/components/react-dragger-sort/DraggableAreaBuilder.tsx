@@ -35,7 +35,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const parentRef = useRef<any>();
         const childNodesRef = useRef<DraggerChildNodes[]>([]);
         const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
-        const [dragTag, setDragTag] = useState<DraggerItemEvent>();
+        const [coverChild, setCoverChild] = useState<DraggerChildNodes>();
 
         const [placeholderData, setPlaceholderData] = useState<PlaceholderProps>();
         const placeholderDataRef = useRef<PlaceholderProps>()
@@ -157,8 +157,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             if (!tag) return false;
             placeholderMovingChange(true);
             setDragType('draging');
-            setDragTag(tag);
             const coverChild = moveTrigger(tag, childNodesRef.current);
+            setCoverChild(coverChild)
             const ret = props?.onDragMove && props?.onDragMove(tag, coverChild, e);
             if (ret && coverChild) {
                 exchangePos(tag, coverChild);
@@ -170,7 +170,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             setDragType('dragEnd');
             placeholderShowChange(false);
             placeholderMovingChange(false);
-            setDragTag(undefined);
+            setCoverChild(undefined);
             const coverChild = moveTrigger(tag, childNodesRef.current);
             const ret = props?.onDragMoveEnd && props?.onDragMoveEnd(tag, coverChild, e);
             if (ret && coverChild) {
@@ -249,10 +249,9 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     onResizing,
                     onResizeEnd,
                     listenChild: listenChild,
-                    parentRef: parentRef,
                     isReflow: !dragType || !['dragStart', 'draging', 'dragEnd']?.includes(dragType),
                     childLayOut: childLayOut,
-                    childNodes: childNodesRef.current,
+                    coverChild: coverChild,
                     zIndexRange: [2, 10]
                 }}>
                     {children}
