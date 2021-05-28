@@ -341,7 +341,7 @@ export function getScrollParent(target: any, step?: number): HTMLElement {
         return document.body || document.documentElement;
     };
 
-    let scrollParent = target.parentNode;
+    let scrollParent = target?.parentNode;
 
     if (step) {
         while (root.indexOf(scrollParent) == -1 && step > 0) {

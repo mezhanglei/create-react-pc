@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle,
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, BoundsInterface, DragData } from "@/components/react-free-draggable";
-import { ChildrenType } from "./types";
+import { ChildrenType, DraggerChildNodes } from "./types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
@@ -58,7 +58,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const [y, setY] = useState<number>();
     const [width, setWidth] = useState<number>();
     const [height, setHeight] = useState<number>();
-    const [isOver, setIsOver] = useState<boolean>();
 
     const context = useContext(DraggerContext)
 
@@ -101,13 +100,13 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         listenChild && listenChild({ node, id });
     }, [children]);
 
-    useEffect(() => {
+    const isOver = (coverChild?: DraggerChildNodes, id?: string | number) => {
         if (coverChild?.id === id) {
-            setIsOver(true)
+            return true;
         } else {
-            setIsOver(false)
+            return false;
         }
-    }, [coverChild])
+    }
 
     // 可以拖拽
     const canDrag = () => {
@@ -259,9 +258,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            opacity: isOver ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: (!dragType || dragType !== 'dragEnd' && dragType !== 'resizeEnd') && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-                            zIndex: zIndexRange && ((!dragType || (dragType === 'resizeEnd' || dragType === 'dragEnd')) ? zIndexRange[0] : zIndexRange[1])
+                            opacity: isOver(coverChild, id) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
+                            transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
+                            zIndex: zIndexRange && ((!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange[0] : zIndexRange[1])
                         }
                     })
                 }
