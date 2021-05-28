@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler, PositionType } from "./utils/types";
+import { DraggableProps, DragData, EventHandler } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getPositionInParent } from '@/utils/dom';
@@ -44,8 +44,6 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
     const wrapClassNameDragged = "react-draggable-dragged";
-
-    const reflowPositionRef = useRef<any>();
 
     useImperativeHandle(ref, () => (nodeRef?.current));
 

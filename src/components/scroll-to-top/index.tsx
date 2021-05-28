@@ -3,7 +3,7 @@ import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, getSc
 import { isMobile } from '@/utils/verify';
 import { getPrefixStyle } from '@/utils/cssPrefix';
 
-// 吸顶组件
+// 任意元素吸顶组件
 // Simple abstraction for dragging events names.
 const eventsFor = {
     touch: {
