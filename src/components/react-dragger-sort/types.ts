@@ -51,7 +51,6 @@ export interface DraggableAreaProps {
     style?: CSSProperties;
     children: any;
     placeholder?: boolean;
-    bounds?: string | HTMLElement | BoundsInterface;
     onDragMove?: DragMoveHandle;
     onDragMoveEnd?: DragMoveHandle;
 }
@@ -78,8 +77,7 @@ export interface DraggerContextInterface {
     onResizeEnd?: DraggerItemHandler;
     listenChild?: (value: DraggerChildNodes) => void;
     childLayOut?: { [key: string]: DraggerItemEvent } | {}; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
-    coverChild?: DraggerChildNodes; // 当前被选中的元素
+    coverChild?: DraggerChildNodes; // 当前被覆盖的元素
     zIndexRange?: [number, number];
-    bounds?: string | HTMLElement | BoundsInterface;
-    isReflow?: boolean; // 是否发生重绘
+    isReflow?: boolean; // 拖拽过程中子元素是否重新排列
 }

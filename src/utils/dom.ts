@@ -290,24 +290,19 @@ export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, p
 /**
  * 给目标节点设置样式,并返回旧样式
  * @param {*} style 样式对象
- * @param {*} options {element: HTMLElement 默认document.body}
+ * @param {*} node 目标元素
  */
-interface OptionsType {
-    element?: HTMLElement,
-    [propName: string]: any;
-}
-export function setStyle(style: any, options: OptionsType = {}): CSSProperties {
-    const { element = document.body } = options;
+export function setStyle(style: any, node: HTMLElement = document.body || document.documentElement): CSSProperties {
     const oldStyle: any = {};
 
     const styleKeys: string[] = Object.keys(style);
 
     styleKeys.forEach(key => {
-        oldStyle[key] = (element.style as any)[key];
+        oldStyle[key] = (node.style as any)[key];
     });
 
     styleKeys.forEach(key => {
-        (element.style as any)[key] = (style as any)[key];
+        (node.style as any)[key] = (style as any)[key];
     });
 
     return oldStyle;
