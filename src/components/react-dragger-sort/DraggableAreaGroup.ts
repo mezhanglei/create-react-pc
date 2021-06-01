@@ -1,5 +1,6 @@
 import buildDraggableArea from './DraggableAreaBuilder';
-import { AddAreaFunc } from "./types";
+import { AddAreaFunc } from "./utils/types";
+import { getRectInParent } from "@/utils/dom";
 
 // 创建拖拽容器的类
 export default class DraggableAreaGroup {
@@ -15,7 +16,7 @@ export default class DraggableAreaGroup {
                 let result = {};
                 this.addAreaFn.forEach(fn => {
                     const r = fn({ ...tag }, e);
-                    if (r.isIn) {
+                    if (r.isTrigger) {
                         result = r;
                     }
                 });
@@ -24,17 +25,24 @@ export default class DraggableAreaGroup {
             // 将所在的area的添加tag的事件添加进队列
             listenAddFunc: (area, addTag) => {
                 this.addAreaFn.push(function (tag, e) {
-
-                    // 拖拽区域添加tag，如果在区域内则添加进来
-                    // addTag(tag);
-                    // return {
-                    //     isIn: true,
-                    //     toAreaId: areaId,
-                    //     fromAreaId: fromAreaId
-                    // };
-
+                    const areaNode = area?.node;
+                    if (tag?.areaId !== area?.areaId) {
+                        const parent = document?.body || document?.documentElement;
+                        const areaRect = getRectInParent(areaNode, parent);
+                        const x = tag?.x || 0;
+                        const y = tag?.y || 0;
+                        if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
+                            const ret = {
+                                isTrigger: true,
+                                areaId: areaId,
+                                fromAreaId: tag?.areaId
+                            };
+                            addTag(tag, ret, e);
+                            return ret;
+                        }
+                    }
                     return {
-                        isIn: false,
+                        isTrigger: false,
                         areaId: areaId,
                         fromAreaId: tag?.areaId
                     };

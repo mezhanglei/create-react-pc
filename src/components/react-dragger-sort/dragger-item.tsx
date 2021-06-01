@@ -2,13 +2,10 @@ import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle,
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
-import { ChildrenType, DraggerChildNodes } from "./types";
+import { ChildrenType, DraggerChildNodes, DraggerContextInterface } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH, setStyle } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
-import {
-    DraggerContextInterface
-} from "./types";
 import ReactDOM from 'react-dom';
 
 export type EventType = MouseEvent | TouchEvent;
@@ -152,7 +149,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const ownerDocument = findOwnerDocument();
         let div = ownerDocument.createElement('div');
         appendRoot?.appendChild(div);
-        ReactDOM.render(DragItem, div);
+        ReactDOM.render(DragCopyItem, div);
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
@@ -206,7 +203,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         if (!data || !canDrag()) return false;
         setDragType('dragEnd');
         const node = data?.node;
-        draggerRef.current?.parentNode?.removeChild(draggerRef.current);
+        const appendRoot = findAppendRoot();
+        appendRoot?.removeChild(draggerRef.current?.parentNode);
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
         return context?.onDragEnd && context?.onDragEnd(e, {
@@ -271,7 +269,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const cls = classNames((children?.props?.className || ''), className);
 
-    // 受控显示的可拖拽子元素
+    // 可拖拽子元素
     const NormalItem = (
         <Draggable
             ref={nodeRef}
@@ -298,7 +296,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                             ...style,
                             opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild, id) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
                             transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-                            zIndex: zIndexRange && ((!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange[0] : zIndexRange[1])
+                            zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
                         }
                     })
                 }
@@ -306,17 +304,17 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         </Draggable>
     );
 
-    // 动态生成的拖拽显示组件
-    const DragItem = React.cloneElement(React.Children.only(children), {
+    // 子元素动态生成的拖拽显示副本
+    const DragCopyItem = React.cloneElement(React.Children.only(children), {
         className: cls,
         ref: (node: HTMLElement) => draggerRef.current = node,
         style: {
             ...children.props.style,
             ...style,
             position: 'absolute',
-            opacity: '0.5',
+            opacity: '0.8',
             transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-            zIndex: zIndexRange && ((!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange[0] : zIndexRange[1])
+            zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
         }
     });
 

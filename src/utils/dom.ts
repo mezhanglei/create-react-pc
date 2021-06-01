@@ -267,6 +267,31 @@ export function getClientXYInParent(el: MouseEvent | TouchEvent | HTMLElement, p
     return pos;
 }
 
+/**
+ * 返回元素相对于父元素的位置信息
+ * @param el 元素或事件对象
+ * @param parent 父元素
+ */
+export interface RectInParent {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+}
+export function getRectInParent(el: HTMLElement, parent: HTMLElement): null | RectInParent {
+    let pos = null;
+    if (isDom(el)) {
+        pos = {
+            left: el.getBoundingClientRect().left - parent.getBoundingClientRect().left,
+            top: el.getBoundingClientRect().top - parent.getBoundingClientRect().top,
+            right: el.getBoundingClientRect().right - parent.getBoundingClientRect().left,
+            bottom: el.getBoundingClientRect().bottom - parent.getBoundingClientRect().top
+        };
+    }
+
+    return pos;
+}
+
 
 /**
  * 获取元素或事件对象的相对于父元素的真实位置 = 可视位置 - 父元素的可视位置 + 父元素的卷曲滚动距离

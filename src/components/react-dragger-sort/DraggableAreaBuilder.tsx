@@ -2,29 +2,30 @@ import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
     DraggableAreaProps,
     DraggableAreaBuilder,
-    PlaceholderProps,
     DraggerContextInterface,
     DraggerChildNodes,
-    TagInterface
-} from "./types";
+    TagInterface,
+    AddTagFunc
+} from "./utils/types";
 import classNames from "classnames";
-import DraggerItem, { DraggerItemHandler, DraggerItemEvent } from "./dragger-item";
-import { findElement, getOffsetWH, getPositionInParent } from "@/utils/dom";
-import { changeLocation, findInArray } from "@/utils/array";
-import produce from 'immer'
+import { DraggerItemHandler, DraggerItemEvent } from "./dragger-item";
+import { getOffsetWH, getPositionInParent } from "@/utils/dom";
+import { findInArray } from "@/utils/array";
 
 export const DraggerContext = React.createContext<DraggerContextInterface | null>(null);
 
 // 拖拽容器
 const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
+    const listenAddFunc = areaProps?.listenAddFunc;
+    const triggerAddFunc = areaProps?.triggerAddFunc;
+    const areaId = areaProps?.areaId;
     // 拖拽区域
     const DraggableArea = React.forwardRef<any, DraggableAreaProps>((props, ref) => {
 
         const {
             className,
             style,
-            placeholder = true,
             children,
             ...rest
         } = props;
@@ -36,18 +37,18 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
         const [coverChild, setCoverChild] = useState<DraggerChildNodes>();
 
-        const [placeholderData, setPlaceholderData] = useState<PlaceholderProps>();
-        const placeholderDataRef = useRef<PlaceholderProps>()
-
         useImperativeHandle(ref, () => (parentRef?.current));
-
-        const placeholderDataChange = (val: PlaceholderProps) => {
-            setPlaceholderData(val);
-            placeholderDataRef.current = val;
-        }
 
         useEffect(() => {
             setChildLayOutFunc(childNodesRef.current);
+            // 初始化监听事件
+            if (listenAddFunc) {
+                const area = {
+                    node: parentRef.current,
+                    areaId: areaProps?.areaId
+                }
+                listenAddFunc(area, addTag);
+            }
         }, []);
 
         const findOwnerDocument = () => {
@@ -84,16 +85,16 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         }
 
         // 根据当前拖拽元素和其他所有的子元素比较，如果存在接近的元素，则返回
-        const moveTrigger = (tag: DraggerItemEvent, childNodes: DraggerChildNodes[]): DraggerChildNodes | undefined => {
+        const moveTrigger = (tag: TagInterface, childNodes: DraggerChildNodes[]): DraggerChildNodes | undefined => {
             const parent = findParent();
             const tagCenter = {
-                x: tag?.x + tag?.width / 2,
-                y: tag?.y + tag?.height / 2
+                x:(tag?.x || 0) + (tag?.width || 0) / 2,
+                y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
             const child = findInArray(childNodes, (item) => {
                 const position = getPositionInParent(item?.node, parent);
                 const offsetWH = getOffsetWH(item?.node);
-                if (offsetWH && position && item?.id !== tag?.id) {
+                if (offsetWH && position && (item?.id !== tag?.id || tag?.areaId !== areaId)) {
                     const itemCenter = {
                         x: position?.x + offsetWH?.width / 2,
                         y: position?.y + offsetWH?.height / 2
@@ -110,28 +111,50 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType('dragStart');
-            placeholderDataChange({
-                x: tag?.x,
-                y: tag?.y,
-                width: tag?.width,
-                height: tag?.height
-            })
         }
 
         const onDrag: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
+            const areaTag = { ...tag, areaId }
             setDragType('draging');
-            const coverChild = moveTrigger(tag, childNodesRef.current);
+            const coverChild = moveTrigger(areaTag, childNodesRef.current);
             setCoverChild(coverChild)
-            props?.onDragMove && props?.onDragMove(tag, coverChild, e);
+            props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
         }
 
         const onDragEnd: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
+            const areaTag = { ...tag, areaId }
             setDragType('dragEnd');
             setCoverChild(undefined);
+            const coverChild = moveTrigger(areaTag, childNodesRef.current);
+            props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, e);
+            // 是否拖到区域外部
+            if (triggerAddFunc) {
+                const ret = triggerAddFunc(areaTag, e);
+                if (ret?.isTrigger) {
+                    const triggerInfo = {
+                        type: 'out',
+                        areaId: ret?.areaId,
+                        fromAreaId: ret?.fromAreaId,
+                        moveTag: areaTag
+                    }
+                    props?.onChange && props?.onChange(triggerInfo);
+                }
+            }
+        }
+
+        // 监听添加外部区域来的tag
+        const addTag: AddTagFunc = (tag, ret, e) => {
             const coverChild = moveTrigger(tag, childNodesRef.current);
-            props?.onDragMoveEnd && props?.onDragMoveEnd(tag, coverChild, e);
+            const triggerInfo = {
+                type: 'in',
+                areaId: ret?.areaId,
+                fromAreaId: ret?.fromAreaId,
+                moveTag: tag,
+                coverChild: coverChild
+            }
+            props.onChange && props.onChange(triggerInfo);
         }
 
         const onResizeStart: DraggerItemHandler = (e, tag) => {
@@ -157,33 +180,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             } else {
                 childNodesRef.current.push(value);
             }
-        }
-
-        const renderPlaceholder = () => {
-            if (!dragType || !['dragStart', 'draging']?.includes(dragType)) return;
-            return (
-                <DraggerItem
-                    onDragStart={onDragStart}
-                    onDrag={onDrag}
-                    onDragEnd={onDragEnd}
-                    onResizeStart={onResizeStart}
-                    onResizing={onResizing}
-                    onResizeEnd={onResizeEnd}
-                    x={placeholderData?.x}
-                    y={placeholderData?.y}
-                    width={placeholderData?.width}
-                    height={placeholderData?.height}
-                    id={-1}
-                    zIndexRange={[1, 9]}
-                    style={{
-                        position: 'absolute',
-                        background: 'green',
-                        transition: ' all .15s ease-out'
-                    }}
-                >
-                    <div />
-                </DraggerItem>
-            )
         }
 
         const cls = classNames('DraggerLayout', className);
@@ -212,7 +208,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 }}>
                     {children}
                 </DraggerContext.Provider>
-                {renderPlaceholder()}
             </div>
         );
     });
