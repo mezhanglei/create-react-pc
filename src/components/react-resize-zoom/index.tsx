@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
-import { addEvent, removeEvent, getClientXYInParent, getOffsetWH } from "@/utils/dom";
+import { addEvent, removeEvent, getPositionInParent, getOffsetWH } from "@/utils/dom";
 import { EventType, EventHandler, EventDataType, Direction, Axis, DragResizeProps } from "./type";
 
 // Simple abstraction for dragging events names.
@@ -97,11 +97,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     // 返回鼠标所在的边
     const getDirection = (e: EventType): string => {
         const element = nodeRef.current;
-        const clientXY = getClientXYInParent(e, element);
+        const position = getPositionInParent(e, element);
         const offsetWH = getOffsetWH(element);
-        if (!clientXY || !offsetWH) return '';
+        if (!position || !offsetWH) return '';
         const distance = offset;
-        const { x, y } = clientXY;
+        const { x, y } = position;
         let direction = '';
         // 上边
         if (y < distance && y > -distance) direction += Direction.N;
@@ -158,9 +158,9 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         };
         e.preventDefault();
         const element = nodeRef?.current;
-        const clientXY = getClientXYInParent(e, element);
+        const position = getPositionInParent(e, element);
         const offsetWH = getOffsetWH(element);
-        if (!clientXY || !offsetWH) return;
+        if (!position || !offsetWH) return;
 
         const eventData = {
             node: element,
@@ -170,10 +170,10 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             height: offsetWH?.height,
             zIndex: zIndexRange[1],
             lastDir: direction,
-            eventX: clientXY?.x,
-            eventY: clientXY?.y,
-            lastEventX: clientXY?.x,
-            lastEventY: clientXY?.y,
+            eventX: position?.x,
+            eventY: position?.y,
+            lastEventX: position?.x,
+            lastEventY: position?.y,
             lastW: offsetWH?.width,
             lastH: offsetWH?.height
         }
@@ -192,22 +192,22 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         const mouseCursor = getMouseCursor(direction);
         element.style.cursor = mouseCursor;
         if (!isDraggableRef.current) return;
-        const clientXY = getClientXYInParent(e, element);
+        const position = getPositionInParent(e, element);
         const offsetWH = getOffsetWH(element);
-        if (!clientXY || !offsetWH) return;
+        if (!position || !offsetWH) return;
         const { lastDir = Axis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
 
         let deltaX, deltaY;
-        deltaX = clientXY?.x - lastEventX;
-        deltaY = clientXY?.y - lastEventY;
+        deltaX = position?.x - lastEventX;
+        deltaY = position?.y - lastEventY;
 
         const eventData = {
             ...eventDataRef.current,
             node: element,
             mouseCursor: mouseCursor,
             dir: direction,
-            eventX: clientXY?.x,
-            eventY: clientXY?.y,
+            eventX: position?.x,
+            eventY: position?.y,
             width: canDragX(lastDir) ? (lastW + deltaX) : lastW,
             height: canDragY(lastDir) ? (lastH + deltaY) : lastH,
             zIndex: zIndexRange[1]

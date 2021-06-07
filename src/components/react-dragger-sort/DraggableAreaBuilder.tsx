@@ -5,12 +5,14 @@ import {
     DraggerContextInterface,
     DraggerChildNodes,
     TagInterface,
-    AddTagFunc
+    AddTagFunc,
+    ChildLayOut,
+    InitPosition
 } from "./utils/types";
 import classNames from "classnames";
 import { DraggerItemHandler, DraggerItemEvent } from "./dragger-item";
 import { getOffsetWH, getPositionInParent } from "@/utils/dom";
-import { findInArray } from "@/utils/array";
+import { combinedArr } from "@/utils/array";
 
 export const DraggerContext = React.createContext<DraggerContextInterface | null>(null);
 
@@ -34,13 +36,14 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const parentRef = useRef<any>();
         const childNodesRef = useRef<DraggerChildNodes[]>([]);
-        const [childLayOut, setChildLayOut] = useState<{ [key: string]: DraggerItemEvent }>({});
+        const initPositionListRef = useRef<InitPosition[]>([]);
+        const [childLayOut, setChildLayOut] = useState<ChildLayOut>({});
         const [coverChild, setCoverChild] = useState<DraggerChildNodes>();
 
         useImperativeHandle(ref, () => (parentRef?.current));
 
         useEffect(() => {
-            setChildLayOutFunc(childNodesRef.current);
+            initChildren(childNodesRef.current);
             // 初始化监听事件
             if (listenAddFunc) {
                 const area = {
@@ -62,8 +65,36 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             return node;
         };
 
-        // 设置子元素的位置以及宽高
-        const setChildLayOutFunc = (childNodes: DraggerChildNodes[]): DraggerChildNodes | {} => {
+        // 初始化children位置信息
+        const initChildren = (childNodes: DraggerChildNodes[]) => {
+            const parent = findParent();
+            const layout: any = {};
+            const positionList: InitPosition[] = [];
+            childNodes?.map((item) => {
+                if (item?.node) {
+                    const position = getPositionInParent(item?.node, parent);
+                    const offsetWH = getOffsetWH(item?.node);
+                    layout[item?.id] = {
+                        id: item?.id,
+                        node: item?.node,
+                        width: offsetWH?.width,
+                        height: offsetWH?.height,
+                        x: position?.x,
+                        y: position?.y
+                    }
+                    const initPosition = {
+                        x: position?.x || 0,
+                        y: position?.y || 0
+                    }
+                    positionList?.push(initPosition);
+                }
+            })
+            setChildLayOut(layout);
+            initPositionListRef.current = positionList;
+        }
+
+        // 设置子元素的位置排列
+        const setChildLayOutFunc = (childNodes: DraggerChildNodes[]) => {
             const parent = findParent();
             const pos: any = {};
             childNodes?.map((item) => {
@@ -81,17 +112,16 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 }
             })
             setChildLayOut(pos);
-            return pos;
         }
 
         // 根据当前拖拽元素和其他所有的子元素比较，如果存在接近的元素，则返回
-        const moveTrigger = (tag: TagInterface, childNodes: DraggerChildNodes[]): DraggerChildNodes | undefined => {
+        const moveTrigger = (tag: TagInterface): DraggerChildNodes | undefined => {
             const parent = findParent();
             const tagCenter = {
-                x:(tag?.x || 0) + (tag?.width || 0) / 2,
+                x: (tag?.x || 0) + (tag?.width || 0) / 2,
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
-            const child = findInArray(childNodes, (item) => {
+            const child = childNodesRef?.current?.find((item) => {
                 const position = getPositionInParent(item?.node, parent);
                 const offsetWH = getOffsetWH(item?.node);
                 if (offsetWH && position && (item?.id !== tag?.id || tag?.areaId !== areaId)) {
@@ -111,13 +141,14 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType('dragStart');
+            console.log(initPositionListRef.current, 222)
         }
 
         const onDrag: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             const areaTag = { ...tag, areaId }
             setDragType('draging');
-            const coverChild = moveTrigger(areaTag, childNodesRef.current);
+            const coverChild = moveTrigger(areaTag);
             setCoverChild(coverChild)
             props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
         }
@@ -127,7 +158,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const areaTag = { ...tag, areaId }
             setDragType('dragEnd');
             setCoverChild(undefined);
-            const coverChild = moveTrigger(areaTag, childNodesRef.current);
+            const coverChild = moveTrigger(areaTag);
             props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, e);
             // 是否拖到区域外部
             if (triggerAddFunc) {
@@ -146,7 +177,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         // 监听添加外部区域来的tag
         const addTag: AddTagFunc = (tag, ret, e) => {
-            const coverChild = moveTrigger(tag, childNodesRef.current);
+            const coverChild = moveTrigger(tag);
             const triggerInfo = {
                 type: 'in',
                 areaId: ret?.areaId,
@@ -169,7 +200,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         const onResizeEnd: DraggerItemHandler = (e, tag) => {
             setDragType('resizeEnd');
-            setChildLayOutFunc(childNodesRef.current);
+            initChildren(childNodesRef.current);
         }
 
         // 监听children元素

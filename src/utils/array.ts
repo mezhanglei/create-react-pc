@@ -484,9 +484,9 @@ export function findInArray(array: any, callback: (value: any, i?: number, array
 }
 
 // 转化对象数组为map数据
-export const getArrMap = (arr: any[] = [], valueKey: string = 'value', labelKey?: string) => {
+export const getArrMap = (arr: any[] = [], valueKey?: string, labelKey?: string) => {
     const data = {};
-    arr.forEach((item) => data[item[valueKey]] = labelKey ? item[labelKey] : item);
+    arr.forEach((item, index) => data[valueKey ? item[valueKey] : index] = labelKey ? item[labelKey] : item);
     return data;
 };
 
@@ -495,4 +495,18 @@ export const getArrMap = (arr: any[] = [], valueKey: string = 'value', labelKey?
 export const changeLocation = (arr: any[], index1: number, index2: number) => {
     arr[index1] = arr.splice(index2, 1, arr[index1])[0];
     return arr;
+}
+
+// 根据条件合并两个对象数组
+export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
+    const ret = arr2?.reduce((combined: object[], cur, curIndex) => {
+        const target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
+        if (target) {
+            Object.assign(target, cur);
+        } else {
+            combined?.push(cur);
+        }
+        return combined;
+    }, arr1)
+    return ret;
 }

@@ -239,11 +239,11 @@ export function getPositionInPage(el: MouseEvent | TouchEvent | HTMLElement): nu
 
 
 /**
- * 返回元素或事件对象相对于父元素的窗口位置
+ * 返回元素或事件对象相对于父元素的真实位置
  * @param el 元素或事件对象
  * @param parent 父元素
  */
-export function getClientXYInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement): null | SizeInterface {
+export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement): null | SizeInterface {
     let pos = null;
     if ("clientX" in el) {
         pos = {
@@ -291,26 +291,6 @@ export function getRectInParent(el: HTMLElement, parent: HTMLElement): null | Re
 
     return pos;
 }
-
-
-/**
- * 获取元素或事件对象的相对于父元素的真实位置 = 可视位置 - 父元素的可视位置 + 父元素的卷曲滚动距离
- * @param el 元素或事件对象
- * @param parent 父元素
- */
-export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement): null | SizeInterface {
-    const clientXY = getClientXYInParent(el, parent);
-    const scroll = getScroll(parent);
-    let pos = null;
-    if (clientXY) {
-        pos = {
-            x: clientXY.x + (scroll?.x || 0),
-            y: clientXY.y + (scroll?.y || 0),
-        }
-    }
-
-    return pos;
-};
 
 /**
  * 给目标节点设置样式,并返回旧样式

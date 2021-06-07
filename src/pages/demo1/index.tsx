@@ -44,7 +44,7 @@ const Demo1: React.FC<any> = (props) => {
 
     const onDragMove1: DragMoveHandle = (tag, coverChild, e) => {
         if (coverChild?.id == 3) {
-            setArrDrag1([3, 2, 1, 5, 6, 7, 8])
+            // setArrDrag1([3, 2, 1, 5, 6, 7, 8])
             return true;
         }
     }
@@ -64,7 +64,7 @@ const Demo1: React.FC<any> = (props) => {
 
     const area2Change = (info) => {
         if (info?.type === 'in') {
-            setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
+            // setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
         }
     }
 
@@ -98,7 +98,7 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <DraggableArea1 onChange={area1Change} className="flex-box" onDragMoveEnd={onDragMove1}>
+            <DraggableArea1 onChange={area1Change} className="flex-box" onDragMove={onDragMove1}>
                 {
                     arrDrag1?.map((item, index) => {
                         return (
@@ -112,7 +112,7 @@ const Demo1: React.FC<any> = (props) => {
                 }
             </DraggableArea1>
             <div style={{ marginTop: '10px' }}>
-                <DraggableArea2 onChange={area2Change} className="flex-box" onDragMoveEnd={onDragMove2}>
+                <DraggableArea2 onChange={area2Change} className="flex-box" onDragMove={onDragMove2}>
                     {
                         arrDrag2?.map((item, index) => {
                             return (

@@ -17,6 +17,15 @@ export interface DraggerChildNodes {
     id: string | number
 }
 
+// 初始化的位置列表
+export interface InitPosition {
+    x: number;
+    y: number;
+}
+
+// 子元素的位置
+export type ChildLayOut = { [key: string]: DraggerItemEvent }
+
 // 拖拽tag对象的类型
 export interface TagInterface {
     x?: number; // 在容器内的x轴位置
@@ -73,7 +82,7 @@ export interface DraggerContextInterface {
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
     listenChild?: (value: DraggerChildNodes) => void;
-    childLayOut?: { [key: string]: DraggerItemEvent } | {}; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
+    childLayOut?: ChildLayOut | {}; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
     coverChild?: DraggerChildNodes; // 当前被覆盖的元素
     zIndexRange?: [number, number];
     isReflow?: boolean; // 拖拽过程中子元素是否重新排列

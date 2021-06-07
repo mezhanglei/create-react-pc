@@ -155,7 +155,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: `${offsetWH?.height}px`,
             left: `${data?.x}px`,
             pointerEvents: 'none',
-            position: 'fixed',
+            position: 'absolute',
             top: `${data?.y}px`,
             width: `${offsetWH?.width}px`
         }, draggerRef.current);
@@ -182,7 +182,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: `${offsetWH?.height}px`,
             left: `${data?.x}px`,
             pointerEvents: 'none',
-            position: 'fixed',
+            position: 'absolute',
             top: `${data?.y}px`,
             width: `${offsetWH?.width}px`
         }, draggerRef.current);
