@@ -127,22 +127,24 @@ export const asyncSequentializer = (() => {
     }
 })();
 
+// settimeout模拟的循环方法
 export async function poll(fn: () => any, validate: (val: any) => boolean, interval = 2500) {
     const resolver = async (resolve: (arg0: any) => void, reject: (arg0: any) => void) => {
-      try {
-        const result = await fn();
-        // call validator to see if the data is at the state to stop the polling
-        const valid = validate(result);
-        if (valid === true) {
-          resolve(result);
-        } else if (valid === false) {
-          setTimeout(resolver, interval, resolve, reject);
+        try {
+            const result = await fn();
+            // call validator to see if the data is at the state to stop the polling
+            const valid = validate(result);
+            if (valid === true) {
+                resolve(result);
+            } else if (valid === false) {
+                setTimeout(resolver, interval, resolve, reject);
+            }
+        } catch (e) {
+            // if validator returns anything other than "true" or "false" it stops polling
+            reject(e);
         }
-      } catch (e) {
-        // if validator returns anything other than "true" or "false" it stops polling
-        reject(e);
-      }
     };
     return new Promise(resolver);
-  }
+}
+
 

@@ -1,6 +1,8 @@
 
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
+import produce from "immer";
+import { isObjectEqual } from "./object";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型
@@ -261,54 +263,6 @@ export function longCommonPrefix(strs: any[]): string {
 };
 
 /**
- * 使用indexof方法实现模糊查询  数组元素支持Object和简单数据类型
- * @param  {Array}  list     数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function indexOfQuery(list: any, keyWord: string, attr: string): any[] {
-    let newList = list;
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (newList[i]?.toString().indexOf(keyWord) > -1) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (newList[i][attr]?.toString().indexOf(keyWord) > -1) {
-                arr.push(newList[i]);
-            }
-        }
-    }
-    return arr;
-}
-
-/**
- * 使用spilt方法实现模糊查询 数组元素支持Object和简单数据类型
- * @param  {Array}  list     进行查询的数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function splitQuery(list: any[], keyWord: string = "", attr: string): any[] {
-    let newList = list;
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (newList[i]?.toString().split(keyWord).length > 1) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (newList[i][attr]?.toString().split(keyWord).length > 1) {
-                arr.push(newList[i]);
-            }
-        }
-    }
-    return arr;
-}
-
-/**
  * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写) 数组元素支持Object和简单数据类型
  * @param  {Array}  list     原数组
  * @param  {String} keyWord  查询的关键词
@@ -338,11 +292,16 @@ export function regQuery(list: any[], keyWord = "", attr: string): any[] {
  * 判断两个数组是否具有数量和内容相同的元素(忽略顺序)
  * @param {*} arr1 
  * @param {*} arr2 
+ * @param {*} condition 判断相等的条件
  */
-export function isAllMatch(arr1: any[] = [], arr2: any[] = []): boolean {
-    let noMatched = arr1.some(item => (arr2.indexOf(item) < 0));
+ export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: any) => boolean): boolean {
+    if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) {
+        return false;
+    }
+    if (arr1?.length !== arr2?.length) return false;
+    let noMatched = arr1?.some(item1 => !arr2?.some(item2 => condition(item2, item1)));
     return !noMatched;
-}
+  }
 
 /**
  * 深度优先遍历非递归(先进后出的栈结构，有回溯行为，速度慢些)
@@ -509,4 +468,21 @@ export const combinedArr = (arr1: object[], arr2: object[], condition: (next: ob
         return combined;
     }, arr1)
     return ret;
+}
+
+// 更新对象数组中指定项的值
+export const updateArrItem = (arr: any[], itemData: any, condition: (item: any, index?: number) => boolean) => {
+    const newArr = produce(arr, draft => {
+        if (draft && itemData) {
+            const index = draft?.findIndex((item, index) => condition(item, index));
+            if (isObject(itemData)) {
+                Object.keys(itemData)?.map((key) => {
+                    draft[index][key] = itemData[key];
+                })
+            } else {
+                draft[index] = itemData;
+            }
+        }
+    });
+    return newArr;
 }
