@@ -156,7 +156,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: `${offsetWH?.height}px`,
             left: `${data?.x}px`,
             pointerEvents: 'none',
-            position: 'absolute',
+            position: 'fixed',
             top: `${data?.y}px`,
             width: `${offsetWH?.width}px`
         }, draggerRef.current);
@@ -182,7 +182,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: `${offsetWH?.height}px`,
             left: `${data?.x}px`,
             pointerEvents: 'none',
-            position: 'absolute',
+            position: 'fixed',
             top: `${data?.y}px`,
             width: `${offsetWH?.width}px`
         }, draggerRef.current);
@@ -263,7 +263,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     }
 
     const cls = classNames((children?.props?.className || ''), className);
-console.log(dragType,222)
+
     // 可拖拽子元素
     const NormalItem = (
         <Draggable
@@ -307,7 +307,7 @@ console.log(dragType,222)
         style: {
             ...children.props.style,
             ...style,
-            position: 'absolute',
+            position: 'fixed',
             opacity: '0.8',
             transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
             zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
