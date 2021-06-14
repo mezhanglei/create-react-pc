@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle,
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
-import { ChildrenType, DraggerChildNodes, DraggerContextInterface } from "./utils/types";
+import { ChildrenType, DraggerContextInterface } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH, setStyle } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
@@ -17,7 +17,6 @@ export interface DraggerItemEvent {
     y: number;
     translateX?: number;
     translateY?: number;
-    id: string | number;
     node: HTMLElement;
 }
 export interface DraggerProps extends DraggerContextInterface {
@@ -30,7 +29,6 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeStart?: DraggerItemHandler;
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
-    id: string | number;
     type?: 'drag' | 'resize' | 'both' | 'none'; // 允许操作的类型
     width?: number; // 宽度
     height?: number; // 高度
@@ -48,7 +46,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         className,
         style,
         type = "both",
-        id,
         dragNode,
         appendRoot
     } = props;
@@ -63,9 +60,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
     const isReflow = context?.isReflow ?? props?.isReflow;
-    const childLayOut = context?.childLayOut ?? props?.childLayOut;
+    const childLayout = context?.childLayout ?? props?.childLayout;
     const coverChild = context?.coverChild ?? props?.coverChild;
-    const itemLayOut = childLayOut?.[id];
     const listenChild = context?.listenChild ?? props?.listenChild;
     const nodeRef = useRef<any>();
     const draggerRef = useRef<any>();
@@ -74,34 +70,39 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         node: nodeRef?.current
     }));
 
+    const itemLayout = () => {
+        const child = childLayout?.find((item) => item?.node === nodeRef.current)
+        return child;
+    }
+
     useEffect(() => {
-        const x = props?.x ?? itemLayOut?.x;
+        const x = props?.x ?? itemLayout()?.x;
         x != undefined && setX(x);
-    }, [props?.x, itemLayOut?.x])
+    }, [props?.x, itemLayout()?.x])
 
     useEffect(() => {
-        const y = props?.y ?? itemLayOut?.y;
+        const y = props?.y ?? itemLayout()?.y;
         y !== undefined && setY(y);
-    }, [props?.y, itemLayOut?.y])
+    }, [props?.y, itemLayout()?.y])
 
     useEffect(() => {
-        const width = props?.width ?? itemLayOut?.width;
+        const width = props?.width ?? itemLayout()?.width;
         width != undefined && setWidth(width);
-    }, [props?.width, itemLayOut?.width])
+    }, [props?.width, itemLayout()?.width])
 
     useEffect(() => {
-        const height = props?.height ?? itemLayOut?.height;
+        const height = props?.height ?? itemLayout()?.height;
         height !== undefined && setHeight(height);
-    }, [props?.height, itemLayOut?.height]);
+    }, [props?.height, itemLayout()?.height]);
 
     // 监听children是否重绘从而重新初始化获取node
     useEffect(() => {
         const node = nodeRef.current;
-        listenChild && listenChild({ node, id });
+        listenChild && listenChild(node);
     }, [children]);
 
-    const isOver = (coverChild?: DraggerChildNodes, id?: string | number) => {
-        if (coverChild?.id === id) {
+    const isOver = (coverChild?: HTMLElement) => {
+        if (coverChild === nodeRef.current) {
             return true;
         } else {
             return false;
@@ -167,7 +168,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            id: id,
             node: node
         });
     }
@@ -194,7 +194,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            id: id,
             node: node
         });
     }
@@ -214,7 +213,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            id: id,
             node: node
         });
     }
@@ -230,7 +228,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            id: id,
             node: node
         })
     }
@@ -246,7 +243,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            id: id,
             node: node
         })
     }
@@ -262,13 +258,12 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            id: id,
             node: node
         });
     }
 
     const cls = classNames((children?.props?.className || ''), className);
-
+console.log(dragType,222)
     // 可拖拽子元素
     const NormalItem = (
         <Draggable
@@ -294,8 +289,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild, id) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
+                            opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
+                            // transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
+                            transition: 'all .2s ease-out',
                             zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
                         }
                     })

@@ -5,11 +5,11 @@ import Button from '@/components/button';
 import DragResize from '@/components/react-resize-zoom';
 import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 import VirtualList from '@/components/react-mini-virtual-list';
-import { DragMoveHandle } from '@/components/react-dragger-sort/types';
+import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
-const DraggableArea1 = DraggableAreaGroups.addArea(1)
-const DraggableArea2 = DraggableAreaGroups.addArea(2)
+const DraggableArea1 = DraggableAreaGroups.addArea()
+const DraggableArea2 = DraggableAreaGroups.addArea()
 
 const Demo1: React.FC<any> = (props) => {
     const [dataSource, setDataSource] = useState<any>([]);
@@ -43,27 +43,21 @@ const Demo1: React.FC<any> = (props) => {
     };
 
     const onDragMove1: DragMoveHandle = (tag, coverChild, e) => {
-        if (coverChild?.id == 3) {
-            // setArrDrag1([3, 2, 1, 5, 6, 7, 8])
-            return true;
-        }
+
     }
 
     const onDragMove2: DragMoveHandle = (tag, coverChild, e) => {
-        if (coverChild?.id == 3) {
-            setArrDrag2([3, 2, 1, 5, 6, 7, 8])
-            return true;
-        }
+
     }
 
     const area1Change = (info) => {
         if (info?.type === 'out') {
-            setArrDrag1([2, 3, 5, 6, 7, 8])
         }
     }
 
     const area2Change = (info) => {
         if (info?.type === 'in') {
+            console.log(info, 2222)
             // setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
         }
     }
@@ -102,7 +96,7 @@ const Demo1: React.FC<any> = (props) => {
                 {
                     arrDrag1?.map((item, index) => {
                         return (
-                            <DraggerItem className="drag-a" key={item} id={item}>
+                            <DraggerItem className="drag-a" key={item}>
                                 <div>
                                     大小拖放{item}
                                 </div>
@@ -116,7 +110,7 @@ const Demo1: React.FC<any> = (props) => {
                     {
                         arrDrag2?.map((item, index) => {
                             return (
-                                <DraggerItem className="drag-a" key={item} id={item}>
+                                <DraggerItem className="drag-a" key={item}>
                                     <div>
                                         大小拖放{item}
                                     </div>

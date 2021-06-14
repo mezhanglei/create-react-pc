@@ -458,10 +458,12 @@ export const changeLocation = (arr: any[], index1: number, index2: number) => {
 
 // 根据条件合并两个对象数组
 export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
-    const ret = arr2?.reduce((combined: object[], cur, curIndex) => {
-        const target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
+    const ret: object[] = [];
+    arr2?.reduce((combined: object[], cur, curIndex) => {
+        let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
         if (target) {
-            Object.assign(target, cur);
+            target = {...target, ...cur};
+            ret?.push(target)
         } else {
             combined?.push(cur);
         }

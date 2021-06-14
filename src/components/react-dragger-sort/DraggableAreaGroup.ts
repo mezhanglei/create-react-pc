@@ -9,7 +9,7 @@ export default class DraggableAreaGroup {
         this.addAreaFn = [];
     }
 
-    addArea(areaId: string | number) {
+    addArea() {
         return buildDraggableArea({
             // 将当前拖拽的tag传入所有容器监听的队列进行计算
             triggerAddFunc: (tag, e) => {
@@ -25,17 +25,15 @@ export default class DraggableAreaGroup {
             // 将所在的area的添加tag的事件添加进队列
             listenAddFunc: (area, addTag) => {
                 this.addAreaFn.push(function (tag, e) {
-                    const areaNode = area?.node;
-                    if (tag?.areaId !== area?.areaId) {
+                    if (tag?.area !== area) {
                         const parent = document?.body || document?.documentElement;
-                        const areaRect = getRectInParent(areaNode, parent);
+                        const areaRect = getRectInParent(area, parent);
                         const x = tag?.x || 0;
                         const y = tag?.y || 0;
                         if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
                             const ret = {
                                 isTrigger: true,
-                                areaId: areaId,
-                                fromAreaId: tag?.areaId
+                                fromArea: tag?.area
                             };
                             addTag(tag, ret, e);
                             return ret;
@@ -43,12 +41,10 @@ export default class DraggableAreaGroup {
                     }
                     return {
                         isTrigger: false,
-                        areaId: areaId,
-                        fromAreaId: tag?.areaId
+                        fromArea: tag?.area
                     };
                 });
-            },
-            areaId: areaId
+            }
         });
     }
 }
