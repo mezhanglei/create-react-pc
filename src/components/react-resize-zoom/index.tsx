@@ -28,6 +28,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         zIndexRange = [],
         width,
         height,
+        forbid,
         className,
         style
     } = props;
@@ -149,6 +150,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     const onResizeStart: EventHandler = (e) => {
+        if(forbid) return;
         const direction = getDirection(e);
         const mouseCursor = getMouseCursor(direction);
         if (mouseCursor === 'default') {
@@ -186,6 +188,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     const onMove: EventHandler = (e) => {
+        if(forbid) return;
         e.preventDefault();
         const element = nodeRef?.current;
         const direction = getDirection(e);

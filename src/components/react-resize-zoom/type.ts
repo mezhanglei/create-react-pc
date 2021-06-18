@@ -36,6 +36,7 @@ export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
     axis?: 'auto' | 'x' | 'y' | 'angle' | 'none';
+    forbid?: boolean;
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差
     zIndexRange?: [number, number]; // zIndex变化的范围
