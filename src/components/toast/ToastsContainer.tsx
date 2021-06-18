@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { DarkColors, LightColors } from "./DefaultColors";
-import { getGUID } from "@/utils/common";
+import { getGUID } from "@/utils/character";
 import "./ToastsContainer.less";
 import classNames from 'classnames';
 import { ToastsPosition, ToastProps } from "./type";

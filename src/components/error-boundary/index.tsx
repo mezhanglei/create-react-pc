@@ -5,16 +5,10 @@ import Result from "@/components/result/result";
 
 const styled = clz.bind(css);
 
-interface IErrorBoundaryProps {
-  state?: {
-    error: any;
-    errorInfo: any;
-  }
-}
 /**
  * react错误边界处理
  */
-class ErrorBoundary extends React.Component<IErrorBoundaryProps, any> {
+class ErrorBoundary extends React.Component<{ reload: () => void, children: any }, { error: any, errorInfo: any }> {
   /**
    * 初始化参数
    * @param props 父级参数
@@ -36,29 +30,26 @@ class ErrorBoundary extends React.Component<IErrorBoundaryProps, any> {
     })
   }
 
-  /**
-   * 回首页
-   */
-  handleGoHome = () => {
+  // 重新加载
+  reload = () => {
     this.setState({
       error: null,
       errorInfo: null
     }, () => {
-      window.location.replace('/');
+      this.props?.reload && this.props?.reload()
     });
   }
 
   render() {
     if (this.state.errorInfo) {
       return (
-        <div className="error-boundary-wrapper" onClick={this.handleGoHome}>
+        <div className={styled("error-boundary-wrapper")} onClick={this.reload}>
           <Result title="错误处理" />
         </div>
       );
     }
     return (this.props.children);
   }
-
 }
 
 export default (ErrorBoundary);

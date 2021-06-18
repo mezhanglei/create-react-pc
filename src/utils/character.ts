@@ -2,9 +2,11 @@
 import { isObject, isNumber } from "./type";
 
 //保留n位小数并格式化输出字符串类型的数据
-export function formatFloat(value, n = 2) {
-    if (value === undefined || value === '') {
-        return '';
+export function formatFloat(value: number | string, n = 2) {
+    if (typeof value === 'string') {
+        value = parseFloat(value);
+    } else if (!isNumber(value)) {
+        return "";
     }
     // 浮点类型数字
     let numValue = Math.round(value * Math.pow(10, n)) / Math.pow(10, n);
@@ -24,13 +26,13 @@ export function formatFloat(value, n = 2) {
 }
 
 // 自动补充0
-export function prefixZero(num, len) {
+export function prefixZero(num: number, len: number) {
     if (String(num).length > len) return num;
     return (Array(len).join(0) + num).slice(-len);
 }
 
 // 将数字或数字字符串转成百分比
-export function numberToRate(value, n = 2) {
+export function numberToRate(value: number | string, n = 2) {
     if (value === undefined || value === '') {
         return '';
     }
@@ -39,7 +41,7 @@ export function numberToRate(value, n = 2) {
 }
 
 // 对正整数循环除以10得到10的几次幂。
-export function getPower(integer) {
+export function getPower(integer: number) {
     let power = -1;
     while (integer >= 1) {
         power++;
@@ -54,9 +56,14 @@ export function getPower(integer) {
  * @param {String} unit 指定单位，默认 "万"
  * @param {Number} n 保留几位小数，默认保留2位
  */
-export function unitChange(number, unit = "万", n = 2) {
-    if (!isNumber(number)) {
+export function unitChange(number: number | string, unit = "万", n = 2) {
+    // if (!isNumber(number)) {
+    //     number = parseFloat(number);
+    // }
+    if (typeof number === "string") {
         number = parseFloat(number);
+    } else if (!isNumber(number)) {
+        return;
     }
     // 单位对应十的几次幂的映射规则
     const unitMap = {
@@ -89,7 +96,7 @@ export function unitChange(number, unit = "万", n = 2) {
  * 递归去除参数的前后空格
  * @param {*} data 参数
  */
-export const trimParams = (data) => {
+export const trimParams = (data: any) => {
     if (typeof data === 'string') return data.trim();
     if (isObject(data)) {
         for (let key in data) {
@@ -99,27 +106,47 @@ export const trimParams = (data) => {
     return data;
 };
 
-// react将字符串转化为html
-export function showhtml(htmlString) {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }}></div>;
-}
-
 // 格式化text-area文本, 返回格式化后的字符串： 去空格，并实现换行
-export const handleTextArea = (text) => {
-    let arr = [];
+export const handleTextArea = (text: string) => {
+    const arr: string[] = [];
     text.split('\n').forEach(item => arr.push(`<span>${item.trim()}</span>`));
     return arr.join('<br>');
 };
 
 // 隐藏手机号中间的四位数并返回结果
-export function hideTelephone(phone) {
+export function hideTelephone(phone: number | string) {
     phone = "" + phone;
     let reg = /(\d{3})\d{4}(\d{4})/;
     return phone.replace(reg, "$1****$2");
 }
 
 // 过滤富文本中的标签和空格，提取文本
-export function richTextFilter(str) {
+export function richTextFilter(str: string) {
     // return str.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, '').replace(/&nbsp;/ig, '');
     return (str.replace(/<[^<>]+>/g, '').replace(/&nbsp;/ig, ''));
+}
+
+/**
+ * 随机一定范围内的数字
+ * @param max 最大值
+ * @param min 最小值
+ */
+export function randomNumber(max = 1, min = 0) {
+    if (min >= max) {
+        return max;
+    }
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+/**
+ * 生成GUID(全局唯一标识符32位，UUID的一种)
+ * 其中4表示UUID生成算法版本
+ */
+export const getGUID = () => {
+    let str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    return str.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }

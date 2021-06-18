@@ -148,9 +148,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const offsetWH = getOffsetWH(node);
         const appendRoot = findAppendRoot();
         const ownerDocument = findOwnerDocument();
-        let div = ownerDocument.createElement('div');
-        appendRoot?.appendChild(div);
-        ReactDOM.render(DragCopyItem, div);
+        draggerRef.current = ownerDocument.createElement('div');
+        appendRoot?.appendChild(draggerRef.current);
+        ReactDOM.render(DragCopyItem, draggerRef.current);
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
@@ -158,7 +158,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             pointerEvents: 'none',
             position: 'fixed',
             top: `${data?.y}px`,
-            width: `${offsetWH?.width}px`
+            width: `${offsetWH?.width}px`,
+            opacity: '0.8',
+            zIndex: zIndexRange?.[1]
         }, draggerRef.current);
         if (!offsetWH) return false;
         return context?.onDragStart && context?.onDragStart(e, {
@@ -184,7 +186,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             pointerEvents: 'none',
             position: 'fixed',
             top: `${data?.y}px`,
-            width: `${offsetWH?.width}px`
+            width: `${offsetWH?.width}px`,
+            opacity: '0.8',
+            zIndex: zIndexRange?.[1]
         }, draggerRef.current);
         if (!offsetWH) return false;
         return context?.onDrag && context?.onDrag(e, {
@@ -203,7 +207,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         setDragType('dragEnd');
         const node = data?.node;
         const appendRoot = findAppendRoot();
-        appendRoot?.removeChild(draggerRef.current?.parentNode);
+        appendRoot?.removeChild(draggerRef.current);
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
         return context?.onDragEnd && context?.onDragEnd(e, {
@@ -303,14 +307,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     // 子元素动态生成的拖拽显示副本
     const DragCopyItem = React.cloneElement(React.Children.only(children), {
         className: cls,
-        ref: (node: HTMLElement) => draggerRef.current = node,
         style: {
             ...children.props.style,
-            ...style,
-            position: 'fixed',
-            opacity: '0.8',
-            transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-            zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
+            ...style
         }
     });
 

@@ -89,7 +89,7 @@ const ReactTransformSticky: React.FC<ReactTransformStickyProps> = (props) => {
 
     const cls = classNames((children?.props?.className || ''), className);
 
-    const NormalChild = React.cloneElement(children, {
+    const NormalChild = React.cloneElement(React.Children.only(children), {
         ref: nodeRef,
         className: cls,
         style: {

@@ -72,6 +72,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
         ReactDOM.render(FixedChild, draggerRef.current);
         return () => {
             removeEvent(addEventEle, dragEventFor.move, handleScroll);
+            parent?.removeChild(draggerRef.current);
         }
     }, []);
 
@@ -103,7 +104,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
 
     const cls = classNames((children?.props?.className || ''), className);
 
-    const FixedChild = React.cloneElement(children, {
+    const FixedChild = React.cloneElement(React.Children.only(children), {
         className: cls,
         style: {
             ...children.props.style,
@@ -111,7 +112,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
         }
     });
 
-    const NormalChild = React.cloneElement(children, {
+    const NormalChild = React.cloneElement(React.Children.only(children), {
         ref: nodeRef,
         className: cls,
         style: {
