@@ -13,11 +13,11 @@ export default class DraggableAreaGroup {
         return buildDraggableArea({
             // 将当前拖拽的tag传入所有容器监听的队列进行计算
             triggerAddFunc: (tag, e) => {
-                let result = {};
+                let result = false;
                 this.addAreaFn.forEach(fn => {
-                    const r = fn({ ...tag }, e);
-                    if (r.isTrigger) {
-                        result = r;
+                    const isTrigger = fn({ ...tag }, e);
+                    if (isTrigger) {
+                        result = isTrigger;
                     }
                 });
                 return result;
@@ -31,18 +31,11 @@ export default class DraggableAreaGroup {
                         const x = tag?.x || 0;
                         const y = tag?.y || 0;
                         if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
-                            const ret = {
-                                isTrigger: true,
-                                fromArea: tag?.area
-                            };
-                            addTag(tag, ret, e);
-                            return ret;
+                            addTag(tag, e);
+                            return true;
                         }
                     }
-                    return {
-                        isTrigger: false,
-                        fromArea: tag?.area
-                    };
+                    return false;
                 });
             }
         });

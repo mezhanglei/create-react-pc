@@ -18,6 +18,7 @@ export interface DraggerItemEvent {
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
+    dragType?: 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd';
 }
 export interface DraggerProps extends DraggerContextInterface {
     children: ChildrenType;
@@ -143,7 +144,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onDragStart: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        setDragType('dragStart');
+        const dragType = 'dragStart'
+        setDragType(dragType);
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
         const appendRoot = findAppendRoot();
@@ -170,14 +172,16 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            node: node
+            node: node,
+            dragType
         });
     }
 
     const onDrag: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
         const node = data?.node;
-        setDragType('draging');
+        const dragType = 'draging';
+        setDragType(dragType);
         const offsetWH = getOffsetWH(node);
         setStyle({
             boxSizing: 'border-box',
@@ -198,13 +202,15 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            node: node
+            node: node,
+            dragType
         });
     }
 
     const onDragStop: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        setDragType('dragEnd');
+        const dragType = 'dragEnd';
+        setDragType(dragType);
         const node = data?.node;
         const appendRoot = findAppendRoot();
         appendRoot?.removeChild(draggerRef.current);
@@ -217,13 +223,15 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             translateY: data?.translateY,
             x: data?.x,
             y: data?.y,
-            node: node
+            node: node,
+            dragType
         });
     }
 
     const onResizeStart: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        setDragType('resizeStart');
+        const dragType = 'resizeStart';
+        setDragType(dragType);
         const node = data?.node;
         const parent = findParent();
         const position = getPositionInParent(node, parent);
@@ -232,14 +240,16 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            node: node
+            node: node,
+            dragType
         })
     }
 
     const onResizing: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
         const node = data?.node;
-        setDragType('resizing');
+        const dragType = 'resizing';
+        setDragType(dragType);
         const parent = findParent();
         const position = getPositionInParent(node, parent);
         return context?.onResizing && context?.onResizing(e, {
@@ -247,13 +257,15 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            node: node
+            node: node,
+            dragType
         })
     }
 
     const onResizeEnd: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        setDragType('resizeEnd');
+        const dragType = 'resizeEnd';
+        setDragType(dragType);
         const node = data?.node;
         const parent = findParent();
         const position = getPositionInParent(node, parent);
@@ -262,7 +274,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: data?.height,
             x: position?.x || 0,
             y: position?.y || 0,
-            node: node
+            node: node,
+            dragType
         });
     }
 

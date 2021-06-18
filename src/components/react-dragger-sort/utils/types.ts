@@ -11,6 +11,7 @@ export interface TagInterface {
     width?: number; // 宽度
     height?: number; // 高度
     area?: HTMLElement; // tag所在的area
+    dragType?: 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd', // 当前拖拽类型
     translateX?: number;
     translateY?: number;
     node: HTMLElement; // tag节点
@@ -24,16 +25,14 @@ export interface InitPosition {
     height: number; // 高度
 }
 
-// 跨容器拖拽结果类型
-export type DragRet = { isTrigger?: boolean; fromArea?: HTMLElement; area?: HTMLElement };
 // 拖拽回调函数
 export type DragMoveHandle = (tag: TagInterface, coverChild?: HTMLElement, e?: EventType) => void | boolean;
 // 添加tag函数类型
-export type AddTagFunc = (tag: TagInterface, ret: DragRet, e: EventType) => void | boolean;
+export type AddTagFunc = (tag: TagInterface, e: EventType) => void | boolean;
 // 添加队列的类型
-export type AddAreaFunc = (tag: TagInterface, e: EventType) => DragRet;
+export type AddAreaFunc = (tag: TagInterface, e: EventType) => boolean;
 // 容器触发添加事件的类型
-export type TriggerAddFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) =>  DragRet;
+export type TriggerAddFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) =>  boolean;
 // 容器监听添加事件的类型
 export type ListenAddFuncHandle = (area: HTMLElement, addTag: AddTagFunc) => void;
 // 拖拽类
@@ -42,10 +41,9 @@ export type DraggableAreaBuilder = (props?: { triggerAddFunc: TriggerAddFuncHand
 
 // 拖拽容器props
 export interface TriggerInfo {
-    type: 'in' | 'out' | string; // in拖进，out拖出
-    area?: HTMLElement; // 被拖进tag的area
-    fromArea?: HTMLElement; // 拖出tag的area
-    coverChild?: HTMLElement; // 跨容器的coverChild
+    type: 'in' | 'out' | string; // 触发类型，in拖进，out拖出
+    area?: HTMLElement; // 当前触发的area
+    coverChild?: HTMLElement; // 当前的被over的coverChild
     moveTag: TagInterface; // 当前移动的元素
 }
 export interface DraggableAreaProps {

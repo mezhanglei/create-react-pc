@@ -57,7 +57,6 @@ const Demo1: React.FC<any> = (props) => {
 
     const area2Change = (info) => {
         if (info?.type === 'in') {
-            console.log(info, 2222)
             // setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
         }
     }
