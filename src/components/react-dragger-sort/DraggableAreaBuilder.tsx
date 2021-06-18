@@ -153,8 +153,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const coverChild = moveTrigger(areaTag);
             setCoverChild(coverChild)
             props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
-             // 是否拖到区域外部
-             if (triggerAddFunc) {
+            // 是否拖到区域外部
+            if (triggerAddFunc) {
                 const isTrigger = triggerAddFunc(areaTag, e);
                 if (isTrigger) {
                     const triggerInfo = {
@@ -193,7 +193,11 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         // 监听添加外部区域来的tag
         const addTag: AddTagFunc = (tag, e) => {
             const coverChild = moveTrigger(tag);
-            setCoverChild(coverChild)
+            if (tag?.dragType === 'dragEnd') {
+                setCoverChild(undefined)
+            } else {
+                setCoverChild(coverChild)
+            }
             const triggerInfo = {
                 type: 'in',
                 area: parentRef?.current,
