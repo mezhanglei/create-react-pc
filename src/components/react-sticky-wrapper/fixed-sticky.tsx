@@ -39,6 +39,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
 
     // 获取滚动根元素
     const getScrollRoot = () => {
+        console.log(findElement(scrollRoot))
         const root = findElement(scrollRoot) || getScrollParent(nodeRef.current);
         return root;
     }

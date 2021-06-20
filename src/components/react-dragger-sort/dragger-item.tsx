@@ -89,6 +89,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     useEffect(() => {
         const width = props?.width ?? itemLayout()?.width;
         width != undefined && setWidth(width);
+        console.log(width, 2222)
     }, [props?.width, itemLayout()?.width])
 
     useEffect(() => {
@@ -150,9 +151,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const offsetWH = getOffsetWH(node);
         const appendRoot = findAppendRoot();
         const ownerDocument = findOwnerDocument();
-        draggerRef.current = ownerDocument.createElement('div');
-        appendRoot?.appendChild(draggerRef.current);
-        ReactDOM.render(DragCopyItem, draggerRef.current);
+        const div = ownerDocument.createElement('div');
+        appendRoot?.appendChild(div);
+        ReactDOM.render(DragCopyItem, div);
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
@@ -212,8 +213,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const dragType = 'dragEnd';
         setDragType(dragType);
         const node = data?.node;
-        const appendRoot = findAppendRoot();
-        appendRoot?.removeChild(draggerRef.current);
+        draggerRef.current?.parentNode?.removeChild(draggerRef.current);
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
         return context?.onDragEnd && context?.onDragEnd(e, {
@@ -320,6 +320,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     // 子元素动态生成的拖拽显示副本
     const DragCopyItem = React.cloneElement(React.Children.only(children), {
         className: cls,
+        ref: node => draggerRef.current = node,
         style: {
             ...children.props.style,
             ...style

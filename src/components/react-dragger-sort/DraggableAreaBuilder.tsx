@@ -35,10 +35,9 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const parentRef = useRef<any>();
         const childNodesRef = useRef<HTMLElement[]>([]);
         const [childLayout, setChildLayout] = useState<DraggerItemEvent[]>();
+        const childLayoutRef = useRef<DraggerItemEvent[]>([]);
         const initPositionRef = useRef<InitPosition[]>([]);
         const [coverChild, setCoverChild] = useState<HTMLElement>();
-        const dragPreIndexRef = useRef<number>();
-        const dragNextIndexRef = useRef<number>();
 
         useImperativeHandle(ref, () => (parentRef?.current));
 
@@ -103,27 +102,49 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     layout.push(layoutItem);
                 }
             })
+            childLayoutRef.current = layout;
             setChildLayout(layout);
         }
 
-        // 根据当前拖拽元素和其他所有的子元素比较，如果存在接近的元素，则返回
-        const moveTrigger = (tag: TagInterface): HTMLElement | undefined => {
+        // 同区域内拖拽
+        const moveTrigger = (tag: TagInterface): { coverChild?: HTMLElement, dragPreIndex?: number, dragNextIndex?: number } => {
             const parent = findParent();
             const tagCenter = {
                 x: (tag?.x || 0) + (tag?.width || 0) / 2,
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
-            dragNextIndexRef.current = initPositionRef.current?.findIndex((item) => {
-                const itemCenter = {
-                    x: item?.x + item?.width / 2,
-                    y: item?.y + item?.height / 2
+            let dragPreIndex;
+            let dragNextIndex;
+            const child = childNodesRef?.current?.find((item, index) => {
+                const position = getPositionInParent(item, parent);
+                const offsetWH = getOffsetWH(item);
+                if (item === tag?.node) {
+                    dragPreIndex = index;
                 }
+                if (offsetWH && position && (item !== tag?.node || tag?.area !== parentRef?.current)) {
+                    const itemCenter = {
+                        x: position?.x + offsetWH?.width / 2,
+                        y: position?.y + offsetWH?.height / 2
+                    }
 
-                if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                    return true;
+                    if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
+                        dragNextIndex = index;
+                        return true;
+                    }
                 }
             });
-            const child = childNodesRef?.current?.find((item) => {
+            return { coverChild: child, dragPreIndex, dragNextIndex };
+        }
+
+        // 跨区域拖拽
+        const crossTrigger = (tag: TagInterface): { coverChild?: HTMLElement, dragNextIndex?: number } => {
+            const parent = findParent();
+            const tagCenter = {
+                x: (tag?.x || 0) + (tag?.width || 0) / 2,
+                y: (tag?.y || 0) + (tag?.height || 0) / 2
+            }
+            let dragNextIndex;
+            const child = childNodesRef?.current?.find((item, index) => {
                 const position = getPositionInParent(item, parent);
                 const offsetWH = getOffsetWH(item);
                 if (offsetWH && position && (item !== tag?.node || tag?.area !== parentRef?.current)) {
@@ -133,24 +154,39 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     }
 
                     if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
+                        dragNextIndex = index;
                         return true;
                     }
                 }
             });
-            return child;
+            return { coverChild: child, dragNextIndex };
         }
 
         const onDragStart: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             setDragType(tag?.dragType);
-            dragPreIndexRef.current = initPositionRef.current?.findIndex((item) => item?.x === tag?.x && tag?.y === item?.y);
         }
 
         const onDrag: DraggerItemHandler = (e, tag) => {
             if (!tag) return false;
             const areaTag = { ...tag, area: parentRef.current }
             setDragType(tag.dragType);
-            const coverChild = moveTrigger(areaTag);
+            const { coverChild, dragNextIndex, dragPreIndex } = moveTrigger(areaTag);
+                if(dragNextIndex !== undefined && dragPreIndex !== undefined) {
+                const newchild = produce(childLayoutRef.current, draft => {
+                    if(dragNextIndex === 0) {
+                        draft?.splice(dragNextIndex, 0, draft?.[dragPreIndex]);
+                    } else {
+                        draft?.splice(dragNextIndex + 1, 0, draft?.[dragPreIndex]);
+                    }  
+                })
+                const newchild2 = produce(newchild, draft => {
+                    draft?.splice(dragPreIndex, 1);
+                });
+                const newarr = combinedArr(newchild2, initPositionRef.current, (item1,item2, index1, index2) => index1 === index2);
+                console.log(coverChild, 111)
+                setChildLayout(newarr)
+            }
             setCoverChild(coverChild)
             props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
             // 是否拖到区域外部
@@ -173,7 +209,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const areaTag = { ...tag, area: parentRef.current }
             setDragType(tag?.dragType);
             setCoverChild(undefined);
-            const coverChild = moveTrigger(areaTag);
+            const { coverChild, dragNextIndex, dragPreIndex } = moveTrigger(areaTag);
             props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, e);
             // 是否拖到区域外部
             if (triggerAddFunc) {
@@ -192,7 +228,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         // 监听添加外部区域来的tag
         const addTag: AddTagFunc = (tag, e) => {
-            const coverChild = moveTrigger(tag);
+            const { coverChild, dragNextIndex } = crossTrigger(tag);
             if (tag?.dragType === 'dragEnd') {
                 setCoverChild(undefined)
             } else {
