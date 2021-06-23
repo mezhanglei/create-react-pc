@@ -294,14 +294,14 @@ export function regQuery(list: any[], keyWord = "", attr: string): any[] {
  * @param {*} arr2 
  * @param {*} condition 判断相等的条件
  */
- export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: any) => boolean): boolean {
+export function isArrSame(arr1: any, arr2: any, condition: (item1: any, item2: any) => boolean): boolean {
     if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) {
         return false;
     }
     if (arr1?.length !== arr2?.length) return false;
     let noMatched = arr1?.some(item1 => !arr2?.some(item2 => condition(item2, item1)));
     return !noMatched;
-  }
+}
 
 /**
  * 深度优先遍历非递归(先进后出的栈结构，有回溯行为，速度慢些)
@@ -458,14 +458,14 @@ export const changeLocation = (arr: any[], index1: number, index2: number) => {
 
 // 根据条件合并两个对象数组
 export const combinedArr = (arr1: object[], arr2: object[], condition: (next: object, cur: object, nextIndex: number, curIndex: number) => boolean) => {
-    const ret: object[] = [];
+    const ret: any[] = [];
     arr2?.reduce((combined: object[], cur, curIndex) => {
         let target = combined?.find((next, nextIndex) => condition(next, cur, nextIndex, curIndex));
         if (target) {
-            target = {...target, ...cur};
+            target = { ...target, ...cur };
             ret?.push(target)
         } else {
-            combined?.push(cur);
+            ret?.push(cur);
         }
         return combined;
     }, arr1)
@@ -486,5 +486,23 @@ export const updateArrItem = (arr: any[], itemData: any, condition: (item: any, 
             }
         }
     });
+    return newArr;
+}
+
+export const arrayMove = (arr: any[], preIndex: number, nextIndex: number) => {
+    //如果当前元素在拖动目标位置的下方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置的地方新增一个和当前元素值一样的元素，
+    //我们再把数组之前的那个拖动的元素删除掉，所以要len+1
+    const newArr = produce(arr, draft => {
+        if (preIndex > nextIndex) {
+            draft.splice(nextIndex, 0, arr[preIndex]);
+            draft.splice(preIndex + 1, 1)
+        }
+        else {
+            //如果当前元素在拖动目标位置的上方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置+1的地方新增一个和当前元素值一样的元素，
+            //这时，数组len不变，我们再把数组之前的那个拖动的元素删除掉，下标还是index
+            draft.splice(nextIndex + 1, 0, arr[preIndex]);
+            draft.splice(preIndex, 1)
+        }
+    })
     return newArr;
 }

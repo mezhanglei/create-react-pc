@@ -4,7 +4,7 @@ import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
 import { ChildrenType, DraggerContextInterface } from "./utils/types";
 import classNames from "classnames";
-import { findElement, getPositionInParent, getOffsetWH, setStyle } from "@/utils/dom";
+import { findElement, getPositionInParent, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 import ReactDOM from 'react-dom';
 
@@ -89,7 +89,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     useEffect(() => {
         const width = props?.width ?? itemLayout()?.width;
         width != undefined && setWidth(width);
-        console.log(width, 2222)
     }, [props?.width, itemLayout()?.width])
 
     useEffect(() => {
@@ -149,6 +148,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         setDragType(dragType);
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
+        const clientXY = getClientXY(node);
         const appendRoot = findAppendRoot();
         const ownerDocument = findOwnerDocument();
         const div = ownerDocument.createElement('div');
@@ -157,10 +157,10 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
-            left: `${data?.x}px`,
+            left: `${clientXY?.x}px`,
             pointerEvents: 'none',
             position: 'fixed',
-            top: `${data?.y}px`,
+            top: `${clientXY?.y}px`,
             width: `${offsetWH?.width}px`,
             opacity: '0.8',
             zIndex: zIndexRange?.[1]
@@ -184,13 +184,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const dragType = 'draging';
         setDragType(dragType);
         const offsetWH = getOffsetWH(node);
+        const clientXY = getClientXY(node);
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
-            left: `${data?.x}px`,
+            left: `${clientXY?.x}px`,
             pointerEvents: 'none',
             position: 'fixed',
-            top: `${data?.y}px`,
+            top: `${clientXY?.y}px`,
             width: `${offsetWH?.width}px`,
             opacity: '0.8',
             zIndex: zIndexRange?.[1]
@@ -307,9 +308,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                             ...children.props.style,
                             ...style,
                             opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            // transition: (!dragType || !['resizeEnd', 'dragEnd'].includes(dragType)) && (canDrag() || canResize()) ? '' : 'all .2s ease-out',
-                            transition: 'all .2s ease-out',
-                            zIndex: (!dragType || ['resizeEnd', 'dragEnd'].includes(dragType)) ? zIndexRange?.[0] : zIndexRange?.[1]
+                            transition: dragType && ['dragStart', 'draging'].includes(dragType) ? '' : 'all .2s ease-out',
+                            zIndex: dragType && ['dragStart', 'draging'].includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
                         }
                     })
                 }
@@ -320,7 +320,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     // 子元素动态生成的拖拽显示副本
     const DragCopyItem = React.cloneElement(React.Children.only(children), {
         className: cls,
-        ref: node => draggerRef.current = node,
+        ref: (node: any) => draggerRef.current = node,
         style: {
             ...children.props.style,
             ...style

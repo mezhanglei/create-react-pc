@@ -10,7 +10,7 @@ import {
 import classNames from "classnames";
 import { DraggerItemHandler, DraggerItemEvent } from "./dragger-item";
 import { getOffsetWH, getPositionInParent } from "@/utils/dom";
-import { combinedArr, getArrMap } from "@/utils/array";
+import { combinedArr, getArrMap, arrayMove } from "@/utils/array";
 import { produce } from "immer";
 
 export const DraggerContext = React.createContext<DraggerContextInterface | null>(null);
@@ -49,20 +49,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 listenAddFunc(area, addTag);
             }
         }, []);
-
-        // useEffect(() => {
-        //     if(dragNextIndexRef.current !== undefined && dragPreIndexRef.current !== undefined && dragNextIndexRef.current > -1 && dragPreIndexRef.current > -1) {
-        //         const newchild = produce(childLayout, draft => {
-        //             draft?.splice(dragNextIndexRef.current + 1, 0, draft?.[dragPreIndexRef.current]);
-        //         })
-        //         const newchild2 = produce(newchild, draft => {
-        //             draft?.splice(dragPreIndexRef.current, 1);
-        //         })
-        //         // childLayout?.splice(dragPreIndexRef.current, 1);
-        //         const newarr = combinedArr(newchild2, initPositionRef.current, (item1,item2, index1, index2) => index1 === index2);
-        //         setChildLayout(newarr)
-        //     } 
-        // }, [dragPreIndexRef.current, dragNextIndexRef.current])
 
         const findOwnerDocument = () => {
             return document;
@@ -108,57 +94,42 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
 
         // 同区域内拖拽
         const moveTrigger = (tag: TagInterface): { coverChild?: HTMLElement, dragPreIndex?: number, dragNextIndex?: number } => {
-            const parent = findParent();
             const tagCenter = {
                 x: (tag?.x || 0) + (tag?.width || 0) / 2,
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
-            let dragPreIndex;
-            let dragNextIndex;
-            const child = childNodesRef?.current?.find((item, index) => {
-                const position = getPositionInParent(item, parent);
-                const offsetWH = getOffsetWH(item);
-                if (item === tag?.node) {
-                    dragPreIndex = index;
+            let dragPreIndex = childNodesRef?.current?.findIndex((item) => item === tag.node);
+            let dragNextIndex = initPositionRef?.current?.findIndex((item) => {
+                const itemCenter = {
+                    x: (item?.x || 0) + (item?.width || 0) / 2,
+                    y: (item?.y || 0) + (item?.height || 0) / 2
                 }
-                if (offsetWH && position && (item !== tag?.node || tag?.area !== parentRef?.current)) {
-                    const itemCenter = {
-                        x: position?.x + offsetWH?.width / 2,
-                        y: position?.y + offsetWH?.height / 2
-                    }
-
-                    if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                        dragNextIndex = index;
-                        return true;
-                    }
+                if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
+                    return true;
                 }
             });
+            const nextChild = childNodesRef.current?.[dragNextIndex];
+            const child = nextChild && nextChild !== tag?.node ? nextChild : undefined;
             return { coverChild: child, dragPreIndex, dragNextIndex };
         }
 
         // 跨区域拖拽
         const crossTrigger = (tag: TagInterface): { coverChild?: HTMLElement, dragNextIndex?: number } => {
-            const parent = findParent();
             const tagCenter = {
                 x: (tag?.x || 0) + (tag?.width || 0) / 2,
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
-            let dragNextIndex;
-            const child = childNodesRef?.current?.find((item, index) => {
-                const position = getPositionInParent(item, parent);
-                const offsetWH = getOffsetWH(item);
-                if (offsetWH && position && (item !== tag?.node || tag?.area !== parentRef?.current)) {
-                    const itemCenter = {
-                        x: position?.x + offsetWH?.width / 2,
-                        y: position?.y + offsetWH?.height / 2
-                    }
-
-                    if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                        dragNextIndex = index;
-                        return true;
-                    }
+            let dragNextIndex = initPositionRef?.current?.findIndex((item) => {
+                const itemCenter = {
+                    x: (item?.x || 0) + (item?.width || 0) / 2,
+                    y: (item?.y || 0) + (item?.height || 0) / 2
+                }
+                if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
+                    return true;
                 }
             });
+            const nextChild = childNodesRef.current?.[dragNextIndex];
+            const child = nextChild && tag?.area !== parentRef?.current ? nextChild : undefined;
             return { coverChild: child, dragNextIndex };
         }
 
@@ -172,20 +143,10 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const areaTag = { ...tag, area: parentRef.current }
             setDragType(tag.dragType);
             const { coverChild, dragNextIndex, dragPreIndex } = moveTrigger(areaTag);
-                if(dragNextIndex !== undefined && dragPreIndex !== undefined) {
-                const newchild = produce(childLayoutRef.current, draft => {
-                    if(dragNextIndex === 0) {
-                        draft?.splice(dragNextIndex, 0, draft?.[dragPreIndex]);
-                    } else {
-                        draft?.splice(dragNextIndex + 1, 0, draft?.[dragPreIndex]);
-                    }  
-                })
-                const newchild2 = produce(newchild, draft => {
-                    draft?.splice(dragPreIndex, 1);
-                });
-                const newarr = combinedArr(newchild2, initPositionRef.current, (item1,item2, index1, index2) => index1 === index2);
-                console.log(coverChild, 111)
-                setChildLayout(newarr)
+            if (dragNextIndex !== undefined && dragPreIndex !== undefined && dragNextIndex > -1 && dragPreIndex > -1) {
+                const moveArr = arrayMove(childLayoutRef.current, dragPreIndex, dragNextIndex);
+                const moveAfterChildLayout = combinedArr(moveArr, initPositionRef.current, (item1, item2, index1, index2) => index1 === index2);
+                setChildLayout(moveAfterChildLayout);
             }
             setCoverChild(coverChild)
             props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
@@ -229,6 +190,17 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         // 监听添加外部区域来的tag
         const addTag: AddTagFunc = (tag, e) => {
             const { coverChild, dragNextIndex } = crossTrigger(tag);
+            if (dragNextIndex !== undefined && dragNextIndex > -1) {
+                const moveArr = produce(childLayoutRef.current, draft => {
+                    draft?.splice(dragNextIndex, 0, tag)
+                })
+                const newPostion = produce(initPositionRef.current, draft => {
+                    draft?.splice(dragNextIndex, 0, { x: tag?.x, y: tag?.y, width: tag?.width, height: tag?.height })
+                });
+                console.log(moveArr, newPostion, 2222)
+                const moveAfterChildLayout = combinedArr(moveArr, newPostion, (item1, item2, index1, index2) => index1 === index2);
+                setChildLayout(moveAfterChildLayout);
+            }
             if (tag?.dragType === 'dragEnd') {
                 setCoverChild(undefined)
             } else {
