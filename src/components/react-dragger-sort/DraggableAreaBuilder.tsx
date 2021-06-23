@@ -109,7 +109,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 }
             });
             const nextChild = childNodesRef.current?.[dragNextIndex];
-            const child = nextChild && nextChild !== tag?.node ? nextChild : undefined;
+            const child = nextChild && nextChild !== tag?.node ? nextChild: undefined;
             return { coverChild: child, dragPreIndex, dragNextIndex };
         }
 
@@ -129,7 +129,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 }
             });
             const nextChild = childNodesRef.current?.[dragNextIndex];
-            const child = nextChild && tag?.area !== parentRef?.current ? nextChild : undefined;
+            const child = nextChild && tag?.area !== parentRef?.current ? nextChild: undefined;
             return { coverChild: child, dragNextIndex };
         }
 
@@ -144,7 +144,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             setDragType(tag.dragType);
             const { coverChild, dragNextIndex, dragPreIndex } = moveTrigger(areaTag);
             if (dragNextIndex !== undefined && dragPreIndex !== undefined && dragNextIndex > -1 && dragPreIndex > -1) {
-                const moveArr = arrayMove(childLayoutRef.current, dragPreIndex, dragNextIndex);
+                const moveArr = arrayMove(childLayoutRef.current, dragPreIndex,dragNextIndex);
                 const moveAfterChildLayout = combinedArr(moveArr, initPositionRef.current, (item1, item2, index1, index2) => index1 === index2);
                 setChildLayout(moveAfterChildLayout);
             }
@@ -191,15 +191,12 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const addTag: AddTagFunc = (tag, e) => {
             const { coverChild, dragNextIndex } = crossTrigger(tag);
             if (dragNextIndex !== undefined && dragNextIndex > -1) {
-                const moveArr = produce(childLayoutRef.current, draft => {
-                    draft?.splice(dragNextIndex, 0, tag)
-                })
-                const newPostion = produce(initPositionRef.current, draft => {
-                    draft?.splice(dragNextIndex, 0, { x: tag?.x, y: tag?.y, width: tag?.width, height: tag?.height })
-                });
-                console.log(moveArr, newPostion, 2222)
-                const moveAfterChildLayout = combinedArr(moveArr, newPostion, (item1, item2, index1, index2) => index1 === index2);
-                setChildLayout(moveAfterChildLayout);
+                // const moveArr = produce(childLayoutRef.current, draft => {
+                //     draft?.splice(dragNextIndex, 0, tag)
+                // })
+                // console.log(moveArr, 2222)
+                // const moveAfterChildLayout = combinedArr(moveArr, initPositionRef.current, (item1, item2, index1, index2) => index1 === index2);
+                // setChildLayout(moveAfterChildLayout);
             }
             if (tag?.dragType === 'dragEnd') {
                 setCoverChild(undefined)
