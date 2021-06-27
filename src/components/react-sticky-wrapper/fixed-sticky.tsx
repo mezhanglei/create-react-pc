@@ -98,7 +98,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
                 // console.log(rootScrollTop, '下');
                 node.style['opacity'] = '0';
                 draggerRef.current.style['opacity'] = 1;
-                draggerRef.current.style['zIndex'] = 999
+                draggerRef.current.style['zIndex'] = 0
             }
         }
     }

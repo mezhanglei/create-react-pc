@@ -21,7 +21,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         zIndexRange = [],
         className,
         style,
-        isReflow,
+        reset,
         ...DraggableEventProps
     } = props;
 
@@ -71,13 +71,13 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             eventDataUpdate(eventDataRef.current, { newY, translateY })
         }
         // 非拖拽引起的位置变化,则更新初始位置
-        if (x !== initX && initX !== undefined && x !== undefined && !draggingRef.current && isReflow) {
+        if (x !== initX && initX !== undefined && x !== undefined && !draggingRef.current && reset) {
             setInitX(x);
         }
-        if (y !== initY && initY !== undefined && y !== undefined && !draggingRef.current && isReflow) {
+        if (y !== initY && initY !== undefined && y !== undefined && !draggingRef.current && reset) {
             setInitY(y);
         }
-    }, [x, y, initX, initY, isReflow, draggingRef.current]);
+    }, [x, y, initX, initY, reset, draggingRef.current]);
 
     // 更新axis
     useEffect(() => {

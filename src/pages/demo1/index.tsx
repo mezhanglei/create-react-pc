@@ -6,6 +6,7 @@ import DragResize from '@/components/react-resize-zoom';
 import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 import VirtualList from '@/components/react-mini-virtual-list';
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
+import { arrayMove } from '@/utils/array';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.addArea()
@@ -22,6 +23,7 @@ const Demo1: React.FC<any> = (props) => {
 
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
+    const arrRef = useRef<any>(arrDrag1)
 
     const onDrag = (e, data) => {
         // setX(data?.x)
@@ -42,8 +44,12 @@ const Demo1: React.FC<any> = (props) => {
         );
     };
 
-    const onDragMove1: DragMoveHandle = (tag, coverChild, e) => {
-
+    const onDragMove1: DragMoveHandle = (tag, coverChild, preIndex, nextIndex) => {
+        if(preIndex !== undefined && nextIndex !== undefined) {
+            const newArr = arrayMove(arrRef.current, preIndex, nextIndex);
+            arrRef.current = newArr;
+            setArrDrag1(newArr);
+        }
     }
 
     const onDragMove2: DragMoveHandle = (tag, coverChild, e) => {
@@ -91,7 +97,7 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <DraggableArea1 onChange={area1Change} className="flex-box" onDragMove={onDragMove1}>
+            <DraggableArea1 onChange={area1Change} className="flex-box" onDragMoveEnd={onDragMove1}>
                 {
                     arrDrag1?.map((item, index) => {
                         return (

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle,
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
-import { ChildrenType, DraggerContextInterface } from "./utils/types";
+import { ChildrenType, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInParent, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
@@ -18,7 +18,7 @@ export interface DraggerItemEvent {
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
-    dragType?: 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd';
+    dragType?: DragTypes;
 }
 export interface DraggerProps extends DraggerContextInterface {
     children: ChildrenType;
@@ -51,7 +51,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         appendRoot
     } = props;
 
-    const [dragType, setDragType] = useState<'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd'>();
+    const [dragType, setDragType] = useState<DragTypes>();
     const [x, setX] = useState<number>();
     const [y, setY] = useState<number>();
     const [width, setWidth] = useState<number>();
@@ -60,7 +60,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
-    const isReflow = context?.isReflow ?? props?.isReflow;
+    const parentDragType = context?.parentDragType ?? props?.parentDragType;
     const childLayout = context?.childLayout ?? props?.childLayout;
     const coverChild = context?.coverChild ?? props?.coverChild;
     const listenChild = context?.listenChild ?? props?.listenChild;
@@ -96,11 +96,10 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         height !== undefined && setHeight(height);
     }, [props?.height, itemLayout()?.height]);
 
-    // 监听children是否重绘从而重新初始化获取node
     useEffect(() => {
         const node = nodeRef.current;
         listenChild && listenChild(node);
-    }, [children]);
+    }, []);
 
     const isOver = (coverChild?: HTMLElement) => {
         if (coverChild === nodeRef.current) {
@@ -291,7 +290,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDrag={onDrag}
             onDragStop={onDragStop}
             dragNode={dragNode}
-            isReflow={isReflow}
+            reset={!parentDragType || !['dragStart', 'draging']?.includes(parentDragType)} // 拖拽会引起非拖拽元素位置变化，所以设置true用来更新子元素的初始位置
             x={x}
             y={y}
         >
@@ -308,7 +307,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                             ...children.props.style,
                             ...style,
                             opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: dragType && ['dragStart', 'draging'].includes(dragType) ? '' : 'all .2s ease-out',
+                            transition: dragType && ['dragStart', 'draging'].includes(dragType) || parentDragType === 'dragEnd' ? '' : 'all .2s ease-out',
                             zIndex: dragType && ['dragStart', 'draging'].includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
                         }
                     })

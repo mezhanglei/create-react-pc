@@ -223,6 +223,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     }
 
     const onResizeEnd: EventHandler = (e) => {
+        if(forbid) return;
         e.preventDefault();
         if (!isDraggableRef.current || !eventDataRef.current) return;
         const eventData = {

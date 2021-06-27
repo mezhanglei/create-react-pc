@@ -3,6 +3,7 @@ import { DraggerItemEvent, DraggerItemHandler } from "../dragger-item";
 
 export type EventType = MouseEvent | TouchEvent;
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
+export type DragTypes = 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd';
 
 // 拖拽tag对象的类型
 export interface TagInterface {
@@ -11,7 +12,7 @@ export interface TagInterface {
     width?: number; // 宽度
     height?: number; // 高度
     area?: HTMLElement; // tag所在的area
-    dragType?: 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd', // 当前拖拽类型
+    dragType?: DragTypes, // 当前拖拽类型
     translateX?: number;
     translateY?: number;
     node: HTMLElement; // tag节点
@@ -26,7 +27,7 @@ export interface InitPosition {
 }
 
 // 拖拽回调函数
-export type DragMoveHandle = (tag: TagInterface, coverChild?: HTMLElement, e?: EventType) => void | boolean;
+export type DragMoveHandle = (tag: TagInterface, coverChild?: HTMLElement,dragPreIndex?: number, dragNextIndex?: number, e?: EventType) => void | boolean;
 // 添加tag函数类型
 export type AddTagFunc = (tag: TagInterface, e: EventType) => void | boolean;
 // 添加队列的类型
@@ -67,5 +68,5 @@ export interface DraggerContextInterface {
     childLayout?: DraggerItemEvent[]; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
     coverChild?: HTMLElement; // 当前被覆盖的元素
     zIndexRange?: [number, number];
-    isReflow?: boolean; // 拖拽过程中子元素是否重新排列
+    parentDragType?: DragTypes; // 父元素内发生的拖拽类型
 }
