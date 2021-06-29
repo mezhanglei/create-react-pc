@@ -39,6 +39,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const childLayoutRef = useRef<DraggerItemEvent[]>([]);
         const initPositionRef = useRef<InitPosition[]>([]);
         const [coverChild, setCoverChild] = useState<HTMLElement>();
+        const dragPreIndexRef = useRef<number>();
+        const dragNextIndexRef = useRef<number>();
 
         useImperativeHandle(ref, () => (parentRef?.current));
 
@@ -99,25 +101,23 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 x: (tag?.x || 0) + (tag?.width || 0) / 2,
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
-            let dragPreIndex;
-            let dragNextIndex;
             childLayoutRef?.current?.map((item, index) => {
                 const itemCenter = {
                     x: (item?.x || 0) + (item?.width || 0) / 2,
                     y: (item?.y || 0) + (item?.height || 0) / 2
                 }
                 if (item?.node === tag.node) {
-                    dragPreIndex = index;
+                    dragPreIndexRef.current = index;
                 }
                 if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                    dragNextIndex = index;
+                    dragNextIndexRef.current = index;
                     return true;
                 }
             });
-            const nextChild = dragNextIndex !== undefined ? childLayoutRef.current?.[dragNextIndex]?.node : undefined;
+            const nextChild = dragNextIndexRef.current !== undefined ? childLayoutRef.current?.[dragNextIndexRef.current]?.node : undefined;
             const child = nextChild && nextChild !== tag?.node ? nextChild : undefined;
             if (child) {
-                return { coverChild: child, dragPreIndex, dragNextIndex };
+                return { coverChild: child, dragPreIndex: dragPreIndexRef.current, dragNextIndex: dragNextIndexRef.current };
             }
         }
 
@@ -128,12 +128,13 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 y: (tag?.y || 0) + (tag?.height || 0) / 2
             }
             let dragNextIndex;
-            childLayoutRef?.current?.map((item) => {
+            childLayoutRef?.current?.map((item, index) => {
                 const itemCenter = {
                     x: (item?.x || 0) + (item?.width || 0) / 2,
                     y: (item?.y || 0) + (item?.height || 0) / 2
                 }
                 if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
+                    dragNextIndex = index;
                     return true;
                 }
             });
@@ -144,7 +145,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             }
         }
 
-        // 容器内移动
+        // 容器内移动位置
         const updateMoving = (dragPreIndex?: number, dragNextIndex?: number, dragType?: string) => {
             if (dragNextIndex !== undefined && dragPreIndex !== undefined) {
                 const moveArr = arrayMove(childLayoutRef.current, dragPreIndex, dragNextIndex);
@@ -196,7 +197,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const coverChild = moveRet?.coverChild;
             const dragNextIndex = moveRet?.dragNextIndex;
             const dragPreIndex = moveRet?.dragPreIndex;
-            updateMoving(dragPreIndex, dragNextIndex, tag?.dragType)
+            updateMoving(dragPreIndex, dragNextIndex, tag?.dragType);
             props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, dragPreIndex, dragNextIndex, e);
             // 是否拖到区域外部
             if (triggerAddFunc) {

@@ -9,12 +9,14 @@ const eventsFor = {
     touch: {
         start: 'touchstart',
         move: 'touchmove',
-        stop: 'touchend'
+        stop: 'touchend',
+        cancel: 'touchcancel'
     },
     mouse: {
         start: 'mousedown',
         move: 'mousemove',
-        stop: 'mouseup'
+        stop: 'mouseup',
+        cancel: 'dragover'
     }
 };
 
@@ -79,6 +81,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             removeEvent(dragNode, dragEventFor.start, handleDragStart);
             removeEvent(ownerDocument, dragEventFor.move, handleDrag);
             removeEvent(ownerDocument, dragEventFor.stop, handleDragStop);
+            removeEvent(ownerDocument, dragEventFor.cancel, handleDragStop);
             // 移除选中样式
             if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
         };
@@ -140,6 +143,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
         addEvent(ownerDocument, dragEventFor.move, handleDrag);
         addEvent(ownerDocument, dragEventFor.stop, handleDragStop);
+        addEvent(ownerDocument, dragEventFor.cancel, handleDragStop);
     };
 
     const handleDrag = (e: EventType) => {
@@ -220,6 +224,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         if (ownerDocument) {
             removeEvent(ownerDocument, dragEventFor.move, handleDrag);
             removeEvent(ownerDocument, dragEventFor.stop, handleDragStop);
+            removeEvent(ownerDocument, dragEventFor.cancel, handleDragStop);
         }
     };
 
