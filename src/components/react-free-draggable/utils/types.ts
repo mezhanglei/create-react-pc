@@ -19,13 +19,13 @@ export interface DragData {
     node?: any; // 节点
     deltaX: number; // x方向移动的距离
     deltaY: number; // y方向移动的距离
-    x: number; // 元素位置x
-    y: number; // 元素位置y
+    x?: number; // 元素在页面中的位置x
+    y?: number; // 元素在页面中的位置y
     translateX: number; // 当前x轴的translate
     translateY: number; // 当前y轴的translate
     zIndex?: number; // 层级
-    lastX: number; // 上个位置x
-    lastY: number; // 上个位置y
+    lastX?: number; // 上个位置x
+    lastY?: number; // 上个位置y
 }
 
 // 位置类型
@@ -40,10 +40,11 @@ export type AxisType = "both" | "x" | "y" | "none";
 
 // 限制范围的类型
 export interface BoundsInterface {
-    xStart: number;
-    xEnd: number;
-    yStart: number;
-    yEnd: number;
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+    boundsParent: string | HTMLElement;
 }
 
 // DraggableEvent的props的类型
@@ -58,7 +59,6 @@ export interface DraggableEventProps {
     disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-    bounds?: string | HTMLElement;
 }
 
 // Draggable的props的类型
@@ -71,16 +71,15 @@ export interface DraggableProps {
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
     scale?: number; // 拖拽灵敏度
-    x?: number;
-    y?: number;
+    x?: number; // 在页面中的位置
+    y?: number; // 在页面中的位置
     axis?: AxisType; // 限制拖拽的方向
-    positionOffset?: PositionType; // 接收偏移位置（不受bounds和boundsParent影响）
-    bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在boundsParent元素内部范围的限制拖拽范围
+    positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
+    bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
     zIndexRange?: [number, number]; // zIndex的变化范围
     className?: string;
     style?: CSSProperties;
     transform?: string;
-    reset?: boolean; // 重置位置变化
     onDragStart?: DragHandler; // 拖拽开始事件
     onDrag?: DragHandler; // 拖拽进行事件
     onDragStop?: DragHandler; // 拖拽结束事件

@@ -1,10 +1,10 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler } from "./utils/types";
+import { DraggableProps, DragData, EventHandler, PositionType } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
-import { findElement, getPositionInParent } from '@/utils/dom';
+import { getPositionInPage } from '@/utils/dom';
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
@@ -21,7 +21,6 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         zIndexRange = [],
         className,
         style,
-        reset,
         ...DraggableEventProps
     } = props;
 
@@ -36,8 +35,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const [eventData, setEventData] = useState<DragData>();
     const eventDataRef = useRef<DragData>();
 
-    const [initX, setInitX] = useState<number>()
-    const [initY, setInitY] = useState<number>()
+    // 拖拽的初始位置
+    const [initXY, setInitXY] = useState<PositionType>();
 
     const axisRef = useRef<string>("both");
 
@@ -48,36 +47,27 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     useImperativeHandle(ref, () => (nodeRef?.current));
 
     useEffect(() => {
-        const node = nodeRef?.current;
-        const parent = findBoundsParent();
-        const position = getPositionInParent(node, parent);
-        position?.x !== undefined && setInitX(position?.x);
-        position?.y !== undefined && setInitY(position?.y);
+        const node = nodeRef.current;
+        const initXY = getPositionInPage(node);
+        initXY && setInitXY(initXY);
+        if (initXY) {
+            eventDataUpdate(eventDataRef.current, { lastX: initXY?.x, lastY: initXY?.y });
+        }
     }, []);
 
     // 更新x,y
     useEffect(() => {
-        if (x != undefined && !draggingRef.current) {
-            const lastX = initX || 0;
-            const newX = x || 0;
+        if (x !== undefined && y !== undefined && initXY && !draggingRef.current) {
+            const lastX = initXY?.x;
+            const lastY = initXY?.y;
+            // 初始化传值时根据限制重新计算该值(这里看看要不要仅初始化时限制位置)
+            const newX = eventDataRef.current?.x === undefined ? getPositionByBounds(nodeRef.current, { x, y }, bounds)?.x : x;
+            const newY = eventDataRef.current?.y === undefined ? getPositionByBounds(nodeRef.current, { x, y }, bounds)?.y : y;
             const translateX = newX - lastX;
-            eventDataUpdate(eventDataRef.current, { newX, translateX })
-        }
-
-        if (y !== undefined && !draggingRef.current) {
-            const lastY = initY || 0;
-            const newY = y || 0;
             const translateY = newY - lastY;
-            eventDataUpdate(eventDataRef.current, { newY, translateY })
+            eventDataUpdate(eventDataRef.current, { x: newX, y: newY, lastX: newX, lastY: newY, translateX, translateY });
         }
-        // 非拖拽引起的位置变化,则更新初始位置
-        if (x !== initX && initX !== undefined && x !== undefined && !draggingRef.current && reset) {
-            setInitX(x);
-        }
-        if (y !== initY && initY !== undefined && y !== undefined && !draggingRef.current && reset) {
-            setInitY(y);
-        }
-    }, [x, y, initX, initY, reset, draggingRef.current]);
+    }, [x, y, initXY, bounds, draggingRef.current]);
 
     // 更新axis
     useEffect(() => {
@@ -94,35 +84,21 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             translateX: 0,
             translateY: 0,
             deltaX: 0,
-            deltaY: 0,
-            x: 0, y: 0,
-            lastX: 0,
-            lastY: 0
+            deltaY: 0
         }
         const value = { ...eventData, ...data };
         eventDataRef.current = value;
         setEventData(value);
     }
 
-    const findOwnerDocument = () => {
-        return document;
-    };
-
-    // 限制范围的父元素
-    const findBoundsParent = () => {
-        const ownerDocument = findOwnerDocument();
-        const node = (findElement(props.bounds)) || ownerDocument?.body || ownerDocument?.documentElement;
-        return node;
-    };
-
     const onDragStart: EventHandler = (e, data) => {
         e.stopImmediatePropagation();
         if (!data) return;
         const node = data?.node;
-        const parent = findBoundsParent();
-        const position = getPositionInParent(node, parent);
-        const x = position?.x || 0;
-        const y = position?.y || 0;
+        const positionXY = getPositionInPage(node);
+        let positionX = positionXY?.x;
+        let positionY = positionXY?.y;
+
         const translateX = eventDataRef.current?.translateX || 0;
         const translateY = eventDataRef.current?.translateY || 0;
 
@@ -132,9 +108,9 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             translateY,
             deltaX: 0,
             deltaY: 0,
-            x: x, y: y,
-            lastX: x,
-            lastY: y,
+            x: positionX, y: positionY,
+            lastX: positionX,
+            lastY: positionY,
             zIndex: zIndexRange[1],
             node
         }
@@ -155,16 +131,6 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         const y = eventDataRef?.current?.y ?? 0;
         let translateX = eventDataRef?.current?.translateX ?? 0;
         let translateY = eventDataRef?.current?.translateY ?? 0;
-
-        const node = nodeRef?.current;
-        const parent = findBoundsParent();
-        const position = getPositionInParent(node, parent);
-
-        const diffX = (position?.x || x) - x;
-        const diffY = (position?.y || y) - y;
-
-        translateX = translateX - diffX;
-        translateY = translateY - diffY;
 
         // 拖拽生成的位置信息
         const eventData = {
@@ -193,9 +159,9 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             // 边界处理
             const node = data?.node;
 
-            const newPosition = getPositionByBounds(node, { x: nowX, y: nowY }, bounds);
-            nowX = newPosition.x;
-            nowY = newPosition.y;
+            const newPositionXY = getPositionByBounds(node, { x: nowX, y: nowY }, bounds);
+            nowX = newPositionXY.x;
+            nowY = newPositionXY.y;
             const nowTranslateX = translateX + nowX - x;
             const nowTranslateY = translateY + nowY - y;
 

@@ -10,7 +10,7 @@ import {
 } from "./utils/types";
 import classNames from "classnames";
 import { DraggerItemHandler, DraggerItemEvent } from "./dragger-item";
-import { getOffsetWH, getPositionInParent } from "@/utils/dom";
+import { getOffsetWH, getPositionInPage } from "@/utils/dom";
 import { combinedArr, getArrMap, arrayMove } from "@/utils/array";
 import { produce } from "immer";
 
@@ -53,25 +53,13 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             }
         }, []);
 
-        const findOwnerDocument = () => {
-            return document;
-        };
-
-        // 父元素
-        const findParent = () => {
-            const ownerDocument = findOwnerDocument();
-            const node = ownerDocument?.body || ownerDocument?.documentElement;
-            return node;
-        };
-
         // 初始化children位置信息
         const initChildren = (childNodes: HTMLElement[]) => {
-            const parent = findParent();
             initPositionRef.current = [];
             const layout: DraggerItemEvent[] = [];
             childNodes?.map((item) => {
                 if (item) {
-                    const position = getPositionInParent(item, parent);
+                    const position = getPositionInPage(item);
                     const offsetWH = getOffsetWH(item);
                     const layoutItem = {
                         node: item,

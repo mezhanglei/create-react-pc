@@ -4,7 +4,7 @@ import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
 import { ChildrenType, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
-import { findElement, getPositionInParent, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
+import { findElement, getPositionInPage, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 import ReactDOM from 'react-dom';
 
@@ -13,8 +13,8 @@ export type DraggerItemHandler<E = EventType, T = DraggerItemEvent> = (e: E, dat
 export interface DraggerItemEvent {
     width: number;
     height: number;
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
@@ -36,7 +36,6 @@ export interface DraggerProps extends DraggerContextInterface {
     x?: number;
     y?: number;
     dragNode?: string | HTMLElement;
-    appendRoot?: string | HTMLElement; // 显示拖拽元素(脱离标准流)的根节点
 }
 
 // 拖拽及缩放组件
@@ -47,8 +46,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         className,
         style,
         type = "both",
-        dragNode,
-        appendRoot
+        dragNode
     } = props;
 
     const [dragType, setDragType] = useState<DragTypes>();
@@ -130,11 +128,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         return node;
     };
 
-    // 拖拽元素插入根节点
-    const findAppendRoot = () => {
-        return findElement(appendRoot) || findParent();
-    }
-
     useEffect(() => {
         return () => {
             draggerRef.current?.parentNode?.removeChild(draggerRef.current);
@@ -148,10 +141,10 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
         const clientXY = getClientXY(node);
-        const appendRoot = findAppendRoot();
+        const parent = findParent();
         const ownerDocument = findOwnerDocument();
         const div = ownerDocument.createElement('div');
-        appendRoot?.appendChild(div);
+        parent?.appendChild(div);
         ReactDOM.render(DragCopyItem, div);
         setStyle({
             boxSizing: 'border-box',
@@ -233,8 +226,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const dragType = 'resizeStart';
         setDragType(dragType);
         const node = data?.node;
-        const parent = findParent();
-        const position = getPositionInParent(node, parent);
+        const position = getPositionInPage(node);
         return context?.onResizeStart && context?.onResizeStart(e, {
             width: data?.width,
             height: data?.height,
@@ -250,8 +242,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         const dragType = 'resizing';
         setDragType(dragType);
-        const parent = findParent();
-        const position = getPositionInParent(node, parent);
+        const position = getPositionInPage(node);
         return context?.onResizing && context?.onResizing(e, {
             width: data?.width,
             height: data?.height,
@@ -267,8 +258,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const dragType = 'resizeEnd';
         setDragType(dragType);
         const node = data?.node;
-        const parent = findParent();
-        const position = getPositionInParent(node, parent);
+        const position = getPositionInPage(node);
         return context?.onResizeEnd && context?.onResizeEnd(e, {
             width: data?.width,
             height: data?.height,
@@ -290,7 +280,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDrag={onDrag}
             onDragStop={onDragStop}
             dragNode={dragNode}
-            reset={!parentDragType || !['dragStart', 'draging']?.includes(parentDragType)} // 拖拽会引起非拖拽元素位置变化，所以设置true用来更新子元素的初始位置
             x={x}
             y={y}
         >

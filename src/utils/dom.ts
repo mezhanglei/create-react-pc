@@ -226,12 +226,12 @@ export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | S
  */
 export function getPositionInPage(el: MouseEvent | TouchEvent | HTMLElement): null | SizeInterface {
     const clientXY = getClientXY(el);
-    const scroll = getScroll();
+    const parentXY = getClientXY(document.body || document.documentElement);
     let pos = null;
-    if (clientXY) {
+    if (clientXY && parentXY) {
         pos = {
-            x: clientXY.x + (scroll?.x || 0),
-            y: clientXY.y + (scroll?.y || 0)
+            x: clientXY.x - parentXY?.x,
+            y: clientXY.y - parentXY?.y
         }
     }
     return pos;

@@ -27,6 +27,7 @@ const Demo1: React.FC<any> = (props) => {
 
     const onDrag = (e, data) => {
         // setX(data?.x)
+        // setY(data?.y)
     }
 
 
@@ -69,7 +70,7 @@ const Demo1: React.FC<any> = (props) => {
 
     return (
         <>
-            <div className="boxs" style={{ display: 'inline-block', width: '500px', background: "red" }}>
+            <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px',marginTop: '100px', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
                     bounds=".boxs"

@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useRef } from 'react';
-import { matchParent, addEvent, removeEvent, getPositionInParent, findElement } from "@/utils/dom";
+import { matchParent, addEvent, removeEvent, getPositionInPage, findElement } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
 import { DraggableEventProps, EventData, EventType } from "./utils/types";
@@ -66,13 +66,6 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         return node;
     };
 
-    // 限制范围的父元素
-    const findBoundsParent = () => {
-        const ownerDocument = findOwnerDocument();
-        const node = (props.bounds && findElement(props.bounds)) || ownerDocument?.body || ownerDocument?.documentElement;
-        return node;
-    };
-
     useEffect(() => {
         const ownerDocument = findOwnerDocument();
         const dragNode = findDragNode();
@@ -90,7 +83,6 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
     const handleDragStart = (e: EventType) => {
         const dragNode = findDragNode();
         const disabledNode = findDisabledNode();
-        const boundsParent = findBoundsParent();
         const ownerDocument = findOwnerDocument();
         e.preventDefault();
 
@@ -111,20 +103,21 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             return;
         }
 
-        // 获取在指定父元素内的位置
-        const { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
+        // 可视位置
+        const positionXY = getPositionInPage(e);
+        if(!positionXY) return;
+        const positionX = positionXY?.x;
+        const positionY = positionXY?.y;
 
         // 返回事件对象相关的位置信息
-        const lastEventX = eventDataRef?.current?.lastEventX ?? x;
-        const lastEventY = eventDataRef?.current?.lastEventY ?? y;
         eventDataRef.current = {
             node: nodeRef.current,
             deltaX: 0,
             deltaY: 0,
-            lastEventX: lastEventX,
-            lastEventY: lastEventY,
-            eventX: x,
-            eventY: y
+            lastEventX: positionX,
+            lastEventY: positionY,
+            eventX: positionX,
+            eventY: positionY
         };
 
         // 如果没有完成渲染或者返回false则禁止拖拽
@@ -137,8 +130,8 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         draggingRef.current = true;
         eventDataRef.current = {
             ...eventDataRef.current,
-            lastEventX: x,
-            lastEventY: y
+            lastEventX: positionX,
+            lastEventY: positionY
         }
 
         addEvent(ownerDocument, dragEventFor.move, handleDrag);
@@ -148,33 +141,33 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
     const handleDrag = (e: EventType) => {
         if (!draggingRef.current) return;
-        const boundsParent = findBoundsParent();
         e.preventDefault();
-        // 获取在指定父元素内的位置
-        let { x, y } = boundsParent && getPositionInParent(e, boundsParent) || {};
+        // 可视位置
+        const positionXY = getPositionInPage(e);
+        if(!positionXY) return;
+        let positionX = positionXY?.x;
+        let positionY = positionXY?.y;
+
         if (!eventDataRef.current) return;
 
         // 拖拽跳跃,可设置多少幅度跳跃一次
         if (Array.isArray(grid)) {
             const { lastEventX, lastEventY } = eventDataRef.current;
-            let deltaX = x - lastEventX, deltaY = y - lastEventY;
+            let deltaX = positionX - lastEventX, deltaY = positionY - lastEventY;
             [deltaX, deltaY] = snapToGrid(grid, deltaX, deltaY);
             if (!deltaX && !deltaY) return; // skip useless drag
-            x = lastEventX + deltaX, y = lastEventY + deltaY;
+            positionX = lastEventX + deltaX, positionY = lastEventY + deltaY;
         }
 
         // 返回事件对象相关的位置信息
-        const lastEventX = eventDataRef?.current?.lastEventX ?? x;
-        const lastEventY = eventDataRef?.current?.lastEventY ?? y;
- 
         eventDataRef.current = {
             node: nodeRef?.current,
-            deltaX: x - lastEventX,
-            deltaY: y - lastEventY,
-            lastEventX: lastEventX,
-            lastEventY: lastEventY,
-            eventX: x,
-            eventY: y
+            deltaX: positionX - eventDataRef?.current?.lastEventX,
+            deltaY: positionY - eventDataRef?.current?.lastEventY,
+            lastEventX: positionX,
+            lastEventY: positionY,
+            eventX: positionX,
+            eventY: positionY
         }
 
         // 返回false则禁止拖拽并初始化鼠标事件
@@ -189,12 +182,6 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
                 handleDragStop(event);
             }
             return;
-        }
-
-        eventDataRef.current = {
-            ...eventDataRef.current,
-            lastEventX: x,
-            lastEventY: y
         }
     };
 

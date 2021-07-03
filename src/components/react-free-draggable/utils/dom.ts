@@ -1,6 +1,5 @@
 import { isDom, isEmpty, isNumber } from "@/utils/type";
-import { isContains, findElement } from "@/utils/dom";
-import { BoundsInterface } from "./types";
+import { isContains, findElement, getPositionInPage } from "@/utils/dom";
 
 // 添加选中类和样式
 export const addUserSelectStyles = (doc: any): any => {
@@ -74,7 +73,7 @@ export interface PositionInterface {
 // 接收偏移位置，返回新的transform值
 export function getTranslation(current: PositionInterface, positionOffset: PositionInterface | undefined, unit: string): string {
     let translation = `translate3d(${current.x}${unit},${current.y}${unit}, 0)`;
-    
+
     if (positionOffset) {
         const offsetX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
         const offsetY = `${(typeof positionOffset.y === 'string') ? positionOffset.y : positionOffset.y + unit}`;
@@ -95,10 +94,10 @@ export function createSVGTransform(current: PositionInterface, positionOffset?: 
     return translation;
 }
 
-// 返回目标元素相对于父元素内的视口范围
-export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterface | undefined {
+// 返回目标元素被父元素限制的位置范围
+export function getBoundsInParent(node: HTMLElement, bounds: any) {
     // 限制父元素
-    const boundsParent: HTMLElement = findElement(parent);
+    const boundsParent: HTMLElement = findElement(bounds) || findElement(bounds?.boundsParent);
 
     if (!isDom(node) || !isDom(boundsParent)) {
         return;
@@ -116,29 +115,46 @@ export function getBoundsInParent(node: HTMLElement, parent: any): BoundsInterfa
     const parentInnerHeight = boundsParent.clientHeight;
 
     // 大小差距
-    const xDiff = parentInnerWidth - nodeOutWidth;
-    const yDiff = parentInnerHeight - nodeOutHeight;
+    const xDiff = parentInnerWidth - nodeOutWidth > 0 ? parentInnerWidth - nodeOutWidth : 0;
+    const yDiff = parentInnerHeight - nodeOutHeight > 0 ? parentInnerHeight - nodeOutHeight : 0;
 
-    return {
-        xStart: 0,
-        xEnd: xDiff > 0 ? xDiff : 0,
-        yStart: 0,
-        yEnd: yDiff > 0 ? yDiff : 0
-    };
+    // 容器的页面位置
+    const parentXY = getPositionInPage(boundsParent);
+
+    if (parentXY) {
+        // 当限制为元素选择器或元素时，位置限制该元素内部
+        if (findElement(bounds)) {
+            return {
+                left: parentXY?.x,
+                right: xDiff + parentXY?.x,
+                top: parentXY?.y,
+                bottom: yDiff + parentXY?.y
+            };
+            // 当限制为某个元素内的某个范围，则计算该范围内的限制位置
+        } else {
+            return {
+                left: Math.max(0, bounds?.left || 0) + parentXY?.x,
+                right: Math.min(xDiff, bounds?.right || 0) + parentXY?.x,
+                top: Math.max(0, bounds?.top || 0) + parentXY?.y,
+                bottom: Math.min(yDiff, bounds?.bottom || 0) + parentXY?.y
+            }
+        }
+    }
 }
 
-// 元素在父元素限制范围下的位置
+// 元素在父元素限制范围下的可视位置
 export function getPositionByBounds(node: HTMLElement, position: PositionInterface, bounds: any): PositionInterface {
 
-    if(isEmpty(bounds)) return position;
+    if (isEmpty(bounds)) return position;
 
-    const resultBounds = findElement(bounds) ? getBoundsInParent(node, findElement(bounds)) : bounds;
-    const { xStart = 0, yStart = 0, xEnd = 0, yEnd = 0 } = resultBounds;
+    let resultBounds = getBoundsInParent(node, bounds);
+    if (!resultBounds) return position;
+    const { left, top, right, bottom } = resultBounds;
     let { x, y } = position;
-    if (isNumber(xEnd)) x = Math.min(x, xEnd);
-    if (isNumber(yEnd)) y = Math.min(y, yEnd);
-    if (isNumber(xStart)) x = Math.max(x, xStart);
-    if (isNumber(yStart)) y = Math.max(y, yStart);
+    if (isNumber(right)) x = Math.min(x, right);
+    if (isNumber(bottom)) y = Math.min(y, bottom);
+    if (isNumber(left)) x = Math.max(x, left);
+    if (isNumber(top)) y = Math.max(y, top);
 
     return { x, y };
 }
