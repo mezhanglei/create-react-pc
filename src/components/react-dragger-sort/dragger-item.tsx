@@ -280,6 +280,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDrag={onDrag}
             onDragStop={onDragStop}
             dragNode={dragNode}
+            reset={!parentDragType || !['dragStart', 'draging']?.includes(parentDragType)}
             x={x}
             y={y}
         >

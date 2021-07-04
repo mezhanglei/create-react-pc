@@ -19,6 +19,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         positionOffset,
         bounds,
         zIndexRange = [],
+        reset,
         className,
         style,
         ...DraggableEventProps
@@ -67,7 +68,10 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             const translateY = newY - lastY;
             eventDataUpdate(eventDataRef.current, { x: newX, y: newY, lastX: newX, lastY: newY, translateX, translateY });
         }
-    }, [x, y, initXY, bounds, draggingRef.current]);
+        if (x !== undefined && y !== undefined && reset) {
+            setInitXY({ x, y });
+        }
+    }, [x, y, initXY?.x, initXY?.y, reset, bounds, draggingRef.current]);
 
     // 更新axis
     useEffect(() => {
