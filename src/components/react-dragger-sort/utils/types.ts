@@ -53,7 +53,8 @@ export interface DraggableAreaProps {
     children: any;
     onDragMove?: DragMoveHandle; // 容器内拖拽结束中触发的函数
     onDragMoveEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
-    onChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器会触发的函数
+    onMoveOutChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖出触发的函数
+    onMoveInChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖拽进触发的函数
 }
 
 // context

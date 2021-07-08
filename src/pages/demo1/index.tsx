@@ -7,6 +7,7 @@ import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort
 import VirtualList from '@/components/react-mini-virtual-list';
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
+import produce from "immer";
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.addArea()
@@ -23,7 +24,8 @@ const Demo1: React.FC<any> = (props) => {
 
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
-    const arrRef = useRef<any>(arrDrag1)
+    const arr1Ref = useRef<any>(arrDrag1)
+    const arr2Ref = useRef<any>(arrDrag2)
 
     const onDrag = (e, data) => {
         // setX(data?.x)
@@ -47,8 +49,8 @@ const Demo1: React.FC<any> = (props) => {
 
     const onDragMove1: DragMoveHandle = (tag, coverChild, preIndex, nextIndex) => {
         if(preIndex !== undefined && nextIndex !== undefined) {
-            const newArr = arrayMove(arrRef.current, preIndex, nextIndex);
-            arrRef.current = newArr;
+            const newArr = arrayMove(arr1Ref.current, preIndex, nextIndex);
+            arr1Ref.current = newArr;
             setArrDrag1(newArr);
         }
     }
@@ -57,12 +59,17 @@ const Demo1: React.FC<any> = (props) => {
 
     }
 
-    const area1Change = (info) => {
+    const onMoveOutChange = (info) => {
         if (info?.type === 'out') {
+            const newArr = produce(arr1Ref.current, draft => {
+                draft?.splice(info?.dragPreIndex, 1)
+            });
+            arr1Ref.current = newArr;
+            setArrDrag1(newArr);
         }
     }
 
-    const area2Change = (info) => {
+    const onMoveInChange = (info) => {
         if (info?.type === 'in') {
             // setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
         }
@@ -98,7 +105,7 @@ const Demo1: React.FC<any> = (props) => {
                     </Button>
                 </div>
             </Draggable>
-            <DraggableArea1 onChange={area1Change} className="flex-box" onDragMoveEnd={onDragMove1}>
+            <DraggableArea1 onMoveOutChange={onMoveOutChange} className="flex-box" onDragMoveEnd={onDragMove1}>
                 {
                     arrDrag1?.map((item, index) => {
                         return (
@@ -112,7 +119,7 @@ const Demo1: React.FC<any> = (props) => {
                 }
             </DraggableArea1>
             <div style={{ marginTop: '10px' }}>
-                <DraggableArea2 onChange={area2Change} className="flex-box" onDragMove={onDragMove2}>
+                <DraggableArea2 onMoveInChange={onMoveInChange} className="flex-box" onDragMove={onDragMove2}>
                     {
                         arrDrag2?.map((item, index) => {
                             return (
