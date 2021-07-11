@@ -1,10 +1,10 @@
 import buildDraggableArea from './DraggableAreaBuilder';
-import { AddAreaFunc } from "./utils/types";
+import { AddTagFunc } from "./utils/types";
 import { getRectInParent } from "@/utils/dom";
 
 // 创建拖拽容器的类
 export default class DraggableAreaGroup {
-    addAreaFn: AddAreaFunc[];
+    addAreaFn: AddTagFunc[];
     constructor() {
         this.addAreaFn = [];
     }

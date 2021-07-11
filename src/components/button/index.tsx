@@ -33,10 +33,10 @@ export enum SIZE_TYPE {
 
 export interface ButtonProps {
     prefixCls?: string;
-    type?: "primary" | "default" | "dashed"; // 按钮类型
-    htmlType?: "button" | "submit" | "reset"; // 功能
-    shape?: "circle"; // 形状
-    size?: 'large' | "small"; // 大小
+    type?: `${BUTTON_TYPE}`; // 按钮类型
+    htmlType?: `${HTML_TYPE}`; // 功能
+    shape?: `${SHAPE_TYPE}`; // 形状
+    size?: `${SIZE_TYPE}`; // 大小
     danger?: boolean; // 是否为警告颜色
     disabled?: boolean; // 禁用
     onClick?: (e: any) => any;

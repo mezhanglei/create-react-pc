@@ -31,7 +31,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             ...rest
         } = props;
 
-        const [dragType, setDragType] = useState<DragTypes>();
+        const [dragType, setDragType] = useState<`${DragTypes}`>();
 
         const parentRef = useRef<any>();
         const childNodesRef = useRef<HTMLElement[]>([]);
@@ -135,7 +135,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                 const moveArr = arrayMove(childLayoutRef.current, dragPreIndex, dragNextIndex);
                 const moveAfterChildLayout = combinedArr(moveArr, initPositionRef.current, (item1, item2, index1, index2) => index1 === index2);
                 setChildLayout(moveAfterChildLayout);
-                if (dragType === 'dragEnd') {
+                if (dragType === DragTypes.dragEnd) {
                     childLayoutRef.current = moveAfterChildLayout;
                 }
             }
@@ -159,7 +159,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             coverChild && props?.onDragMove && props?.onDragMove(areaTag, coverChild, dragPreIndex, dragNextIndex, e);
             // 是否拖到区域外部
             if (triggerAddFunc) {
-                triggerAddFunc(areaTag, e);
+                triggerAddFunc({ ...areaTag, dragPreIndex }, e);
             }
         }
 
@@ -176,18 +176,16 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, dragPreIndex, dragNextIndex, e);
             // 是否拖到区域外部
             if (triggerAddFunc) {
-                const isTrigger = triggerAddFunc(areaTag, e);
+                const moveTag = { ...areaTag, dragPreIndex };
+                const isTrigger = triggerAddFunc(moveTag, e);
                 if (isTrigger) {
                     if (dragPreIndex != undefined) {
                         childLayoutRef.current?.splice(dragPreIndex, 1);
                         setChildLayout(childLayoutRef.current);
                     }
                     const triggerInfo = {
-                        type: 'out',
                         area: parentRef.current,
-                        moveTag: areaTag,
-                        coverChild,
-                        dragPreIndex
+                        moveTag
                     }
                     props?.onMoveOutChange && props?.onMoveOutChange(triggerInfo);
                 }
@@ -200,16 +198,15 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const coverChild = moveRet?.coverChild;
             const dragNextIndex = moveRet?.dragNextIndex;
             setDragType(tag?.dragType);
-            if (tag?.dragType === 'draging' && dragNextIndex !== undefined) {
+            if (tag?.dragType === DragTypes.draging && dragNextIndex !== undefined) {
                 // 拖拽位置
-            } else if (tag?.dragType === 'dragEnd' && dragNextIndex !== undefined) {
+            } else if (tag?.dragType === DragTypes.dragEnd && dragNextIndex !== undefined) {
                 // 同步数据
             }
 
-            if (tag?.dragType === 'dragEnd') {
+            if (tag?.dragType === DragTypes.dragEnd) {
                 setCoverChild(undefined)
                 const triggerInfo = {
-                    type: 'in',
                     area: parentRef?.current,
                     moveTag: tag,
                     coverChild: coverChild

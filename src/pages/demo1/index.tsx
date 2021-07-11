@@ -48,7 +48,7 @@ const Demo1: React.FC<any> = (props) => {
     };
 
     const onDragMove1: DragMoveHandle = (tag, coverChild, preIndex, nextIndex) => {
-        if(preIndex !== undefined && nextIndex !== undefined) {
+        if (preIndex !== undefined && nextIndex !== undefined) {
             const newArr = arrayMove(arr1Ref.current, preIndex, nextIndex);
             arr1Ref.current = newArr;
             setArrDrag1(newArr);
@@ -60,24 +60,24 @@ const Demo1: React.FC<any> = (props) => {
     }
 
     const onMoveOutChange = (info) => {
-        if (info?.type === 'out') {
-            const newArr = produce(arr1Ref.current, draft => {
-                draft?.splice(info?.dragPreIndex, 1)
-            });
-            arr1Ref.current = newArr;
-            setArrDrag1(newArr);
-        }
+        const newArr = produce(arr1Ref.current, draft => {
+            draft?.splice(info?.moveTag?.dragPreIndex, 1)
+        });
+        arr1Ref.current = newArr;
+        setArrDrag1(newArr);
     }
 
     const onMoveInChange = (info) => {
-        if (info?.type === 'in') {
-            // setArrDrag2([1, 1, 2, 3, 5, 6, 7, 8])
-        }
+        // const newArr = produce(arr2Ref.current, draft => {
+        //     draft?.push(arr1Ref.current[info?.moveTag?.dragPreIndex])
+        // });
+        // arr2Ref.current = newArr;
+        // setArrDrag2(newArr);
     }
 
     return (
         <>
-            <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px',marginTop: '100px', width: '500px', background: "red" }}>
+            <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px', marginTop: '100px', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
                     bounds=".boxs"
@@ -123,7 +123,7 @@ const Demo1: React.FC<any> = (props) => {
                     {
                         arrDrag2?.map((item, index) => {
                             return (
-                                <DraggerItem className="drag-a" key={item}>
+                                <DraggerItem className="drag-a" key={index}>
                                     <div>
                                         大小拖放{item}
                                     </div>

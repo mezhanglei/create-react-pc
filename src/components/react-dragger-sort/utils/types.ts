@@ -3,8 +3,15 @@ import { DraggerItemEvent, DraggerItemHandler } from "../dragger-item";
 
 export type EventType = MouseEvent | TouchEvent;
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
-export type DragTypes = 'dragStart' | 'draging' | 'dragEnd' | 'resizeStart' | 'resizing' | 'resizeEnd';
-
+// 拖拽类型
+export enum DragTypes {
+    dragStart ='dragStart',
+    draging = 'draging',
+    dragEnd = 'dragEnd',
+    resizeStart = 'resizeStart',
+    resizing = 'resizing',
+    resizeEnd = 'resizeEnd'
+}
 // 拖拽tag对象的类型
 export interface TagInterface {
     x?: number; // 在容器内的x轴位置
@@ -12,11 +19,16 @@ export interface TagInterface {
     width?: number; // 宽度
     height?: number; // 高度
     area?: HTMLElement; // tag所在的area
-    dragType?: DragTypes, // 当前拖拽类型
+    dragType?: `${DragTypes}`, // 当前拖拽类型
     translateX?: number;
     translateY?: number;
     node: HTMLElement; // tag节点
-    [key: string]: any;
+}
+
+// 跨域拖拽的tag的类型
+export interface AreaTagInterface extends TagInterface {
+    area?: HTMLElement; // tag所在的area
+    dragPreIndex?: number; // 拖拽前的所在队列的index序号
 }
 
 export interface InitPosition {
@@ -29,11 +41,9 @@ export interface InitPosition {
 // 拖拽回调函数
 export type DragMoveHandle = (tag: TagInterface, coverChild?: HTMLElement,dragPreIndex?: number, dragNextIndex?: number, e?: EventType) => void | boolean;
 // 添加tag函数类型
-export type AddTagFunc = (tag: TagInterface, e: EventType) => void | boolean;
-// 添加队列的类型
-export type AddAreaFunc = (tag: TagInterface, e: EventType) => boolean;
+export type AddTagFunc = (tag: AreaTagInterface, e: EventType) => void | boolean;
 // 容器触发添加事件的类型
-export type TriggerAddFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) =>  boolean;
+export type TriggerAddFuncHandle<T = AreaTagInterface, E = EventType> = (tag: T, e: E) =>  boolean;
 // 容器监听添加事件的类型
 export type ListenAddFuncHandle = (area: HTMLElement, addTag: AddTagFunc) => void;
 // 拖拽类
@@ -42,7 +52,6 @@ export type DraggableAreaBuilder = (props?: { triggerAddFunc: TriggerAddFuncHand
 
 // 拖拽容器props
 export interface TriggerInfo {
-    type: 'in' | 'out' | string; // 触发类型，in拖进，out拖出
     area?: HTMLElement; // 当前触发的area
     coverChild?: HTMLElement; // 当前的被over的coverChild
     moveTag: TagInterface; // 当前移动的元素
@@ -51,7 +60,7 @@ export interface DraggableAreaProps {
     className?: string;
     style?: CSSProperties;
     children: any;
-    onDragMove?: DragMoveHandle; // 容器内拖拽结束中触发的函数
+    onDragMove?: DragMoveHandle; // 容器内拖拽时触发的函数
     onDragMoveEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
     onMoveOutChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖出触发的函数
     onMoveInChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖拽进触发的函数
@@ -69,5 +78,5 @@ export interface DraggerContextInterface {
     childLayout?: DraggerItemEvent[]; // 控制拖拽子元素的布局(注意:当拖拽时是不更新的)
     coverChild?: HTMLElement; // 当前被覆盖的元素
     zIndexRange?: [number, number];
-    parentDragType?: DragTypes; // 父元素内发生的拖拽类型
+    parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
 }

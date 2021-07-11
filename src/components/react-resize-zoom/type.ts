@@ -35,7 +35,7 @@ export enum Axis {
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis?: 'auto' | 'x' | 'y' | 'angle' | 'none';
+    axis?: `${Axis}`;
     forbid?: boolean;
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差

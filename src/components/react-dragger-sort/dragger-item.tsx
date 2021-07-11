@@ -18,7 +18,13 @@ export interface DraggerItemEvent {
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
-    dragType?: DragTypes;
+    dragType?: `${DragTypes}`;
+}
+export enum DragControlType {
+    drag = 'drag',
+    resize = 'resize',
+    both = 'both',
+    none = 'none'
 }
 export interface DraggerProps extends DraggerContextInterface {
     children: ChildrenType;
@@ -30,7 +36,7 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeStart?: DraggerItemHandler;
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
-    type?: 'drag' | 'resize' | 'both' | 'none'; // 允许操作的类型
+    type?: `${DragControlType}`; // 允许操作的类型
     width?: number; // 宽度
     height?: number; // 高度
     x?: number;
@@ -45,11 +51,11 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         children,
         className,
         style,
-        type = "both",
+        type = DragControlType.both,
         dragNode
     } = props;
 
-    const [dragType, setDragType] = useState<DragTypes>();
+    const [dragType, setDragType] = useState<`${DragTypes}`>();
     const [x, setX] = useState<number>();
     const [y, setY] = useState<number>();
     const [width, setWidth] = useState<number>();
@@ -109,12 +115,12 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     // 可以拖拽
     const canDrag = () => {
-        return ['drag', 'both']?.includes(type)
+        return ([DragControlType.drag, DragControlType.both] as string[])?.includes(type)
     }
 
     // 可以调整尺寸
     const canResize = () => {
-        return ['resize', 'both']?.includes(type)
+        return ([DragControlType.resize, DragControlType.both] as string[])?.includes(type)
     }
 
     const findOwnerDocument = () => {
@@ -136,8 +142,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const onDragStart: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        const dragType = 'dragStart'
-        setDragType(dragType);
+        setDragType(DragTypes.dragStart);
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
         const clientXY = getClientXY(node);
@@ -166,15 +171,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType
+            dragType: DragTypes.dragStart
         });
     }
 
     const onDrag: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
         const node = data?.node;
-        const dragType = 'draging';
-        setDragType(dragType);
+        setDragType(DragTypes.draging);
         const offsetWH = getOffsetWH(node);
         const clientXY = getClientXY(node);
         setStyle({
@@ -197,14 +201,13 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType
+            dragType: DragTypes.draging
         });
     }
 
     const onDragStop: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
-        const dragType = 'dragEnd';
-        setDragType(dragType);
+        setDragType(DragTypes.dragEnd);
         const node = data?.node;
         draggerRef.current?.parentNode?.removeChild(draggerRef.current);
         const offsetWH = getOffsetWH(node);
@@ -217,14 +220,13 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType
+            dragType: DragTypes.dragEnd
         });
     }
 
     const onResizeStart: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        const dragType = 'resizeStart';
-        setDragType(dragType);
+        setDragType(DragTypes.resizeStart);
         const node = data?.node;
         const position = getPositionInPage(node);
         return context?.onResizeStart && context?.onResizeStart(e, {
@@ -233,15 +235,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType
+            dragType: DragTypes.resizeStart
         })
     }
 
     const onResizing: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
         const node = data?.node;
-        const dragType = 'resizing';
-        setDragType(dragType);
+        setDragType(DragTypes.resizing);
         const position = getPositionInPage(node);
         return context?.onResizing && context?.onResizing(e, {
             width: data?.width,
@@ -249,14 +250,13 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType
+            dragType: DragTypes.resizing
         })
     }
 
     const onResizeEnd: ResizeEventHandler = (e, data) => {
         if (!data || !canResize()) return false;
-        const dragType = 'resizeEnd';
-        setDragType(dragType);
+        setDragType(DragTypes.resizeEnd);
         const node = data?.node;
         const position = getPositionInPage(node);
         return context?.onResizeEnd && context?.onResizeEnd(e, {
@@ -265,7 +265,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType
+            dragType: DragTypes.resizeEnd
         });
     }
 
@@ -280,7 +280,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDrag={onDrag}
             onDragStop={onDragStop}
             dragNode={dragNode}
-            reset={!parentDragType || !['dragStart', 'draging']?.includes(parentDragType)}
+            reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
             x={x}
             y={y}
         >
@@ -296,9 +296,9 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            opacity: dragType && ['dragStart', 'draging'].includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: dragType && ['dragStart', 'draging'].includes(dragType) || parentDragType === 'dragEnd' ? '' : 'all .2s ease-out',
-                            zIndex: dragType && ['dragStart', 'draging'].includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
+                            opacity: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
+                            transition: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) || parentDragType === DragTypes.dragEnd ? '' : 'all .2s ease-out',
+                            zIndex: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
                         }
                     })
                 }
