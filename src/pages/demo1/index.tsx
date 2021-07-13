@@ -10,69 +10,67 @@ import { arrayMove } from '@/utils/array';
 import produce from "immer";
 
 const DraggableAreaGroups = new DraggableAreaGroup();
-const DraggableArea1 = DraggableAreaGroups.addArea()
-const DraggableArea2 = DraggableAreaGroups.addArea()
+const DraggableArea1 = DraggableAreaGroups.create()
+const DraggableArea2 = DraggableAreaGroups.create()
 
 const Demo1: React.FC<any> = (props) => {
-    const [dataSource, setDataSource] = useState<any>([]);
-    const [width, setWidth] = useState<any>(100);
-    const [height, setHeight] = useState<any>(200);
-    const [axis, setAxis] = useState<any>('both');
-
-    const [arrDrag1, setArrDrag1] = useState<any>([1, 2, 3, 5, 6, 7, 8])
-    const [arrDrag2, setArrDrag2] = useState<any>([1, 2, 3, 5, 6, 7, 8])
-
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
-    const arr1Ref = useRef<any>(arrDrag1)
-    const arr2Ref = useRef<any>(arrDrag2)
+
+    const [state, setState] = useState({ arr1: [1, 2, 3, 4, 5, 6, 7], arr2: [8, 9, 10, 11, 12, 13, 14] })
 
     const onDrag = (e, data) => {
         // setX(data?.x)
         // setY(data?.y)
     }
 
-
-    useEffect(() => {
-        setTimeout(() => {
-            setDataSource([...new Array(100).keys()])
-        }, 500);
-    }, [])
-
-    const renderItem = (item: any, index: number) => {
-        return (
-            <div className="Row" key={index}>
-                Row #{item}
-            </div>
-        );
-    };
-
-    const onDragMove1: DragMoveHandle = (tag, coverChild, preIndex, nextIndex) => {
-        if (preIndex !== undefined && nextIndex !== undefined) {
-            const newArr = arrayMove(arr1Ref.current, preIndex, nextIndex);
-            arr1Ref.current = newArr;
-            setArrDrag1(newArr);
+    const onDragMoveEnd1: DragMoveHandle = (tag, coverChild) => {
+        if (tag && coverChild) {
+            setState(state => {
+                const preIndex = state?.arr1?.findIndex((item) => item === tag?.id);
+                const nextIndex = state?.arr1?.findIndex((item) => item === coverChild?.id)
+                const newArr = arrayMove(state?.arr1, preIndex, nextIndex);
+                return {
+                    ...state,
+                    arr1: newArr
+                }
+            });
         }
     }
 
-    const onDragMove2: DragMoveHandle = (tag, coverChild, e) => {
+    const onDragMoveEnd2: DragMoveHandle = (tag, coverChild, e) => {
 
     }
 
-    const onMoveOutChange = (info) => {
-        const newArr = produce(arr1Ref.current, draft => {
-            draft?.splice(info?.moveTag?.dragPreIndex, 1)
-        });
-        arr1Ref.current = newArr;
-        setArrDrag1(newArr);
+    const onMoveOutChange = (data) => {
+        if (data) {
+            setState(state => {
+                const newArr = produce(state?.arr1, draft => {
+                    const index = draft?.findIndex((item) => item === data?.moveTag?.id)
+                    draft?.splice(index, 1)
+                });
+                return {
+                    ...state,
+                    arr1: newArr
+                }
+            })
+        }
     }
 
-    const onMoveInChange = (info) => {
-        // const newArr = produce(arr2Ref.current, draft => {
-        //     draft?.push(arr1Ref.current[info?.moveTag?.dragPreIndex])
-        // });
-        // arr2Ref.current = newArr;
-        // setArrDrag2(newArr);
+    const onMoveInChange = (data) => {
+        if (data) {
+            setState(state => {
+                const newArr = produce(state?.arr2, draft => {
+                    const index = state?.arr1?.findIndex((item) => item === data?.moveTag?.id);
+                    const nextIndex = draft?.findIndex((item) => item === data?.coverChild?.id);
+                    draft?.splice(nextIndex, 0, state?.arr1?.[index]);
+                });
+                return {
+                    ...state,
+                    arr2: newArr
+                }
+            })
+        }
     }
 
     return (
@@ -95,21 +93,11 @@ const Demo1: React.FC<any> = (props) => {
                     </div>
                 </Draggable>
             </div>
-            <Draggable
-                axis="both"
-                scale={1}
-            >
-                <div>
-                    <Button className="handles" type="default">
-                        拖拽元素2
-                    </Button>
-                </div>
-            </Draggable>
-            <DraggableArea1 onMoveOutChange={onMoveOutChange} className="flex-box" onDragMoveEnd={onDragMove1}>
+            <DraggableArea1 dataSource={state?.arr1} onMoveOutChange={onMoveOutChange} className="flex-box" onDragMoveEnd={onDragMoveEnd1}>
                 {
-                    arrDrag1?.map((item, index) => {
+                    state?.arr1?.map((item, index) => {
                         return (
-                            <DraggerItem className="drag-a" key={item}>
+                            <DraggerItem className="drag-a" key={item} id={item}>
                                 <div>
                                     大小拖放{item}
                                 </div>
@@ -119,11 +107,11 @@ const Demo1: React.FC<any> = (props) => {
                 }
             </DraggableArea1>
             <div style={{ marginTop: '10px' }}>
-                <DraggableArea2 onMoveInChange={onMoveInChange} className="flex-box" onDragMove={onDragMove2}>
+                <DraggableArea2 dataSource={state?.arr2} onMoveInChange={onMoveInChange} className="flex-box" onDragMoveEnd={onDragMoveEnd2}>
                     {
-                        arrDrag2?.map((item, index) => {
+                        state?.arr2?.map((item, index) => {
                             return (
-                                <DraggerItem className="drag-a" key={index}>
+                                <DraggerItem className="drag-a" key={item} id={item}>
                                     <div>
                                         大小拖放{item}
                                     </div>
@@ -133,26 +121,6 @@ const Demo1: React.FC<any> = (props) => {
                     }
                 </DraggableArea2>
             </div>
-
-            <div>
-                大小拖放
-                <DragResize>
-                    <div style={{ width: '50px', height: "50px", background: "red" }}>
-                        大小拖放2
-                    </div>
-                </DragResize>
-            </div>
-            <VirtualList
-                width="auto"
-                // scrollToAlignment="start"
-                // scrollToIndex={30}
-                scrollOffset={500}
-                limit={200}
-                dataSource={dataSource}
-                renderItem={renderItem}
-                itemSize={50}
-                className="VirtualList"
-            />
         </>
     );
 }

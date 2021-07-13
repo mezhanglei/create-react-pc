@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle,
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
-import { ChildrenType, DraggerContextInterface, DragTypes } from "./utils/types";
+import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInPage, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
@@ -19,6 +19,7 @@ export interface DraggerItemEvent {
     translateY?: number;
     node: HTMLElement;
     dragType?: `${DragTypes}`;
+    id: string | number;
 }
 export enum DragControlType {
     drag = 'drag',
@@ -42,6 +43,7 @@ export interface DraggerProps extends DraggerContextInterface {
     x?: number;
     y?: number;
     dragNode?: string | HTMLElement;
+    id: string | number;
 }
 
 // 拖拽及缩放组件
@@ -52,7 +54,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         className,
         style,
         type = DragControlType.both,
-        dragNode
+        dragNode,
+        id
     } = props;
 
     const [dragType, setDragType] = useState<`${DragTypes}`>();
@@ -102,11 +105,11 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
-        listenChild && listenChild(node);
+        listenChild && listenChild({ node, id });
     }, []);
 
-    const isOver = (coverChild?: HTMLElement) => {
-        if (coverChild === nodeRef.current) {
+    const isOver = (coverChild?: ChildTypes) => {
+        if (coverChild?.node === nodeRef.current) {
             return true;
         } else {
             return false;
@@ -171,7 +174,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType: DragTypes.dragStart
+            dragType: DragTypes.dragStart,
+            id
         });
     }
 
@@ -201,7 +205,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType: DragTypes.draging
+            dragType: DragTypes.draging,
+            id
         });
     }
 
@@ -220,7 +225,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: data?.x,
             y: data?.y,
             node: node,
-            dragType: DragTypes.dragEnd
+            dragType: DragTypes.dragEnd,
+            id
         });
     }
 
@@ -235,7 +241,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType: DragTypes.resizeStart
+            dragType: DragTypes.resizeStart,
+            id
         })
     }
 
@@ -250,7 +257,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType: DragTypes.resizing
+            dragType: DragTypes.resizing,
+            id
         })
     }
 
@@ -265,7 +273,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             x: position?.x || 0,
             y: position?.y || 0,
             node: node,
-            dragType: DragTypes.resizeEnd
+            dragType: DragTypes.resizeEnd,
+            id
         });
     }
 
@@ -281,6 +290,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDragStop={onDragStop}
             dragNode={dragNode}
             reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
+            // x={0} // 设置0只提供拖拽能力，不会进行碰撞计算，适合复杂的数据源渲染的界面
+            // y={0}
             x={x}
             y={y}
         >

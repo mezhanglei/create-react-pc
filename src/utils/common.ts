@@ -44,10 +44,10 @@ export function cacheProxy(fn: any, cache: {}): any {
  */
 export function debounce(fn: any, time: number = 500): any {
     let timeout: any = null;
-    return function () {
+    return function (...args: any[]) {
         if (timeout !== null) clearTimeout(timeout);
         timeout = setTimeout(() => {
-            fn.apply(debounce, arguments);
+            fn.apply(this, args);
         }, time);
     };
 };
@@ -60,10 +60,10 @@ export function debounce(fn: any, time: number = 500): any {
  */
 export function throttle(fn: any, time: number = 500): any {
     let timer: any = null;
-    return function () {
+    return function (...args: any[]) {
         if (!timer) {
             timer = setTimeout(function () {
-                fn.apply(throttle, arguments);
+                fn.apply(this, args);
                 timer = null;
             }, time);
         }
