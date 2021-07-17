@@ -2,7 +2,7 @@ import *as React from 'react';
 import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type'
 import { HistoryDragact } from './HistoryLayout'
 import { Words } from './largedata';
-import './index.less';
+import './index.css';
 
 const fakeData = () => {
     var Y = 0;
@@ -14,16 +14,12 @@ const fakeData = () => {
 }
 
 
-export const Card: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
+export const Card: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
     return (
         <div
             className='layout-Item'
             ref={ref}
-            {...rest}
-            style={{
-                ...style,
-                background: `${provided.isDragging ? '#eaff8f' : 'white'}`
-            }}
+            style={{ ...style, background: '#fff' }}
         >
             <div
                 style={{ padding: 5, textAlign: 'center', color: '#595959' }}
@@ -33,7 +29,7 @@ export const Card: (any: any) => any = React.forwardRef(({ item, provided, style
                 {item.content}
             </div>
             <span
-                {...resizeMix}
+                // {...provided.resizeHandle}
                 style={{
                     position: 'absolute',
                     width: 10, height: 10, right: 2, bottom: 2, cursor: 'se-resize',
@@ -86,18 +82,16 @@ export class HistoryDemo extends React.Component<{}, {}> {
                     }}>clear</button>
                     <HistoryDragact
                         {...dragactInit}
-                        placeholder={true}
                         ref={n => this.drag = n}
                         style={{
                             background: '#003A8C'
                         }}
                     >
-                        {(item: DragactLayoutItem, provided: GridItemProvided) => {
-                            return <Card
-                                item={item}
-                                provided={provided}
-                            />
-                        }}
+                        {
+                            dragactInit.layout?.map((item, index) => {
+                                return <Card item={item} key={item.key} />
+                            })
+                        }
                     </HistoryDragact>
                 </div>
             </div>

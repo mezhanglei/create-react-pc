@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { DragactProps, DragactLayoutItem } from '@/components/react-draggable-layout/dragact-type';
-import { GridItemEvent } from '@/components/react-draggable-layout/GridItem';
+import { GridItemEvent } from '@/components/react-draggable-layout/gridItem';
 import { Dragact } from '@/components/react-draggable-layout';
 
 interface HistoryDragactState {
@@ -96,10 +96,13 @@ export class HistoryDragact extends React.Component<DragactProps, HistoryDragact
     }
 
     componentDidMount() {
-        if (this._dragact) {
-            const initiateSnapShot = this._cachingLayouts(this._dragact);
-            this._storeLayoutToHistory(initiateSnapShot)
-        }
+        // 异步获取
+        setTimeout(() => {
+            if (this._dragact) {
+                const initiateSnapShot = this._cachingLayouts(this._dragact);
+                this._storeLayoutToHistory(initiateSnapShot)
+            }    
+        }, 0);
     }
 
     componentWillReceiveProps(nextProps: DragactProps) {
@@ -109,6 +112,7 @@ export class HistoryDragact extends React.Component<DragactProps, HistoryDragact
     }
     _dragactRefCallback = (d: Dragact) => {
         this._dragact = d;
+        console.log(d)
     }
 
     get getDragact() {

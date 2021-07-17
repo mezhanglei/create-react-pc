@@ -16,6 +16,7 @@ const DraggableArea2 = DraggableAreaGroups.create()
 const Demo1: React.FC<any> = (props) => {
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
+    const [dataSource, setDataSource] = useState([...new Array(100).keys()]);
 
     const [state, setState] = useState({ arr1: [1, 2, 3, 4, 5, 6, 7], arr2: [8, 9, 10, 11, 12, 13, 14] })
 
@@ -73,6 +74,18 @@ const Demo1: React.FC<any> = (props) => {
         }
     }
 
+    const renderOn = (startIndex, stopIndex) => {
+        console.log(startIndex, stopIndex);
+    };
+
+    const renderItem = (item: any, index: number) => {
+        return (
+            <div className="Row" key={index}>
+                Row #{item}
+            </div>
+        );
+    };
+
     return (
         <>
             <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px', marginTop: '100px', width: '500px', background: "red" }}>
@@ -97,7 +110,7 @@ const Demo1: React.FC<any> = (props) => {
                 {
                     state?.arr1?.map((item, index) => {
                         return (
-                            <DraggerItem className="drag-a" key={item} id={item}>
+                            <DraggerItem resizeAxis='auto' className="drag-a" key={item} id={item}>
                                 <div>
                                     大小拖放{item}
                                 </div>
@@ -121,6 +134,24 @@ const Demo1: React.FC<any> = (props) => {
                     }
                 </DraggableArea2>
             </div>
+            <VirtualList
+                width="auto"
+                // scrollToAlignment="start"
+                // scrollToIndex={30}
+                scrollOffset={500}
+                height={400}
+                limit={200}
+                dataSource={dataSource}
+                onItemsRendered={renderOn}
+                itemSize={50}
+                className="VirtualList"
+            >
+                {
+                    dataSource?.map((item, index) => {
+                        return renderItem(item, index);
+                    })
+                }
+                </VirtualList>
         </>
     );
 }

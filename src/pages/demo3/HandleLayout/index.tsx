@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Dragact } from '@/components/react-draggable-layout'
 import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type'
 
-import './index.less'
+import './index.css'
 
 const Words = [
     { content: 'You can do anything, but not everything.' },
@@ -27,13 +27,13 @@ const fakeData = () => {
     })
 }
 
-const Card: (item: any) => any = React.forwardRef(({ item, provided, resizeMix, ...rest }, ref) => {
+const Card: (item: any) => any = React.forwardRef(({ item, style }, ref) => {
     if (item.key !== '3') {
         return (
             <div
-                className="layout-Item"
                 ref={ref}
-                {...rest}
+                style={style}
+                className="layout-Item"
             >
                 <div
                     style={{
@@ -48,7 +48,7 @@ const Card: (item: any) => any = React.forwardRef(({ item, provided, resizeMix, 
         )
     }
     return (
-        <div ref={ref} className="layout-Item" {...rest}>
+        <div ref={ref} style={style} className="layout-Item">
             <div style={{ padding: 5, textAlign: 'center', color: '#595959' }}>
                 {item.content}
                 <div className="card-handle">
@@ -77,12 +77,11 @@ export class HandleLayout extends React.Component<{}, {}> {
                     <div>
                         <h1 style={{ textAlign: 'center' }}>拖拽把手 Demo</h1>
                         <Dragact {...dragactInit}>
-                            {(
-                                item: DragactLayoutItem,
-                                provided: GridItemProvided
-                            ) => {
-                                return <Card item={item} provided={provided} />
-                            }}
+                            {
+                                dragactInit.layout?.map((item, index) => {
+                                    return <Card item={item} key={item.key} />
+                                })
+                            }
                         </Dragact>
                     </div>
                 </div>

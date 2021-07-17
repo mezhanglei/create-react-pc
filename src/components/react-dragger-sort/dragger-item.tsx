@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import ResizeZoom from "@/components/react-resize-zoom";
-import { EventType as ResizeEventType, EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler } from "@/components/react-free-draggable";
+import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, Axis } from "@/components/react-resize-zoom/type";
+import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, AxisType } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInPage, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
@@ -13,19 +13,13 @@ export type DraggerItemHandler<E = EventType, T = DraggerItemEvent> = (e: E, dat
 export interface DraggerItemEvent {
     width: number;
     height: number;
-    x?: number;
-    y?: number;
+    x: number;
+    y: number;
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
     dragType?: `${DragTypes}`;
     id: string | number;
-}
-export enum DragControlType {
-    drag = 'drag',
-    resize = 'resize',
-    both = 'both',
-    none = 'none'
 }
 export interface DraggerProps extends DraggerContextInterface {
     children: ChildrenType;
@@ -37,7 +31,8 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeStart?: DraggerItemHandler;
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
-    type?: `${DragControlType}`; // 允许操作的类型
+    dragAxis?: `${AxisType}`; // 拖拽位置
+    resizeAxis?: `${Axis}`; // 拖拽大小
     width?: number; // 宽度
     height?: number; // 高度
     x?: number;
@@ -53,7 +48,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         children,
         className,
         style,
-        type = DragControlType.both,
+        dragAxis = AxisType.both,
+        resizeAxis = Axis.NONE,
         dragNode,
         id
     } = props;
@@ -118,12 +114,12 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     // 可以拖拽
     const canDrag = () => {
-        return ([DragControlType.drag, DragControlType.both] as string[])?.includes(type)
+        return !([AxisType.none] as string[])?.includes(dragAxis)
     }
 
     // 可以调整尺寸
     const canResize = () => {
-        return ([DragControlType.resize, DragControlType.both] as string[])?.includes(type)
+        return !([Axis.NONE] as string[])?.includes(resizeAxis)
     }
 
     const findOwnerDocument = () => {
@@ -171,8 +167,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: offsetWH?.height,
             translateX: data?.translateX,
             translateY: data?.translateY,
-            x: data?.x,
-            y: data?.y,
+            x: data?.x || 0,
+            y: data?.y || 0,
             node: node,
             dragType: DragTypes.dragStart,
             id
@@ -202,8 +198,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: offsetWH?.height,
             translateX: data?.translateX,
             translateY: data?.translateY,
-            x: data?.x,
-            y: data?.y,
+            x: data?.x || 0,
+            y: data?.y || 0,
             node: node,
             dragType: DragTypes.draging,
             id
@@ -222,8 +218,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             height: offsetWH?.height,
             translateX: data?.translateX,
             translateY: data?.translateY,
-            x: data?.x,
-            y: data?.y,
+            x: data?.x || 0,
+            y: data?.y || 0,
             node: node,
             dragType: DragTypes.dragEnd,
             id
@@ -285,6 +281,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         <Draggable
             ref={nodeRef}
             className={cls}
+            axis={dragAxis}
             onDragStart={onDragStart}
             onDrag={onDrag}
             onDragStop={onDragStop}
@@ -299,6 +296,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                 onResizeStart={onResizeStart}
                 onResizeMoving={onResizing}
                 onResizeEnd={onResizeEnd}
+                axis={resizeAxis}
                 width={width}
                 height={height}
             >

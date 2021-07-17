@@ -7,7 +7,6 @@ import { AddRemove } from "./AddRemove/index";
 import { HistoryDemo } from "./HistoryLayout/index";
 import { Mobile } from "./mobileLayout/index";
 import './index.less'
-// import { Dragact } from "./lib/dragact";
 
 
 

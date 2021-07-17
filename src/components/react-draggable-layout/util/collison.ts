@@ -31,10 +31,9 @@ export const getFirstCollison = (layout: DragactLayoutItem[], item: DragactLayou
  */
 export const layoutCheck = function () {
 
-    var caches: any = {};
+    let caches: any = {};
 
-    const _layoutCheck = function (layout: DragactLayoutItem[], layoutItem: GridItemEvent,
-        key: string, fristItemkey: string, moving: number) {
+    const _layoutCheck = function (layout: DragactLayoutItem[], layoutItem: GridItemEvent, key: string, fristItemkey: string) {
 
 
         if (layoutItem.GridX === caches.GridX
@@ -59,9 +58,6 @@ export const layoutCheck = function () {
                      */
                     let offsetY = item.GridY + 1
 
-                    /**这一行也非常关键，当向上移动的时候，碰撞的元素必须固定 */
-                    // if (moving < 0 && layoutItem.GridY > 0) offsetY = item.GridY
-
                     if (layoutItem.GridY > item.GridY && layoutItem.GridY < item.GridY + item.h) {
                         /**
                          * 元素向上移动时，元素的上面空间不足,则不移动这个元素
@@ -69,24 +65,21 @@ export const layoutCheck = function () {
                          */
                         offsetY = item.GridY
                     }
-                    // const newItem = { ...item, GridX: layoutItem.GridX, GridY: offsetY, isUserMove: false };
-
-                    const newItem = { ...item, GridY: offsetY, isUserMove: false }
+                    const newItem = { ...item, GridY: offsetY, isMove: false }
                     movedItem.push(newItem)
                     return newItem
                 }
             } else if (fristItemkey === key) {
 
-                /**永远保持用户移动的块是 isUserMove === true */
+                /**永远保持用户移动的块是 isMove === true */
                 return { ...item, ...layoutItem }
             }
 
             return item
         })
         /** 递归调用,将layout中的所有重叠元素全部移动 */
-        const length = movedItem.length;
-        for (let c = 0; c < length; c++) {
-            newlayout = _layoutCheck(newlayout, movedItem[c], i[c], fristItemkey, 0)
+        for (let c = 0; c < movedItem?.length; c++) {
+            newlayout = _layoutCheck(newlayout, movedItem[c], i[c], fristItemkey)
         }
         return newlayout
     }

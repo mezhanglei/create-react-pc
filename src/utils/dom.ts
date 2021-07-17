@@ -16,6 +16,20 @@ export const findElement = (target: any): any => {
     return result;
 };
 
+// 返回目标元素的兄弟节点
+export const findSiblingsElement = (target: HTMLElement, containOwner?: boolean) => {
+    if (target && !isDom(target)) return;
+    const ret = [];    //保存所有兄弟节点
+    const childs = target?.parentNode?.children || []; //获取父级的所有子节点
+    for (let i = 0; i < childs?.length; i++) {
+        // 去掉本身
+        if (isDom(childs[i]) && (containOwner || childs[i] != target)) {
+            ret.push(childs[i]);
+        }
+    }
+    return ret as HTMLElement[];
+}
+
 /**
  * 返回目标元素相对于定位父元素的位置
  * @param {*} ele 元素

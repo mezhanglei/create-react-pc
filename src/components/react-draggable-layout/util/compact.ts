@@ -1,7 +1,7 @@
 import { sortLayout } from "./sort";
 import { getFirstCollison } from "./collison";
-import { DragactLayoutItem, mapLayout } from "../dragact-type";
-import { GridItemEvent } from "../GridItem";
+import { DragactLayoutItem, MapLayout } from "../dragact-type";
+import { GridItemEvent } from "../gridItem";
 
 /**
  * 压缩单个元素，使得每一个元素都会紧挨着边界或者相邻的元素
@@ -36,10 +36,10 @@ export const compactItem = (finishedLayout: DragactLayoutItem[], item: DragactLa
  * @param {*} layout 
  */
 export const compactLayout = function () {
-    var _cache: any = {
+    let _cache: any = {
     };
 
-    return function (layout: DragactLayoutItem[], movingItem: GridItemEvent | undefined, mapedLayout: mapLayout | undefined) {
+    return function (layout: DragactLayoutItem[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
         if (movingItem) {
             if (_cache.GridX === movingItem.GridX
                 && _cache.GridY === movingItem.GridY &&
@@ -54,10 +54,10 @@ export const compactLayout = function () {
             }
             _cache = movingItem;
         }
-        let sorted = sortLayout(layout)//把静态的放在前面
+        let sorted = sortLayout(layout) //把静态的放在前面
         const needCompact = Array(layout.length)
         const compareList = []
-        const mapLayout: mapLayout = {};
+        const mapLayout: MapLayout = {};
         
         
         for (let i = 0, length = sorted.length; i < length; i++) {
@@ -66,12 +66,12 @@ export const compactLayout = function () {
                 if (movingItem.UniqueKey === finished.key) {
                     movingItem.GridX = finished.GridX;
                     movingItem.GridY = finished.GridY;
-                    finished.isUserMove = true
+                    finished.isMove = true
                 } else
-                    finished.isUserMove = false
+                    finished.isMove = false
             }
             else
-                finished.isUserMove = false
+                finished.isMove = false
             compareList.push(finished)
             needCompact[i] = finished
             mapLayout[finished.key + ''] = finished;

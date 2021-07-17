@@ -1,8 +1,12 @@
-// import * as React from "react";
-import { Dragger } from './dragger/index'
+import * as React from "react";
 import { checkInContainer } from './util/correction';
-import { Bound } from './utils';
+import ResizeZoom from "@/components/react-resize-zoom";
+import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, Axis } from "@/components/react-resize-zoom/type";
+import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, AxisType, BoundsInterface } from "@/components/react-free-draggable";
+import classNames from "classnames";
+import { DragTypes } from "../react-dragger-sort/utils/types";
 
+export type GridItemEventHandle = (event: GridItemEvent) => void;
 export interface GridItemProps {
     /**外部容器属性 */
     col: number,
@@ -20,29 +24,26 @@ export interface GridItemProps {
     h: number,
 
     /**生命周期回掉函数 */
-    onDragStart?: (event: GridItemEvent) => void,
-    onDragEnd?: (event: GridItemEvent) => void,
-    onDrag?: (event: GridItemEvent) => void
+    onDragStart?: GridItemEventHandle;
+    onDragEnd?: GridItemEventHandle;
+    onDrag?: GridItemEventHandle;
 
-    onResizeStart?: (event: GridItemEvent) => void
-    onResizing?: (event: GridItemEvent) => void
-    onResizeEnd?: (event: GridItemEvent) => void
+    onResizeStart?: GridItemEventHandle;
+    onResizing?: GridItemEventHandle;
+    onResizeEnd?: GridItemEventHandle;
 
-    isUserMove: Boolean
-
-    UniqueKey?: string
-
+    UniqueKey?: string | number;
+    parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
+    isMove?: Boolean;
     static?: Boolean
-
-    style?: React.CSSProperties
-
-    bounds?: Bound | 'parent'
-
-    dragType: 'drag' | 'resize'
-
+    bounds?: string | HTMLElement | BoundsInterface;
     handle?: Boolean
-
-    children: (provided: any, draggerProps: any, resizerProps: any) => any;
+    canDrag?: Boolean
+    canResize?: Boolean
+    children: any;
+    className?: string;
+    style?: React.CSSProperties;
+    zIndexRange?: [number, number];
 }
 
 export interface GridItemEvent {
@@ -67,7 +68,7 @@ const checkWidthHeight = (GridX: number, w: number, h: number, col: number) => {
 
 }
 
-export default class GridItems extends React.Component<GridItemProps, {}> {
+export default class GridItem extends React.Component<GridItemProps, {}> {
     constructor(props: GridItemProps) {
         super(props)
         this.onDrag = this.onDrag.bind(this)
@@ -75,6 +76,9 @@ export default class GridItems extends React.Component<GridItemProps, {}> {
         this.onDragEnd = this.onDragEnd.bind(this)
         this.calGridXY = this.calGridXY.bind(this)
         this.calColWidth = this.calColWidth.bind(this)
+        this.state = {
+            dragType: undefined
+        }
     }
 
 
@@ -112,7 +116,7 @@ export default class GridItems extends React.Component<GridItemProps, {}> {
 
 
     /**给予一个grid的位置，算出元素具体的在容器中位置在哪里，单位是px */
-    calGridToPx(GridX: number, GridY: number) {
+    calGridItemPosition(GridX: number, GridY: number) {
         var { margin, rowHeight } = this.props
 
         if (!margin) margin = [0, 0];
@@ -126,7 +130,6 @@ export default class GridItems extends React.Component<GridItemProps, {}> {
             y: y
         }
     }
-
 
     shouldComponentUpdate(props: GridItemProps, state: any) {
 
@@ -158,75 +161,118 @@ export default class GridItems extends React.Component<GridItemProps, {}> {
         return checkWidthHeight(this.props.GridX, w, h, this.props.col)
     }
 
-    onDragStart(x: number, y: number) {
+    onDragStart: DragEventHandler = (event, data) => {
+        if (!data) return;
         const { w, h, UniqueKey } = this.props;
+        const { x = 0, y = 0 } = data;
 
         if (this.props.static) return;
 
         const { GridX, GridY } = this.calGridXY(x, y)
-
-        this.props.onDragStart && this.props.onDragStart(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + ''})
+        this.setState({
+            dragType: DragTypes.dragStart
+        })
+        this.props.onDragStart && this.props.onDragStart({
+            event, GridX, GridY, w, h, UniqueKey: UniqueKey + ''
+        })
     }
-    onDrag(event: any, x: number, y: number) {
+    onDrag: DragEventHandler = (event, data) => {
+        if (!data) return;
         if (this.props.static) return;
+        const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calGridXY(x, y)
+        this.setState({
+            dragType: DragTypes.draging
+        })
         const { w, h, UniqueKey } = this.props
-        this.props.onDrag && this.props.onDrag(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
+        this.props.onDrag && this.props.onDrag({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
     }
 
-    onDragEnd(event: any, x: number, y: number) {
+    onDragEnd: DragEventHandler = (event, data) => {
+        if (!data) return;
         if (this.props.static) return;
+        const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calGridXY(x, y);
         const { w, h, UniqueKey } = this.props;
-        if (this.props.onDragEnd) this.props.onDragEnd(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + '' });
+        this.setState({
+            dragType: DragTypes.dragEnd
+        })
+        if (this.props.onDragEnd) this.props.onDragEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event });
     }
 
-    onResizeStart = (event: any, wPx: number, hPx: number) => {
+    onResizeStart: ResizeEventHandler = (event) => {
         const { GridX, GridY, UniqueKey, w, h } = this.props;
-        this.props.onResizeStart && this.props.onResizeStart(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
+        this.setState({
+            dragType: DragTypes.resizeStart
+        })
+        this.props.onResizeStart && this.props.onResizeStart({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
     }
 
-    onResizing = (event: any, wPx: number, hPx: number) => {
-        var { w, h } = this.calPxToWH(wPx, hPx);
-
+    onResizing: ResizeEventHandler = (event, data) => {
+        if (!data) return;
+        const wPx = data?.width;
+        const hPx = data?.height;
+        const { w, h } = this.calPxToWH(wPx, hPx);
         const { GridX, GridY, UniqueKey } = this.props;
-        this.props.onResizing && this.props.onResizing(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
+        this.setState({
+            dragType: DragTypes.resizing
+        })
+        this.props.onResizing && this.props.onResizing({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
     }
 
-    onResizeEnd = (event: any, wPx: number, hPx: number) => {
-        var { w, h } = this.calPxToWH(wPx, hPx);
+    onResizeEnd: ResizeEventHandler = (event: any, data) => {
+        if (!data) return;
+        const wPx = data?.width;
+        const hPx = data?.height;
+        const { w, h } = this.calPxToWH(wPx, hPx);
         const { GridX, GridY, UniqueKey } = this.props;
-
-        this.props.onResizeEnd && this.props.onResizeEnd(event, { GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
+        this.setState({
+            dragType: DragTypes.resizeEnd
+        })
+        this.props.onResizeEnd && this.props.onResizeEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
     }
     render() {
-        const { w, h, style, bounds, GridX, GridY, handle } = this.props;
-        const { x, y } = this.calGridToPx(GridX, GridY);
+        const { w, h, style, bounds, GridX, GridY, handle, canDrag, canResize } = this.props;
+        const { x, y } = this.calGridItemPosition(GridX, GridY);
         const { wPx, hPx } = this.calWHtoPx(w, h);
+        const children = this.props.children;
+        const cls = classNames((children?.props?.className || ''), this.props.className);
+        const dragType = this.state.dragType;
+        const parentDragType = this.props.parentDragType;
+        const zIndexRange = this.props.zIndexRange || [];
+
         return (
-            <Dragger
-                style={{
-                    ...style,
-                    position: 'absolute',
-                    transition: this.props.isUserMove ? '' : 'all .2s ease-out',
-                    zIndex: this.props.isUserMove ? (this.props.dragType === 'drag' ? 10 : 2) : 2
-                }}
+            <Draggable
+                className={cls}
+                axis="both"
+                bounds={bounds}
                 onDragStart={this.onDragStart}
-                onMove={this.onDrag}
-                onDragEnd={this.onDragEnd}
-                onResizeStart={this.onResizeStart}
-                onResizing={this.onResizing}
-                onResizeEnd={this.onResizeEnd}
+                onDrag={this.onDrag}
+                onDragStop={this.onDragEnd}
                 x={x}
                 y={y}
-                w={wPx}
-                h={hPx}
-                isUserMove={this.props.isUserMove}
-                bounds={bounds}
             >
-                {/* {(provided, draggerProps, resizerProps) => this.props.children(provided, draggerProps, resizerProps)} */}
-                {this.props.children}
-            </Dragger>
+                <ResizeZoom
+                    onResizeStart={this.onResizeStart}
+                    onResizeMoving={this.onResizing}
+                    onResizeEnd={this.onResizeEnd}
+                    axis='auto'
+                    width={wPx}
+                    height={hPx}
+                >
+                    {
+                        React.cloneElement(React.Children.only(children), {
+                            style: {
+                                ...children.props.style,
+                                ...style,
+                                position: 'absolute',
+                                transition: this.props.isMove || !parentDragType ? '' : 'all .2s ease-out',
+                                zIndex: this.props.isMove ? ((parentDragType && [DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType) ? zIndexRange[1] : zIndexRange[0]) : zIndexRange[0]
+                            }
+                        })
+                    }
+                </ResizeZoom>
+            </Draggable>
         )
     }
 }

@@ -1,34 +1,27 @@
 import *as React from 'react';
-import { Dragact } from '@/components/react-draggable-layout';
-import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type';
+import { Dragact } from '@/components/react-draggable-layout'
+import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type'
 import { Words } from './largedata';
-import './index.less';
+import './index.css';
 
 
 
 const fakeData = () => {
     var Y = 0;
-    const base = 4;
     return Words.map((item, index) => {
         if (index % 4 === 0) Y++;
 
-        return { ...item, GridX: index % base * base, GridY: Y * base, w: base, h: 3, key: index + '' }
+        return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 3, key: index + '' }
     })
 }
 
 
-export const Card: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
-
+export const Card: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
     return (
         <div
-            ref={ref}
-            {...rest}
             className='layout-Item'
-            style={{
-                // ...provided.props.style,
-                ...style,
-                background: `${provided.isDragging ? '#eaff8f' : 'white'}`
-            }}
+            ref={ref}
+            style={{ ...style, background: '#fff' }}
         >
             <div
                 style={{ padding: 5, textAlign: 'center', color: '#595959' }}
@@ -38,7 +31,7 @@ export const Card: (any: any) => any = React.forwardRef(({ item, provided, style
                 {item.content}
             </div>
             <span
-                {...resizeMix}
+                // {...provided.resizeHandle}
                 style={{
                     position: 'absolute',
                     width: 10, height: 10, right: 2, bottom: 2, cursor: 'se-resize',
@@ -75,17 +68,15 @@ export class LayoutDemo extends React.Component<{}, {}> {
                     </h1>
                     <Dragact
                         {...dragactInit}
-                        placeholder={true}
                         style={{
                             background: '#003A8C'
                         }}
                     >
-                        {(item: DragactLayoutItem, provided: GridItemProvided) => {
-                            return <Card
-                                item={item}
-                                provided={provided}
-                            />
-                        }}
+                        {
+                            fakeData()?.map((item, index) => {
+                                return <Card item={item} key={item.key} />
+                            })
+                        }
                     </Dragact>
                 </div>
             </div>

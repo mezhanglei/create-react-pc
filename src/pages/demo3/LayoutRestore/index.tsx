@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dragact } from '@/components/react-draggable-layout'
 import { Card } from '../NormalLayout/index';
-import './index.less';
+import './index.css';
 
 const Words = [
     { content: 'You can do anything, but not everything.' },
@@ -59,9 +59,11 @@ export class LayoutRestore extends React.Component<{}, {}> {
                 onDragEnd={this.handleOnDragEnd}
 
             >
-                {(item: any, provided: any) => {
-                    return <Card item={item} provided={provided} />
-                }}
+                {
+                    dragactInit.layout?.map((item, index) => {
+                        return <Card item={item} key={item.key} />
+                    })
+                }
             </Dragact>
         )
     }

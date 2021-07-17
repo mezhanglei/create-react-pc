@@ -9,12 +9,14 @@ const Words = [
     { content: 'I’d rather live with a good question than a bad answer.' }
 ]
 
-const Card = React.forwardRef(({ item, provided, onDelete, resizeMix, ...rest }, ref) => {
+const Card = React.forwardRef(({ item, style, onDelete, ...rest }, ref) => {
     return (
         <div
             className="layout-Item"
+            // {...provided.props}
+            // {...provided.dragHandle}
             ref={ref}
-            {...rest}
+            style={style}
         >
             <div
                 style={{
@@ -61,7 +63,7 @@ export class AddRemove extends React.Component<{}, {}> {
         layout: fakeData()
     }
 
-    componentDidMount() {}
+    componentDidMount() { }
     handleClick = () => {
         const change = this.state.layout.map(item => {
             return { ...item, content: '21312' }
@@ -81,6 +83,12 @@ export class AddRemove extends React.Component<{}, {}> {
         })
     }
 
+    onChange = (item, oldLayout, layout) => {
+        this.setState({
+            layout: layout
+        })
+    }
+
     render() {
         const margin: [number, number] = [5, 5]
         const dragactInit = {
@@ -90,7 +98,8 @@ export class AddRemove extends React.Component<{}, {}> {
             margin: margin,
             className: 'normal-layout',
             layout: this.state.layout,
-            placeholder: true
+            placeholder: true,
+            onChange: this.onChange
         }
         return (
             <div>
@@ -100,15 +109,11 @@ export class AddRemove extends React.Component<{}, {}> {
                         <h3 style={{ textAlign: 'center' }}>在这个布局中，新增一个布局，会新加入一个布局</h3>
                         <button onClick={this.handleClick}>新增</button>
                         <Dragact {...dragactInit}>
-                            {(item, provided) => {
-                                return (
-                                    <Card
-                                        item={item}
-                                        provided={provided}
-                                        onDelete={this.hanldeOnDelete}
-                                    />
-                                )
-                            }}
+                            {
+                                dragactInit.layout?.map((item, index) => {
+                                    return <Card onDelete={this.hanldeOnDelete} item={item} key={item.key} />
+                                })
+                            }
                         </Dragact>
                     </div>
                 </div>

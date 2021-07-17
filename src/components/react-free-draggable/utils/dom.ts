@@ -1,5 +1,5 @@
 import { isDom, isEmpty, isNumber } from "@/utils/type";
-import { isContains, findElement, getPositionInPage } from "@/utils/dom";
+import { isContains, findElement } from "@/utils/dom";
 
 // 添加选中类和样式
 export const addUserSelectStyles = (doc: any): any => {
@@ -118,26 +118,21 @@ export function getBoundsInParent(node: HTMLElement, bounds: any) {
     const xDiff = parentInnerWidth - nodeOutWidth > 0 ? parentInnerWidth - nodeOutWidth : 0;
     const yDiff = parentInnerHeight - nodeOutHeight > 0 ? parentInnerHeight - nodeOutHeight : 0;
 
-    // 容器的页面位置
-    const parentXY = getPositionInPage(boundsParent);
-
-    if (parentXY) {
-        // 当限制为元素选择器或元素时，位置限制该元素内部
-        if (findElement(bounds)) {
-            return {
-                left: parentXY?.x,
-                right: xDiff + parentXY?.x,
-                top: parentXY?.y,
-                bottom: yDiff + parentXY?.y
-            };
-            // 当限制为某个元素内的某个范围，则计算该范围内的限制位置
-        } else {
-            return {
-                left: Math.max(0, bounds?.left || 0) + parentXY?.x,
-                right: Math.min(xDiff, bounds?.right || 0) + parentXY?.x,
-                top: Math.max(0, bounds?.top || 0) + parentXY?.y,
-                bottom: Math.min(yDiff, bounds?.bottom || 0) + parentXY?.y
-            }
+    // 当限制为元素选择器或元素时，位置限制该元素内部
+    if (findElement(bounds)) {
+        return {
+            left: 0,
+            right: xDiff + 0,
+            top: 0,
+            bottom: yDiff + 0
+        };
+        // 当限制为某个元素内的某个范围，则计算该范围内的限制位置
+    } else {
+        return {
+            left: Math.max(0, bounds?.left || 0),
+            right: Math.min(xDiff, bounds?.right || 0),
+            top: Math.max(0, bounds?.top || 0),
+            bottom: Math.min(yDiff, bounds?.bottom || 0)
         }
     }
 }

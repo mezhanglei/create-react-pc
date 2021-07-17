@@ -7,13 +7,13 @@ import {
     listenEventFunc,
     DragTypes,
     ChildTypes,
-    ChildLayout
+    ChildLayout,
 } from "./utils/types";
 import classNames from "classnames";
 import { DraggerItemHandler } from "./dragger-item";
-import { getOffsetWH, getPositionInPage } from "@/utils/dom";
-import { combinedArr, getArrMap, arrayMove } from "@/utils/array";
-import { produce } from "immer";
+import { getOffsetWH, getPositionInPage, getRectInParent, findSiblingsElement, setStyle } from "@/utils/dom";
+import { throttle } from "@/utils/common";
+import { isOverLay } from "./utils/dom";
 
 export const DraggerContext = React.createContext<DraggerContextInterface | null>(null);
 
@@ -36,12 +36,14 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const [dragType, setDragType] = useState<`${DragTypes}`>();
 
         const parentRef = useRef<any>();
-        const initChildrenRef = useRef<ChildTypes[]>([]);
-        const [childLayout, setChildLayout] = useState<ChildLayout[]>();
-        const childLayoutRef = useRef<ChildLayout[]>([]);
-        const [coverChild, setCoverChild] = useState<ChildLayout>();
-        const coverChildRef = useRef<ChildLayout>();
-        const crossCoverChildRef = useRef<ChildLayout>();
+        const initChildrenRef = useRef<ChildTypes[]>([]); // 初始化时所有的可拖拽子元素
+        const [childLayout, setChildLayout] = useState<ChildLayout[]>(); // 可拖拽子元素布局的列表ref
+        const childLayoutRef = useRef<ChildLayout[]>([]); // 可拖拽子元素布局列表state数据
+        const cacheCoverChildRef = useRef<ChildLayout>(); // 实时存储同区域内的被覆盖的元素
+        const cacheCrossCoverChildRef = useRef<ChildLayout>(); // 实时存储跨区域的被覆盖的元素
+        const [coverChild, setCoverChild] = useState<ChildLayout>(); // 被拖拽覆盖的目标元素
+        // 节流函数
+        const throttleFn = useRef(throttle((fn: any, ...args: any[]) => fn(...args), 16.7)).current;
 
         useImperativeHandle(ref, () => (parentRef?.current));
 
@@ -83,62 +85,55 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             setChildLayout(layout);
         }
 
-        // 同区域内拖拽
+        // 同区域内拖拽返回覆盖目标
         const moveTrigger = (tag: TagInterface): ChildLayout | undefined => {
-            const tagCenter = {
-                x: (tag?.x || 0) + (tag?.width || 0) / 2,
-                y: (tag?.y || 0) + (tag?.height || 0) / 2
-            }
-            childLayoutRef?.current?.map((item, index) => {
-                const itemCenter = {
-                    x: (item?.x || 0) + (item?.width || 0) / 2,
-                    y: (item?.y || 0) + (item?.height || 0) / 2
-                }
-                if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                    coverChildRef.current = item;
-                    return true;
+            throttleFn(() => {
+                // 判断是不是区域内 
+                const parent = document?.body || document?.documentElement;
+                const areaRect = getRectInParent(parentRef.current, parent);
+                const x = tag?.x || 0;
+                const y = tag?.y || 0;
+                if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
+                    for (let i = 0; i < childLayoutRef?.current?.length; i++) {
+                        const item = childLayoutRef?.current[i];
+                        if (isOverLay(tag, item)) {
+                            cacheCoverChildRef.current = item;
+                            break;
+                        }
+                    }
                 }
             });
-            return coverChildRef.current;
+            return cacheCoverChildRef.current;
         }
 
-        // 跨区域拖拽
+        // 跨区域拖拽返回覆盖目标
         const crossTrigger = (tag: TagInterface): ChildLayout | undefined => {
-            const tagCenter = {
-                x: (tag?.x || 0) + (tag?.width || 0) / 2,
-                y: (tag?.y || 0) + (tag?.height || 0) / 2
-            }
-            childLayoutRef?.current?.map((item, index) => {
-                const itemCenter = {
-                    x: (item?.x || 0) + (item?.width || 0) / 2,
-                    y: (item?.y || 0) + (item?.height || 0) / 2
-                }
-                if (Math.abs(tagCenter?.x - itemCenter?.x) < 20 && Math.abs(tagCenter?.y - itemCenter?.y) < 20) {
-                    crossCoverChildRef.current = item;
-                    return true;
+            throttleFn(() => {
+                for (let i = 0; i < childLayoutRef?.current?.length; i++) {
+                    const item = childLayoutRef?.current[i];
+                    if (isOverLay(tag, item)) {
+                        cacheCrossCoverChildRef.current = item;
+                        break;
+                    }
                 }
             });
-            return crossCoverChildRef.current;
+            return cacheCrossCoverChildRef.current;
         }
 
         // 碰撞移动位置
-        const impactMoving = (moveTag?: TagInterface, coverChild?: ChildLayout) => {
+        const impactMovingAndEnd = (moveTag?: TagInterface, coverChild?: ChildLayout) => {
             if (moveTag && coverChild) {
-                // const moveArr = arrayMove(childLayoutRef.current, dragPreIndex, dragNextIndex);
-
-                // const moveMinIndex = Math.min(dragPreIndex, dragNextIndex)
-                // moveArr?.map((item, index) => {
-                //     console.log(moveMinIndex, 22222)
-                //     if (dragPreIndex > dragNextIndex) {
-                //         console.log()
-                //     }
-                //     else if (dragPreIndex < dragNextIndex) {
-
-                //     }
-                // });
-                // setChildLayout(moveAfterChildLayout);
-                if (moveTag?.dragType === DragTypes.dragEnd) {
-                    // childLayoutRef.current = moveAfterChildLayout;
+                const silbings = findSiblingsElement(coverChild?.node, true);
+                const nextIndex = silbings?.indexOf(coverChild?.node);
+                if (nextIndex === undefined || nextIndex === -1) return;
+                if (moveTag?.dragType === DragTypes.draging) {
+                    props.impactMoving && props?.impactMoving(moveTag, coverChild, silbings);
+                } else if (moveTag?.dragType === DragTypes.dragEnd) {
+                    silbings?.map((item) => {
+                        setStyle({
+                            transform: 'translate3d(0px, 0px, 0px)'
+                        }, item)
+                    });
                 }
             }
         }
@@ -153,7 +148,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             const areaTag = { ...tag, area: parentRef.current }
             setDragType(tag.dragType);
             const coverChild = moveTrigger(areaTag);
-            impactMoving(areaTag, coverChild);
+            impactMovingAndEnd(areaTag, coverChild);
             setCoverChild(coverChild)
             coverChild && props?.onDragMove && props?.onDragMove(areaTag, coverChild, e);
             // 是否拖到区域外部
@@ -168,16 +163,14 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             setDragType(tag?.dragType);
             setCoverChild(undefined);
             const coverChild = moveTrigger(areaTag);
-            impactMoving(areaTag, coverChild);
+            impactMovingAndEnd(areaTag, coverChild);
             props?.onDragMoveEnd && props?.onDragMoveEnd(areaTag, coverChild, e);
             // 是否拖到区域外部
             if (triggerFunc) {
                 const isTrigger = triggerFunc(areaTag, e);
                 if (isTrigger) {
-                    if (areaTag) {
-                        childLayoutRef.current = childLayoutRef.current?.filter((item) => item?.id !== areaTag?.id);
-                        setChildLayout(childLayoutRef.current);
-                    }
+                    // 删除元素
+                    initChildrenRef.current = initChildrenRef.current?.filter((item) => item?.id !== areaTag?.id);
                     const triggerInfo = {
                         area: parentRef.current,
                         moveTag: areaTag
@@ -191,13 +184,9 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         const AddEvent: listenEventFunc = (tag, e) => {
             const coverChild = crossTrigger(tag);
             setDragType(tag?.dragType);
-            if (tag?.dragType === DragTypes.draging && coverChild) {
-                // 拖拽位置
-            } else if (tag?.dragType === DragTypes.dragEnd && coverChild) {
-                // 同步数据
-            }
-
-            if (tag?.dragType === DragTypes.dragEnd) {
+            if (tag?.dragType === DragTypes.draging) {
+                setCoverChild(coverChild);
+            } else if (tag?.dragType === DragTypes.dragEnd) {
                 setCoverChild(undefined)
                 const triggerInfo = {
                     area: parentRef?.current,
@@ -205,8 +194,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
                     coverChild: coverChild
                 }
                 props.onMoveInChange && props.onMoveInChange(triggerInfo);
-            } else {
-                setCoverChild(coverChild);
             }
         }
 
@@ -232,7 +219,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             initChildren(initChildrenRef.current);
         }
 
-        // 获取所有的子元素
+        // 初始化所有的子元素
         const listenChild = (value: ChildTypes) => {
             initChildrenRef.current.push(value);
         }

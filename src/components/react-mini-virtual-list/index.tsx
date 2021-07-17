@@ -38,9 +38,9 @@ export interface VirtualListProps {
     scrollToIndex?: number; // 设置滚动到哪一条数据
     scrollToAlignment?: ALIGNMENT; // 与scrollToIndex结合使用
     overscanCount?: number; //  预加载的元素个数(默认前后各三个)
-    renderItem: (item: any, index: number) => any; // 渲染列表的模板
     onItemsRendered?: (start: number, end: number) => any; // 加载新的数据时触发的函数
     onScroll?: (e: Event, offset: number) => any; // 滚动触发函数
+    children: any;
 };
 
 const VirtualList: React.FC<VirtualListProps> = (props) => {
@@ -58,7 +58,6 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
         scrollToIndex,
         scrollToAlignment,
         overscanCount = 3,
-        renderItem,
         onItemsRendered,
         onScroll,
         dataSource
@@ -259,22 +258,22 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
         ...(scrollDirection === DIRECTION.HORIZONTAL ? { display: "flex" } : {})
     };
 
-    // 子元素
-    const items = dataSource?.map((item: any, index: number) => {
-        if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
-            if (index >= start && index <= stop) {
-                const itemComponent = renderItem(item, index);
-                const itemStyle = getStyle(index);
-                return React.cloneElement(React.Children.only(itemComponent), {
-                    style: { ...itemComponent.props.style, ...itemStyle }
-                });
-            }
-        }
-    });
-
     return (
         <div ref={nodeRef} className={className} style={wrapperStyle}>
-            <div style={innerStyle}>{items}</div>
+            <div style={innerStyle}>
+                {
+                    React.Children.map(props.children, (child, index) => {
+                        if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
+                            if (index >= start && index <= stop) {
+                                const itemStyle = getStyle(index);
+                                return React.cloneElement(React.Children.only(child), {
+                                    style: { ...child.props.style, ...itemStyle }
+                                });
+                            }
+                        }
+                    })
+                }
+            </div>
         </div>
     );
 };

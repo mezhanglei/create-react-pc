@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Dragact } from '@/components/react-draggable-layout';
-import './index.less'
+import { Dragact } from '@/components/react-draggable-layout'
+import './index.css'
 
 const Words = [
     { content: 'Sorry I just can not move in any circumstances', static: true },
@@ -19,11 +19,10 @@ const fakeData = () => {
     })
 }
 
-const Cell: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
+const Cell: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
     return (
         <div
             ref={ref}
-            {...(!item.static && rest)}
             className={`layout-Cell ${item.static ? "static" : ""}`}
             style={{ ...style, background: item.static ? "#e8e8e8" : "" }}
         >
@@ -44,11 +43,12 @@ export const SortedTableWithStatic = () => {
                     margin={[2, 2]}
                     className='normal-layout'
                     layout={fakeData()}
-                    placeholder={true}
                 >
-                    {(item: any, provided: any) => {
-                        return <Cell item={item} provided={provided} />
-                    }}
+                    {
+                        fakeData()?.map((item, index) => {
+                            return <Cell item={item} key={item.key} />
+                        })
+                    }
                 </Dragact>
             </div>
         </div>

@@ -1,36 +1,30 @@
-import { DragactLayoutItem, mapLayout } from "../dragact-type";
-import { GridItemEvent } from "../GridItem";
+import { DragactLayoutItem, MapLayout } from "../dragact-type";
+import { GridItemEvent } from "../gridItem";
 
 /**
  * 把用户移动的块，标记为true
- * @param {*} layout 
- * @param {*} key 
- * @param {*} GridX 
- * @param {*} GridY 
- * @param {*} isUserMove 
  */
-export const syncLayout = (layout: mapLayout, movingItem: GridItemEvent) => {
+export const syncLayout = (mapLayout: MapLayout, movingItem: GridItemEvent) => {
+    if (!mapLayout) return;
     const key = movingItem.UniqueKey;
-
-    layout[key].GridX = movingItem.GridX;
-    layout[key].GridY = movingItem.GridY
-    layout[key].isUserMove = true;
-
+    mapLayout[key].GridX = movingItem.GridX;
+    mapLayout[key].GridY = movingItem.GridY
+    mapLayout[key].isMove = true;
     // for (const idx in layout) {
     //     if (layout[idx].key === movingItem.UniqueKey) {
     //         layout[idx].GridX = movingItem.GridX
     //         layout[idx].GridY = movingItem.GridY
-    //         layout[idx].isUserMove = true
+    //         layout[idx].isMove = true
     //         break;
     //     }
     // }
-    return layout
+    return mapLayout;
 }
 
 
 /**
  * 初始化的时候调用
- * 会把isUserMove和key一起映射到layout中
+ * 会把isMove和key一起映射到layout中
  * 不用用户设置
  * @param {*} layout 
  * @param {*} children 
@@ -38,18 +32,9 @@ export const syncLayout = (layout: mapLayout, movingItem: GridItemEvent) => {
 
 export const MapLayoutTostate = (layout: DragactLayoutItem[], children: any[]) => {
     return layout.map((child, index) => {
-        let newChild = { ...child, isUserMove: true, key: children[index].key, static: children[index].static }
+        let newChild = { ...child, isMove: true, key: children[index].key, static: children[index].static }
         return newChild
     })
-}
-
-/**
- * 用key从layout中拿出item
- * @param {*} layout 输入进来的布局
- * @param {*} key 
- */
-export const layoutItemForkey = (layout: mapLayout, key: string) => {
-    return layout[key]
 }
 
 

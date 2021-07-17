@@ -2,7 +2,7 @@ import *as React from 'react';
 import { Dragact } from '@/components/react-draggable-layout'
 import { DragactLayoutItem } from '@/components/react-draggable-layout/dragact-type'
 import { Words } from './largedata'
-import './index.less';
+import './index.css';
 
 const fakeData = () => {
     var Y = 0;
@@ -14,16 +14,12 @@ const fakeData = () => {
 }
 
 
-const Card: (any: any) => any = React.forwardRef(({ item, provided, style, resizeMix, ...rest }, ref) => {
+const Card: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
     return (
         <div
             className='layout-Item'
             ref={ref}
-            {...rest}
-            style={{
-                ...style,
-                background: `${provided.isDragging ? '#eaff8f' : 'white'}`
-            }}
+            style={{ ...style, background: '#fff' }}
         >
             <div
                 style={{ padding: 5, textAlign: 'center', color: '#595959' }}
@@ -60,17 +56,15 @@ export class Mobile extends React.Component<{}, {}> {
                     </h1>
                     <Dragact
                         {...dragactInit}
-                        placeholder={true}
                         style={{
                             background: '#003A8C'
                         }}
                     >
-                        {(item: DragactLayoutItem, provided: any) => {
-                            return <Card
-                                item={item}
-                                provided={provided}
-                            />
-                        }}
+                        {
+                            fakeData()?.map((item, index) => {
+                                return <Card item={item} key={item.key} />
+                            })
+                        }
                     </Dragact>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler, PositionType, AxisType } from "./utils/types";
+import { DraggableProps, DragData, EventHandler, PositionType, AxisType, BoundsInterface } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
-import { getPositionInPage } from '@/utils/dom';
+import { findElement, getPositionInParent } from '@/utils/dom';
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
@@ -47,23 +47,30 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     useImperativeHandle(ref, () => (nodeRef?.current));
 
+    // 获取定位父元素，涉及的位置相对于该父元素
+    const getLocationParent = () => {
+        const parent = findElement(bounds) || findElement((bounds as BoundsInterface)?.boundsParent) || document.body || document.documentElement;
+        return parent;
+    }
+
     useEffect(() => {
         const node = nodeRef.current;
-        const initXY = getPositionInPage(node);
+        const parent = getLocationParent();
+        const initXY = getPositionInParent(node, parent);
         initXY && setInitXY(initXY);
         if (initXY) {
             eventDataUpdate(eventDataRef.current, { lastX: initXY?.x, lastY: initXY?.y });
         }
-    }, []);
+    }, [bounds]);
 
     // 更新x,y
     useEffect(() => {
         if (x !== undefined && y !== undefined && initXY && !draggingRef.current) {
             const lastX = initXY?.x;
             const lastY = initXY?.y;
-            // 初始化传值时根据限制重新计算该值(这里看看要不要仅初始化时限制位置)
-            const newX = eventDataRef.current?.x === undefined ? getPositionByBounds(nodeRef.current, { x, y }, bounds)?.x : x;
-            const newY = eventDataRef.current?.y === undefined ? getPositionByBounds(nodeRef.current, { x, y }, bounds)?.y : y;
+            // 初始化传值时根据限制重新计算该值
+            const newX = x;
+            const newY = y;
             const translateX = newX - lastX;
             const translateY = newY - lastY;
             eventDataUpdate(eventDataRef.current, { x: newX, y: newY, lastX: newX, lastY: newY, translateX, translateY });
@@ -99,7 +106,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         e.stopImmediatePropagation();
         if (!data) return;
         const node = data?.node;
-        const positionXY = getPositionInPage(node);
+        const parent = getLocationParent();
+        const positionXY = getPositionInParent(node, parent);
         let positionX = positionXY?.x;
         let positionY = positionXY?.y;
 
@@ -201,7 +209,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         slackXRef.current = 0;
         slackYRef.current = 0;
         eventDataRef.current && eventDataChange(eventDataRef.current);
-        
+
         // Short-circuit if user's callback killed it.
         props.onDragStop && props.onDragStop(e, eventDataRef.current);
     };
