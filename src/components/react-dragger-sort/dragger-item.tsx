@@ -33,10 +33,6 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeEnd?: DraggerItemHandler;
     dragAxis?: `${AxisType}`; // 拖拽位置
     resizeAxis?: `${Axis}`; // 拖拽大小
-    width?: number; // 宽度
-    height?: number; // 高度
-    x?: number;
-    y?: number;
     dragNode?: string | HTMLElement;
     id: string | number;
 }
@@ -55,57 +51,30 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     } = props;
 
     const [dragType, setDragType] = useState<`${DragTypes}`>();
-    const [x, setX] = useState<number>();
-    const [y, setY] = useState<number>();
-    const [width, setWidth] = useState<number>();
-    const [height, setHeight] = useState<number>();
-
+    const lastXRef = useRef<number>();
+    const lastYRef = useRef<number>();
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
     const parentDragType = context?.parentDragType ?? props?.parentDragType;
-    const childLayout = context?.childLayout ?? props?.childLayout;
     const coverChild = context?.coverChild ?? props?.coverChild;
     const listenChild = context?.listenChild ?? props?.listenChild;
     const nodeRef = useRef<any>();
+    const [node, setNode] = useState<any>();
     const draggerRef = useRef<any>();
 
     useImperativeHandle(ref, () => ({
         node: nodeRef?.current
     }));
 
-    const itemLayout = () => {
-        const child = childLayout?.find((item) => item?.node === nodeRef.current)
-        return child;
-    }
-
-    useEffect(() => {
-        const x = props?.x ?? itemLayout()?.x;
-        x != undefined && setX(x);
-    }, [props?.x, itemLayout()?.x])
-
-    useEffect(() => {
-        const y = props?.y ?? itemLayout()?.y;
-        y !== undefined && setY(y);
-    }, [props?.y, itemLayout()?.y])
-
-    useEffect(() => {
-        const width = props?.width ?? itemLayout()?.width;
-        width != undefined && setWidth(width);
-    }, [props?.width, itemLayout()?.width])
-
-    useEffect(() => {
-        const height = props?.height ?? itemLayout()?.height;
-        height !== undefined && setHeight(height);
-    }, [props?.height, itemLayout()?.height]);
-
     useEffect(() => {
         const node = nodeRef.current;
+        setNode(node);
         listenChild && listenChild({ node, id });
     }, []);
 
     const isOver = (coverChild?: ChildTypes) => {
-        if (coverChild?.node === nodeRef.current) {
+        if (coverChild?.node === node) {
             return true;
         } else {
             return false;
@@ -150,13 +119,15 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const div = ownerDocument.createElement('div');
         parent?.appendChild(div);
         ReactDOM.render(DragCopyItem, div);
+        lastXRef.current = clientXY?.x || 0;
+        lastYRef.current = clientXY?.y || 0;
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
-            left: `${clientXY?.x}px`,
+            left: `${lastXRef.current}px`,
+            top: `${lastYRef.current}px`,
             pointerEvents: 'none',
             position: 'fixed',
-            top: `${clientXY?.y}px`,
             width: `${offsetWH?.width}px`,
             opacity: '0.8',
             zIndex: zIndexRange?.[1]
@@ -180,18 +151,21 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         setDragType(DragTypes.draging);
         const offsetWH = getOffsetWH(node);
-        const clientXY = getClientXY(node);
+        const nowX = (lastXRef.current || 0) + (data?.deltaX || 0);
+        const nowY = (lastYRef.current || 0) + (data?.deltaY || 0);
         setStyle({
             boxSizing: 'border-box',
             height: `${offsetWH?.height}px`,
-            left: `${clientXY?.x}px`,
+            left: `${nowX}px`,
+            top: `${nowY}px`,
             pointerEvents: 'none',
             position: 'fixed',
-            top: `${clientXY?.y}px`,
             width: `${offsetWH?.width}px`,
             opacity: '0.8',
             zIndex: zIndexRange?.[1]
         }, draggerRef.current);
+        lastXRef.current = nowX;
+        lastYRef.current = nowY;
         if (!offsetWH) return false;
         return context?.onDrag && context?.onDrag(e, {
             width: offsetWH?.width,
@@ -287,18 +261,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDragStop={onDragStop}
             dragNode={dragNode}
             reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
-            // x={0} // 设置0只提供拖拽能力，不会进行碰撞计算，适合复杂的数据源渲染的界面
-            // y={0}
-            x={x}
-            y={y}
+            x={0}
+            y={0}
         >
             <ResizeZoom
                 onResizeStart={onResizeStart}
                 onResizeMoving={onResizing}
                 onResizeEnd={onResizeEnd}
                 axis={resizeAxis}
-                width={width}
-                height={height}
             >
                 {
                     React.cloneElement(React.Children.only(children), {

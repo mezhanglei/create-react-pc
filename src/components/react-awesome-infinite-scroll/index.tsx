@@ -152,7 +152,6 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
         // 加载下一个列表时重置状态
         if (props?.children) {
-            console.log(loadNumRef.current)
             if (loadNumRef.current > 0) {
                 resetStatus(target);
             }

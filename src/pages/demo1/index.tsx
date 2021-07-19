@@ -31,6 +31,7 @@ const Demo1: React.FC<any> = (props) => {
                 const preIndex = state?.arr1?.findIndex((item) => item === tag?.id);
                 const nextIndex = state?.arr1?.findIndex((item) => item === coverChild?.id)
                 const newArr = arrayMove(state?.arr1, preIndex, nextIndex);
+                console.log(newArr, coverChild)
                 return {
                     ...state,
                     arr1: newArr
