@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import ResizeZoom from "@/components/react-resize-zoom";
-import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, Axis } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, AxisType } from "@/components/react-free-draggable";
+import { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom/type";
+import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
 import { findElement, getPositionInPage, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
@@ -31,8 +31,8 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeStart?: DraggerItemHandler;
     onResizing?: DraggerItemHandler;
     onResizeEnd?: DraggerItemHandler;
-    dragAxis?: `${AxisType}`; // 拖拽位置
-    resizeAxis?: `${Axis}`; // 拖拽大小
+    dragAxis?: `${DragAxis}`; // 拖拽位置
+    resizeAxis?: `${ResizeAxis}`; // 拖拽大小
     dragNode?: string | HTMLElement;
     id: string | number;
 }
@@ -44,8 +44,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         children,
         className,
         style,
-        dragAxis = AxisType.both,
-        resizeAxis = Axis.NONE,
+        dragAxis = DragAxis.both,
+        resizeAxis = ResizeAxis.NONE,
         dragNode,
         id
     } = props;
@@ -83,12 +83,12 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     // 可以拖拽
     const canDrag = () => {
-        return !([AxisType.none] as string[])?.includes(dragAxis)
+        return !([DragAxis.none] as string[])?.includes(dragAxis)
     }
 
     // 可以调整尺寸
     const canResize = () => {
-        return !([Axis.NONE] as string[])?.includes(resizeAxis)
+        return !([ResizeAxis.NONE] as string[])?.includes(resizeAxis)
     }
 
     const findOwnerDocument = () => {

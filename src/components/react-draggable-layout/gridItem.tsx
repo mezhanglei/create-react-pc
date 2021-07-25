@@ -1,8 +1,8 @@
 import * as React from "react";
 import { checkInContainer } from './util/correction';
 import ResizeZoom from "@/components/react-resize-zoom";
-import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, Axis } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, AxisType, BoundsInterface } from "@/components/react-free-draggable";
+import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom/type";
+import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, DragAxis, BoundsInterface } from "@/components/react-free-draggable";
 import classNames from "classnames";
 import { DragTypes } from "../react-dragger-sort/utils/types";
 

@@ -31,7 +31,6 @@ const Demo1: React.FC<any> = (props) => {
                 const preIndex = state?.arr1?.findIndex((item) => item === tag?.id);
                 const nextIndex = state?.arr1?.findIndex((item) => item === coverChild?.id)
                 const newArr = arrayMove(state?.arr1, preIndex, nextIndex);
-                console.log(newArr, coverChild)
                 return {
                     ...state,
                     arr1: newArr
@@ -76,7 +75,7 @@ const Demo1: React.FC<any> = (props) => {
     }
 
     const renderOn = (startIndex, stopIndex) => {
-        console.log(startIndex, stopIndex);
+        // console.log(startIndex, stopIndex);
     };
 
     const renderItem = (item: any, index: number) => {
@@ -107,11 +106,11 @@ const Demo1: React.FC<any> = (props) => {
                     </div>
                 </Draggable>
             </div>
-            <DraggableArea1 dataSource={state?.arr1} onMoveOutChange={onMoveOutChange} className="flex-box" onDragMoveEnd={onDragMoveEnd1}>
+            <DraggableArea1 dataSource={state?.arr1} onMoveOutChange={onMoveOutChange} style={{display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px'}} onDragMoveEnd={onDragMoveEnd1}>
                 {
                     state?.arr1?.map((item, index) => {
                         return (
-                            <DraggerItem resizeAxis='auto' className="drag-a" key={item} id={item}>
+                            <DraggerItem style={{width: '50px',height: '50px', backgroundColor: 'red', border:'1px solid green'}} resizeAxis='auto' key={item} id={item}>
                                 <div>
                                     大小拖放{item}
                                 </div>
@@ -121,11 +120,11 @@ const Demo1: React.FC<any> = (props) => {
                 }
             </DraggableArea1>
             <div style={{ marginTop: '10px' }}>
-                <DraggableArea2 dataSource={state?.arr2} onMoveInChange={onMoveInChange} className="flex-box" onDragMoveEnd={onDragMoveEnd2}>
+                <DraggableArea2 dataSource={state?.arr2} onMoveInChange={onMoveInChange} style={{display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px'}} onDragMoveEnd={onDragMoveEnd2}>
                     {
                         state?.arr2?.map((item, index) => {
                             return (
-                                <DraggerItem className="drag-a" key={item} id={item}>
+                                <DraggerItem style={{width: '50px',height: '50px', backgroundColor: 'red', border:'1px solid green'}} key={item} id={item}>
                                     <div>
                                         大小拖放{item}
                                     </div>

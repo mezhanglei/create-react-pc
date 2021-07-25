@@ -1,6 +1,5 @@
-import { isArray, isString } from "@/utils/type";
-
 // 时间格式化操作
+import { TimeInputType } from "./interface";
 
 /**
  * 将其他类型格式的时间转化为日期对象并返回
@@ -8,8 +7,8 @@ import { isArray, isString } from "@/utils/type";
  * @param {*} time 时间字符串/对象/时间戳
  * @returns
  */
-export function getNewDate(time) {
-    if (typeof time === 'object') {
+export function getNewDate(time: TimeInputType): Date | null {
+    if (time instanceof Date) {
         return time;
     } else if (typeof time === 'string') {
         // 浏览器对/分割的时间字符串都兼容
@@ -25,11 +24,10 @@ export function getNewDate(time) {
  * 将时间转换为时间戳
  * @param {*} time 时间字符串/对象/时间戳
  */
-export function getDateTimeStamp(time) {
-    if (!getNewDate(time)) {
-        return null;
-    }
+export function getDateTimeStamp(time: TimeInputType): number | null {
+
     const newDate = getNewDate(time);
+    if (!newDate) return null;
     return Date.parse(newDate);
 }
 
@@ -37,14 +35,12 @@ export function getDateTimeStamp(time) {
  * 将日期转换为 2020501 这种年月日格式
  * @param {*} time 时间字符串/对象/时间戳
  */
-export function getYMD(time) {
-    if (!getNewDate(time)) {
-        return "";
-    }
+export function getYMD(time: TimeInputType): string {
     let newDate = getNewDate(time);
+    if(!newDate) return '';
     let y = newDate.getFullYear();
     let m = newDate.getMonth() + 1;
-    m = m < 10 ? '0' + m : '' + m;
+    m = m < 10 ? ('0' + m) : ('' + m);
     let d = newDate.getDate() < 10 ? '0' + newDate.getDate() : '' + newDate.getDate();
     let ymd = y + m + d;
     return ymd;
@@ -56,11 +52,9 @@ export function getYMD(time) {
  * @param {*} fmt 格式类型：默认 YYYY-MM-DD，完整类型YYYY-MM-DD hh:mm:ss
  * @returns
  */
-export function dateFormat(time, fmt = 'YYYY-MM-DD') {
-    if (!getNewDate(time)) {
-        return "";
-    }
+export function dateFormat(time: TimeInputType, fmt = 'YYYY-MM-DD'): string {
     let newDate = getNewDate(time);
+    if(!newDate) return '';
     let part;
     // 校验规则
     const opt = {
@@ -96,11 +90,9 @@ export function dateFormat(time, fmt = 'YYYY-MM-DD') {
  * 若是非当年，则显示带年份的绝对时间，即详细日期+时间（例：2019-04-01 19:48）
  * @param {*} time 
  */
-export function getDateFormat(time) {
-    if (!getNewDate(time)) {
-        return "";
-    }
+export function getDateFormat(time: TimeInputType): string {
     const oldDate = getNewDate(time);
+    if(!oldDate) return '';
     const newDate = new Date();
     // 毫秒差距（绝对差距）
     const diffMs = newDate.getTime() - oldDate.getTime();

@@ -82,7 +82,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         refreshEndComponent,
         endComponent,
         loadingComponent,
-        hasMore,
+        hasMore = true,
         errorComponent,
         className,
         onScroll,
@@ -198,7 +198,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
     // 滚动监听事件中无法获取到最新的state所以需要ref
     const onScrollListener = (event: EventType) => {
-        if(mouseDown) return;
+        if (mouseDown) return;
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
@@ -417,8 +417,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                 style={insideStyle}
             >
                 <div ref={childrenContainerRef}>
-                    {refreshComponent}
-                    {inverse && loadingMoreComponent}
+                    {inverse ? loadingMoreComponent : refreshComponent}
                     {
                         React.Children.map(props.children, (child, index) => {
                             return React.cloneElement(React.Children.only(child), {
@@ -426,8 +425,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                             });
                         })
                     }
-                    {!inverse && loadingMoreComponent}
-                    {refreshComponent}
+                    {inverse ? refreshComponent : loadingMoreComponent}
                 </div>
             </div>
         </div>

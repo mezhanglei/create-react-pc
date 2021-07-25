@@ -1,5 +1,5 @@
-import { formatFloat } from "@/utils/character";
 import { getNewDate } from "./format";
+import { TimeInputType } from "./interface";
 
 // 年的操作
 
@@ -9,11 +9,12 @@ import { getNewDate } from "./format";
  * @param {*} time 时间字符串/对象/时间戳
  * @returns
  */
-export function isLeapYear(time) {
+export function isLeapYear(time: TimeInputType) {
     if (!getNewDate(time)) {
         return null;
     }
     let newDate = getNewDate(time);
+    if(!newDate) return null;
     if (newDate instanceof Date) {
         return (0 == newDate.getYear() % 4 && ((newDate.getYear() % 100 != 0) || (newDate.getYear() % 400 == 0)));
     }

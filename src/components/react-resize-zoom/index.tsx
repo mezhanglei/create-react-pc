@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getPositionInParent, getOffsetWH } from "@/utils/dom";
-import { EventType, EventHandler, EventDataType, Direction, Axis, DragResizeProps } from "./type";
+import { EventType, EventHandler, EventDataType, Direction, ResizeAxis, DragResizeProps } from "./type";
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -38,7 +38,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     const eventDataRef = useRef<EventDataType>();
     const [eventData, setEventData] = useState<EventDataType>();
 
-    const axisRef = useRef<string>(Axis.AUTO);
+    const axisRef = useRef<string>(ResizeAxis.AUTO);
 
     useImperativeHandle(ref, () => (nodeRef.current));
 
@@ -118,11 +118,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
     // 返回鼠标的样式
     const getMouseCursor = (direction: string): string => {
-        if (direction === Direction.S && ([Axis.AUTO, Axis.Y] as string[]).includes(axisRef.current)) {
+        if (direction === Direction.S && ([ResizeAxis.AUTO, ResizeAxis.Y] as string[]).includes(axisRef.current)) {
             return 'row-resize';
-        } else if (direction === Direction.E && ([Axis.AUTO, Axis.X] as string[]).includes(axisRef.current)) {
+        } else if (direction === Direction.E && ([ResizeAxis.AUTO, ResizeAxis.X] as string[]).includes(axisRef.current)) {
             return 'col-resize';
-        } else if (direction?.length === 2 && ([Axis.ANGLE, Axis.AUTO] as string[]).includes(axisRef.current)) {
+        } else if (direction?.length === 2 && ([ResizeAxis.ANGLE, ResizeAxis.AUTO] as string[]).includes(axisRef.current)) {
             return direction + '-resize';
         } else {
             return 'default';
@@ -131,11 +131,11 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
 
 
     const canDragX = (dir: string): boolean => {
-        return ([Axis.AUTO, Axis.ANGLE, Axis.X] as string[]).includes(axisRef.current) && dir.indexOf(Direction.E) > -1;
+        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.X] as string[]).includes(axisRef.current) && dir.indexOf(Direction.E) > -1;
     };
 
     const canDragY = (dir: string): boolean => {
-        return ([Axis.AUTO, Axis.ANGLE, Axis.Y] as string[]).includes(axisRef.current) && dir.indexOf(Direction.S) > -1;
+        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.Y] as string[]).includes(axisRef.current) && dir.indexOf(Direction.S) > -1;
     };
 
     const eventDataChange = (value: EventDataType) => {
@@ -198,7 +198,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         const position = getPositionInParent(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
-        const { lastDir = Axis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
+        const { lastDir = ResizeAxis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
 
         let deltaX, deltaY;
         deltaX = position?.x - lastEventX;

@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler, PositionType, AxisType, BoundsInterface } from "./utils/types";
+import { DraggableProps, DragData, EventHandler, PositionType, DragAxis, BoundsInterface } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getPositionInParent } from '@/utils/dom';
@@ -39,7 +39,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     // 拖拽的初始位置
     const [initXY, setInitXY] = useState<PositionType>();
 
-    const axisRef = useRef<string>(AxisType.both);
+    const axisRef = useRef<string>(DragAxis.both);
 
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
@@ -222,11 +222,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     });
 
     const canDragX = () => {
-        return axisRef.current === AxisType.both || axisRef.current === AxisType.x;
+        return axisRef.current === DragAxis.both || axisRef.current === DragAxis.x;
     };
 
     const canDragY = () => {
-        return axisRef.current === AxisType.both || axisRef.current === AxisType.y;
+        return axisRef.current === DragAxis.both || axisRef.current === DragAxis.y;
     };
 
     // 当前位置

@@ -60,6 +60,7 @@ export interface DraggableAreaProps {
     style?: CSSProperties;
     children: any;
     dataSource: any; // 列表渲染的数据源
+    mounted?: (dataSource: any[]) => any; // 数据渲染完成之后触发的函数
     onDragMove?: DragMoveHandle; // 容器内拖拽时触发的函数
     onDragMoveEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
     onMoveOutChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖出触发的函数

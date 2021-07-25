@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
-import GridItem, {GridItemEventHandle } from './gridItem';
+import GridItem, { GridItemEventHandle } from './gridItem';
 import { compactLayout } from './util/compact';
 import { getMaxContainerHeight } from './util/sort';
 import { layoutCheck } from './util/collison';
@@ -242,7 +242,9 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
         >
             {
                 React.Children.map(children, (child) => {
-                    return getGridItem(child);
+                    if (child) {
+                        return getGridItem(child);
+                    }
                 })
             }
         </div>

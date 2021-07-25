@@ -25,7 +25,7 @@ export enum Direction {
     W = "w", // 左边
     E = "e" // 右边
 }
-export enum Axis {
+export enum ResizeAxis {
     AUTO = 'auto', // 所有轴
     X = 'x', // x轴
     Y = 'y', // y轴
@@ -35,7 +35,7 @@ export enum Axis {
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis?: `${Axis}`;
+    axis?: `${ResizeAxis}`;
     forbid?: boolean;
     children: ChildrenType;
     offset?: number; // 鼠标距离边的可以拖拽的偏差

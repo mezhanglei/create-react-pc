@@ -1,5 +1,6 @@
 import { formatFloat } from "@/utils/character";
-import { getNewDate, dateFormat } from "./format";
+import { getNewDate, getYMD, dateFormat } from "./format";
+import { TimeInputType } from "./interface";
 
 // 日的操作
 
@@ -11,15 +12,12 @@ import { getNewDate, dateFormat } from "./format";
  * @param {*} fmt fmt为日期数组中的日期格式：日为YYYY-MM-DD，月为YYYY-MM,年为YYYY
  * @returns
  */
-export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
-    if (!getNewDate(startTime) || !getNewDate(endTime)) {
-        return [];
-    }
+export function getDateList(startTime: TimeInputType, endTime: TimeInputType, fmt = 'YYYY-MM-DD'): string[] {
     // 开始时间对象
     let start = getNewDate(startTime);
     // 结束时间对象
     let end = getNewDate(endTime);
-
+    if (!start || !end) return [];
     // 年月日规则对应的时间跨度
     const rules = [{
         type: 'YYYY',
@@ -40,7 +38,7 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
     }];
 
     // 获取的时间数组
-    let timeArr = [];
+    let timeArr: string[] = [];
 
     // 当前操作的对象
     rules.map((item) => {
@@ -53,9 +51,10 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
             for (let i = 1; i < length; i++) {
                 // 在31号使用setMonth会跳过一个月，必须先使用setDate初始化第一天
                 if (item.type === 'YYYY-MM') {
-                    start.setDate(1);
+                    (start as Date).setDate(1);
                 }
-                start[item.setName](start[item.getName]() + 1);
+                const nextGetName = (start as Date)[item.getName]() + 1;
+                (start as Date)[item.setName](nextGetName);
                 timeArr[i] = dateFormat(start, fmt);
             }
         }
@@ -73,11 +72,10 @@ export function getDateList(startTime, endTime, fmt = 'YYYY-MM-DD') {
  * @param {*} holidays 休假日期字符串数组 格式: ['2012-12-10','2012-9-10']
  * @returns
  */
-export function isWorkDate(time, { workDays = [], holidays = [] } = {}) {
-    if (!getNewDate(time)) {
-        return null;
-    }
+export function isWorkDate(time: TimeInputType, { workDays = [], holidays = [] }: { workDays?: string[]; holidays?: string[] } = {}) {
+
     let newDate = getNewDate(time);
+    if (!newDate) return null;
     // 将节假日数组和目标日期全部转为同等格式便于比较
     let ymd = getYMD(time);
     holidays = holidays.map(item => {
@@ -107,14 +105,12 @@ export function isWorkDate(time, { workDays = [], holidays = [] } = {}) {
  * @param {*} endTime endTime：结束日期时间字符串/对象/时间戳
  * @param {*} n 表示保留几位小数，默认0
  */
-export function getBetweenDateNum(startTime, endTime, n = 0) {
-    if (!getNewDate(startTime) || !getNewDate(endTime)) {
-        return null;
-    }
+export function getBetweenDateNum(startTime: TimeInputType, endTime: TimeInputType, n = 0) {
     // 开始时间对象
     let start = getNewDate(startTime);
     // 结束时间对象
     let end = getNewDate(endTime);
+    if (!start || !end) return null;
     return formatFloat((end.getTime() - start.getTime()) / (1000 * 24 * 60 * 60), n);
 }
 
@@ -124,12 +120,10 @@ export function getBetweenDateNum(startTime, endTime, n = 0) {
  * @param {*} endTime endTime：结束日期时间字符串/对象/时间戳
  * @param {*} {}: {workDays：工作调休日数组，holidays：节假日期数组}
  */
-export function countWorkDay(startTime, endTime, { workDays = [], holidays = [] } = {}) {
-    if (!getNewDate(startTime) || !getNewDate(endTime)) {
-        return null;
-    }
+export function countWorkDay(startTime: TimeInputType, endTime: TimeInputType, { workDays = [], holidays = [] }:{ workDays?: string[]; holidays?: string[] } = {}) {
     const start = getNewDate(startTime);
     const end = getNewDate(endTime);
+    if(!start || !end) return null;
     let first = start.getTime();
     let last = end.getTime();
     let count = 0;
@@ -153,11 +147,10 @@ export function countWorkDay(startTime, endTime, { workDays = [], holidays = [] 
  * @param {*} fmt 声明时间字符串格式, 默认YYYY-MM-DD
  * @returns
  */
-export function getWorkDate(time, dayNum, { workDays = [], holidays = [] } = {}, fmt = 'YYYY-MM-DD') {
-    if (!getNewDate(time)) {
-        return null;
-    }
+export function getWorkDate(time: TimeInputType, dayNum: number, { workDays = [], holidays = [] }: { workDays?: string[]; holidays?: string[] } = {}, fmt = 'YYYY-MM-DD'): string {
+
     let newDate = getNewDate(time);
+    if(!newDate) return '';
     let startTime = newDate.getTime();
     let T = 24 * 60 * 60 * 1000;
     let endTime = startTime + (dayNum * T);

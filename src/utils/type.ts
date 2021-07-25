@@ -26,7 +26,7 @@ export function isArray(data: any) {
 }
 
 export function isDate(data: any) {
-    return getType(data) == '[object Date]';
+    return data instanceof Date;
 }
 
 export function isRegExp(data: any) {
