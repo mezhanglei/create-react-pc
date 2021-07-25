@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
-import GridItem, { GridItemEventHandle } from './gridItem';
+import GridItem, { GridItemEventHandle } from './grid-item';
 import { compactLayout } from './util/compact';
 import { getMaxContainerHeight } from './util/sort';
 import { layoutCheck } from './util/collison';

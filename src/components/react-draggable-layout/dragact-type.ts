@@ -1,5 +1,5 @@
 import { DragTypes } from '../react-dragger-sort/utils/types';
-import { GridItemEvent } from './gridItem';
+import { GridItemEvent } from './gird-item';
 
 export interface DragactLayoutItem {
     GridX: number;

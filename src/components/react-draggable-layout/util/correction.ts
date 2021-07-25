@@ -1,6 +1,6 @@
 import { collision, layoutCheck } from "./collison";
 import { DragactLayoutItem } from "../dragact-type";
-import { GridItemEvent } from "../gridItem";
+import { GridItemEvent } from "../gird-item";
 
 
 export const checkInContainer = (GridX: number, GridY: number, col: number, w: number) => {

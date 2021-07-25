@@ -1,5 +1,5 @@
 import { DragactLayoutItem, MapLayout } from "../dragact-type";
-import { GridItemEvent } from "../gridItem";
+import { GridItemEvent } from "../gird-item";
 
 /**
  * 把用户移动的块，标记为true

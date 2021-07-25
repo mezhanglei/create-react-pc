@@ -1,7 +1,7 @@
 import { sortLayout } from "./sort";
 import { getFirstCollison } from "./collison";
 import { DragactLayoutItem, MapLayout } from "../dragact-type";
-import { GridItemEvent } from "../gridItem";
+import { GridItemEvent } from "../gird-item";
 
 /**
  * 压缩单个元素，使得每一个元素都会紧挨着边界或者相邻的元素

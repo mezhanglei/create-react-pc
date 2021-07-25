@@ -40,7 +40,17 @@ const Demo1: React.FC<any> = (props) => {
     }
 
     const onDragMoveEnd2: DragMoveHandle = (tag, coverChild, e) => {
-
+        if (tag && coverChild) {
+            setState(state => {
+                const preIndex = state?.arr2?.findIndex((item) => item === tag?.id);
+                const nextIndex = state?.arr2?.findIndex((item) => item === coverChild?.id)
+                const newArr = arrayMove(state?.arr2, preIndex, nextIndex);
+                return {
+                    ...state,
+                    arr2: newArr
+                }
+            });
+        }
     }
 
     const onMoveOutChange = (data) => {
