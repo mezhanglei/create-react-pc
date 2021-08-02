@@ -1,5 +1,5 @@
 import { DragTypes } from '../react-dragger-sort/utils/types';
-import { GridItemEvent } from './gird-item';
+import { GridItemEvent } from './grid-item';
 
 export interface DragactLayoutItem {
     GridX: number;
@@ -38,17 +38,17 @@ export interface DragactProps {
     /**
      * 拖动开始的回调
      */
-    onDragStart?: (event: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
+    onDragStart?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
 
     /**
      * 拖动中的回调
      */
-    onDrag?: (event: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
+    onDrag?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
 
     /**
      * 拖动结束的回调
      */
-    onDragEnd?: (event: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
+    onDragEnd?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
 
     /**
      * 每个元素的margin,第一个参数是左右，第二个参数是上下

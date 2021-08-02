@@ -1,86 +1,71 @@
 import React, { useState } from "react";
-import { checkInContainer } from './util/correction';
+import { checkInContainer, checkWidthHeight } from './util/correction';
 import ResizeZoom from "@/components/react-resize-zoom";
 import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom/type";
 import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, DragAxis, BoundsInterface } from "@/components/react-free-draggable";
 import classNames from "classnames";
-import { DragTypes } from "../react-dragger-sort/utils/types";
 
-export type GridItemEventHandle = (event: GridItemEvent) => void;
+export type EventType = MouseEvent | TouchEvent;
+// 拖拽类型
+export enum DragTypes {
+    dragStart = 'dragStart',
+    draging = 'draging',
+    dragEnd = 'dragEnd',
+    resizeStart = 'resizeStart',
+    resizing = 'resizing',
+    resizeEnd = 'resizeEnd'
+}
+export interface GridItemEvent {
+    e: EventType;
+    GridX: number;
+    GridY: number;
+    w: number;
+    h: number;
+    UniqueKey: string | number;
+}
+export type GridItemEventHandle = (data: GridItemEvent) => void;
 export interface GridItemProps {
     /**外部容器属性 */
     col: number,
     containerWidth: number,
     containerPadding: [number, number],
+    rowHeight: number,
 
     /**子元素的属性 */
     margin?: [number, number],
     GridX: number,
     GridY: number,
-    rowHeight: number,
-
-    /**子元素的宽高 */
     w: number,
     h: number,
 
-    /**生命周期回掉函数 */
     onDragStart?: GridItemEventHandle;
     onDragEnd?: GridItemEventHandle;
     onDrag?: GridItemEventHandle;
-
     onResizeStart?: GridItemEventHandle;
     onResizing?: GridItemEventHandle;
     onResizeEnd?: GridItemEventHandle;
 
     UniqueKey?: string | number;
     parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
-    isMove?: Boolean;
-    static?: Boolean
-    bounds?: string | HTMLElement | BoundsInterface;
-    handle?: Boolean
-    canDrag?: Boolean
-    canResize?: Boolean
+    isMove?: boolean; // 是否移动
+    forbid?: boolean; // 禁止拖拽和移动
+    bounds?: string | HTMLElement | BoundsInterface; // 定位父元素
+    handle?: string | HTMLElement; // 拖拽句柄
+    dragAxis?: DragAxis; // 允许的拖拽类型
+    resizeAxis?: ResizeAxis; // 允许缩放类型
+    zIndexRange?: [number, number];
     children: any;
     className?: string;
     style?: React.CSSProperties;
-    zIndexRange?: [number, number];
-}
-
-export interface GridItemEvent {
-    event: any
-    GridX: number
-    GridY: number
-    w: number
-    h: number
-    UniqueKey: string | number
-}
-
-
-const checkWidthHeight = (GridX: number, w: number, h: number, col: number) => {
-    var newW = w;
-    var newH = h;
-    if (GridX + w > col - 1) newW = col - GridX //右边界
-    if (w < 1) newW = 1;
-    if (h < 1) newH = 1;
-    return {
-        w: newW, h: newH
-    }
-
 }
 
 export default class GridItem extends React.Component<GridItemProps, {}> {
     constructor(props: GridItemProps) {
         super(props)
-        this.onDrag = this.onDrag.bind(this)
-        this.onDragStart = this.onDragStart.bind(this)
-        this.onDragEnd = this.onDragEnd.bind(this)
-        this.calGridXY = this.calGridXY.bind(this)
-        this.calColWidth = this.calColWidth.bind(this)
         this.state = {
             dragType: undefined
         }
     }
-
 
     static defaultProps = {
         col: 12,
@@ -89,46 +74,9 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
         margin: [10, 10],
         rowHeight: 30,
         w: 1,
-        h: 1
-    }
-
-    /** 计算容器的每一个格子多大 */
-    calColWidth() {
-        const { containerWidth, col, containerPadding, margin } = this.props;
-
-        if (margin) {
-            return (containerWidth - containerPadding[0] * 2 - margin[0] * (col + 1)) / col
-        }
-        return (containerWidth - containerPadding[0] * 2 - 0 * (col + 1)) / col
-    }
-
-    /**转化，计算网格的GridX,GridY值 */
-    calGridXY(x: number, y: number) {
-        const { margin, containerWidth, col, w, rowHeight } = this.props
-
-        /**坐标转换成格子的时候，无须计算margin */
-        let GridX = Math.round(x / containerWidth * col)
-        let GridY = Math.round(y / (rowHeight + (margin ? margin[1] : 0)))
-
-        // /**防止元素出container */
-        return checkInContainer(GridX, GridY, col, w)
-    }
-
-
-    /**给予一个grid的位置，算出元素具体的在容器中位置在哪里，单位是px */
-    calGridItemPosition(GridX: number, GridY: number) {
-        var { margin, rowHeight } = this.props
-
-        if (!margin) margin = [0, 0];
-
-        let x = Math.round(GridX * this.calColWidth() + (GridX + 1) * margin[0])
-        let y = Math.round(GridY * rowHeight + margin[1] * (GridY + 1))
-
-
-        return {
-            x: x,
-            y: y
-        }
+        h: 1,
+        dragAxis: DragAxis.both,
+        resizeAxis: ResizeAxis.AUTO
     }
 
     shouldComponentUpdate(props: GridItemProps, state: any) {
@@ -142,110 +90,140 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
         return isUpdate
     }
 
-    /**宽和高计算成为px */
-    calWHtoPx(w: number, h: number) {
-        var { margin } = this.props
+    // 计算每列的宽度
+    calColWidth = () => {
+        const { containerWidth, col, containerPadding, margin } = this.props;
+        if (margin) {
+            return (containerWidth - containerPadding[0] * 2 - margin[0] * (col + 1)) / col
+        }
+        return (containerWidth - containerPadding[0] * 2 - 0 * (col + 1)) / col
+    }
+
+    // 布局位置计算为px单位
+    calGridXYToPx = (GridX: number, GridY: number) => {
+        let { margin, rowHeight } = this.props
+        if (!margin) margin = [0, 0];
+        const x = Math.round(GridX * this.calColWidth() + (GridX + 1) * margin[0])
+        const y = Math.round(GridY * rowHeight + margin[1] * (GridY + 1))
+        return { x, y };
+    }
+
+    // px 转化为布局位置
+    calPxToGridXY = (x: number, y: number) => {
+        const { margin, containerWidth, col, w, rowHeight } = this.props
+        // 坐标计算为格子时无需计算margin
+        let GridX = Math.round(x / containerWidth * col)
+        let GridY = Math.round(y / (rowHeight + (margin ? margin[1] : 0)))
+        return checkInContainer(GridX, GridY, col, w)
+    }
+
+    // 布局宽高转化为px单位
+    calWHtoPx = (w: number, h: number) => {
+        let { margin, rowHeight } = this.props
 
         if (!margin) margin = [0, 0];
         const wPx = Math.round(w * this.calColWidth() + (w - 1) * margin[0])
-        const hPx = Math.round(h * this.props.rowHeight + (h - 1) * margin[1])
+        const hPx = Math.round(h * rowHeight + (h - 1) * margin[1])
 
         return { wPx, hPx }
     }
 
-    calPxToWH(wPx: number, hPx: number) {
+    // px转化为布局宽高单位
+    calPxToWH = (wPx: number, hPx: number) => {
+        const { rowHeight, col, GridX } = this.props;
         const calWidth = this.calColWidth();
-
-        const w = Math.round((wPx - calWidth * 0.5) / calWidth)
-        const h = Math.round((hPx - this.props.rowHeight * 0.5) / this.props.rowHeight)
-        return checkWidthHeight(this.props.GridX, w, h, this.props.col)
+        const w = Math.round((wPx - calWidth * 0.5) / calWidth);
+        const h = Math.round((hPx - rowHeight * 0.5) / rowHeight);
+        return checkWidthHeight(GridX, w, h, col);
     }
 
-    onDragStart: DragEventHandler = (event, data) => {
-        if (!data) return;
+    onDragStart: DragEventHandler = (e, data) => {
+        if (!data || !this.canDrag()) return;
         const { w, h, UniqueKey } = this.props;
         const { x = 0, y = 0 } = data;
-
-        if (this.props.static) return;
-
-        const { GridX, GridY } = this.calGridXY(x, y)
+        const { GridX, GridY } = this.calPxToGridXY(x, y)
         this.setState({
             dragType: DragTypes.dragStart
         })
-        this.props.onDragStart && this.props.onDragStart({
-            event, GridX, GridY, w, h, UniqueKey: UniqueKey + ''
-        })
+        this.props.onDragStart && this.props.onDragStart({ e, GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
     }
-    onDrag: DragEventHandler = (event, data) => {
-        if (!data) return;
-        if (this.props.static) return;
+    onDrag: DragEventHandler = (e, data) => {
+        if (!data || !this.canDrag()) return;
+        const { w, h, UniqueKey } = this.props;
         const { x = 0, y = 0 } = data;
-        const { GridX, GridY } = this.calGridXY(x, y)
+        const { GridX, GridY } = this.calPxToGridXY(x, y);
         this.setState({
             dragType: DragTypes.draging
-        })
-        const { w, h, UniqueKey } = this.props
-        this.props.onDrag && this.props.onDrag({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
+        });
+        this.props.onDrag && this.props.onDrag({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', e })
     }
 
-    onDragEnd: DragEventHandler = (event, data) => {
-        if (!data) return;
-        if (this.props.static) return;
+    onDragEnd: DragEventHandler = (e, data) => {
+        if (!data || !this.canDrag()) return;
         const { x = 0, y = 0 } = data;
-        const { GridX, GridY } = this.calGridXY(x, y);
+        const { GridX, GridY } = this.calPxToGridXY(x, y);
         const { w, h, UniqueKey } = this.props;
         this.setState({
             dragType: DragTypes.dragEnd
         })
-        if (this.props.onDragEnd) this.props.onDragEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event });
+        if (this.props.onDragEnd) this.props.onDragEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', e });
     }
 
-    onResizeStart: ResizeEventHandler = (event) => {
+    onResizeStart: ResizeEventHandler = (e) => {
         const { GridX, GridY, UniqueKey, w, h } = this.props;
         this.setState({
             dragType: DragTypes.resizeStart
         })
-        this.props.onResizeStart && this.props.onResizeStart({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
+        this.props.onResizeStart && this.props.onResizeStart({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', e })
     }
 
-    onResizing: ResizeEventHandler = (event, data) => {
-        if (!data) return;
-        const wPx = data?.width;
-        const hPx = data?.height;
-        const { w, h } = this.calPxToWH(wPx, hPx);
+    onResizing: ResizeEventHandler = (e, data) => {
+        if (!data || !this.canResize()) return;
         const { GridX, GridY, UniqueKey } = this.props;
+        const { width, height } = data;
+        const { w, h } = this.calPxToWH(width, height);
         this.setState({
             dragType: DragTypes.resizing
         })
-        this.props.onResizing && this.props.onResizing({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
+        this.props.onResizing && this.props.onResizing({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', e })
     }
 
-    onResizeEnd: ResizeEventHandler = (event: any, data) => {
-        if (!data) return;
-        const wPx = data?.width;
-        const hPx = data?.height;
-        const { w, h } = this.calPxToWH(wPx, hPx);
+    onResizeEnd: ResizeEventHandler = (e, data) => {
+        if (!data || !this.canResize()) return;
+
         const { GridX, GridY, UniqueKey } = this.props;
+        const { width, height } = data;
+        const { w, h } = this.calPxToWH(width, height);
         this.setState({
             dragType: DragTypes.resizeEnd
         })
-        this.props.onResizeEnd && this.props.onResizeEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
+        this.props.onResizeEnd && this.props.onResizeEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', e })
     }
+
+    // 可以拖拽
+    canDrag = () => {
+        const { dragAxis, forbid } = this.props;
+        return !forbid && (!dragAxis || !([DragAxis.none] as string[])?.includes(dragAxis))
+    }
+
+    // 可以调整尺寸
+    canResize = () => {
+        const { resizeAxis, forbid } = this.props;
+        return !forbid && (!resizeAxis || !([ResizeAxis.NONE] as string[])?.includes(resizeAxis))
+    }
+
     render() {
-        const { w, h, style, bounds, GridX, GridY, handle, canDrag, canResize } = this.props;
-        const { x, y } = this.calGridItemPosition(GridX, GridY);
+        const { w, h, style, bounds, GridX, GridY, handle, dragAxis, resizeAxis, isMove, parentDragType, zIndexRange, children, className } = this.props;
+        const { x, y } = this.calGridXYToPx(GridX, GridY);
         const { wPx, hPx } = this.calWHtoPx(w, h);
-        const children = this.props.children;
-        const cls = classNames((children?.props?.className || ''), this.props.className);
-        const dragType = this.state.dragType;
-        const parentDragType = this.props.parentDragType;
-        const zIndexRange = this.props.zIndexRange || [];
+        const cls = classNames((children?.props?.className || ''), className);
 
         return (
             <Draggable
                 className={cls}
-                axis="both"
+                axis={dragAxis}
                 bounds={bounds}
+                dragNode={handle}
                 onDragStart={this.onDragStart}
                 onDrag={this.onDrag}
                 onDragStop={this.onDragEnd}
@@ -256,7 +234,7 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
                     onResizeStart={this.onResizeStart}
                     onResizeMoving={this.onResizing}
                     onResizeEnd={this.onResizeEnd}
-                    axis='auto'
+                    axis={resizeAxis}
                     width={wPx}
                     height={hPx}
                 >
@@ -266,8 +244,8 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
                                 ...children.props.style,
                                 ...style,
                                 position: 'absolute',
-                                transition: this.props.isMove || !parentDragType ? '' : 'all .2s ease-out',
-                                zIndex: this.props.isMove ? ((parentDragType && [DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType) ? zIndexRange[1] : zIndexRange[0]) : zIndexRange[0]
+                                transition: isMove || !parentDragType ? '' : 'all .2s ease-out',
+                                zIndex: isMove ? ((parentDragType && [DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType) ? zIndexRange?.[1] : zIndexRange?.[0]) : zIndexRange?.[0]
                             }
                         })
                     }
@@ -276,160 +254,3 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
         )
     }
 }
-
-// const GridItem = React.forwardRef<{}, GridItemProps>((props, ref) => {
-
-//     let {
-//         col = 12,
-//         containerWidth = 500,
-//         containerPadding = [0, 0],
-//         margin = [10, 10],
-//         rowHeight = 30,
-//         w = 1,
-//         h = 1,
-//         GridX,
-//         GridY,
-//         forbid,
-//         UniqueKey,
-//         parentDragType,
-//         zIndexRange,
-//         isMove,
-//         bounds,
-//         className,
-//         style,
-//         children
-//     } = props;
-
-//     const [dragType, setDragType] = useState<`${DragTypes}`>();
-
-//     /** 计算容器的每一个格子多大 */
-//     const calColWidth = () => {
-//         if (margin) {
-//             return (containerWidth - containerPadding[0] * 2 - margin[0] * (col + 1)) / col
-//         }
-//         return (containerWidth - containerPadding[0] * 2 - 0 * (col + 1)) / col
-//     }
-
-//     /**转化，计算网格的GridX,GridY值 */
-//     const calGridXY = (x: number, y: number) => {
-//         /**坐标转换成格子的时候，无须计算margin */
-//         let GridX = Math.round(x / containerWidth * col)
-//         let GridY = Math.round(y / (rowHeight + (margin ? margin[1] : 0)))
-
-//         // /**防止元素出container */
-//         return checkInContainer(GridX, GridY, col, w)
-//     }
-
-//     const calGridItemPosition = (GridX: number, GridY: number) => {
-//         if (!margin) margin = [0, 0];
-
-//         let x = Math.round(GridX * calColWidth() + (GridX + 1) * margin[0])
-//         let y = Math.round(GridY * rowHeight + margin[1] * (GridY + 1))
-//         return {
-//             x: x,
-//             y: y
-//         }
-//     }
-
-//     const calWHtoPx = (w: number, h: number) => {
-//         if (!margin) margin = [0, 0];
-//         const wPx = Math.round(w * calColWidth() + (w - 1) * margin[0])
-//         const hPx = Math.round(h * rowHeight + (h - 1) * margin[1])
-
-//         return { wPx, hPx }
-//     }
-
-//     const calPxToWH = (wPx: number, hPx: number) => {
-//         const calWidth = calColWidth();
-//         const w = Math.round((wPx - calWidth * 0.5) / calWidth)
-//         const h = Math.round((hPx - rowHeight * 0.5) / rowHeight)
-//         return checkWidthHeight(GridX, w, h, col)
-//     }
-
-//     const onDragStart: DragEventHandler = (event, data) => {
-//         if (!data || forbid) return;
-//         const { x = 0, y = 0 } = data;
-//         const { GridX, GridY } = calGridXY(x, y)
-//         setDragType(DragTypes.dragStart);
-//         props.onDragStart && props.onDragStart({ event, GridX, GridY, w, h, UniqueKey: UniqueKey + '' })
-//     }
-
-//     const onDrag: DragEventHandler = (event, data) => {
-//         if (!data || forbid) return;
-//         const { x = 0, y = 0 } = data;
-//         const { GridX, GridY } = calGridXY(x, y)
-//         setDragType(DragTypes.draging);
-//         props.onDrag && props.onDrag({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
-//     }
-
-//     const onDragEnd: DragEventHandler = (event, data) => {
-//         if (!data || forbid) return;
-//         const { x = 0, y = 0 } = data;
-//         const { GridX, GridY } = calGridXY(x, y);
-//         setDragType(DragTypes.dragEnd)
-//         props.onDragEnd && props.onDragEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event });
-//     }
-
-//     const onResizeStart: ResizeEventHandler = (event) => {
-//         setDragType(DragTypes.resizeStart)
-//         props.onResizeStart && props.onResizeStart({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
-//     }
-
-//     const onResizing: ResizeEventHandler = (event, data) => {
-//         if (!data) return;
-//         const wPx = data?.width;
-//         const hPx = data?.height;
-//         const { w, h } = calPxToWH(wPx, hPx);
-//         setDragType(DragTypes.resizing)
-//         props.onResizing && props.onResizing({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
-//     }
-
-//     const onResizeEnd: ResizeEventHandler = (event: any, data) => {
-//         if (!data) return;
-//         const wPx = data?.width;
-//         const hPx = data?.height;
-//         const { w, h } = calPxToWH(wPx, hPx);
-//         setDragType(DragTypes.resizeEnd)
-//         props.onResizeEnd && props.onResizeEnd({ GridX, GridY, w, h, UniqueKey: UniqueKey + '', event })
-//     }
-
-//     const cls = classNames((children?.props?.className || ''), className);
-//     const { x, y } = calGridItemPosition(GridX, GridY);
-//     const { wPx, hPx } = calWHtoPx(w, h);
-
-//     return (
-//         <Draggable
-//             ref={ref}
-//             className={cls}
-//             axis="both"
-//             bounds={bounds}
-//             onDragStart={onDragStart}
-//             onDrag={onDrag}
-//             onDragStop={onDragEnd}
-//             x={x}
-//             y={y}
-//         >
-//             <ResizeZoom
-//                 onResizeStart={onResizeStart}
-//                 onResizeMoving={onResizing}
-//                 onResizeEnd={onResizeEnd}
-//                 axis='auto'
-//                 width={wPx}
-//                 height={hPx}
-//             >
-//                 {
-//                     React.cloneElement(React.Children.only(children), {
-//                         style: {
-//                             ...children.props.style,
-//                             ...style,
-//                             position: 'absolute',
-//                             transition: isMove || !parentDragType ? '' : 'all .2s ease-out',
-//                             zIndex: isMove ? ((parentDragType && [DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType) ? zIndexRange?.[1] : zIndexRange?.[0]) : zIndexRange?.[0]
-//                         }
-//                     })
-//                 }
-//             </ResizeZoom>
-//         </Draggable>
-//     )
-// })
-// export default GridItem;

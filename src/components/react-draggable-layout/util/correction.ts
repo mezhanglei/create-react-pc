@@ -1,8 +1,8 @@
 import { collision, layoutCheck } from "./collison";
 import { DragactLayoutItem } from "../dragact-type";
-import { GridItemEvent } from "../gird-item";
+import { GridItemEvent } from "../grid-item";
 
-
+// grid位置边界
 export const checkInContainer = (GridX: number, GridY: number, col: number, w: number) => {
 
     /**防止元素出container */
@@ -10,6 +10,18 @@ export const checkInContainer = (GridX: number, GridY: number, col: number, w: n
     if (GridX < 0) GridX = 0//左边界
     if (GridY < 0) GridY = 0//上边界
     return { GridX, GridY }
+}
+
+// grid宽高边界
+export const checkWidthHeight = (GridX: number, w: number, h: number, col: number) => {
+    let newW = w;
+    let newH = h;
+    if (GridX + w > col - 1) newW = col - GridX //右边界
+    if (w < 1) newW = 1;
+    if (h < 1) newH = 1;
+    return {
+        w: newW, h: newH
+    }
 }
 
 /**
