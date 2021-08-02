@@ -1,5 +1,5 @@
 import { DragactLayoutItem } from "../dragact-type";
-import { GridItemEvent } from "../gird-item";
+import { GridItemEvent } from "../grid-item";
 
 export const collision = (a: DragactLayoutItem, b: DragactLayoutItem) => {
     if (a.GridX === b.GridX && a.GridY === b.GridY &&
