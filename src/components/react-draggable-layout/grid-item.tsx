@@ -160,9 +160,9 @@ export default class GridItem extends React.Component<GridItemProps, {}> {
 
     onDragEnd: DragEventHandler = (e, data) => {
         if (!data || !this.canDrag()) return;
+        const { w, h, UniqueKey } = this.props;
         const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calPxToGridXY(x, y);
-        const { w, h, UniqueKey } = this.props;
         this.setState({
             dragType: DragTypes.dragEnd
         })
