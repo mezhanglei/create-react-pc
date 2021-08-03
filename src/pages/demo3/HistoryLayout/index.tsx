@@ -1,5 +1,4 @@
 import *as React from 'react';
-import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type'
 import { HistoryDragact } from './HistoryLayout'
 import { Words } from './largedata';
 import './index.css';

@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
-import GridItem, { GridItemEventHandle } from './grid-item';
-import { compactLayout } from './util/compact';
-import { getMaxContainerHeight } from './util/sort';
-import { layoutCheck } from './util/collison';
-import { correctLayout } from './util/correction';
-import { syncLayout } from './util/initiate';
+import GridItem from './grid-item';
+import { GridItemEventHandle } from "./grid-item-types";
+import { compactLayout, getMaxContainerHeight, layoutCheck, correctLayout, syncLayout } from './util/dom';
 import { DragactProps, DragactState, DragactLayoutItem } from './dragact-type';
 import classNames from "classnames";
 import { DragTypes } from '../react-dragger-sort/utils/types';

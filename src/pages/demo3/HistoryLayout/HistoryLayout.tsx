@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { DragactProps, DragactLayoutItem } from '@/components/react-draggable-layout/dragact-type';
-import { GridItemEvent } from '@/components/react-draggable-layout/grid-item';
+import { GridItemEvent } from '@/components/react-draggable-layout/grid-item-types';
 import { Dragact } from '@/components/react-draggable-layout';
 
 interface HistoryDragactState {
