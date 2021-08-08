@@ -10,53 +10,24 @@ export interface DragactLayoutItem {
     static?: boolean; // 是否静态组件
 }
 
+export type DragGridHandler = (layoutItem: GridItemEvent, oldLayout: DragactLayoutItem[], currentLayout?: DragactLayoutItem[]) => void;
+
 export interface DragactProps {
     layout: DragactLayoutItem[]
-    /** 
-     * 宽度切分比 
-     * 这个参数会把容器的宽度平均分为col等份
-     * 于是容器内元素的最小宽度就等于 containerWidth/col
-    */
-    col: number,
-
-    /** 
-     * 容器的宽度
-    */
-    width: number,
-
-    /**容器内每个元素的最小高度 */
-    rowHeight: number,
-
-    /**
-     * 容器内部的padding
-     */
-    padding?: number,
-
-    children: any,
-
-    /**
-     * 拖动开始的回调
-     */
-    onDragStart?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
-
-    /**
-     * 拖动中的回调
-     */
-    onDrag?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
-
-    /**
-     * 拖动结束的回调
-     */
-    onDragEnd?: (e: GridItemEvent, currentLayout: DragactLayoutItem[]) => void
-
-    /**
-     * 每个元素的margin,第一个参数是左右，第二个参数是上下
-     */
+    col: number;
+    width: number;
+    rowHeight: number;
+    padding?: number;
     margin: [number, number];
+    children: any;
+    onDragStart?: DragGridHandler;
+    onDrag?: DragGridHandler;
+    onDragEnd?: DragGridHandler;
+    onResizeStart?: DragGridHandler;
+    onResizing?: DragGridHandler;
+    onResizeEnd?: DragGridHandler;
     className: number | string;
     style?: React.CSSProperties;
-    // layout的onChange事件
-    onChange?: (item: DragactLayoutItem, oldLayout: DragactLayoutItem[], layout: DragactLayoutItem[]) => void;
 }
 
 export interface MapLayout {
@@ -65,7 +36,7 @@ export interface MapLayout {
 
 export interface DragactState {
     layout: DragactLayoutItem[];
-    containerHeight: number;
+    containerHeight?: number;
     parentDragType?: `${DragTypes}`;
     mapLayout?: MapLayout;
 }

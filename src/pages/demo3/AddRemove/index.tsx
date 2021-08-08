@@ -83,12 +83,6 @@ export class AddRemove extends React.Component<{}, {}> {
         })
     }
 
-    onChange = (item, oldLayout, layout) => {
-        this.setState({
-            layout: layout
-        })
-    }
-
     render() {
         const margin: [number, number] = [5, 5]
         const dragactInit = {
@@ -98,8 +92,7 @@ export class AddRemove extends React.Component<{}, {}> {
             margin: margin,
             className: 'normal-layout',
             layout: this.state.layout,
-            placeholder: true,
-            onChange: this.onChange
+            placeholder: true
         }
         return (
             <div>

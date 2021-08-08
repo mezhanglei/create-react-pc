@@ -1,126 +1,100 @@
-import * as React from 'react';
-
-import { DragactProps, DragactLayoutItem } from '@/components/react-draggable-layout/dragact-type';
-import { GridItemEvent } from '@/components/react-draggable-layout/grid-item-types';
+import React, { useEffect, useState, useRef, useImperativeHandle } from 'react';
+import { DragactProps, DragactLayoutItem, DragGridHandler } from '@/components/react-draggable-layout/dragact-type';
 import { Dragact } from '@/components/react-draggable-layout';
 
-interface HistoryDragactState {
-    layout: DragactLayoutItem[]
-}
+// 存在历史记录的grid
+export const HistoryLayout = React.forwardRef<{}, DragactProps>((props, ref) => {
+    const dragRef = useRef<any>();
+    const [layout, setLayout] = useState<DragactLayoutItem[]>([]);
+    const lastLayoutItemRef = useRef<DragactLayoutItem>();
+    const activeIndexRef = useRef<number>();
+    const cacheLayoutArrRef = useRef<string[]>([]);
 
-export class HistoryDragact extends React.Component<DragactProps, HistoryDragactState> {
-    _actionsHistory: string[] = []
-    _cacheLayouts: string;
-    _activeItem: GridItemEvent
-    _dragact: Dragact | null
-    constructor(props: DragactProps) {
-        super(props);
-        this.state = { layout: props.layout } as any;
-    }
+    useImperativeHandle(ref, () => ({
+        go,
+        back,
+        clear
+    }));
 
-    _cacheCurrentLayoutStart = (layoutItem: GridItemEvent) => {
-        this._activeItem = layoutItem
-        if (!this._dragact) {
-            return;
+    useEffect(() => {
+        setLayout(props?.layout);
+        const cache = getCacheLayout(props?.layout);
+        if (cache) {
+            cacheLayoutArrRef.current?.push(cache);
+            activeIndexRef.current = cacheLayoutArrRef.current?.length - 1;
         }
-        this._cachingLayouts(this._dragact);
+    }, [props?.layout])
+
+    const getCacheLayout = (layout: DragactLayoutItem[]) => {
+        return layout && JSON.stringify({ layout: layout });
     }
 
-    _cacheCurrentLayoutEnd = (layoutItem: GridItemEvent) => {
-        const { GridY, GridX, h, w } = this._activeItem;
+    const cacheToLayout = (cache: string) => {
+        try {
+            if (cache) {
+                const { layout } = JSON.parse(cache);
+                setLayout(layout)
+            };
+        } catch (e) {
+        }
+    }
+
+    const back = () => {
+        const cacheArr = cacheLayoutArrRef.current;
+        if (cacheArr?.length > 1) {
+            const lastIndex = activeIndexRef.current || 0;
+            const index = Math.max(0, lastIndex - 1);
+            activeIndexRef.current = index;
+            const active = cacheArr?.[index];
+            active && cacheToLayout(active);
+        }
+    }
+
+    const go = () => {
+        const cacheArr = cacheLayoutArrRef.current;
+        if (cacheArr?.length > 1) {
+            const lastIndex = activeIndexRef.current || 0;
+            const index = Math.min(lastIndex + 1, cacheArr?.length - 1);
+            activeIndexRef.current = index;
+            const active = cacheArr?.[index];
+            active && cacheToLayout(active);
+        }
+    }
+
+    const clear = () => {
+        const cacheArr = cacheLayoutArrRef.current?.slice(0, 1);
+        cacheLayoutArrRef.current = cacheArr;
+        if (cacheArr?.length) {
+            const index = cacheArr?.length - 1;
+            activeIndexRef.current = index;
+            const active = cacheArr?.[index];
+            active && cacheToLayout(active);
+        }
+    }
+
+    const onDragStart: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
+        lastLayoutItemRef.current = layoutItem;
+        props.onDragStart && props.onDragStart(layoutItem, oldLayout, newLayout)
+    }
+
+    const onDragEnd: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
+        const { GridY, GridX, h, w } = lastLayoutItemRef.current || {};
         if (GridX === layoutItem.GridX && GridY === layoutItem.GridY && h === layoutItem.h && w === layoutItem.w) {
             return;
         }
-        this._storeLayoutToHistory(this._cacheLayouts)
-    }
-
-    _cachingLayouts = (d: Dragact) => {
-        const initiateSnapShot = JSON.stringify({
-            layout: d.getLayout(),
-        })
-        return this._cacheLayouts = initiateSnapShot;
-    }
-
-    goBack = () => {
-        const mapLayoutHistory = this._actionsHistory;
-        if (mapLayoutHistory.length > 1) {
-            const last = mapLayoutHistory.pop();
-            if (!last) {
-                return;
-            }
-            this._changeDragactLayouts(last);
+        // 重置缓存
+        const index = activeIndexRef.current;
+        if (index !== undefined && index < cacheLayoutArrRef.current?.length - 1) {
+            cacheLayoutArrRef.current = cacheLayoutArrRef.current?.slice?.(0, index + 1);
         }
-    }
-
-    reset = () => {
-        if (!this._dragact) {
-            return;
+        // 添加缓存
+        const cache = newLayout && getCacheLayout(newLayout);
+        if (cache) {
+            cacheLayoutArrRef.current?.push(cache);
+            activeIndexRef.current = cacheLayoutArrRef.current?.length - 1;
         }
-        this._cachingLayouts(this._dragact);
-        this._storeLayoutToHistory(this._cacheLayouts);
-        const initiateSnapShot = this._actionsHistory[0];
-        this._changeDragactLayouts(initiateSnapShot);
+        props.onDragEnd && props.onDragEnd(layoutItem, oldLayout, newLayout);
     }
 
-    clear = () => {
-        this._actionsHistory = this._actionsHistory.slice(0, 1);
-        this._changeDragactLayouts(this._actionsHistory[0]);
-    }
-
-    onDragStart = (event: GridItemEvent, currentLayout: DragactLayoutItem[]) => {
-        this._cacheCurrentLayoutStart(event)
-        this.props.onDragStart && this.props.onDragStart(event, currentLayout)
-    }
-
-    onDragEnd = (event: GridItemEvent, currentLayout: DragactLayoutItem[]) => {
-        this._cacheCurrentLayoutEnd(event);
-        this.props.onDragEnd && this.props.onDragEnd(event, currentLayout)
-    }
-
-    _changeDragactLayouts = (snapshot: string) => {
-        if (!this._dragact) {
-            return;
-        }
-        try {
-            const { layout } = JSON.parse(snapshot);
-            this.setState({
-                layout
-            })
-        } catch (e) {
-        }
-
-    }
-
-    _storeLayoutToHistory = (layouts: string) => {
-        this._actionsHistory.push(layouts);
-    }
-
-    componentDidMount() {
-        // 异步获取
-        setTimeout(() => {
-            if (this._dragact) {
-                const initiateSnapShot = this._cachingLayouts(this._dragact);
-                this._storeLayoutToHistory(initiateSnapShot)
-            }    
-        }, 0);
-    }
-
-    componentWillReceiveProps(nextProps: DragactProps) {
-        this.setState({
-            layout: nextProps.layout
-        })
-    }
-    _dragactRefCallback = (d: Dragact) => {
-        this._dragact = d;
-        console.log(d)
-    }
-
-    get getDragact() {
-        return this._dragact;
-    }
-
-    render() {
-        const layout = this.state.layout;
-        return <Dragact ref={this._dragactRefCallback} {...this.props} layout={layout} onDragStart={this.onDragStart} onDragEnd={this.onDragEnd} />
-    }
-}
+    return <Dragact ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+})

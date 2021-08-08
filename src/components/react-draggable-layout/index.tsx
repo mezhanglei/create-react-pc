@@ -57,7 +57,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 compacted,
                 rowHeight,
                 margin[1],
-                state.containerHeight,
+                state?.containerHeight,
                 false
             )
         }))
@@ -90,7 +90,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 layoutItem,
                 state.mapLayout
             );
-            props.onDrag && props.onDrag(layoutItem, compacted)
+            props.onDrag && props.onDrag(layoutItem, state.layout, compacted)
             return {
                 ...state,
                 layout: compacted,
@@ -112,7 +112,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 undefined,
                 state.mapLayout
             );
-            props.onDragEnd && props.onDragEnd(layoutItem, compacted);
+            props.onDragEnd && props.onDragEnd(layoutItem, state.layout, compacted);
             return {
                 ...state,
                 layout: compacted,
@@ -132,7 +132,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
             const mapLayout = state?.mapLayout;
             const newlayout = mapLayout && syncLayout(mapLayout, layoutItem);
             const layout = state?.layout;
-            props.onDragStart && props.onDragStart(layoutItem, layout);
+            props.onResizeStart && props.onResizeStart(layoutItem, layout);
             return {
                 ...state,
                 mapLayout: newlayout
@@ -154,7 +154,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 layoutItem,
                 state?.mapLayout
             );
-
+            props.onResizing && props.onResizing(layoutItem, state.layout, compacted);
             return {
                 ...state,
                 layout: compacted,
@@ -178,6 +178,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 state.mapLayout
             );
             props.onDragEnd && props.onDragEnd(layoutItem, compacted);
+            props.onResizeEnd && props.onResizeEnd(layoutItem, state.layout, compacted);
             return {
                 ...state,
                 layout: compacted,
@@ -233,7 +234,7 @@ export const Dragact = React.forwardRef<{}, DragactProps>((props, ref) => {
                 ...style,
                 left: 100,
                 width: width,
-                height: state.containerHeight,
+                height: state.containerHeight || parentRef.current?.style?.width,
                 zIndex: 1
             }}
         >

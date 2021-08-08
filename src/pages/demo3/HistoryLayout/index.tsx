@@ -1,5 +1,5 @@
 import *as React from 'react';
-import { HistoryDragact } from './HistoryLayout'
+import { HistoryLayout } from './HistoryLayout'
 import { Words } from './largedata';
 import './index.css';
 
@@ -66,20 +66,20 @@ export class HistoryDemo extends React.Component<{}, {}> {
                     </h1>
                     <button onClick={() => {
                         if (this.drag) {
-                            this.drag.goBack();
+                            this.drag.back();
                         }
                     }}>back</button>
                     <button onClick={() => {
                         if (this.drag) {
-                            this.drag.reset();
+                            this.drag.go();
                         }
-                    }}>reset</button>
+                    }}>go</button>
                     <button onClick={() => {
                         if (this.drag) {
                             this.drag.clear();
                         }
                     }}>clear</button>
-                    <HistoryDragact
+                    <HistoryLayout
                         {...dragactInit}
                         ref={n => this.drag = n}
                         style={{
@@ -91,7 +91,7 @@ export class HistoryDemo extends React.Component<{}, {}> {
                                 return <Card item={item} key={item.key} />
                             })
                         }
-                    </HistoryDragact>
+                    </HistoryLayout>
                 </div>
             </div>
         )

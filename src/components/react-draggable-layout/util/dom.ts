@@ -1,6 +1,6 @@
 
 import { DragactLayoutItem, MapLayout } from "../dragact-type";
-import { GridItemEvent } from "../grid-item";
+import { GridItemEvent } from "../grid-item-types";
 import { isNumber } from '@/utils/type'
 
 /**
@@ -145,7 +145,7 @@ export const getMaxContainerHeight = (function () {
         layout: DragactLayoutItem[],
         elementHeight = 30,
         elementMarginBottom = 10,
-        currentHeight: number,
+        currentHeight?: number,
         useCache?: Boolean
     ) {
         if (useCache !== false) {

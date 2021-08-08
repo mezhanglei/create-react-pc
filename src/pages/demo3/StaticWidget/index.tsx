@@ -3,7 +3,7 @@ import { Dragact } from '@/components/react-draggable-layout'
 import './index.css'
 
 const Words = [
-    { content: 'Sorry I just can not move in any circumstances', static: true },
+    { content: 'Sorry I just can not move in any circumstances', forbid: true },
     { content: 'Those who dare to fail miserably can achieve greatly.' },
     { content: 'You miss 100 percent of the shots you never take.' },
     { content: 'Sorry I just can not move in any circumstances,too' },
@@ -23,8 +23,8 @@ const Cell: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
     return (
         <div
             ref={ref}
-            className={`layout-Cell ${item.static ? "static" : ""}`}
-            style={{ ...style, background: item.static ? "#e8e8e8" : "" }}
+            className={`layout-Cell ${item.forbid ? "static" : ""}`}
+            style={{ ...style, background: item.forbid ? "#e8e8e8" : "" }}
         >
             <div style={{ padding: 10, color: '#595959' }}>{item.content}</div>
         </div>
