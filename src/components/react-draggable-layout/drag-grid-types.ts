@@ -1,23 +1,23 @@
 import { GridItemEvent, DragTypes } from './grid-item-types';
 
-export interface DragactLayoutItem {
+export interface DragGridLayoutItem {
     GridX: number;
     GridY: number;
     w: number;
     h: number;
     isMove?: boolean;
-    key?: number | string;
-    static?: boolean; // 是否静态组件
+    key: number | string;
+    forbid?: boolean; // 是否静态组件
 }
 
-export type DragGridHandler = (layoutItem: GridItemEvent, oldLayout: DragactLayoutItem[], currentLayout?: DragactLayoutItem[]) => void;
+export type DragGridHandler = (layoutItem: GridItemEvent, oldLayout: DragGridLayoutItem[], currentLayout?: DragGridLayoutItem[]) => void;
 
-export interface DragactProps {
-    layout: DragactLayoutItem[]
-    col: number;
+export interface DragGridProps {
+    layout: DragGridLayoutItem[]
+    cols: number;
     width: number;
+    padding?: [number, number];
     rowHeight: number;
-    padding?: number;
     margin: [number, number];
     children: any;
     onDragStart?: DragGridHandler;
@@ -31,11 +31,11 @@ export interface DragactProps {
 }
 
 export interface MapLayout {
-    [key: string]: DragactLayoutItem
+    [key: string]: DragGridLayoutItem
 }
 
-export interface DragactState {
-    layout: DragactLayoutItem[];
+export interface DragGridState {
+    layout: DragGridLayoutItem[];
     containerHeight?: number;
     parentDragType?: `${DragTypes}`;
     mapLayout?: MapLayout;

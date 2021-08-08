@@ -1,5 +1,5 @@
-import { ResizeAxis } from "@/components/react-resize-zoom/type";
-import { DragAxis, BoundsInterface } from "@/components/react-free-draggable";
+import { ResizeAxis } from "./react-resize-zoom";
+import { DragAxis, BoundsInterface } from "./react-free-draggable";
 
 export type EventType = MouseEvent | TouchEvent;
 // 拖拽类型
@@ -17,12 +17,12 @@ export interface GridItemEvent {
     GridY: number;
     w: number;
     h: number;
-    UniqueKey: string | number;
+    uniqueKey: string | number;
 }
 export type GridItemEventHandle = (data: GridItemEvent) => void;
 export interface GridItemProps {
     /**外部容器属性 */
-    col: number,
+    cols: number,
     containerWidth: number,
     containerPadding: [number, number],
     rowHeight: number,
@@ -41,7 +41,7 @@ export interface GridItemProps {
     onResizing?: GridItemEventHandle;
     onResizeEnd?: GridItemEventHandle;
 
-    UniqueKey?: string | number;
+    uniqueKey?: string | number;
     parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
     isMove?: boolean; // 是否移动
     forbid?: boolean; // 禁止拖拽和移动

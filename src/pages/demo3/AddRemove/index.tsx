@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Dragact } from '@/components/react-draggable-layout'
+import DragGrid from '@/components/react-draggable-layout'
 
 const Words = [
     { content: 'You can do anything, but not everything.' },
@@ -87,7 +87,7 @@ export class AddRemove extends React.Component<{}, {}> {
         const margin: [number, number] = [5, 5]
         const dragactInit = {
             width: 600,
-            col: 12,
+            cols: 12,
             rowHeight: 800 / 12,
             margin: margin,
             className: 'normal-layout',
@@ -101,13 +101,13 @@ export class AddRemove extends React.Component<{}, {}> {
                         <h1 style={{ textAlign: 'center' }}>AddRemove Demo</h1>
                         <h3 style={{ textAlign: 'center' }}>在这个布局中，新增一个布局，会新加入一个布局</h3>
                         <button onClick={this.handleClick}>新增</button>
-                        <Dragact {...dragactInit}>
+                        <DragGrid {...dragactInit}>
                             {
                                 dragactInit.layout?.map((item, index) => {
                                     return <Card onDelete={this.hanldeOnDelete} item={item} key={item.key} />
                                 })
                             }
-                        </Dragact>
+                        </DragGrid>
                     </div>
                 </div>
             </div>

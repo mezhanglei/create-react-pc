@@ -1,14 +1,14 @@
 
-import { DragactLayoutItem, MapLayout } from "../dragact-type";
+import { DragGridLayoutItem, MapLayout } from "../drag-grid-types";
 import { GridItemEvent } from "../grid-item-types";
-import { isNumber } from '@/utils/type'
+import { isNumber } from '@/utils/type';
 
 /**
  * 把用户移动的块，标记为true
  */
  export const syncLayout = (mapLayout: MapLayout, movingItem: GridItemEvent) => {
     if (!mapLayout) return;
-    const key = movingItem.UniqueKey;
+    const key = movingItem.uniqueKey;
     mapLayout[key].GridX = movingItem.GridX;
     mapLayout[key].GridY = movingItem.GridY
     mapLayout[key].isMove = true;
@@ -24,14 +24,14 @@ import { isNumber } from '@/utils/type'
  * @param {*} children 
  */
 
-export const MapLayoutTostate = (layout: DragactLayoutItem[], children: any[]) => {
+export const MapLayoutTostate = (layout: DragGridLayoutItem[], children: any[]) => {
     return layout.map((child, index) => {
-        let newChild = { ...child, isMove: true, key: children[index].key, static: children[index].static }
+        let newChild = { ...child, isMove: true, key: children[index].key, forbid: children[index].forbid }
         return newChild
     })
 }
 
-export const collision = (a: DragactLayoutItem, b: DragactLayoutItem) => {
+export const colslision = (a: DragGridLayoutItem, b: DragGridLayoutItem) => {
     if (a.GridX === b.GridX && a.GridY === b.GridY &&
         a.w === b.w && a.h === b.h) {
         return true
@@ -45,10 +45,10 @@ export const collision = (a: DragactLayoutItem, b: DragactLayoutItem) => {
 
 
 /**获取layout中，item第一个碰撞到的物体 */
-export const getFirstCollison = (layout: DragactLayoutItem[], item: DragactLayoutItem) => {
+export const getFirstcolslison = (layout: DragGridLayoutItem[], item: DragGridLayoutItem) => {
 
     for (let i = 0, length = layout.length; i < length; i++) {
-        if (collision(layout[i], item)) {
+        if (colslision(layout[i], item)) {
             return layout[i]
         }
     }
@@ -62,7 +62,7 @@ export const layoutCheck = function () {
 
     let caches: any = {};
 
-    const _layoutCheck = function (layout: DragactLayoutItem[], layoutItem: GridItemEvent, key: string, fristItemkey: string) {
+    const _layoutCheck = function (layout: DragGridLayoutItem[], layoutItem: GridItemEvent, key: string, fristItemkey: string) {
 
 
         if (layoutItem.GridX === caches.GridX
@@ -76,10 +76,10 @@ export const layoutCheck = function () {
         let i: any = [], movedItem: any = []/**收集所有移动过的物体 */
         let newlayout = layout.map((item, idx) => {
             if (item.key !== key) {
-                if (item.static) {
+                if (item.forbid) {
                     return item
                 }
-                if (collision(item, layoutItem)) {
+                if (colslision(item, layoutItem)) {
                     i.push(item.key)
                     /**
                      * 这里就是奇迹发生的地方，如果向上移动，那么必须注意的是
@@ -127,7 +127,7 @@ export function quickSort(a: number[]): any {
 export const sortLayout = (layout: any) => {
     return [].concat(layout).sort((a: any, b: any) => {
         if (a.GridY > b.GridY || (a.GridY === b.GridY && a.GridX > b.GridX)) {
-            if (a.static) return 0 // 为了静态，排序的时候尽量把静态的放在前面
+            if (a.forbid) return 0 // 为了静态，排序的时候尽量把静态的放在前面
             return 1
         } else if (a.GridY === b.GridY && a.GridX === b.GridX) {
             return 0
@@ -142,7 +142,7 @@ export const sortLayout = (layout: any) => {
 export const getMaxContainerHeight = (function () {
     let lastOneYNH = 0;
     return function (
-        layout: DragactLayoutItem[],
+        layout: DragGridLayoutItem[],
         elementHeight = 30,
         elementMarginBottom = 10,
         currentHeight?: number,
@@ -171,8 +171,8 @@ export const getMaxContainerHeight = (function () {
  * @param {*} finishedLayout 压缩完的元素会放进这里来，用来对比之后的每一个元素是否需要压缩
  * @param {*} item 
  */
- export const compactItem = (finishedLayout: DragactLayoutItem[], item: DragactLayoutItem) => {
-    if (item.static) return item;
+ export const compactItem = (finishedLayout: DragGridLayoutItem[], item: DragGridLayoutItem) => {
+    if (item.forbid) return item;
     const newItem = { ...item, key: item.key + '' }
     if (finishedLayout.length === 0) {
         return { ...newItem, GridY: 0 }
@@ -181,10 +181,10 @@ export const getMaxContainerHeight = (function () {
      * 类似一个递归调用
      */
     while (true) {
-        let FirstCollison = getFirstCollison(finishedLayout, newItem)
-        if (FirstCollison) {
+        let Firstcolslison = getFirstcolslison(finishedLayout, newItem)
+        if (Firstcolslison) {
             /**第一次发生碰撞时，就可以返回了 */
-            newItem.GridY = FirstCollison.GridY + FirstCollison.h
+            newItem.GridY = Firstcolslison.GridY + Firstcolslison.h
             return newItem
         }
         newItem.GridY--
@@ -202,13 +202,13 @@ export const compactLayout = function () {
     let _cache: any = {
     };
 
-    return function (layout: DragactLayoutItem[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
+    return function (layout: DragGridLayoutItem[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
         if (movingItem) {
             if (_cache.GridX === movingItem.GridX
                 && _cache.GridY === movingItem.GridY &&
                 _cache.w === movingItem.w &&
                 _cache.h === movingItem.h &&
-                _cache.UniqueKey === movingItem.UniqueKey
+                _cache.uniqueKey === movingItem.uniqueKey
             ) {
                 return {
                     compacted: layout,
@@ -226,7 +226,7 @@ export const compactLayout = function () {
         for (let i = 0, length = sorted.length; i < length; i++) {
             let finished = compactItem(compareList, sorted[i])
             if (movingItem) {
-                if (movingItem.UniqueKey === finished.key) {
+                if (movingItem.uniqueKey === finished.key) {
                     movingItem.GridX = finished.GridX;
                     movingItem.GridY = finished.GridY;
                     finished.isMove = true
@@ -249,20 +249,20 @@ export const compactLayout = function () {
 }()
 
 // grid位置边界
-export const checkInContainer = (GridX: number, GridY: number, col: number, w: number) => {
+export const checkInContainer = (GridX: number, GridY: number, cols: number, w: number) => {
 
     /**防止元素出container */
-    if (GridX + w > col - 1) GridX = col - w //右边界
+    if (GridX + w > cols - 1) GridX = cols - w //右边界
     if (GridX < 0) GridX = 0//左边界
     if (GridY < 0) GridY = 0//上边界
     return { GridX, GridY }
 }
 
 // grid宽高边界
-export const checkWidthHeight = (GridX: number, w: number, h: number, col: number) => {
+export const checkWidthHeight = (GridX: number, w: number, h: number, cols: number) => {
     let newW = w;
     let newH = h;
-    if (GridX + w > col - 1) newW = col - GridX //右边界
+    if (GridX + w > cols - 1) newW = cols - GridX //右边界
     if (w < 1) newW = 1;
     if (h < 1) newH = 1;
     return {
@@ -270,23 +270,22 @@ export const checkWidthHeight = (GridX: number, w: number, h: number, col: numbe
     }
 }
 
-/**
- * 这个函数会有副作用，不是纯函数，会改变item的Gridx和GridY
- * @param {*} item 
- */
-export const correctItem = (item: DragactLayoutItem, col: number) => {
-    const { GridX, GridY } = checkInContainer(item.GridX, item.GridY, col, item.w)
-    item.GridX = GridX;
-    item.GridY = GridY;
+// 边界纠正
+export const correctItem = (item: DragGridLayoutItem, cols: number) => {
+    const { GridX, GridY } = checkInContainer(item.GridX, item.GridY, cols, item.w)
+    return {
+        GridX,
+        GridY
+    }
 }
-export const correctLayout = (layout: DragactLayoutItem[], col: number) => {
-    var copy = [...layout];
+export const correctLayout = (layout: DragGridLayoutItem[], cols: number) => {
+    let copy = [...layout];
     for (let i = 0; i < layout?.length - 1; i++) {
-        correctItem(copy[i], col)
-        correctItem(copy[i + 1], col);
+        copy[i].GridX = correctItem(copy[i], cols)?.GridX;
+        copy[i].GridY = correctItem(copy[i + 1], cols)?.GridY;
 
-        if (collision(copy[i], copy[i + 1])) {
-            copy = layoutCheck(copy, <GridItemEvent>copy[i], (<GridItemEvent>copy[i]).UniqueKey + '', (<GridItemEvent>copy[i]).UniqueKey + '')
+        if (colslision(copy[i], copy[i + 1])) {
+            copy = layoutCheck(copy, <GridItemEvent>copy[i], (<GridItemEvent>copy[i]).uniqueKey + '', (<GridItemEvent>copy[i]).uniqueKey + '')
         }
     }
 

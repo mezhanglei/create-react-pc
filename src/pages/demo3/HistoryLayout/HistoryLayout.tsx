@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useRef, useImperativeHandle } from 'react';
-import { DragactProps, DragactLayoutItem, DragGridHandler } from '@/components/react-draggable-layout/dragact-type';
-import { Dragact } from '@/components/react-draggable-layout';
+import { DragGridProps, DragGridHandler } from '@/components/react-draggable-layout/drag-grid-types';
+import DragGrid, { DragGridLayoutItem } from '@/components/react-draggable-layout';
 
+export interface DragGridRef {
+    go: () => void;
+    back: () => void;
+    clear: () => void;
+}
 // 存在历史记录的grid
-export const HistoryLayout = React.forwardRef<{}, DragactProps>((props, ref) => {
+export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props, ref) => {
     const dragRef = useRef<any>();
-    const [layout, setLayout] = useState<DragactLayoutItem[]>([]);
-    const lastLayoutItemRef = useRef<DragactLayoutItem>();
+    const [layout, setLayout] = useState<DragGridLayoutItem[]>([]);
+    const lastLayoutItemRef = useRef<DragGridLayoutItem>();
     const activeIndexRef = useRef<number>();
     const cacheLayoutArrRef = useRef<string[]>([]);
 
@@ -25,7 +30,7 @@ export const HistoryLayout = React.forwardRef<{}, DragactProps>((props, ref) => 
         }
     }, [props?.layout])
 
-    const getCacheLayout = (layout: DragactLayoutItem[]) => {
+    const getCacheLayout = (layout: DragGridLayoutItem[]) => {
         return layout && JSON.stringify({ layout: layout });
     }
 
@@ -96,5 +101,5 @@ export const HistoryLayout = React.forwardRef<{}, DragactProps>((props, ref) => 
         props.onDragEnd && props.onDragEnd(layoutItem, oldLayout, newLayout);
     }
 
-    return <Dragact ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onDragEnd={onDragEnd} />
 })

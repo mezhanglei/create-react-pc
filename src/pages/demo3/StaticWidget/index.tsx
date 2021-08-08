@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dragact } from '@/components/react-draggable-layout'
+import DragGrid from '@/components/react-draggable-layout'
 import './index.css'
 
 const Words = [
@@ -36,9 +36,9 @@ export const SortedTableWithStatic = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div>
                 <h1 style={{ textAlign: 'center' }}>静态组件 Demo</h1>
-                <Dragact
+                <DragGrid
                     width={600}
-                    col={16}
+                    cols={16}
                     rowHeight={30}
                     margin={[2, 2]}
                     className='normal-layout'
@@ -49,7 +49,7 @@ export const SortedTableWithStatic = () => {
                             return <Cell item={item} key={item.key} />
                         })
                     }
-                </Dragact>
+                </DragGrid>
             </div>
         </div>
     )

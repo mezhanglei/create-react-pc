@@ -1,5 +1,5 @@
 import *as React from 'react';
-import { HistoryLayout } from './HistoryLayout'
+import { DragGridRef, HistoryLayout } from './HistoryLayout'
 import { Words } from './largedata';
 import './index.css';
 
@@ -41,13 +41,13 @@ export const Card: (any: any) => any = React.forwardRef(({ item, style }, ref) =
 })
 
 
-export class HistoryDemo extends React.Component<{}, {}> {
-    drag: HistoryDragact | null
+export class HistoryDemo extends React.Component {
+    drag: DragGridRef;
     render() {
         const margin: [number, number] = [5, 5];
         const dragactInit = {
             width: 600,
-            col: 16,
+            cols: 16,
             rowHeight: 40,
             margin: margin,
             className: 'normal-layout',
@@ -81,7 +81,7 @@ export class HistoryDemo extends React.Component<{}, {}> {
                     }}>clear</button>
                     <HistoryLayout
                         {...dragactInit}
-                        ref={n => this.drag = n}
+                        ref={(n: DragGridRef) => this.drag = n}
                         style={{
                             background: '#003A8C'
                         }}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dragact } from '@/components/react-draggable-layout'
+import DragGrid from '@/components/react-draggable-layout'
 import { Card } from '../NormalLayout/index';
 import './index.css';
 
@@ -26,7 +26,7 @@ const fakeData = () => {
 
 var storeLayout: any = void 666;
 export class LayoutRestore extends React.Component<{}, {}> {
-    dragactNode: Dragact;
+    dragactNode: any;
     handleOnDragEnd = () => {
         const newLayout = this.dragactNode.getLayout();
         const parsedLayout = JSON.stringify(newLayout);
@@ -40,11 +40,11 @@ export class LayoutRestore extends React.Component<{}, {}> {
         }
     }
 
-    renderDragact = () => {
+    renderDragGrid = () => {
         const margin: [number, number] = [5, 5];
         const dragactInit = {
             width: 600,
-            col: 12,
+            cols: 12,
             rowHeight: 800 / 12,
             margin: margin,
             className: 'normal-layout',
@@ -53,7 +53,7 @@ export class LayoutRestore extends React.Component<{}, {}> {
         }
 
         return (
-            <Dragact
+            <DragGrid
                 {...dragactInit}
                 ref={node => node ? this.dragactNode = node : null}
                 onDragEnd={this.handleOnDragEnd}
@@ -64,7 +64,7 @@ export class LayoutRestore extends React.Component<{}, {}> {
                         return <Card item={item} key={item.key} />
                     })
                 }
-            </Dragact>
+            </DragGrid>
         )
     }
 
@@ -73,7 +73,7 @@ export class LayoutRestore extends React.Component<{}, {}> {
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <div>
                     <h1 style={{ textAlign: 'center' }}>存储布局 Demo</h1>
-                    {this.renderDragact()}
+                    {this.renderDragGrid()}
                 </div>
             </div>
         )

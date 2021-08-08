@@ -1,6 +1,5 @@
 import *as React from 'react';
-import { Dragact } from '@/components/react-draggable-layout'
-import { DragactLayoutItem, GridItemProvided } from '@/components/react-draggable-layout/dragact-type'
+import DragGrid from '@/components/react-draggable-layout'
 import { Words } from './largedata';
 import './index.css';
 
@@ -49,7 +48,7 @@ export class LayoutDemo extends React.Component<{}, {}> {
         const margin: [number, number] = [5, 5];
         const dragactInit = {
             width: 600,
-            col: 16,
+            cols: 16,
             rowHeight: 40,
             margin: margin,
             className: 'normal-layout',
@@ -66,7 +65,7 @@ export class LayoutDemo extends React.Component<{}, {}> {
                     <h1 style={{ textAlign: 'center' }}>
                         普通布局demo
                     </h1>
-                    <Dragact
+                    <DragGrid
                         {...dragactInit}
                         style={{
                             background: '#003A8C'
@@ -77,7 +76,7 @@ export class LayoutDemo extends React.Component<{}, {}> {
                                 return <Card item={item} key={item.key} />
                             })
                         }
-                    </Dragact>
+                    </DragGrid>
                 </div>
             </div>
         )
