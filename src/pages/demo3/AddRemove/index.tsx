@@ -27,7 +27,7 @@ const Card = React.forwardRef(({ item, style, onDelete, ...rest }, ref) => {
                     top: 5,
                     cursor: 'pointer'
                 }}
-                onClick={() => onDelete(item.key)}
+                onClick={() => onDelete(item.uniqueKey)}
             >
                 ❌
             </div>
@@ -49,13 +49,13 @@ const fakeData = () => {
             GridY: Y * 4,
             w: 4,
             h: 3,
-            key: index
+            uniqueKey: index
         }
     })
 }
 
 const makeOne = () => {
-    return { content: 'added', GridX: 0, GridY: 0, w: 4, h: 3, key: Date.now() }
+    return { content: 'added', GridX: 0, GridY: 0, w: 4, h: 3, uniqueKey: Date.now() }
 }
 
 export class AddRemove extends React.Component<{}, {}> {
@@ -72,9 +72,9 @@ export class AddRemove extends React.Component<{}, {}> {
             layout: [...change, makeOne()]
         })
     }
-    hanldeOnDelete = (key: any) => {
+    hanldeOnDelete = (uniqueKey: any) => {
         const layout = this.state.layout.filter(item => {
-            if (item.key !== key) {
+            if (item.uniqueKey !== uniqueKey) {
                 return item
             }
         })
@@ -104,7 +104,7 @@ export class AddRemove extends React.Component<{}, {}> {
                         <DragGrid {...dragactInit}>
                             {
                                 dragactInit.layout?.map((item, index) => {
-                                    return <Card onDelete={this.hanldeOnDelete} item={item} key={item.key} />
+                                    return <Card onDelete={this.hanldeOnDelete} item={item} key={item.uniqueKey} />
                                 })
                             }
                         </DragGrid>

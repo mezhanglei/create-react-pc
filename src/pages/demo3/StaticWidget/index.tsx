@@ -15,7 +15,7 @@ const fakeData = () => {
     return Words.map((item, index) => {
         if (index % 4 === 0) Y++;
 
-        return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 4, key: index + '', canResize: false }
+        return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 4, uniqueKey: index + '', canResize: false }
     })
 }
 
@@ -46,7 +46,7 @@ export const SortedTableWithStatic = () => {
                 >
                     {
                         fakeData()?.map((item, index) => {
-                            return <Cell item={item} key={item.key} />
+                            return <Cell item={item} key={item.uniqueKey} />
                         })
                     }
                 </DragGrid>

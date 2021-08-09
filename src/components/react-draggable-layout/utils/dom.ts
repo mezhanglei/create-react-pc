@@ -1,5 +1,5 @@
 
-import { DragGridLayoutItem, MapLayout } from "../drag-grid-types";
+import { MapLayout } from "../drag-grid-types";
 import { GridItemEvent } from "../grid-item-types";
 import { isNumber } from '@/utils/type';
 
@@ -15,23 +15,7 @@ import { isNumber } from '@/utils/type';
     return mapLayout;
 }
 
-
-/**
- * 初始化的时候调用
- * 会把isMove和key一起映射到layout中
- * 不用用户设置
- * @param {*} layout 
- * @param {*} children 
- */
-
-export const MapLayoutTostate = (layout: DragGridLayoutItem[], children: any[]) => {
-    return layout.map((child, index) => {
-        let newChild = { ...child, isMove: true, key: children[index].key, forbid: children[index].forbid }
-        return newChild
-    })
-}
-
-export const colslision = (a: DragGridLayoutItem, b: DragGridLayoutItem) => {
+export const colslision = (a: GridItemEvent, b: GridItemEvent) => {
     if (a.GridX === b.GridX && a.GridY === b.GridY &&
         a.w === b.w && a.h === b.h) {
         return true
@@ -45,7 +29,7 @@ export const colslision = (a: DragGridLayoutItem, b: DragGridLayoutItem) => {
 
 
 /**获取layout中，item第一个碰撞到的物体 */
-export const getFirstcolslison = (layout: DragGridLayoutItem[], item: DragGridLayoutItem) => {
+export const getFirstcolslison = (layout: GridItemEvent[], item: GridItemEvent) => {
 
     for (let i = 0, length = layout.length; i < length; i++) {
         if (colslision(layout[i], item)) {
@@ -62,7 +46,7 @@ export const layoutCheck = function () {
 
     let caches: any = {};
 
-    const _layoutCheck = function (layout: DragGridLayoutItem[], layoutItem: GridItemEvent, key: string, fristItemkey: string) {
+    const _layoutCheck = function (layout: GridItemEvent[], layoutItem: GridItemEvent, uniqueKey: string, fristItemkey: string) {
 
 
         if (layoutItem.GridX === caches.GridX
@@ -75,12 +59,12 @@ export const layoutCheck = function () {
 
         let i: any = [], movedItem: any = []/**收集所有移动过的物体 */
         let newlayout = layout.map((item, idx) => {
-            if (item.key !== key) {
+            if (item.uniqueKey !== uniqueKey) {
                 if (item.forbid) {
                     return item
                 }
                 if (colslision(item, layoutItem)) {
-                    i.push(item.key)
+                    i.push(item.uniqueKey)
                     /**
                      * 这里就是奇迹发生的地方，如果向上移动，那么必须注意的是
                      * 一格一格的移动，而不是一次性移动
@@ -98,7 +82,7 @@ export const layoutCheck = function () {
                     movedItem.push(newItem)
                     return newItem
                 }
-            } else if (fristItemkey === key) {
+            } else if (fristItemkey === uniqueKey) {
 
                 /**永远保持用户移动的块是 isMove === true */
                 return { ...item, ...layoutItem }
@@ -124,8 +108,8 @@ export function quickSort(a: number[]): any {
         )
 }
 
-export const sortLayout = (layout: any) => {
-    return [].concat(layout).sort((a: any, b: any) => {
+export const sortLayout = (layout: GridItemEvent[]) => {
+    return [].concat(layout).sort((a: GridItemEvent, b: GridItemEvent) => {
         if (a.GridY > b.GridY || (a.GridY === b.GridY && a.GridX > b.GridX)) {
             if (a.forbid) return 0 // 为了静态，排序的时候尽量把静态的放在前面
             return 1
@@ -142,7 +126,7 @@ export const sortLayout = (layout: any) => {
 export const getMaxContainerHeight = (function () {
     let lastOneYNH = 0;
     return function (
-        layout: DragGridLayoutItem[],
+        layout: GridItemEvent[],
         elementHeight = 30,
         elementMarginBottom = 10,
         currentHeight?: number,
@@ -171,9 +155,9 @@ export const getMaxContainerHeight = (function () {
  * @param {*} finishedLayout 压缩完的元素会放进这里来，用来对比之后的每一个元素是否需要压缩
  * @param {*} item 
  */
- export const compactItem = (finishedLayout: DragGridLayoutItem[], item: DragGridLayoutItem) => {
+ export const compactItem = (finishedLayout: GridItemEvent[], item: GridItemEvent) => {
     if (item.forbid) return item;
-    const newItem = { ...item, key: item.key + '' }
+    const newItem = { ...item, uniqueKey: item.uniqueKey + '' }
     if (finishedLayout.length === 0) {
         return { ...newItem, GridY: 0 }
     }
@@ -202,7 +186,7 @@ export const compactLayout = function () {
     let _cache: any = {
     };
 
-    return function (layout: DragGridLayoutItem[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
+    return function (layout: GridItemEvent[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
         if (movingItem) {
             if (_cache.GridX === movingItem.GridX
                 && _cache.GridY === movingItem.GridY &&
@@ -226,7 +210,7 @@ export const compactLayout = function () {
         for (let i = 0, length = sorted.length; i < length; i++) {
             let finished = compactItem(compareList, sorted[i])
             if (movingItem) {
-                if (movingItem.uniqueKey === finished.key) {
+                if (movingItem.uniqueKey === finished.uniqueKey) {
                     movingItem.GridX = finished.GridX;
                     movingItem.GridY = finished.GridY;
                     finished.isMove = true
@@ -237,7 +221,7 @@ export const compactLayout = function () {
                 finished.isMove = false
             compareList.push(finished)
             needCompact[i] = finished
-            mapLayout[finished.key + ''] = finished;
+            mapLayout[finished.uniqueKey + ''] = finished;
         }
         
         return {
@@ -271,14 +255,14 @@ export const checkWidthHeight = (GridX: number, w: number, h: number, cols: numb
 }
 
 // 边界纠正
-export const correctItem = (item: DragGridLayoutItem, cols: number) => {
+export const correctItem = (item: GridItemEvent, cols: number) => {
     const { GridX, GridY } = checkInContainer(item.GridX, item.GridY, cols, item.w)
     return {
         GridX,
         GridY
     }
 }
-export const correctLayout = (layout: DragGridLayoutItem[], cols: number) => {
+export const correctLayout = (layout: GridItemEvent[], cols: number) => {
     let copy = [...layout];
     for (let i = 0; i < layout?.length - 1; i++) {
         copy[i].GridX = correctItem(copy[i], cols)?.GridX;

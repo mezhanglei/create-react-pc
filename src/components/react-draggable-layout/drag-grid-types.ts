@@ -1,19 +1,10 @@
-import { GridItemEvent, DragTypes } from './grid-item-types';
+import { EventType } from '../react-resize-zoom';
+import { DragTypes, GridItemEvent } from './grid-item-types';
 
-export interface DragGridLayoutItem {
-    GridX: number;
-    GridY: number;
-    w: number;
-    h: number;
-    isMove?: boolean;
-    key: number | string;
-    forbid?: boolean; // 是否静态组件
-}
-
-export type DragGridHandler = (layoutItem: GridItemEvent, oldLayout: DragGridLayoutItem[], currentLayout?: DragGridLayoutItem[]) => void;
+export type DragGridHandler = (layoutItem: GridItemEvent, oldLayout: GridItemEvent[], currentLayout?: GridItemEvent[], e?: EventType) => void;
 
 export interface DragGridProps {
-    layout: DragGridLayoutItem[]
+    layout: GridItemEvent[]
     cols: number;
     width: number;
     padding?: [number, number];
@@ -31,11 +22,11 @@ export interface DragGridProps {
 }
 
 export interface MapLayout {
-    [key: string]: DragGridLayoutItem
+    [key: string]: GridItemEvent
 }
 
 export interface DragGridState {
-    layout: DragGridLayoutItem[];
+    layout: GridItemEvent[];
     containerHeight?: number;
     parentDragType?: `${DragTypes}`;
     mapLayout?: MapLayout;

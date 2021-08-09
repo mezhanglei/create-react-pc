@@ -17,7 +17,7 @@ const fakeData = () => {
 
     return Words.map((item, index) => {
         if (index % 4 === 0) Y++;
-        return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 2, key: index + '' }
+        return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 2, uniqueKey: index + '' }
     })
 }
 
@@ -61,7 +61,7 @@ export class LayoutRestore extends React.Component<{}, {}> {
             >
                 {
                     dragactInit.layout?.map((item, index) => {
-                        return <Card item={item} key={item.key} />
+                        return <Card item={item} key={item.uniqueKey} />
                     })
                 }
             </DragGrid>

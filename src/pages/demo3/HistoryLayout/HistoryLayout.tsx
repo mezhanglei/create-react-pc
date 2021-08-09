@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useImperativeHandle } from 'react';
-import { DragGridProps, DragGridHandler } from '@/components/react-draggable-layout/drag-grid-types';
-import DragGrid, { DragGridLayoutItem } from '@/components/react-draggable-layout';
+import DragGrid, { GridItemEvent, DragGridProps, DragGridHandler } from '@/components/react-draggable-layout';
 
 export interface DragGridRef {
     go: () => void;
@@ -10,8 +9,8 @@ export interface DragGridRef {
 // 存在历史记录的grid
 export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props, ref) => {
     const dragRef = useRef<any>();
-    const [layout, setLayout] = useState<DragGridLayoutItem[]>([]);
-    const lastLayoutItemRef = useRef<DragGridLayoutItem>();
+    const [layout, setLayout] = useState<GridItemEvent[]>([]);
+    const lastLayoutItemRef = useRef<GridItemEvent>();
     const activeIndexRef = useRef<number>();
     const cacheLayoutArrRef = useRef<string[]>([]);
 
@@ -30,7 +29,7 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
         }
     }, [props?.layout])
 
-    const getCacheLayout = (layout: DragGridLayoutItem[]) => {
+    const getCacheLayout = (layout: GridItemEvent[]) => {
         return layout && JSON.stringify({ layout: layout });
     }
 

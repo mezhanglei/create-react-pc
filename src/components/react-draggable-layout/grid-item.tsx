@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { checkInContainer, checkWidthHeight } from './utils/dom';
-import ResizeZoom from "@/components/react-resize-zoom";
-import { EventType as ResizeEventType, EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom/type";
-import Draggable, { EventType as DragEventType, DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
+import ResizeZoom, { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom";
+import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
 import classNames from "classnames";
 import { GridItemProps, DragTypes } from './grid-item-types';
 
@@ -90,20 +89,20 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
             dragType: DragTypes.dragStart
         });
         if (!data || !this.canDrag()) return;
-        const { w, h, uniqueKey } = this.props;
+        const { w, h, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
         const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calPxToGridXY(x, y)
-        this.props.onDragStart && this.props.onDragStart({ e, GridX, GridY, w, h, uniqueKey: uniqueKey + '' })
+        this.props.onDragStart && this.props.onDragStart({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e)
     }
     onDrag: DragEventHandler = (e, data) => {
         this.setState({
             dragType: DragTypes.draging
         });
         if (!data || !this.canDrag()) return;
-        const { w, h, uniqueKey } = this.props;
+        const { w, h, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
         const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calPxToGridXY(x, y);
-        this.props.onDrag && this.props.onDrag({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', e })
+        this.props.onDrag && this.props.onDrag({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e)
     }
 
     onDragEnd: DragEventHandler = (e, data) => {
@@ -111,18 +110,18 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
             dragType: DragTypes.dragEnd
         })
         if (!data || !this.canDrag()) return;
-        const { w, h, uniqueKey } = this.props;
+        const { w, h, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
         const { x = 0, y = 0 } = data;
         const { GridX, GridY } = this.calPxToGridXY(x, y);
-        if (this.props.onDragEnd) this.props.onDragEnd({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', e });
+        if (this.props.onDragEnd) this.props.onDragEnd({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e);
     }
 
     onResizeStart: ResizeEventHandler = (e) => {
         this.setState({
             dragType: DragTypes.resizeStart
         })
-        const { GridX, GridY, uniqueKey, w, h } = this.props;
-        this.props.onResizeStart && this.props.onResizeStart({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', e })
+        const { GridX, GridY, uniqueKey, w, h, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
+        this.props.onResizeStart && this.props.onResizeStart({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e)
     }
 
     onResizing: ResizeEventHandler = (e, data) => {
@@ -130,10 +129,10 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
             dragType: DragTypes.resizing
         })
         if (!data || !this.canResize()) return;
-        const { GridX, GridY, uniqueKey } = this.props;
+        const { GridX, GridY, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
         const { width, height } = data;
         const { w, h } = this.calPxToWH(width, height);
-        this.props.onResizing && this.props.onResizing({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', e })
+        this.props.onResizing && this.props.onResizing({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e)
     }
 
     onResizeEnd: ResizeEventHandler = (e, data) => {
@@ -141,11 +140,11 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
             dragType: DragTypes.resizeEnd
         })
         if (!data || !this.canResize()) return;
-        const { GridX, GridY, uniqueKey } = this.props;
+        const { GridX, GridY, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
         const { width, height } = data;
         const { w, h } = this.calPxToWH(width, height);
 
-        this.props.onResizeEnd && this.props.onResizeEnd({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', e })
+        this.props.onResizeEnd && this.props.onResizeEnd({ GridX, GridY, w, h, uniqueKey: uniqueKey + '', margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange }, e)
     }
 
     // 可以拖拽
