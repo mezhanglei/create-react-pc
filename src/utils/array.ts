@@ -263,32 +263,6 @@ export function longCommonPrefix(strs: any[]): string {
 };
 
 /**
- * 使用test方法实现模糊查询(推荐，可以给正则添加i规则来决定是否区分大小写) 数组元素支持Object和简单数据类型
- * @param  {Array}  list     原数组
- * @param  {String} keyWord  查询的关键词
- * @param {String} attr 可选，当数组元素为Object时需要指定attr属性名
- * @return {Array}           查询的结果
- */
-export function regQuery(list: any[], keyWord = "", attr: string): any[] {
-    let newList = list;
-    const reg = new RegExp(keyWord);
-    let arr = [];
-    for (let i = 0; i < newList.length; i++) {
-        if (!isObject(newList[i])) {
-            if (reg.test(newList[i])) {
-                arr.push(newList[i]);
-            }
-        } else {
-            if (reg.test(newList[i][attr])) {
-                arr.push(newList[i]);
-            }
-
-        }
-    }
-    return arr;
-}
-
-/**
  * 判断两个数组是否具有数量和内容相同的元素(忽略顺序)
  * @param {*} arr1 
  * @param {*} arr2 

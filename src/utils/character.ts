@@ -56,10 +56,7 @@ export function getPower(integer: number) {
  * @param {String} unit 指定单位，默认 "万"
  * @param {Number} n 保留几位小数，默认保留2位
  */
-export function unitChange(number: number | string, unit = "万", n = 2) {
-    // if (!isNumber(number)) {
-    //     number = parseFloat(number);
-    // }
+export function numberAddUnit(number: number | string, unit = "万", n = 2) {
     if (typeof number === "string") {
         number = parseFloat(number);
     } else if (!isNumber(number)) {

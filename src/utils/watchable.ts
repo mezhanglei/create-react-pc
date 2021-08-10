@@ -8,22 +8,19 @@
  *      4. 通过WatchableStore.unwatch(id), 卸载对应的目标事件
  */
 export class WatchableStore {
-    constructor(initialData) {
-        // 事件池
-        this._watchers = [];
-        // 每个监听事件的id
-        this._nextHandlerId = 0;
-    }
+
+    _watchers: { id: number; handle: Function }[] = [];
+    _nextHandlerId: number = 0;
 
     // 触发事件池里的所有事件(所以监听多个事件，那么触发时会全部触发)
-    triggerAll(data) {
+    triggerAll(data: unknown) {
         this._watchers.forEach(watcher => {
             watcher.handle(data);
         });
     }
 
     // 监听事件，返回id，id用来识别是哪个事件
-    watch(func) {
+    watch(func: Function) {
         const id = this._nextHandlerId;
         this._watchers.push({ id, handle: func });
         this._nextHandlerId++;
@@ -31,7 +28,7 @@ export class WatchableStore {
     }
 
     // 根据监听事件时的id卸载对应的事件
-    unwatch(id) {
+    unwatch(id: number) {
         for (let i = 0; i < this._watchers.length; i++) {
             if (this._watchers[i].id === id) {
                 this._watchers.splice(i, 1);
@@ -51,22 +48,17 @@ export class WatchableStore {
  *      4. 通过WatchableStoreByType.unwatch(type), 卸载对应的目标事件
  */
 export class WatchableStoreByType {
-    constructor(initialData) {
-        // 事件池
-        this._watchers = [];
-        // 每次监听的id
-        this._nextHandlerId = 0;
-    }
+    _watchers: { type: string; handle: Function }[] = [];
 
     // 触发事件池里的所有事件(所以监听多个事件，那么触发时会全部触发)
-    triggerAll(data) {
+    triggerAll(data: unknown) {
         this._watchers.forEach(watcher => {
             watcher.handle(data);
         });
     }
 
     // 触发事件池里对应type的事件
-    trigger(type, data) {
+    trigger(type: string, data: unknown) {
         this._watchers.forEach(watcher => {
             if (watcher.type == type) {
                 watcher.handle(data);
@@ -75,13 +67,13 @@ export class WatchableStoreByType {
     }
 
     // 监听事件，设置事件类型type和要监听的事件
-    watch(type, func) {
+    watch(type: string, func: Function) {
         this._watchers.push({ type, handle: func });
         return type;
     }
 
     // 根据监听事件时的type卸载对应的事件
-    unwatch(type) {
+    unwatch(type: string) {
         for (let i = 0; i < this._watchers.length; i++) {
             if (this._watchers[i].type === type) {
                 this._watchers.splice(i, 1);

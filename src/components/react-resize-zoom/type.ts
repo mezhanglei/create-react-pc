@@ -4,6 +4,12 @@ export type EventType = MouseEvent | TouchEvent;
 
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
 
+// 拖拽类型
+export enum ResizeDragTypes {
+    resizeStart = 'resizeStart',
+    resizing = 'resizing',
+    resizeEnd = 'resizeEnd'
+}
 export interface EventDataType {
     lastDir?: string;
     lastEventX?: number;

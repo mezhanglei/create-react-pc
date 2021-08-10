@@ -26,18 +26,6 @@ let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 // 拖拽事件组件
 const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) => {
 
-    const {
-        children,
-        onDragStart,
-        onDrag,
-        onDragStop,
-        allowAnyClick,
-        disabled,
-        enableUserSelectHack,
-        grid,
-        locationParent
-    } = props;
-
     let draggingRef = useRef<boolean>(false);
     let eventDataRef = useRef<EventData>();
     const nodeRef = useRef<any>();
@@ -53,7 +41,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
 
     // 获取定位父元素, 涉及的位置相对于该父元素
     const getLocationParent = () => {
-        const parent = findElement(locationParent) || document.body || document.documentElement;
+        const parent = findElement(props?.locationParent) || document.body || document.documentElement;
         return parent;
     }
 
@@ -83,7 +71,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             removeEvent(ownerDocument, dragEventFor.stop, handleDragStop);
             removeEvent(ownerDocument, dragEventFor.cancel, handleDragStop);
             // 移除选中样式
-            if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
+            if (props?.enableUserSelectHack) removeUserSelectStyles(ownerDocument);
         };
     }, []);
 
@@ -98,12 +86,12 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
 
         // pc端鼠标操作时允许非左键操作
-        if (!allowAnyClick && !isEventTouch(e) && typeof e.button === 'number' && e.button !== 0) return;
+        if (!props?.allowAnyClick && !isEventTouch(e) && typeof e.button === 'number' && e.button !== 0) return;
         // 移动设备阻止默认行为
         if (e.type === 'touchstart') e.preventDefault();
 
         // props控制是否拖拽
-        if (disabled ||
+        if (props?.disabled ||
             (!(e.target instanceof ownerDocument?.defaultView?.Node)) ||
             (dragNode && !matchParent(e.target, dragNode)) ||
             (disabledNode && matchParent(e.target, disabledNode))) {
@@ -129,11 +117,11 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         };
 
         // 如果没有完成渲染或者返回false则禁止拖拽
-        const shouldUpdate = onDragStart && onDragStart(e, eventDataRef.current);
+        const shouldUpdate = props?.onDragStart && props?.onDragStart(e, eventDataRef.current);
         if (shouldUpdate === false) return;
 
         // 滚动过程中选中文本被添加样式
-        if (enableUserSelectHack) addUserSelectStyles(ownerDocument);
+        if (props?.enableUserSelectHack) addUserSelectStyles(ownerDocument);
 
         draggingRef.current = true;
         eventDataRef.current = {
@@ -160,6 +148,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         if (!eventDataRef.current) return;
 
         // 拖拽跳跃,可设置多少幅度跳跃一次
+        const grid = props?.grid;
         if (Array.isArray(grid)) {
             const { lastEventX, lastEventY } = eventDataRef.current;
             let deltaX = positionX - lastEventX, deltaY = positionY - lastEventY;
@@ -180,7 +169,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
 
         // 返回false则禁止拖拽并初始化鼠标事件
-        const shouldUpdate = onDrag && onDrag(e, eventDataRef.current);
+        const shouldUpdate = props?.onDrag && props?.onDrag(e, eventDataRef.current);
         if (shouldUpdate === false) {
             try {
                 handleDragStop(new MouseEvent(e?.type));
@@ -205,13 +194,13 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
             deltaY: 0
         }
 
-        const shouldContinue = onDragStop && onDragStop(e, eventDataRef.current);
+        const shouldContinue = props?.onDragStop && props?.onDragStop(e, eventDataRef.current);
         if (shouldContinue === false) return;
 
         // 移除文本因滚动造成的显示
         if (ownerDocument) {
             // Remove user-select hack
-            if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
+            if (props?.enableUserSelectHack) removeUserSelectStyles(ownerDocument);
         }
 
         // 重置
@@ -224,7 +213,7 @@ const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) =
         }
     };
 
-    return React.cloneElement(React.Children.only(children), {
+    return React.cloneElement(React.Children.only(props?.children), {
         ref: nodeRef
     });
 });
