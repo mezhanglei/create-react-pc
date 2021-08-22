@@ -1,13 +1,13 @@
 import { dataURLtoFile, binaryToDataURL } from "./file";
-/**
-* canvas压缩图片, 返回promise, 可以得到dataURL类型数据
-* @param {参数obj} param 
-* @param {文件二进制流} param.file 必传
-* @param {输出图片宽度} param.width 不传初始赋值-1
-* @param {输出图片名称} param.fileName 不传初始赋值new Date().toString()时间字符串
-* @param {压缩图片程度} param.quality 不传初始赋值0.92。值范围0~1
-*/
-export function pressImg(param) {
+
+export interface PressImg {
+    file: File; // 文件类型的数据
+    width?: number; // 宽
+    fileName?: string; // 文件名
+    quality?: number; // 压缩图片程度, 默认0.92
+}
+// canvas压缩图片, 返回promise, 可以得到dataURL类型数据
+export function pressImg(param: PressImg): Promise<{data: string} | null> {
     return new Promise((resolve, reject) => {
         //如果file没定义返回null
         if (param.file == undefined) return resolve(null);
@@ -21,7 +21,7 @@ export function pressImg(param) {
             return resolve(null);
         }
         // 读取file文件,得到的结果为base64位
-        binaryToDataURL(param.file, function (base64) {
+        binaryToDataURL(param.file, function (base64: string) {
             if (base64) {
                 let image = new Image();
                 image.src = base64;
