@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef, ReactNode, CSSProperties } from 'react';
-import { throttle } from '@/utils/common';
+import { throttle } from './utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
-import Raf from "@/utils/requestAnimationFrame";
-import { setScroll, getScroll, getOffsetWH, getPositionInPage, getScrollParent, addEvent, removeEvent } from "@/utils/dom";
-import { isDom } from "@/utils/type";
-import { isMobile } from '@/utils/verify';
+import Raf from "./utils/requestAnimationFrame";
+import { setScroll, getScroll, getOffsetWH, getPositionInPage, getScrollParent, addEvent, removeEvent } from "./utils/dom";
+import { isDom } from "./utils/type";
+import { isMobile } from './utils/verify';
 
 type fn = () => any;
 type EventType = MouseEvent | TouchEvent;
@@ -83,7 +83,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         refreshEndComponent,
         endComponent,
         loadingComponent,
-        hasMore = true,
+        hasMore,
         errorComponent,
         className,
         onScroll,
@@ -100,6 +100,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     const [isError, setIsError] = useState<boolean | undefined>(false);
     const [prevScrollHeight, setPrevScrollHeight] = useState<number>(0);
     const [pullDistance, setPullDistance] = useState<number>(0);
+    const pullDistanceRef = useRef<number>(0);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const scrollableRef = useRef<any>();
@@ -111,8 +112,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     const forbidTriggerRef = useRef<boolean>();
     const preStartYRef = useRef<number>(0);
 
-    let mouseDown: boolean = false;
-    let mouseDragging: boolean = false;
+    let mouseDownRef = useRef<boolean>(false);
 
     // ref转发实例方法
     React.useImperativeHandle(ref, () => ({
@@ -197,9 +197,9 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         forbidTriggerRef.current = props.forbidTrigger;
     }, [props.forbidTrigger]);
 
-    // 滚动监听事件中无法获取到最新的state所以需要ref
+   // 监听滚动事件
     const onScrollListener = (event: EventType) => {
-        if (mouseDown) return;
+        // if (mouseDownRef.current) return;
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
@@ -232,8 +232,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         }
 
         if (pullDownToRefresh && el) {
-            addEvent(el, dragEventFor.start, onStart);
-            addEvent(el, dragEventFor.move, onMove);
+            addEvent(document, dragEventFor.start, onStart);
+            addEvent(document, dragEventFor.move, onMove);
             addEvent(document, dragEventFor.stop, onEnd);
         }
     };
@@ -255,11 +255,9 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     };
 
     const onStart = (evt: EventType) => {
-        evt.preventDefault();
-        setPullDistance(0);
         const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue);
         if (condition) return;
-        mouseDown = true;
+        mouseDownRef.current = true;
         preStartYRef.current = getPositionInPage(evt)?.y || 0;
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
@@ -269,8 +267,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     };
 
     const onMove = (evt: EventType) => {
-        evt.preventDefault();
-        if (!mouseDown) return;
+        if (!mouseDownRef.current) return;
         if (minPullDown > maxPullDown) {
             console.warn(`"minPullDown" is large than "maxPullDown", please set "maxPullDown" and "maxPullDown" should large than "minPullDown"`);
             return;
@@ -281,21 +278,29 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
         const startY = getPositionInPage(evt)?.y || 0;
         const deltaY = startY - preStartYRef.current;
-        setPullDistance(Math.min(Math.abs(deltaY), maxHeight));
+
+        if (inverse) {
+            if (deltaY < 0) {
+                const num = Math.max(deltaY, -maxHeight);
+                setPullDistance(num);
+                pullDistanceRef.current = num;
+                Raf.setRaf(() => setDrag(num));
+            }
+        } else {
+            if (deltaY > 0) {
+                const num = Math.min(deltaY, maxHeight)
+                setPullDistance(num);
+                pullDistanceRef.current = num;
+                Raf.setRaf(() => setDrag(num));
+            }
+        }
+
         // 最小判断边界
         if (Math.abs(deltaY) >= minHeight) {
             setRefreshType(COMPONENT_TYPE.RELEASE);
         } else {
             setRefreshType(COMPONENT_TYPE.PULL);
         }
-
-        // 执行偏移
-        if (inverse) {
-            Raf.setRaf(() => setDrag(Math.max(deltaY, -maxHeight)));
-        } else {
-            Raf.setRaf(() => setDrag(Math.min(deltaY, maxHeight)));
-        }
-        mouseDragging = true;
     };
 
     const onEnd = (evt: EventType) => {
@@ -303,18 +308,16 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
             throw new Error(`"refreshFunction" is not function or missing`);
         }
 
-        mouseDown = false;
+        mouseDownRef.current = false;
         setRefreshType(COMPONENT_TYPE.REFRESHING);
-        setTimeout(() => {
-            if (mouseDragging) {
-                refreshFunction && refreshFunction();
-                mouseDragging = false;
-                setRefreshType(COMPONENT_TYPE.END);
-                Raf.setRaf(resetDrag);
-                preStartYRef.current = 0;
-                setPullDistance(0);
-            }
-        }, 1000);
+        if (pullDistanceRef.current > 0) {
+            refreshFunction && refreshFunction();
+            setRefreshType(COMPONENT_TYPE.END);
+            Raf.setRaf(resetDrag);
+            preStartYRef.current = 0;
+            setPullDistance(0);
+            pullDistanceRef.current = 0;
+        }
     };
 
     const resetDrag = () => {
@@ -418,7 +421,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                 style={insideStyle}
             >
                 <div ref={childrenContainerRef}>
-                    {inverse ? loadingMoreComponent : refreshComponent}
+                    {refreshComponent}
+                    {inverse && loadingMoreComponent}
                     {
                         React.Children.map(props.children, (child, index) => {
                             return React.cloneElement(React.Children.only(child), {
@@ -426,7 +430,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                             });
                         })
                     }
-                    {inverse ? refreshComponent : loadingMoreComponent}
+                    {!inverse && loadingMoreComponent}
+                    {refreshComponent}
                 </div>
             </div>
         </div>

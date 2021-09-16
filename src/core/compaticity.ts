@@ -10,7 +10,7 @@ export function resetPageInIOS() {
 }
 
 // 禁止页面滚动默认行为（移动端）
-export function bodyScroll(event) {
+export function bodyScroll(event: Event | MouseEvent) {
     event.preventDefault();
 }
 

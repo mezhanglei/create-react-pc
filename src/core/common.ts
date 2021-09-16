@@ -31,7 +31,7 @@ export function isLogin() {
 // 退出登录后的本地操作
 export function loginOut() {
     // 清除用户信息
-    ClearUserInfo();
+    clearUserInfo();
     window.location.href = LOGIN_PATH;
 }
 
@@ -77,7 +77,7 @@ export const message = {
     oldTitle: document.title,
     time: 0,
     // 开始闪烁消息
-    showMessage(msg) {
+    showMessage(msg: string) {
         message.timeout = setInterval(function () {
             message.time++;
             let title = '';

@@ -171,7 +171,7 @@ export default class WebSocketProxy {
                 this.emitEvent(IMEvent.DISCONNECTED);
                 this.reconnect();
             } else {
-                console.log(`websocket手动关闭链接`)
+                console.log(`websocket主动关闭链接`);
             }
         };
 

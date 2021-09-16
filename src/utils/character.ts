@@ -1,5 +1,6 @@
 //===基础字符串或数字的处理===//
-import { isObject, isNumber } from "./type";
+import { isObject, isNumber, isEmpty } from "./type";
+import * as Pinyin from 'jian-pinyin';
 
 //保留n位小数并格式化输出字符串类型的数据
 export function formatFloat(value: number | string, n = 2) {
@@ -146,4 +147,124 @@ export const getGUID = () => {
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+
+// 2~36转十进制
+export const OtherToDecimal = (num: string, base: number) => {
+    const bases = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const config = {};
+    for (let k = 0; k < base; k++) {
+        config[bases[k]] = k;
+    }
+    num = String(num);
+    num = num.toUpperCase();
+    let count = 0;
+    let res = 0;
+    let i;
+    while (num.length > 0) {
+        i = num[num.length - 1];
+        i = config[i];
+        res = res + i * Math.pow(base, count);
+        num = num.substr(0, num.length - 1);
+        count++;
+    }
+    return res;
+};
+
+// 十进制转化为2~36进制
+export const DecimalToOther = (number: number, base: number) => {
+    const arr = [];
+    const string = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let baseString = '';
+    if (base < 2 || base > 36) return baseString;
+    while (number > 0) {
+        arr.push(Math.floor(number % base));
+        number = Math.floor(number / base);
+    }
+    while (arr.length != 0) baseString += string[arr.pop()];
+    return baseString;
+};
+
+// 首字母排序
+export function pinyinSort(stringArr: string[]) {
+
+    // 按照指定长度补全，然后将36进制字符串转成十进制比较大小
+    const pinyinToNum = (pinyinArr: string[]) => {
+        let value = '';
+        const string = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        pinyinArr?.forEach((char) => {
+            if (char) {
+                const firstLetter = char?.[0]?.toUpperCase() || '';
+                const str = string?.indexOf(firstLetter) > -1 ? firstLetter : '';
+                value += str;
+            }
+        });
+        // 注意设置的是只能比较六位以内的
+        const newValue = value.padEnd(6, '0');
+        return OtherToDecimal(newValue, 36);
+    };
+
+    const dataMap = {};
+    for (let i = 0; i < stringArr.length; i++) {
+        const text = stringArr[i];
+        const pinyinStr = Pinyin.getSpell(text, (charactor, spell) => {
+            return spell[1];
+        });
+        const pinyinArr = pinyinStr.split(',');
+        const pinyin = pinyinArr.join('');
+        const key = pinyin?.[0]?.toUpperCase();
+        if (dataMap[key]) {
+            const value = dataMap[key];
+            const addValue = { text, pinyin, pinyinNum: pinyinToNum(pinyinArr) };
+            value?.push(addValue);
+            dataMap[key] = value;
+        } else {
+            dataMap[key] = [{ text, pinyin, pinyinNum: pinyinToNum(pinyinArr) }];
+        }
+    }
+
+    const ret = [] as { key: string, value: { text: string, pinyin: string, pinyinNum: number }[] }[];
+    const letters = '*ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    for (let i = 1; i < letters.length; i++) {
+        const value = dataMap[letters[i]];
+        if (value) {
+            const obj = new Object() as { key: string, value: { text: string, pinyin: string, pinyinNum: number }[] };
+            obj.key = letters[i];
+            const sortValue = value?.sort((a, b) => {
+                return (a?.pinyinNum - b?.pinyinNum);
+            });
+            obj.value = sortValue;
+            ret.push(obj);
+        }
+    }
+    return ret;
+}
+
+// 针对目标字符串，返回匹配的值
+export const matchChar = (content: string, keyWords?: string) => {
+    if (!content) return;
+    if (isEmpty(keyWords)) return content;
+    // 是否有空格分词
+    const splitParts: string[] = keyWords?.split(' ') || [];
+    // 正则匹配字符串
+    let matchRegStr = '';
+    for (let i = 0; i < splitParts?.length; i++) {
+        matchRegStr += '(' + splitParts[i] + ')([\\s\\S]*)';
+    }
+    const matchReg = new RegExp(matchRegStr);
+    const matchRes = content?.match(matchReg);
+    let k = 0;
+    if (matchRes !== null) {
+        let replaceReturn = "";
+        for (let j = 1; j < matchRes.length; j++) {
+            if (matchRes[j] === splitParts[k]) {
+                replaceReturn += '<span style="color:red;">$' + j + '</span>';
+                k++;
+            } else {
+                // 与 regexp 中的第1到第99个子表达式相匹配的文本。
+                replaceReturn += '$' + j;
+            }
+        }
+        return content?.replace(matchReg, replaceReturn)
+    }
 }

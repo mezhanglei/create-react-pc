@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import App from "./app";
-import store from "@/store/index";
+// import store from "@/redux/index";
 import { ConfigProvider } from 'antd';
 import antdConfigs from "@/core/antd-configs";
 import objectFitImages from 'object-fit-images';
@@ -43,10 +43,11 @@ setTimeout(() => {
 
 
 ReactDOM.render(
-    <Provider store={store} >
-        <ConfigProvider {...antdConfigs} >
-            <App />
-        </ConfigProvider>
-    </Provider>,
+    // <Provider store={store} >
+    <ConfigProvider {...antdConfigs} >
+        <App />
+    </ConfigProvider>
+    // </Provider>,
+    ,
     document.getElementById("root")
 );

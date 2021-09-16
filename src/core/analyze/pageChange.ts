@@ -2,7 +2,7 @@
 // 页面切换埋点
 
 // 监听location.href变化
-windown.onload = function () {
+window.onload = function () {
     // 上报事件
 };
 
@@ -12,7 +12,7 @@ window.addEventListener('hashchange', function () {
 }, true);
 
 // 重写路由事件
-function aop(type) {
+function aop(type: string) {
     const source = window.history[type];
     return function () {
         // 创建自定义事件，以便window可以监听到该事件名

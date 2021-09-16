@@ -8,6 +8,7 @@ import VirtualList from '@/components/react-mini-virtual-list';
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
 import produce from "immer";
+import { ReactFixedSticky, ReactTransformSticky } from '@/components/react-sticky-wrapper'
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -97,7 +98,41 @@ const Demo1: React.FC<any> = (props) => {
     };
 
     return (
-        <>
+        <div className="boxx" style={{ marginTop: '0px' }}>
+            {/* <ReactTransformSticky>
+                <div style={{ height: '20px', background: 'red' }}>
+                    11111
+                </div>
+            </ReactTransformSticky> */}
+            <div style={{ height: '200px', width: '500px', marginTop: '100px', marginLeft: '100px', overflow: 'auto', background: 'gray' }}>
+                <div style={{ width: '1000px' }}>2222222</div>
+                <ReactFixedSticky>
+                    <div style={{ height: '20px', background: 'red' }}>
+                        11111
+                    </div>
+                </ReactFixedSticky>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+                <div>2222222</div>
+            </div>
+
             <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px', marginTop: '100px', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
@@ -116,11 +151,11 @@ const Demo1: React.FC<any> = (props) => {
                     </div>
                 </Draggable>
             </div>
-            <DraggableArea1 dataSource={state?.arr1} onMoveOutChange={onMoveOutChange} style={{display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px'}} onDragMoveEnd={onDragMoveEnd1}>
+            <DraggableArea1 dataSource={state?.arr1} onMoveOutChange={onMoveOutChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd1}>
                 {
                     state?.arr1?.map((item, index) => {
                         return (
-                            <DraggerItem style={{width: '50px',height: '50px', backgroundColor: 'red', border:'1px solid green'}} resizeAxis='auto' key={item} id={item}>
+                            <DraggerItem style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} resizeAxis='auto' key={item} id={item}>
                                 <div>
                                     大小拖放{item}
                                 </div>
@@ -130,11 +165,11 @@ const Demo1: React.FC<any> = (props) => {
                 }
             </DraggableArea1>
             <div style={{ marginTop: '10px' }}>
-                <DraggableArea2 dataSource={state?.arr2} onMoveInChange={onMoveInChange} style={{display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px'}} onDragMoveEnd={onDragMoveEnd2}>
+                <DraggableArea2 dataSource={state?.arr2} onMoveInChange={onMoveInChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd2}>
                     {
                         state?.arr2?.map((item, index) => {
                             return (
-                                <DraggerItem style={{width: '50px',height: '50px', backgroundColor: 'red', border:'1px solid green'}} key={item} id={item}>
+                                <DraggerItem style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} id={item}>
                                     <div>
                                         大小拖放{item}
                                     </div>
@@ -161,8 +196,13 @@ const Demo1: React.FC<any> = (props) => {
                         return renderItem(item, index);
                     })
                 }
-                </VirtualList>
-        </>
+            </VirtualList>
+            <ReactFixedSticky>
+                <div style={{ height: '20px', background: 'red' }}>
+                    11111
+                </div>
+            </ReactFixedSticky>
+        </div>
     );
 }
 

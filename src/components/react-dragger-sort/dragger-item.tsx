@@ -4,7 +4,7 @@ import { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/rea
 import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
-import { findElement, getPositionInPage, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
+import { findElement, getPositionInParent, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 import ReactDOM from 'react-dom';
 
@@ -98,7 +98,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     // 位置相对比较的父元素
     const findParent = () => {
         const ownerDocument = findOwnerDocument();
-        const node = ownerDocument?.body || ownerDocument?.documentElement;
+        const node = ownerDocument?.documentElement;
         return node;
     };
 
@@ -204,7 +204,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         if (!data || !canResize()) return false;
         setDragType(DragTypes.resizeStart);
         const node = data?.node;
-        const position = getPositionInPage(node);
+        const position = getPositionInParent(node);
         return context?.onResizeStart && context?.onResizeStart(e, {
             width: data?.width,
             height: data?.height,
@@ -220,7 +220,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         if (!data || !canResize()) return false;
         const node = data?.node;
         setDragType(DragTypes.resizing);
-        const position = getPositionInPage(node);
+        const position = getPositionInParent(node);
         return context?.onResizing && context?.onResizing(e, {
             width: data?.width,
             height: data?.height,
@@ -236,7 +236,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         if (!data || !canResize()) return false;
         setDragType(DragTypes.resizeEnd);
         const node = data?.node;
-        const position = getPositionInPage(node);
+        const position = getPositionInParent(node);
         return context?.onResizeEnd && context?.onResizeEnd(e, {
             width: data?.width,
             height: data?.height,

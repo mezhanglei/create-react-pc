@@ -62,7 +62,7 @@ export function isNodeList(data: any) {
 }
 
 // 判断值是否为空
-export function isEmpty(value: any) {
+export function isEmpty(value: unknown) {
     if (Array.isArray(value)
         || typeof value === 'string'
         || value instanceof String
@@ -78,10 +78,7 @@ export function isEmpty(value: any) {
         return Object.keys(value).length === 0;
     }
 
-    if (value === undefined || value === null) {
-        return true;
-    }
-    return false;
+    return value === undefined || value === null;
 }
 
 export function isArrayBuffer(data: any) {

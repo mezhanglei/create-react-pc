@@ -30,7 +30,7 @@ export function getFinger() {
  * 缺点：可能受某些因素影响不稳定，另外指纹是会出现重复的，可自行添加特征参数，比如ip等等
  * @param {*} callBack 获取浏览器指纹的回调
  */
-export function createFinger(callBack) {
+export function createFinger(callBack: (data: string) => void) {
     // 排除作为指纹参考的组件，因为不稳定的选项会导致指纹不稳定，所以排除掉
     let excludes = {
         language: true,

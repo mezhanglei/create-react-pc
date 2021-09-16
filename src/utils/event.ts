@@ -22,17 +22,16 @@ export default class DefineEvent {
     step: number;
     eventFn: (e: any) => any;
     constructor(configs: EventConfigs) {
-        configs = configs || {};
         // 自定义属性名
         this.eventKey = 'event-name';
         // 拦截的事件类型
-        this.eventType = configs.eventType || 'click';
+        this.eventType = configs?.eventType || 'click';
         // 会触发的操作名称
-        this.eventName = configs.eventName;
+        this.eventName = configs?.eventName;
         // 触发的操作函数
-        this.eventFn = configs.eventFn;
+        this.eventFn = configs?.eventFn;
         // 递归查询触发事件的的递归层数
-        this.step = configs.step || 3;
+        this.step = configs?.step || 3;
     }
 
     // 给body添加绑定事件，监听，如果触发了，则查询附近的父元素是否含有标记属性，如果含有，则执行发送代码
