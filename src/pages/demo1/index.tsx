@@ -99,18 +99,18 @@ const Demo1: React.FC<any> = (props) => {
 
     return (
         <div className="boxx" style={{ marginTop: '0px' }}>
-            {/* <ReactTransformSticky>
+            <ReactTransformSticky>
                 <div style={{ height: '20px', background: 'red' }}>
                     11111
                 </div>
-            </ReactTransformSticky> */}
+            </ReactTransformSticky>
             <div style={{ height: '200px', width: '500px', marginTop: '100px', marginLeft: '100px', overflow: 'auto', background: 'gray' }}>
                 <div style={{ width: '1000px' }}>2222222</div>
-                <ReactFixedSticky>
+                {/* <ReactFixedSticky>
                     <div style={{ height: '20px', background: 'red' }}>
                         11111
                     </div>
-                </ReactFixedSticky>
+                </ReactFixedSticky> */}
                 <div>2222222</div>
                 <div>2222222</div>
                 <div>2222222</div>
@@ -131,6 +131,11 @@ const Demo1: React.FC<any> = (props) => {
                 <div>2222222</div>
                 <div>2222222</div>
                 <div>2222222</div>
+                {/* <ReactFixedSticky>
+                    <div style={{ height: '20px', background: 'red' }}>
+                        11111
+                    </div>
+                </ReactFixedSticky> */}
             </div>
 
             <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px', marginTop: '100px', width: '500px', background: "red" }}>

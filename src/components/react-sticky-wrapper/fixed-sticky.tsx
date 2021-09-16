@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
-import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, setStyle, getOffsetWH, getClientWH, getInsideRange, getRect } from '@/utils/dom';
+import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, setStyle, getInsideRange, getRect } from '@/utils/dom';
 import { isMobile } from '@/utils/verify';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
@@ -21,7 +21,7 @@ let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 export interface ReactFixedStickyProps {
     children: any;
     scrollRoot?: HTMLElement | string; // 滚动根节点
-    bounds?: { left?: number, top?: number, right?: number, bottom?: number }; // 小于设置值则固定
+    bounds?: { left?: number, top?: number }; // 小于设置值则固定
     style?: CSSProperties;
     className?: string;
 }
@@ -30,7 +30,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
     const {
         children,
         scrollRoot,
-        bounds = { top: 0, left:0 },
+        bounds = { top: 0 },
         style,
         className
     } = props;
@@ -58,7 +58,8 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
     useEffect(() => {
         const root = getScrollRoot();
         const node = nodeRef.current;
-        const addEventEle: any = root === document.documentElement ? (document || window) : root;
+        const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || window) : root;
+  
         const initData = {
             node,
             root
@@ -86,35 +87,20 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
         const node = data?.node;
         const root = data?.root;
         // 目标在根节点内部的位置范围
-        const isRoot = root === document.body || root === document.documentElement;
+        const isRoot = [document.documentElement, document.body].includes(root);
         const insideRange = isRoot ? getRect(node) : getInsideRange(node, root);
         if (!insideRange || !stickyRef.current) return;
 
         const leftTrigger = bounds?.left || bounds.left === 0 ? insideRange?.left < bounds?.left : false;
         const topTrigger = bounds?.top || bounds.top === 0 ? insideRange?.top < bounds?.top : false;
-        const rightTrigger = bounds?.right || bounds.right === 0 ? insideRange.right < bounds?.right : false;
-        const bottomTrigger = bounds?.bottom || bounds.bottom === 0 ? insideRange?.bottom < bounds?.bottom : false;
 
-        if (leftTrigger || topTrigger || rightTrigger || bottomTrigger) {
+        if (leftTrigger || topTrigger) {
             // 根节点的位置
             const baseLeft = Math.max(getClientXY(root)?.x || 0, 0);
-            const baseTop = Math.max(getClientXY(root)?.y || 0);
-            // 根节点的内边框宽高
-            const insideW = getClientWH(root)?.width || 0;
-            const insideH = getClientWH(root)?.height || 0;
-            // 目标节点的外边框宽高
-            const nodeOffsetW = getOffsetWH(node)?.width || 0;
-            const nodeOffsetH = getOffsetWH(node)?.height || 0;
+            const baseTop = Math.max(getClientXY(root)?.y || 0, 0);
 
-            if (leftTrigger) {
-                stickyRef.current.style['left'] = baseLeft + (bounds.left || 0) + 'px';
-            } else if (topTrigger) {
-                stickyRef.current.style['top'] = baseTop + (bounds.top || 0) + 'px';
-            } else if (rightTrigger) {
-                stickyRef.current.style['left'] = insideW - (bounds.right || 0) - nodeOffsetW + 'px';
-            } else if (bottomTrigger) {
-                stickyRef.current.style['top'] = insideH - (bounds.bottom || 0) - nodeOffsetH + 'px';
-            }
+            stickyRef.current.style['top'] = baseTop + (bounds.top || 0) + 'px';
+            stickyRef.current.style['left'] = baseLeft + (bounds.left || 0) + 'px';
 
             node.style['opacity'] = '0';
             stickyRef.current.style['opacity'] = 1;

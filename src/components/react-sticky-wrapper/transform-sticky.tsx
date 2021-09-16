@@ -47,7 +47,7 @@ const ReactTransformSticky: React.FC<ReactTransformStickyProps> = (props) => {
             const node = findElement(selector);
             if (node) {
                 // 目标在根节点内部的位置范围
-                const isRoot = root === document.body || root === document.documentElement;
+                const isRoot = [document.documentElement, document.body].includes(root);
                 const insideRange = isRoot ? getRect(node) : getInsideRange(node, root);
                 if (insideRange) {
                     return {
@@ -68,7 +68,7 @@ const ReactTransformSticky: React.FC<ReactTransformStickyProps> = (props) => {
 
     useEffect(() => {
         const root = getScrollRoot();
-        const addEventEle: any = root === document.documentElement ? (document || window) : root;
+        const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || window) : root;
         let scrollNodeList = findNodeList();
         addEvent(addEventEle, dragEventFor.move, (e) => handleScroll(e, scrollNodeList, root));
         return () => {
@@ -88,9 +88,9 @@ const ReactTransformSticky: React.FC<ReactTransformStickyProps> = (props) => {
             const scrollX = getScroll(root)?.x || 0;
             const scrollY = getScroll(root)?.y || 0;
 
-            const topTrigger = bounds_top || bounds_top === 0 ? scrollY - initTop > bounds_top : false;
+            const topTrigger = bounds_top || bounds_top === 0 ? (scrollY - initTop > bounds_top) : false;
             const leftTrigger = bounds_left || bounds_left === 0 ? scrollX - initLeft > bounds_left : false;
-
+    
             if (topTrigger || leftTrigger) {
                 if (topTrigger) {
                     node.style[getPrefixStyle('transform')] = `translate3d(0px,${scrollY - initTop + (bounds_top || 0)}px, 0)`

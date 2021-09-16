@@ -86,7 +86,7 @@ export function matchParent(el: any, parent: HTMLElement): boolean {
     let node = el;
     do {
         if (node === parent) return true;
-        if ((node === document.body) || (node === document.documentElement)) return false;
+        if ([document.documentElement, document.body].includes(node)) return false;
         node = node.parentNode;
     } while (node);
 
@@ -114,9 +114,9 @@ export function getTouchIdentifier(e: TouchEvent, identifier?: number): number {
  * @param y 纵轴坐标
  */
 export function setScroll(ele: HTMLElement, x: number, y: number): void {
-    if (ele === document.documentElement) {
+    if ([document.documentElement, document.body].includes(ele)) {
         document.documentElement.scrollTop = y || 0;
-        document.documentElement.scrollLeft = y || 0;
+        document.documentElement.scrollLeft = x || 0;
     } else {
         if (ele) {
             ele.scrollTop = y || 0;
@@ -131,15 +131,15 @@ export function setScroll(ele: HTMLElement, x: number, y: number): void {
  * 获取页面或元素的卷曲滚动(兼容写法)
  * @param el 目标元素
  */
-export interface ScrollInterface {
+ export interface ScrollInterface {
     x: number;
     y: number;
 }
-export function getScroll(el: HTMLElement = document.documentElement): undefined | ScrollInterface {
+export function getScroll(el: HTMLElement): undefined | ScrollInterface {
     if (!isDom(el)) {
         return;
     }
-    if (el === document.documentElement) {
+    if ([document.documentElement, document.body].includes(el)) {
         const doc = el.ownerDocument; // 节点所在document对象
         const win: any = doc.defaultView; // 包含document的window对象
         const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
@@ -176,11 +176,11 @@ export interface ClientInterface {
     width: number;
     height: number;
 }
-export function getClientWH(el: HTMLElement = document.documentElement): undefined | ClientInterface {
+export function getClientWH(el: HTMLElement): undefined | ClientInterface {
     if (!isDom(el)) {
         return;
     }
-    if (el === document.documentElement) {
+    if ([document.documentElement, document.body].includes(el)) {
         const width = el.clientWidth || window.screen.availWidth;
         const height = el.clientHeight || window.screen.availHeight;
         return { width, height };
@@ -196,11 +196,11 @@ export interface OffsetInterface {
     width: number;
     height: number;
 }
-export function getOffsetWH(el: HTMLElement = document.documentElement): undefined | OffsetInterface {
+export function getOffsetWH(el: HTMLElement): undefined | OffsetInterface {
     if (!isDom(el)) {
         return;
     }
-    if (el === document.documentElement) {
+    if ([document.documentElement, document.body].includes(el)) {
         const width = window.innerWidth;
         const height = window.innerHeight;
         return { width, height };
@@ -240,8 +240,8 @@ export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | S
 }
 
 // 获取在父元素内的可见位置
-export function getClientXYInParent(node: HTMLElement, parent: HTMLElement = document.documentElement) {
-    if (parent === document.body || parent === document.documentElement) {
+export function getClientXYInParent(node: HTMLElement, parent: HTMLElement = document.body || document.documentElement) {
+    if ([document.documentElement, document.body].includes(parent)) {
         return getClientXY(node);
     } else if (parent) {
         const rect = getOutsideRange(node, parent);
@@ -257,7 +257,7 @@ export function getClientXYInParent(node: HTMLElement, parent: HTMLElement = doc
  * @param el 元素或事件对象
  * @param parent 父元素
  */
-export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement = document.documentElement): null | SizeInterface {
+export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | SizeInterface {
     let pos = null;
     if ("clientX" in el) {
         pos = {
@@ -334,7 +334,7 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
  * @param {*} style 样式对象
  * @param {*} node 目标元素
  */
-export function setStyle(style: any, node: HTMLElement = document.documentElement): CSSProperties {
+export function setStyle(style: any, node: HTMLElement = document.body || document.documentElement): CSSProperties {
     const oldStyle: any = {};
 
     const styleKeys: string[] = Object.keys(style);
@@ -373,9 +373,9 @@ export function eleCanScroll(ele: HTMLElement): boolean {
  * @param {*} step 遍历层数，设置可以限制向上冒泡查找的层数
  */
 export function getScrollParent(target: any, step?: number): HTMLElement {
-    const root = [document.documentElement];
+    const root = [document.documentElement, document.body];
     if (root.indexOf(target) > -1) {
-        return document.documentElement;
+        return document.body || document.documentElement;
     };
 
     let scrollParent = target?.parentNode;
@@ -396,7 +396,7 @@ export function getScrollParent(target: any, step?: number): HTMLElement {
             scrollParent = scrollParent.parentNode;
         }
     }
-    return document.documentElement;
+    return document.body || document.documentElement;
 };
 
 // 是否可以使用dom

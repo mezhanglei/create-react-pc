@@ -186,7 +186,7 @@ export const DecimalToOther = (number: number, base: number) => {
 };
 
 // 首字母排序
-export function pinyinSort(stringArr: string[]) {
+export function pinyinSort(stringArr: string[], maxLength = 6) {
 
     // 按照指定长度补全，然后将36进制字符串转成十进制比较大小
     const pinyinToNum = (pinyinArr: string[]) => {
@@ -199,8 +199,8 @@ export function pinyinSort(stringArr: string[]) {
                 value += str;
             }
         });
-        // 注意设置的是只能比较六位以内的
-        const newValue = value.padEnd(6, '0');
+  
+        const newValue = value.padEnd(maxLength, '0');
         return OtherToDecimal(newValue, 36);
     };
 
@@ -240,7 +240,7 @@ export function pinyinSort(stringArr: string[]) {
     return ret;
 }
 
-// 针对目标字符串，返回匹配的值
+// 针对目标字符串，返回匹配的值替换成着重红色字体
 export const matchChar = (content: string, keyWords?: string) => {
     if (!content) return;
     if (isEmpty(keyWords)) return content;

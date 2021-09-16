@@ -223,7 +223,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     const initDom = (scrollableParent: HTMLElement) => {
         if (forbidTriggerRef.current) return;
         // 滚动父节点绑定事件(文档根节点不能绑定事件)
-        const el: any = scrollableParent === (document.body || document.documentElement) ? (document || window) : scrollableParent;
+        const el: any = [document.documentElement, document.body].includes(scrollableParent) ? (document || window) : scrollableParent;
         eventRef.current = el;
 
         if (el) {

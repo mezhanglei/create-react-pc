@@ -45,18 +45,23 @@ export function getPositionInPage(el: MouseEvent | TouchEvent | HTMLElement): nu
     return pos;
 };
 
-// 滚动的兼容
-export function setScroll(ele: HTMLElement, x: number, y: number) {
-    if (ele === document.body) {
-        if (document.documentElement) {
-            document.documentElement.scrollTop = y || 0;
-            document.documentElement.scrollLeft = y || 0;
+/**
+ * 设置滚动距离（兼容写法）
+ * @param ele 目标元素
+ * @param x 横轴坐标
+ * @param y 纵轴坐标
+ */
+ export function setScroll(ele: HTMLElement, x: number, y: number): void {
+    if ([document.documentElement, document.body].includes(ele)) {
+        document.documentElement.scrollTop = y || 0;
+        document.documentElement.scrollLeft = x || 0;
+    } else {
+        if (ele) {
+            ele.scrollTop = y || 0;
+            ele.scrollLeft = x || 0;
         } else if (window) {
             window.scrollTo(x || 0, y || 0);
         }
-    } else {
-        ele.scrollTop = y || 0;
-        ele.scrollLeft = x || 0;
     }
 };
 
@@ -65,7 +70,7 @@ export function getScroll(el: HTMLElement = (document.body || document.documentE
     if (!isDom(el)) {
         return;
     }
-    if (el === document.body || el === document.documentElement) {
+    if ([document.documentElement, document.body].includes(el)) {
         const doc = el.ownerDocument; // 节点所在document对象
         const win: any = doc.defaultView; // 包含document的window对象
         const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
@@ -87,7 +92,7 @@ export function getOffsetWH(el: HTMLElement = (document.body || document.documen
     if (!isDom(el)) {
         return;
     }
-    if (el === document.body || el === document.documentElement) {
+    if ([document.documentElement, document.body].includes(el)) {
         const width = window.innerWidth;
         const height = window.innerHeight;
         return { width, height };

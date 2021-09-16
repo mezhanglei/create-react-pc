@@ -49,7 +49,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
 
     // 获取定位父元素，涉及的位置相对于该父元素
     const getLocationParent = () => {
-        const parent = findElement(bounds) || findElement((bounds as BoundsInterface)?.boundsParent) || document.documentElement;
+        const parent = findElement(bounds) || findElement((bounds as BoundsInterface)?.boundsParent) || document.body || document.documentElement;
         return parent;
     }
 

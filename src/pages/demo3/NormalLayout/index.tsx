@@ -2,7 +2,6 @@ import *as React from 'react';
 import DragGrid from '@/components/react-draggable-layout'
 import { Words } from './largedata';
 import './index.css';
-import { matchChar } from '@/utils/search';
 
 
 
@@ -78,7 +77,6 @@ export class LayoutDemo extends React.Component<{}, {}> {
                             })
                         }
                     </DragGrid>
-                    {matchChar('我是中国人', '我是 国')}
                 </div>
             </div>
         )
