@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useRef } from 'react';
 import classNames from 'classnames';
 import CSSMotion from 'rc-motion';
-import { getPositionInParent } from '@/utils/dom';
+import { getInsidePosition } from '@/utils/dom';
 import "./Content.less";
 
 const sentinelStyle = { width: 0, height: 0, overflow: 'hidden', outline: 'none' };
@@ -66,11 +66,11 @@ const Content = React.forwardRef((props, ref) => {
     }
 
     function onPrepare() {
-        const pagePosition = getPositionInParent(dialogRef.current);
+        const pagePosition = getInsidePosition(dialogRef.current);
 
         setTransformOrigin(
             mousePosition
-                ? `${mousePosition.x - pagePosition.x}px ${mousePosition.y - pagePosition.y}px`
+                ? `${mousePosition.x - pagePosition.left}px ${mousePosition.y - pagePosition.top}px`
                 : '',
         );
     }

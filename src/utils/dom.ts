@@ -59,7 +59,7 @@ export function getElementXY(ele: HTMLElement, parent: HTMLElement): { x: number
 }
 
 /**
- * 返回元素的视窗内的位置(document.body,document?.documentElement可视位置随着滚动改变)
+ * 返回元素的视窗内的位置
  * @param el 
  * @returns 
  */
@@ -131,7 +131,7 @@ export function setScroll(ele: HTMLElement, x: number, y: number): void {
  * 获取页面或元素的卷曲滚动(兼容写法)
  * @param el 目标元素
  */
- export interface ScrollInterface {
+export interface ScrollInterface {
     x: number;
     y: number;
 }
@@ -153,7 +153,7 @@ export function getScroll(el: HTMLElement): undefined | ScrollInterface {
 };
 
 // 事件对象在屏幕的位置
-export function getScreenXY(e: MouseEvent | TouchEvent): null | {x: number, y: number} {
+export function getScreenXY(e: MouseEvent | TouchEvent): null | { x: number, y: number } {
     let pos = null;
     if ("clientX" in e) {
         pos = {
@@ -211,7 +211,7 @@ export function getOffsetWH(el: HTMLElement): undefined | OffsetInterface {
     }
 };
 
-// 返回元素或事件对象的可视位置
+// 返回元素或事件对象的视口位置
 export interface SizeInterface {
     x: number;
     y: number;
@@ -231,38 +231,50 @@ export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | S
             };
         }
     } else if (isDom(el)) {
-        pos = {
-            x: getRect(el).left,
-            y: getRect(el).top
-        };
+        if ([document.documentElement, document.body].includes(el)) {
+            pos = {
+                x: 0,
+                y: 0
+            }
+        } else {
+            pos = {
+                x: getRect(el)?.left,
+                y: getRect(el).top
+            };
+        }
     }
     return pos;
 }
 
-// 获取在父元素内的可见位置
-export function getClientXYInParent(node: HTMLElement, parent: HTMLElement = document.body || document.documentElement) {
+// 获取在父元素内的视口位置
+export function getClientXYInParent(el: HTMLElement, parent: HTMLElement = document.body || document.documentElement) {
     if ([document.documentElement, document.body].includes(parent)) {
-        return getClientXY(node);
+        return getClientXY(el);
     } else if (parent) {
-        const rect = getOutsideRange(node, parent);
+        const top = getRect(el).top - getRect(parent).top;
+        const left = getRect(el).left - getRect(parent).left;
         return {
-            x: rect?.left,
-            y: rect?.top
+            x: left,
+            y: top
         }
     }
 }
 
+
 /**
- * 返回元素或事件对象相对于父元素的真实位置
- * @param el 元素或事件对象
+ * 返回事件对象相对于父元素的真实位置
+ * @param el 事件对象
  * @param parent 父元素
  */
-export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | SizeInterface {
+export function getEventPosition(el: MouseEvent | TouchEvent, parent: HTMLElement = document.body || document.documentElement): null | {
+    x: number;
+    y: number;
+} {
     let pos = null;
     if ("clientX" in el) {
         pos = {
             x: el?.clientX - getRect(parent).left,
-            y: el?.clientY - getRect(parent).top
+            y: el?.clientY - getRect(parent).top,
         };
     } else if ("touches" in el) {
         if (el?.touches[0]) {
@@ -271,37 +283,12 @@ export function getPositionInParent(el: MouseEvent | TouchEvent | HTMLElement, p
                 y: el?.touches[0]?.clientY - getRect(parent).top
             };
         }
-    } else if (isDom(el)) {
-        pos = {
-            x: getRect(el).left - getRect(parent).left,
-            y: getRect(el).top - getRect(parent).top
-        };
     }
 
     return pos;
 }
 
-// 距离元素外边框的位置信息
-export function getOutsideRange(el: HTMLElement, parent: HTMLElement): null | {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-} {
-    let pos = null;
-    if (isDom(el)) {
-        pos = {
-            left: getRect(el).left - getRect(parent).left,
-            top: getRect(el).top - getRect(parent).top,
-            right: getRect(el).right - getRect(parent).right,
-            bottom: getRect(el).bottom - getRect(parent).bottom
-        };
-    }
-
-    return pos;
-}
-
-// 距离父元素内边框的范围信息
+// 目标在父元素四条内边框距离信息
 export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
     left: number;
     top: number;
@@ -310,20 +297,45 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
 } {
     let pos = null;
     if (isDom(el)) {
-        const nodeClientX = getClientXY(el)?.x || 0;
-        const nodeClientY = getClientXY(el)?.y || 0;
-        const rootClientX = getClientXY(parent)?.x || 0;
-        const rootClientY = getClientXY(parent)?.y || 0;
-        const parentW = getClientWH(parent)?.width || 0;
-        const parentH = getClientWH(parent)?.height || 0;
+        const parentScrollW = parent?.scrollWidth || 0;
+        const parentScrollH = parent?.scrollHeight || 0;
         const nodeW = getOffsetWH(el)?.width || 0;
         const nodeH = getOffsetWH(el)?.height || 0;
 
+        const top = getRect(el).top - getRect(parent).top;
+        const left = getRect(el).left - getRect(parent).left;
+
         return {
-            left: nodeClientX - rootClientX,
-            top: nodeClientY - rootClientY,
-            right: parentW - (nodeClientX - rootClientX + nodeW),
-            bottom: parentH - (nodeClientY - rootClientY + nodeH)
+            left,
+            top,
+            right: parentScrollW - (left + nodeW),
+            bottom: parentScrollH - (top + nodeH)
+        }
+    }
+    return pos;
+}
+
+
+// 目标在父元素内的四条边位置信息
+export function getInsidePosition(el: HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+} {
+    let pos = null;
+    if (isDom(el)) {
+        const nodeW = getOffsetWH(el)?.width || 0;
+        const nodeH = getOffsetWH(el)?.height || 0;
+
+        const top = getRect(el).top - getRect(parent).top;
+        const left = getRect(el).left - getRect(parent).left;
+
+        return {
+            left,
+            top,
+            right: left + nodeW,
+            bottom: top + nodeH
         }
     }
     return pos;

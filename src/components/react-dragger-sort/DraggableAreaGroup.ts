@@ -1,6 +1,6 @@
 import buildDraggableArea from './DraggableAreaBuilder';
 import { listenEventFunc } from "./utils/types";
-import { getOutsideRange } from "@/utils/dom";
+import { getInsidePosition } from "@/utils/dom";
 
 // 创建拖拽容器的类
 export default class DraggableAreaGroup {
@@ -27,7 +27,7 @@ export default class DraggableAreaGroup {
                 this.listenEventList.push(function (tag, e) {
                     if (tag?.area !== area) {
                         const parent = document?.documentElement;
-                        const areaRect = getOutsideRange(area, parent);
+                        const areaRect = getInsidePosition(area, parent);
                         const x = tag?.x || 0;
                         const y = tag?.y || 0;
                         if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {

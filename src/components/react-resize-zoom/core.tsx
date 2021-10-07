@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { isMobile } from "@/utils/verify";
-import { addEvent, removeEvent, getPositionInParent, getOffsetWH } from "@/utils/dom";
+import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "@/utils/dom";
 import { EventType, EventHandler, EventDataType, Direction, ResizeAxis, DragResizeProps } from "./type";
 
 // Simple abstraction for dragging events names.
@@ -92,7 +92,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     // 返回鼠标所在的边
     const getDirection = (e: EventType): string => {
         const element = nodeRef.current;
-        const position = getPositionInParent(e, element);
+        const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return '';
         const distance = offset;
@@ -154,7 +154,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         };
         e.preventDefault();
         const element = nodeRef?.current;
-        const position = getPositionInParent(e, element);
+        const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
 
@@ -187,7 +187,7 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         const mouseCursor = getMouseCursor(direction);
         element.style.cursor = mouseCursor;
         if (!isDraggableRef.current) return;
-        const position = getPositionInParent(e, element);
+        const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
         const { lastDir = ResizeAxis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};

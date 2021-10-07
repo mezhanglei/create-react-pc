@@ -4,7 +4,7 @@ import { createCSSTransform, createSVGTransform, getPositionByBounds } from './u
 import { DraggableProps, DragData, EventHandler, PositionType, DragAxis, BoundsInterface } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
-import { findElement, getPositionInParent } from '@/utils/dom';
+import { findElement, getInsidePosition } from '@/utils/dom';
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
@@ -56,7 +56,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     useEffect(() => {
         const node = nodeRef.current;
         const parent = getLocationParent();
-        const initXY = getPositionInParent(node, parent);
+        const pos = getInsidePosition(node, parent);
+        const initXY = pos && {
+            x: pos?.left,
+            y: pos?.top
+        };
         initXY && setInitXY(initXY);
         if (initXY) {
             eventDataUpdate(eventDataRef.current, { lastX: initXY?.x, lastY: initXY?.y });
@@ -107,9 +111,9 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         if (!data) return;
         const node = data?.node;
         const parent = getLocationParent();
-        const positionXY = getPositionInParent(node, parent);
-        let positionX = positionXY?.x;
-        let positionY = positionXY?.y;
+        const pos = getInsidePosition(node, parent);
+        let positionX = pos?.left;
+        let positionY = pos?.top;
 
         const translateX = eventDataRef.current?.translateX || 0;
         const translateY = eventDataRef.current?.translateY || 0;

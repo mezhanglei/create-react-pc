@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, CSSProperties } from 'react';
 import SizeAndPositionManager from './SizeAndPositionManager';
 import { addEvent, removeEvent } from "@/utils/dom";
 import {
@@ -20,9 +20,6 @@ import { ALIGNMENT, DIRECTION } from "./types";
  *          2. 支持自定义渲染数据
  *          3. 支持横向和竖向的滚动
  */
-export interface StyleCacheInterface {
-    [index: number]: any
-}
 
 export interface VirtualListProps {
     className?: string; // 外部容器的类名
@@ -66,7 +63,7 @@ const VirtualList: React.FC<VirtualListProps> = (props) => {
     const nodeRef = useRef<any>();
 
     const ManagerRef = useRef<any>();
-    const styleCacheRef = useRef<StyleCacheInterface>({});
+    const styleCacheRef = useRef<CSSProperties>({});
 
     const [scrollSize, setScrollSize] = useState<number>(0);
     const scrollSizeRef = useRef<number>(0);
