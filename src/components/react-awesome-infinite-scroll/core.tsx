@@ -331,7 +331,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
     const setDrag = (move: number) => {
         const childrenContainer = childrenContainerRef.current;
         if (childrenContainer) {
-            childrenContainer.style.transition = `transform 0.3s`;
+            childrenContainer.style.transition = `transform 0.2s cubic-bezier(0,0,0.31,1)`;
             childrenContainer.style.transform = `translate3d(0px, ${move}px, 0px)`;
         }
     };

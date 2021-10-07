@@ -240,7 +240,7 @@ export function pinyinSort(stringArr: string[], maxLength = 6) {
     return ret;
 }
 
-// 针对目标字符串，返回匹配的值替换成着重红色字体
+// 针对目标字符串，返回匹配的值替换成着重红色字体，支持关键字空格分词
 export const matchChar = (content: string, keyWords?: string) => {
     if (!content) return;
     if (isEmpty(keyWords)) return content;
