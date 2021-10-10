@@ -50,7 +50,7 @@ const demo2: React.FC<any> = (props) => {
                 };
 
                 resolve(listRef.current.concat(Array.from({ length: 20 })))
-            }, 500);
+            }, 5000);
         }).then((res: any) => {
             return listChange(res);
         }).catch(err => {

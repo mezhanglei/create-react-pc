@@ -131,11 +131,10 @@ export function setScroll(ele: HTMLElement, x: number, y: number): void {
  * 获取页面或元素的卷曲滚动(兼容写法)
  * @param el 目标元素
  */
-export interface ScrollInterface {
+export function getScroll(el: HTMLElement): undefined | {
     x: number;
     y: number;
-}
-export function getScroll(el: HTMLElement): undefined | ScrollInterface {
+} {
     if (!isDom(el)) {
         return;
     }
@@ -172,11 +171,10 @@ export function getScreenXY(e: MouseEvent | TouchEvent): null | { x: number, y: 
 };
 
 // 获取页面或元素的可视宽高(兼容写法, 不包括工具栏和滚动条及边框)
-export interface ClientInterface {
+export function getClientWH(el: HTMLElement): undefined | {
     width: number;
     height: number;
-}
-export function getClientWH(el: HTMLElement): undefined | ClientInterface {
+} {
     if (!isDom(el)) {
         return;
     }
@@ -192,11 +190,10 @@ export function getClientWH(el: HTMLElement): undefined | ClientInterface {
 };
 
 // 获取页面或元素的宽高 = 可视宽高 + 滚动条 + 边框
-export interface OffsetInterface {
+export function getOffsetWH(el: HTMLElement): undefined | {
     width: number;
     height: number;
-}
-export function getOffsetWH(el: HTMLElement): undefined | OffsetInterface {
+} {
     if (!isDom(el)) {
         return;
     }
@@ -212,11 +209,10 @@ export function getOffsetWH(el: HTMLElement): undefined | OffsetInterface {
 };
 
 // 返回元素或事件对象的视口位置
-export interface SizeInterface {
+export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | {
     x: number;
     y: number;
-}
-export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | SizeInterface {
+} {
     let pos = null;
     if ("clientX" in el) {
         pos = {
@@ -258,6 +254,31 @@ export function getClientXYInParent(el: HTMLElement, parent: HTMLElement = docum
             y: top
         }
     }
+}
+
+// 目标在父元素内的四条边位置信息
+export function getInsidePosition(el: HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+} {
+    let pos = null;
+    if (isDom(el)) {
+        const nodeW = getOffsetWH(el)?.width || 0;
+        const nodeH = getOffsetWH(el)?.height || 0;
+
+        const top = getRect(el).top - getRect(parent).top;
+        const left = getRect(el).left - getRect(parent).left;
+
+        return {
+            left,
+            top,
+            right: left + nodeW,
+            bottom: top + nodeH
+        }
+    }
+    return pos;
 }
 
 
@@ -310,32 +331,6 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
             top,
             right: parentScrollW - (left + nodeW),
             bottom: parentScrollH - (top + nodeH)
-        }
-    }
-    return pos;
-}
-
-
-// 目标在父元素内的四条边位置信息
-export function getInsidePosition(el: HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-} {
-    let pos = null;
-    if (isDom(el)) {
-        const nodeW = getOffsetWH(el)?.width || 0;
-        const nodeH = getOffsetWH(el)?.height || 0;
-
-        const top = getRect(el).top - getRect(parent).top;
-        const left = getRect(el).left - getRect(parent).left;
-
-        return {
-            left,
-            top,
-            right: left + nodeW,
-            bottom: top + nodeH
         }
     }
     return pos;
@@ -427,12 +422,11 @@ export function canUseDom(): boolean {
  * @param handler 事件函数
  * @param inputOptions 配置
  */
-interface InputOptionsType {
+export function addEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: {
     captrue?: boolean,
     once?: boolean,
     passive?: boolean
-}
-export function addEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: InputOptionsType): void {
+}): void {
     if (!el) return;
     // captrue: true事件捕获 once: true只调用一次,然后销毁 passive: true不调用preventDefault
     const options = { capture: false, once: false, passive: false, ...inputOptions };
@@ -453,7 +447,11 @@ export function addEvent(el: any, event: string, handler: (...rest: any[]) => an
  * @param handler 事件函数
  * @param inputOptions 配置
  */
-export function removeEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: InputOptionsType): void {
+export function removeEvent(el: any, event: string, handler: (...rest: any[]) => any, inputOptions?: {
+    captrue?: boolean,
+    once?: boolean,
+    passive?: boolean
+}): void {
     if (!el) return;
     const options = { capture: false, once: false, passive: false, ...inputOptions };
     if (el.removeEventListener) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, ReactNode, CSSProperties } from 're
 import { throttle } from './utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "./utils/requestAnimationFrame";
-import { setScroll, getScroll, getOffsetWH, getPositionInPage, getScrollParent, addEvent, removeEvent } from "./utils/dom";
+import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "./utils/dom";
 import { isDom } from "./utils/type";
 import { isMobile } from './utils/verify';
 
@@ -41,7 +41,7 @@ export interface Props {
     forbidTrigger?: boolean; // 禁止滚动加载触发，当页面上有多个滚动列表且滚动父元素相同，则可以通过此api禁止滚动触发加载
     children: any;
     length?: number;
-}
+};
 
 export interface ScrollRef {
     scrollTo: (x: number, y: number) => void;
@@ -153,6 +153,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
 
         // 加载下一个列表时重置状态
         if (props?.length) {
+            console.log(loadNumRef.current)
             if (loadNumRef.current > 0) {
                 resetStatus(target);
             }
@@ -179,6 +180,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         setLoading(false);
         // 结束error状态
         errorChange(false);
+        // 设置加载状态
+        setRefreshType(COMPONENT_TYPE.END);
     };
 
     // error状态change
@@ -197,9 +200,8 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         forbidTriggerRef.current = props.forbidTrigger;
     }, [props.forbidTrigger]);
 
-   // 监听滚动事件
+    // 监听滚动事件
     const onScrollListener = (event: EventType) => {
-        // if (mouseDownRef.current) return;
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
@@ -258,7 +260,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         const condition = inverse ? !isElementAtBottom(scrollableRef.current, thresholdValue) : !isElementAtTop(scrollableRef.current, thresholdValue);
         if (condition) return;
         mouseDownRef.current = true;
-        preStartYRef.current = getPositionInPage(evt)?.y || 0;
+        preStartYRef.current = getEventPosition(evt)?.y || 0;
         const scrollContainerDom = scrollContainerRef.current;
         if (scrollContainerDom) {
             scrollContainerDom.style.willChange = 'transform';
@@ -276,7 +278,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         const minHeight = minPullDown;
         const maxHeight = maxPullDown;
 
-        const startY = getPositionInPage(evt)?.y || 0;
+        const startY = getEventPosition(evt)?.y || 0;
         const deltaY = startY - preStartYRef.current;
 
         if (inverse) {
@@ -309,10 +311,9 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         }
 
         mouseDownRef.current = false;
-        setRefreshType(COMPONENT_TYPE.REFRESHING);
-        if (pullDistanceRef.current > 0) {
+        if (Math.abs(pullDistanceRef.current) > 0) {
+            setRefreshType(COMPONENT_TYPE.REFRESHING);
             refreshFunction && refreshFunction();
-            setRefreshType(COMPONENT_TYPE.END);
             Raf.setRaf(resetDrag);
             preStartYRef.current = 0;
             setPullDistance(0);
@@ -399,10 +400,11 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
         [COMPONENT_TYPE.REFRESHING]: refreshingComponent,
         [COMPONENT_TYPE.END]: refreshEndComponent
     };
+
     const refreshComponent =
         pullDownToRefresh && (
             <div
-                style={{ display: pullDistance ? 'block' : 'none' }}
+                style={{ display: (pullDistance || refreshType === COMPONENT_TYPE.REFRESHING) ? 'block' : 'none' }}
             >
                 <span>
                     {refreshProps[refreshType]}
@@ -421,7 +423,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                 style={insideStyle}
             >
                 <div ref={childrenContainerRef}>
-                    {refreshComponent}
+                    {!inverse && refreshComponent}
                     {inverse && loadingMoreComponent}
                     {
                         React.Children.map(props.children, (child, index) => {
@@ -431,7 +433,7 @@ const InfiniteScroll = React.forwardRef<ScrollRef, Props>((props, ref) => {
                         })
                     }
                     {!inverse && loadingMoreComponent}
-                    {refreshComponent}
+                    {inverse && refreshComponent}
                 </div>
             </div>
         </div>
