@@ -58,7 +58,8 @@ export class LayoutDemo extends React.Component<{}, {}> {
             <div
                 style={{
                     display: 'flex',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    width: '100vw'
                 }}
             >
                 <div>

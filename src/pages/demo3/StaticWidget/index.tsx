@@ -33,7 +33,7 @@ const Cell: (any: any) => any = React.forwardRef(({ item, style }, ref) => {
 
 export const SortedTableWithStatic = () => {
     return (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100vw' }}>
             <div>
                 <h1 style={{ textAlign: 'center' }}>静态组件 Demo</h1>
                 <DragGrid

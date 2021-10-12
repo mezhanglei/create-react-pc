@@ -96,7 +96,7 @@ export class AddRemove extends React.Component<{}, {}> {
         }
         return (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100vw' }}>
                     <div>
                         <h1 style={{ textAlign: 'center' }}>AddRemove Demo</h1>
                         <h3 style={{ textAlign: 'center' }}>在这个布局中，新增一个布局，会新加入一个布局</h3>
