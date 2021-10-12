@@ -2,13 +2,12 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DragResize from '@/components/react-resize-zoom';
 import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 import VirtualList from '@/components/react-mini-virtual-list';
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
 import produce from "immer";
-import { ReactFixedSticky, ReactTransformSticky } from '@/components/react-sticky-wrapper'
+import Modal from '@/components/antd-modal';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -99,46 +98,7 @@ const Demo1: React.FC<any> = (props) => {
 
     return (
         <div className="boxx" style={{ marginTop: '0px' }}>
-            <ReactTransformSticky>
-                <div style={{ height: '20px', background: 'red' }}>
-                    11111
-                </div>
-            </ReactTransformSticky>
-            <div style={{ height: '200px', width: '500px', marginTop: '100px', marginLeft: '100px', overflow: 'auto', background: 'gray' }}>
-                <div style={{ width: '1000px' }}>2222222</div>
-                {/* <ReactFixedSticky>
-                    <div style={{ height: '20px', background: 'red' }}>
-                        11111
-                    </div>
-                </ReactFixedSticky> */}
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                <div>2222222</div>
-                {/* <ReactFixedSticky>
-                    <div style={{ height: '20px', background: 'red' }}>
-                        11111
-                    </div>
-                </ReactFixedSticky> */}
-            </div>
-
-            <div className="boxs" style={{ display: 'inline-block', marginLeft: '100px', marginTop: '100px', width: '500px', background: "red" }}>
+            <div className="boxs" style={{ display: 'inline-block', marginLeft: '10px', marginTop: '10px', width: '500px', background: "red" }}>
                 <Draggable
                     axis="both"
                     bounds=".boxs"
@@ -202,11 +162,6 @@ const Demo1: React.FC<any> = (props) => {
                     })
                 }
             </VirtualList>
-            <ReactFixedSticky>
-                <div style={{ height: '20px', background: 'red' }}>
-                    11111
-                </div>
-            </ReactFixedSticky>
         </div>
     );
 }

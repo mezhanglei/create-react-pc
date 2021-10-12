@@ -41,7 +41,7 @@ export interface ButtonProps {
     disabled?: boolean; // 禁用
     onClick?: (e: any) => any;
     className?: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 const reg = /^[\u4e00-\u9fa5]{2}$/;

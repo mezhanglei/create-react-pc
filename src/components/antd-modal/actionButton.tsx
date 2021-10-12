@@ -1,7 +1,17 @@
 import * as React from 'react';
-import Button from '@/components/button/index';
+import Button, { ButtonProps } from '@/components/button/index';
+import { OKTYPE_BUTTON_TYPE } from './Modal';
 
-const ActionButton = props => {
+export interface ActionButtonProps {
+    type?: OKTYPE_BUTTON_TYPE;
+    actionFn?: (...args: any[]) => any | PromiseLike<any>;
+    closeModal: Function;
+    autoFocus?: boolean;
+    prefixCls: string;
+    buttonProps?: ButtonProps;
+  }
+
+const ActionButton: React.FC<ActionButtonProps> = props => {
     const ref = React.useRef();
     const [loading, setLoading] = React.useState(false);
 

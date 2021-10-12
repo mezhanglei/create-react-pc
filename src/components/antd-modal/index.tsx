@@ -1,42 +1,33 @@
-import * as React from 'react';
-import Modal, { destroyFns } from './Modal';
+import Modal, { destroyFns, ModalFuncProps } from './Modal';
 import confirm from './confirmModal';
 
-Modal.info = (props) => {
+Modal.info = (props: ModalFuncProps) => {
     const config = {
         type: 'info',
-        // icon: ,
-        okCancel: false,
         ...props
     };
     return confirm(config);
 };
 
-Modal.success = (props) => {
+Modal.success = (props: ModalFuncProps) => {
     const config = {
         type: 'success',
-        // icon: ,
-        okCancel: false,
         ...props
     };
     return confirm(config);
 };
 
-Modal.error = (props) => {
+Modal.error = (props: ModalFuncProps) => {
     const config = {
         type: 'error',
-        // icon: ,
-        okCancel: false,
         ...props
     };
     return confirm(config);
 };
 
-Modal.confirm = (props) => {
+Modal.confirm = (props: ModalFuncProps) => {
     const config = {
         type: 'confirm',
-        // icon: ,
-        okCancel: true,
         ...props
     };
     return confirm(config);

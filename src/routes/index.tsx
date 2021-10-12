@@ -9,7 +9,6 @@ import { initWX } from "@/core/wx";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionRoute from "./transitionRoute";
-import Modal from "@/components/modal/index";
 import { HashHistory, BrowserHistory } from "./history";
 import CustomPrompt from "@/components/prompt";
 
