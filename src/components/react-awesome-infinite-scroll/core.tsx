@@ -5,7 +5,6 @@ import Raf from "./utils/requestAnimationFrame";
 import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "./utils/dom";
 import { isDom } from "./utils/type";
 import { isMobile } from './utils/verify';
-import Manager from './manager';
 
 type fn = () => any;
 type EventType = MouseEvent | TouchEvent;
@@ -75,7 +74,6 @@ let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 export default class InfiniteScroll extends React.Component<Props, {}> {
     scrollWrap?: HTMLElement;
     childrenWrap?: HTMLElement;
-    manager: Manager;
     event: any;
     scrollRoot?: HTMLElement;
     dragging: boolean;
@@ -83,11 +81,16 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
     length: number;
     constructor(props: Props) {
         super(props);
-        this.manager = new Manager();
         this.dragging = false;
         this.scrollY = 0;
         this.length = 0;
         this.state = {
+            refreshType: COMPONENT_TYPE.PULL,
+            loading: false,
+            isError: false,
+            scrollHeight: 0,
+            pullDistance: 0,
+            length: 0
         };
     }
 
@@ -155,9 +158,10 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
     // 初始化绑定事件(滚动节点可能是异步也可能是同步)
     initDom = (scrollableParent: HTMLElement) => {
         const {
-            pullDownToRefresh
+            pullDownToRefresh,
+            forbidTrigger
         } = this.props;
-        if (this.manager?.forbidTrigger) return;
+        if (forbidTrigger) return;
         // 滚动父节点绑定事件(文档根节点不能绑定事件)
         const el: any = [document.documentElement, document.body].includes(scrollableParent) ? (document || window) : scrollableParent;
         this.event = el;
@@ -184,15 +188,16 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
             length
         } = this.props;
         const target = this.scrollRoot;
-        if(!target) return;
+        if (!target) return;
         if (length) {
             if (this.length !== 0) {
                 this.resetStatus(target);
             }
             this.length = length;
         }
-        // 更新高度
-        this.manager.setScrollHeight(target.scrollHeight);
+        this.setState({
+            scrollHeight: target.scrollHeight
+        })
     }
 
     // 加载到新数据后重置状态
@@ -201,28 +206,38 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
             inverse,
             thresholdValue
         } = this.props;
+        const {
+            loading,
+            scrollHeight,
+        } = this.state;
         // 反向加载的时候需要重置滚动高度
-        if (inverse && this.manager.loading && this.isElementAtTop(target, thresholdValue)) {
-            setScroll(target, 0, (this.manager.scrollHeight && target.scrollHeight - this.manager.scrollHeight) ? target.scrollHeight - this.manager.scrollHeight : 50);
+        if (inverse && loading && this.isElementAtTop(target, thresholdValue)) {
+            setScroll(target, 0, (scrollHeight && target.scrollHeight - scrollHeight) ? target.scrollHeight - scrollHeight : 50);
         }
         // 结束触发
-        this.manager.setFinishTrigger(false);
         // 结束loading
-        this.manager.setLoading(false);
         // 结束error状态
-        this.manager.setError(false);
         // 设置加载状态
-        this.manager.setRefreshType(COMPONENT_TYPE.END);
+        this.setState({
+            finishTrigger: false,
+            loading: false,
+            isError: false,
+            refreshType: COMPONENT_TYPE.END
+        })
     };
 
     // 监听滚动事件
     onScrollListener = (event: EventType) => {
-        const { onScroll, inverse, thresholdValue, hasMore, next } = this.props;
+        const { onScroll, inverse, thresholdValue, hasMore, next, forbidTrigger } = this.props;
+        const {
+            finishTrigger,
+            isError
+        } = this.state;
         if (typeof onScroll === 'function') {
             setTimeout(() => onScroll && onScroll(event), 0);
         }
 
-        if (this.manager?.finishTrigger || this.manager?.forbidTrigger || this.manager?.error) return;
+        if (finishTrigger || forbidTrigger || isError) return;
 
         const target = this.scrollRoot;
         const atBottom = inverse
@@ -231,8 +246,10 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
 
         // 加载数据
         if (atBottom && hasMore) {
-            this.manager?.setFinishTrigger(true)
-            this.manager?.setLoading(true)
+            this.setState({
+                loading: true,
+                finishTrigger: true
+            })
             next && next();
         }
     };
@@ -306,22 +323,30 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
         if (inverse) {
             if (deltaY < 0) {
                 const num = Math.max(deltaY, -maxHeight);
-                this.manager?.setPullDistance(num);
+                this.setState({
+                    pullDistance: num
+                })
                 Raf.setRaf(() => this.setDrag(num));
             }
         } else {
             if (deltaY > 0) {
                 const num = Math.min(deltaY, maxHeight)
-                this.manager?.setPullDistance(num);
+                this.setState({
+                    pullDistance: num
+                })
                 Raf.setRaf(() => this.setDrag(num));
             }
         }
 
         // 最小判断边界
         if (Math.abs(deltaY) >= minHeight) {
-            this.manager?.setRefreshType(COMPONENT_TYPE.RELEASE);
+            this.setState({
+                refreshType: COMPONENT_TYPE.RELEASE
+            })
         } else {
-            this.manager?.setRefreshType(COMPONENT_TYPE.PULL);
+            this.setState({
+                refreshType: COMPONENT_TYPE.PULL
+            })
         }
     };
 
@@ -329,17 +354,24 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
         const {
             refreshFunction
         } = this.props;
+        const {
+            pullDistance
+        } = this.props;
         if (typeof refreshFunction !== 'function') {
             throw new Error(`"refreshFunction" is not function or missing`);
         }
-
+console.log(pullDistance)
         this.dragging = false;
-        if (Math.abs(this.manager?.pullDistance) > 0) {
-            this.manager?.setRefreshType(COMPONENT_TYPE.REFRESHING);
+        if (Math.abs(pullDistance) > 0) {
+            this.setState({
+                refreshType: COMPONENT_TYPE.REFRESHING
+            })
             refreshFunction && refreshFunction();
             Raf.setRaf(this.resetDrag);
             this.scrollY = 0;
-            this.manager.setPullDistance(0);
+            this.setState({
+                pullDistance: 0
+            })
         }
     };
 
@@ -376,10 +408,12 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
             inverse,
             className
         } = this.props;
-        const loading = this.manager.loading;
-        const isError = this.manager.error;
-        const pullDistance = this.manager.pullDistance;
-        const refreshType = this.manager.refreshType;
+        const {
+            loading,
+            isError,
+            pullDistance,
+            refreshType
+        } = this.state;
         const hasChildren = !!(children);
 
         // 当设置了滚动固定高度, 下拉/上拉刷新时阻止元素溢出到外面显示
