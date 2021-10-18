@@ -17,8 +17,8 @@ function MyRoutes() {
 // 根组件
 const App: React.FC<any> = (props) => {
     return (
-        <div className="app" style={{overflowX: 'auto', width: '100vw'}}>
-            <div style={{width: '2000px'}}>
+        <div className="app">
+            <div>
             <MyRoutes />
             </div>
         </div>

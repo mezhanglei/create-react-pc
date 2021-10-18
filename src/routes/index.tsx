@@ -1,8 +1,7 @@
 import React, { ReactNode } from "react";
 import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } from "react-router-dom";
 // import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
-import { Demo1Route } from "./demo1";
-import { Demo2Route } from "./demo2";
+import { DemoRoute } from "./demo";
 import { DefaultRoutes } from "./default";
 import NotFound from "@/components/default/not-found";
 import { initWX } from "@/core/wx";
@@ -19,8 +18,7 @@ export interface MyRouteProps extends RouteProps {
 
 // 路由配置
 const routes = [
-    ...Demo1Route,
-    ...Demo2Route,
+    ...DemoRoute,
     ...DefaultRoutes,
     // {
     //     path: '*',

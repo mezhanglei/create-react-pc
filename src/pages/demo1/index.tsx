@@ -102,7 +102,7 @@ const Demo1: React.FC<any> = (props) => {
                 <Draggable
                     axis="both"
                     bounds=".boxs"
-                    dragNode=".handle"
+                    handle=".handle"
                     x={x}
                     y={y}
                     onDrag={onDrag}

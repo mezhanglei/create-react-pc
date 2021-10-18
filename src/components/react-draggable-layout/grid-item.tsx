@@ -169,7 +169,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
                 className={cls}
                 axis={this.canDrag() ? dragAxis : DragAxis.none}
                 bounds={bounds}
-                dragNode={handle}
+                handle={handle}
                 onDragStart={this.onDragStart}
                 onDrag={this.onDrag}
                 onDragStop={this.onDragEnd}

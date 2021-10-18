@@ -50,7 +50,7 @@ const demo2: React.FC<any> = (props) => {
                 };
 
                 resolve(listRef.current.concat(Array.from({ length: 20 })))
-            }, 5000);
+            }, 1000);
         }).then((res: any) => {
             return listChange(res);
         }).catch(err => {
@@ -62,7 +62,7 @@ const demo2: React.FC<any> = (props) => {
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve(listRef.current.concat(Array.from({ length: 20 })))
-            }, 500);
+            }, 1000);
         }).then((res: any) => {
             return listChange(res);
         }).catch(err => {

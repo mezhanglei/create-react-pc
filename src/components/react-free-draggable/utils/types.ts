@@ -59,7 +59,7 @@ export interface DraggableEventProps {
     onDragStop?: EventHandler; // 拖拽结束事件
     allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
     disabled?: boolean; // 禁止拖拽
-    dragNode?: string | HTMLElement; // 拖拽句柄的类选择器
+    handle?: string | HTMLElement; // 拖拽句柄的类选择器
     disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
@@ -71,7 +71,7 @@ export interface DraggableProps {
     children: any;
     allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
     disabled?: boolean; // 禁止拖拽
-    dragNode?: string | HTMLElement; // 拖拽句柄的类选择器
+    handle?: string | HTMLElement; // 拖拽句柄的类选择器
     disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标

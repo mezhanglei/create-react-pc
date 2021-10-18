@@ -33,7 +33,7 @@ export interface DraggerProps extends DraggerContextInterface {
     onResizeEnd?: DraggerItemHandler;
     dragAxis?: `${DragAxis}`; // 拖拽位置
     resizeAxis?: `${ResizeAxis}`; // 拖拽大小
-    dragNode?: string | HTMLElement;
+    handle?: string | HTMLElement;
     id: string | number;
 }
 
@@ -46,7 +46,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         style,
         dragAxis = DragAxis.both,
         resizeAxis = ResizeAxis.NONE,
-        dragNode,
+        handle,
         id
     } = props;
 
@@ -69,6 +69,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
+        console.log(node, 2222)
         setNode(node);
         listenChild && listenChild({ node, id });
     }, []);
@@ -259,7 +260,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDragStart={onDragStart}
             onDrag={onDrag}
             onDragStop={onDragStop}
-            dragNode={dragNode}
+            handle={handle}
             reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
             x={0}
             y={0}
