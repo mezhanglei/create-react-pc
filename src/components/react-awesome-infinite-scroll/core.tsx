@@ -43,6 +43,15 @@ export interface Props {
     length?: number;
 };
 
+export interface ListState {
+    refreshType: `${COMPONENT_TYPE}`,
+    loading: boolean,
+    isError: boolean,
+    scrollHeight: number,
+    pullDistance: number,
+    length: number
+}
+
 export interface ScrollRef {
     scrollTo: (x: number, y: number) => void;
     getScrollRef: () => any;
@@ -100,20 +109,22 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
     }
 
     componentDidMount() {
-        this.scrollRoot = this.getScrollableTarget();
-        // 绑定事件
-        const {
-            scrollableParent,
-            height
-        } = this.props;
-        const target = this.scrollRoot;
-        if (target) {
-            this.initDom(target);
-            // 节点设置警告
-            if (scrollableParent && height) {
-                console.error(`"scrollableParent" and "height" only need one`);
+        setTimeout(() => {
+            this.scrollRoot = this.getScrollableTarget();
+            // 绑定事件
+            const {
+                scrollableParent,
+                height
+            } = this.props;
+            const target = this.scrollRoot;
+            if (target) {
+                this.initDom(target);
+                // 节点设置警告
+                if (scrollableParent && height) {
+                    console.error(`"scrollableParent" and "height" only need one`);
+                }
             }
-        }
+        }, 0);
     }
 
     componentWillUnmount() {
@@ -178,7 +189,7 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
         }
     };
 
-    componentWillMount() {
+    componentWillReceiveProps() {
         this.loadMore()
     }
 
@@ -190,10 +201,7 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
         const target = this.scrollRoot;
         if (!target) return;
         if (length) {
-            if (this.length !== 0) {
-                this.resetStatus(target);
-            }
-            this.length = length;
+            this.resetStatus(target);
         }
         this.setState({
             scrollHeight: target.scrollHeight
@@ -352,15 +360,15 @@ export default class InfiniteScroll extends React.Component<Props, {}> {
 
     onEnd = (evt: EventType) => {
         const {
-            refreshFunction
+            refreshFunction,
         } = this.props;
         const {
             pullDistance
-        } = this.props;
+        } = this.state;
         if (typeof refreshFunction !== 'function') {
             throw new Error(`"refreshFunction" is not function or missing`);
         }
-console.log(pullDistance)
+
         this.dragging = false;
         if (Math.abs(pullDistance) > 0) {
             this.setState({

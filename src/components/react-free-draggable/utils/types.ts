@@ -53,7 +53,7 @@ export interface BoundsInterface {
 
 // DraggableEvent的props的类型
 export interface DraggableEventProps {
-    children: any;
+    children?: any;
     onDragStart?: EventHandler; // 拖拽开始事件
     onDrag?: EventHandler; // 拖拽进行事件
     onDragStop?: EventHandler; // 拖拽结束事件
@@ -64,11 +64,12 @@ export interface DraggableEventProps {
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
     locationParent?: string | HTMLElement; // 定位父元素, 设置之后拖拽过程的位置以父元素作为参考
+    forwardedRef?: any;
 }
 
 // Draggable的props的类型
 export interface DraggableProps {
-    children: any;
+    children?: any;
     allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
     disabled?: boolean; // 禁止拖拽
     handle?: string | HTMLElement; // 拖拽句柄的类选择器

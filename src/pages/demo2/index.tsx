@@ -4,70 +4,74 @@ import InfiniteScroll from '@/components/react-awesome-infinite-scroll';
 
 
 const demo2: React.FC<any> = (props) => {
-    const [hasMore, setHasMore] = useState<boolean>(true);
-    const [isError, setIsError] = useState<boolean>(true);
-    const isErrorRef = useRef<boolean>(true);
-    const [total, setTotal] = useState<number>(800);
-    const [maxLength, setMaxLength] = useState<number>(800);
-    const [list, setList] = useState<any[]>([]);
-    const listRef = useRef<any[]>([]);
+
+    const [state, setState] = useState({
+        total: 800,
+        maxLength: 800,
+        list: [],
+        isError: true,
+        hasMore: true
+    })
 
     useEffect(() => {
         const res = Array.from({ length: 100 })
-        listChange(res)
-        setHasMore(res?.length < total)
+
+        setState(state => {
+            return {
+                ...state,
+                list: res,
+                hasMore: res?.length < state?.total
+            }
+        })
     }, [])
-
-    const listChange = (value: any[]) => {
-        listRef.current = value;
-        setList(value);
-    }
-
-    const isErrorChange = (value: boolean) => {
-        isErrorRef.current = value;
-        setIsError(value);
-    }
 
     // loading more
     const fetchMoreData = () => {
 
-        if (listRef.current.length >= maxLength) {
-            setHasMore(false);
-            return;
-        }
+        setState(state => {
+            if (state?.list?.length > state?.maxLength || state?.list?.length > state?.total) {
+                return {
+                    ...state,
+                    hasMore: false
+                }
+            }
 
-        if (listRef.current.length >= total) {
-            setHasMore(false);
-            return;
-        }
+            // simulate request
+            new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // creat a fake 'error' ,so not Use this in real life ;
+                    if (state?.list?.length >= 300) {
+                        reject();
+                        return;
+                    };
 
-        // simulate request
-        new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // creat a fake 'error' ,so not Use this in real life ;
-                if (listRef.current.length >= 300 && !isErrorRef.current) {
-                    reject();
+                    resolve(state?.list?.concat(Array.from({ length: 20 })))
+                }, 1000);
+            }).then((res: any) => {
+                return {
+                    ...state,
+                    list: res
                 };
-
-                resolve(listRef.current.concat(Array.from({ length: 20 })))
-            }, 1000);
-        }).then((res: any) => {
-            return listChange(res);
-        }).catch(err => {
-            isErrorChange(true);
+            }).catch(err => {
+                return {
+                    ...state,
+                    isError: true
+                }
+            })
+            return state;
         })
     };
 
     const reload = () => {
-        new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(listRef.current.concat(Array.from({ length: 20 })))
-            }, 1000);
-        }).then((res: any) => {
-            return listChange(res);
-        }).catch(err => {
-            isErrorChange(true);
-        })
+        // new Promise((resolve, reject) => {
+        //     setTimeout(() => {
+        //         resolve(listRef.current.concat(Array.from({ length: 20 })))
+        //     }, 1000);
+        // }).then((res: any) => {
+        //     return listChange(res);
+        // }).catch(err => {
+        //     isErrorChange(true);
+        // })
     }
 
     const renderItem = (_, index: number) => {
@@ -83,11 +87,11 @@ const demo2: React.FC<any> = (props) => {
             <div>外部容器滚动</div>
             <div className="cart-index" style={{ height: "300px", overflow: "auto" }}>
                 <InfiniteScroll
-                    length={list?.length}
+                    length={state?.list?.length}
                     next={fetchMoreData}
                     scrollableParent={document.querySelector(".cart-index")}
-                    hasMore={hasMore}
-                    isError={isError}
+                    hasMore={state?.hasMore}
+                    isError={state?.isError}
                     pullDownToRefresh
                     refreshFunction={fetchMoreData}
                     pullDownComponent={<div style={{ height: "50px", background: "green" }}>下拉</div>}
@@ -97,21 +101,21 @@ const demo2: React.FC<any> = (props) => {
                     loadingComponent={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
                     errorComponent={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={reload}>重新加载</a></span></div>}
                     endComponent={
-                        (list?.length && !maxLength) ?
+                        (state?.list?.length && !state?.maxLength) ?
                             <div style={{ textAlign: 'center', fontWeight: 'normal', color: '#999' }}>
                                 <span>没有更多内容了</span>
                             </div> : null
                     }
                 >
                     {
-                        list?.map((item, index) => {
+                        state?.list?.map((item, index) => {
                             return renderItem(item, index);
                         })
                     }
                 </InfiniteScroll>
             </div>
             <div>内部固定高度滚动</div>
-            <div>
+            {/* <div>
                 <InfiniteScroll
                     length={list?.length}
                     next={fetchMoreData}
@@ -170,7 +174,7 @@ const demo2: React.FC<any> = (props) => {
                         })
                     }
                 </InfiniteScroll>
-            </div>
+            </div> */}
         </>
     );
 

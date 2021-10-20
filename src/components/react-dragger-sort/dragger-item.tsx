@@ -4,7 +4,7 @@ import { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/rea
 import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
-import { findElement, getInsidePosition, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
+import { getInsidePosition, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 import ReactDOM from 'react-dom';
 
@@ -69,7 +69,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     useEffect(() => {
         const node = nodeRef.current;
-        console.log(node, 2222)
         setNode(node);
         listenChild && listenChild({ node, id });
     }, []);

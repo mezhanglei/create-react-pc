@@ -24,7 +24,7 @@ const eventsFor = {
 // 根据当前设备看是否触发
 let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
-export default class DraggableCore extends React.Component<DraggableEventProps, {}> {
+class DraggableEvent extends React.Component<DraggableEventProps, {}> {
     dragging: boolean;
     eventData?: EventData;
     child?: any;
@@ -227,9 +227,21 @@ export default class DraggableCore extends React.Component<DraggableEventProps, 
 
 
     render() {
-        return this.props?.children;
+        return React.cloneElement(React.Children.only(this.props?.children), {
+            ref: this.props?.forwardedRef
+        });
     }
 }
+
+const wrapper = function (InnerComponent: any) {
+    return React.forwardRef((props, ref) => {
+        return (
+            <InnerComponent forwardedRef={ref} {...props} />
+        )
+    })
+}
+
+export default wrapper(DraggableEvent)
 
 // // 拖拽事件组件
 // const DraggableEvent = React.forwardRef<any, DraggableEventProps>((props, ref) => {
