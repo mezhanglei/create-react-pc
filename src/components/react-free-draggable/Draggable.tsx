@@ -17,6 +17,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         x,
         y,
         scale = 1,
+        axis = DragAxis.both,
         positionOffset,
         bounds,
         zIndexRange = [],
@@ -34,13 +35,15 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     const slackXRef = useRef<number>(0);
     const slackYRef = useRef<number>(0);
 
-    const [eventData, setEventData] = useState<DragData>();
-    const eventDataRef = useRef<DragData>();
+    const [eventData, setEventData] = useState<DragData>({
+        translateX: 0,
+        translateY: 0,
+        deltaX: 0,
+        deltaY: 0
+    });
 
     // 拖拽的初始位置
     const [initXY, setInitXY] = useState<PositionType>();
-
-    const axisRef = useRef<string>(DragAxis.both);
 
     const wrapClassName = "react-draggable";
     const wrapClassNameDragging = "react-draggable-dragging";
@@ -49,7 +52,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     useImperativeHandle(ref, () => (findDOMNode()));
 
     const findDOMNode = () => {
-        return nodeRef?.current;
+        return nodeRef?.current || ReactDOM.findDOMNode(this);
     }
 
     // 获取定位父元素，涉及的位置相对于该父元素
@@ -68,7 +71,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         };
         initXY && setInitXY(initXY);
         if (initXY) {
-            eventDataUpdate(eventDataRef.current, { lastX: initXY?.x, lastY: initXY?.y });
+            setEventData({
+                ...eventData,
+                lastX: initXY?.x,
+                lastY: initXY?.y
+            });
         }
     }, [bounds]);
 
@@ -82,34 +89,20 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             const newY = y;
             const translateX = newX - lastX;
             const translateY = newY - lastY;
-            eventDataUpdate(eventDataRef.current, { x: newX, y: newY, lastX: newX, lastY: newY, translateX, translateY });
+            setEventData(data => ({
+                ...data,
+                x: newX,
+                y: newY,
+                lastX: newX,
+                lastY: newY,
+                translateX,
+                translateY
+            }))
         }
         if (x !== undefined && y !== undefined && reset) {
             setInitXY({ x, y });
         }
     }, [x, y, initXY?.x, initXY?.y, reset, bounds, draggingRef.current]);
-
-    // 更新axis
-    useEffect(() => {
-        if (props?.axis) axisRef.current = props?.axis;
-    }, [props?.axis])
-
-    const eventDataChange = (value: DragData) => {
-        eventDataRef.current = value;
-        setEventData(value);
-    }
-
-    const eventDataUpdate = (eventData: DragData | undefined, data: any) => {
-        eventData = eventData || {
-            translateX: 0,
-            translateY: 0,
-            deltaX: 0,
-            deltaY: 0
-        }
-        const value = { ...eventData, ...data };
-        eventDataRef.current = value;
-        setEventData(value);
-    }
 
     const onDragStart: EventHandler = (e, data) => {
         e.stopImmediatePropagation();
@@ -120,11 +113,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         let positionX = pos?.left;
         let positionY = pos?.top;
 
-        const translateX = eventDataRef.current?.translateX || 0;
-        const translateY = eventDataRef.current?.translateY || 0;
+        const translateX = eventData?.translateX || 0;
+        const translateY = eventData?.translateY || 0;
 
-        const eventData = {
-            ...eventDataRef.current,
+        const newEventData = {
+            ...eventData,
             translateX,
             translateY,
             deltaX: 0,
@@ -139,21 +132,19 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         draggingRef.current = true;
         setDragged(true);
         setIsSVG(isElementSVG(data?.node));
-        eventData && eventDataChange(eventData);
-
-        // 如果onDragStart函数返回false则禁止拖拽
-        props.onDragStart && props.onDragStart(e, eventData);
+        setEventData(newEventData)
+        props.onDragStart && props.onDragStart(e, newEventData);
     };
 
     const onDrag: EventHandler = (e, data) => {
         if (!draggingRef.current || !data) return;
-        let x = eventDataRef?.current?.x ?? 0;
-        const y = eventDataRef?.current?.y ?? 0;
-        let translateX = eventDataRef?.current?.translateX ?? 0;
-        let translateY = eventDataRef?.current?.translateY ?? 0;
+        let x = eventData?.x ?? 0;
+        const y = eventData?.y ?? 0;
+        let translateX = eventData?.translateX ?? 0;
+        let translateY = eventData?.translateY ?? 0;
 
         // 拖拽生成的位置信息
-        const eventData = {
+        const newEventData = {
             node: data.node,
             zIndex: zIndexRange[1],
             translateX: canDragX() ? (translateX + (data?.deltaX / scale)) : translateX,
@@ -166,10 +157,10 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             lastY: y
         };
 
-        if (!eventData) return;
+        if (!newEventData) return;
 
-        let nowX = eventData?.x;
-        let nowY = eventData?.y;
+        let nowX = newEventData?.x;
+        let nowY = newEventData?.y;
 
         // 运动边界限制
         if (bounds) {
@@ -186,30 +177,30 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
             const nowTranslateY = translateY + nowY - y;
 
             // 重新计算越界补偿, 用来修正越界后鼠标真实的位置变化
-            const newSlackX = slackXRef.current + (eventData.x - nowX);
-            const newSlackY = slackYRef.current + (eventData.y - nowY);
+            const newSlackX = slackXRef.current + (newEventData.x - nowX);
+            const newSlackY = slackYRef.current + (newEventData.y - nowY);
             slackXRef.current = newSlackX;
             slackYRef.current = newSlackY;
 
             // 更新
-            eventData.x = nowX;
-            eventData.y = nowY;
-            eventData.translateX = nowTranslateX;
-            eventData.translateY = nowTranslateY;
-            eventData.deltaX = nowX - (eventDataRef.current?.x || 0);
-            eventData.deltaY = nowY - (eventDataRef.current?.y || 0);
+            newEventData.x = nowX;
+            newEventData.y = nowY;
+            newEventData.translateX = nowTranslateX;
+            newEventData.translateY = nowTranslateY;
+            newEventData.deltaX = nowX - (eventData?.x || 0);
+            newEventData.deltaY = nowY - (eventData?.y || 0);
         }
 
-        eventData && eventDataChange(eventData);
-
-        props.onDrag && props.onDrag(e, eventData);
+        // eventData && eventDataChange(eventData);
+        setEventData(newEventData);
+        props.onDrag && props.onDrag(e, newEventData);
     };
 
     const onDragStop: EventHandler = (e, data) => {
-        if (!draggingRef.current || !eventDataRef.current) return;
+        if (!draggingRef.current || !eventData) return;
 
-        eventDataRef.current = {
-            ...eventDataRef.current,
+        const newEventData = {
+            ...eventData,
             deltaX: 0,
             deltaY: 0,
             zIndex: zIndexRange[0]
@@ -217,10 +208,8 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         draggingRef.current = false;
         slackXRef.current = 0;
         slackYRef.current = 0;
-        eventDataRef.current && eventDataChange(eventDataRef.current);
-
-        // Short-circuit if user's callback killed it.
-        props.onDragStop && props.onDragStop(e, eventDataRef.current);
+        setEventData(newEventData);
+        props.onDragStop && props.onDragStop(e, newEventData);
     };
 
 
@@ -231,11 +220,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     });
 
     const canDragX = () => {
-        return axisRef.current === DragAxis.both || axisRef.current === DragAxis.x;
+        return axis === DragAxis.both || axis === DragAxis.x;
     };
 
     const canDragY = () => {
-        return axisRef.current === DragAxis.both || axisRef.current === DragAxis.y;
+        return axis === DragAxis.both || axis === DragAxis.y;
     };
 
     // 当前位置

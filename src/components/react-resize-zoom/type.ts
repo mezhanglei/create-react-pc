@@ -11,13 +11,11 @@ export enum ResizeDragTypes {
     resizeEnd = 'resizeEnd'
 }
 export interface EventDataType {
-    lastDir?: string;
     lastEventX?: number;
     lastEventY?: number;
     lastW?: number;
     lastH?: number;
-    mouseCursor: string;
-    dir: string;
+    dir?: string;
     eventX: number;
     eventY: number;
     width: number;
@@ -41,16 +39,23 @@ export enum ResizeAxis {
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis?: `${ResizeAxis}`;
+    axis: `${ResizeAxis}`;
     forbid?: boolean;
-    children: ChildrenType;
-    offset?: number; // 鼠标距离边的可以拖拽的偏差
+    children: any;
+    offset: number; // 鼠标距离边的可以拖拽的偏差
     zIndexRange?: [number, number]; // zIndex变化的范围
     width?: number; // 受控尺寸
     height?: number; // 受控尺寸
     onResizeStart?: EventHandler; // 拖拽开始事件
     onResizeMoving?: EventHandler; // 拖拽进行中事件
     onResizeEnd?: EventHandler; // 拖拽结束事件
+    forwardedRef?: any; // 拖拽目标的ref
+}
+
+export interface DragResizeState {
+    eventData?: EventDataType
+    prevWidth?: number;
+    prevHeight?: number;
 }
 // 事件处理函数的type
 export type EventHandler<E = EventType, T = EventDataType> = (e: E, data?: T) => void | boolean;

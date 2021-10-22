@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
+import React from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "@/utils/dom";
-import { EventType, EventHandler, EventDataType, Direction, ResizeAxis, DragResizeProps } from "./type";
+import { EventType, EventHandler, Direction, ResizeAxis, DragResizeProps, DragResizeState } from "./type";
+import ReactDOM from 'react-dom';
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -22,40 +23,74 @@ const eventsFor = {
 // 根据当前设备看是否触发
 let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
-const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
+class DragResize extends React.Component<DragResizeProps, DragResizeState> {
+    dragging: boolean;
+    constructor(props: DragResizeProps) {
+        super(props);
+        this.dragging = false;
+        this.state = {
+        };
+    }
+    static defaultProps = {
+        offset: 10,
+        axis: ResizeAxis.AUTO
+    }
 
-    const {
-        offset = 10
-    } = props;
-
-    const nodeRef = useRef<any>();
-    const isDraggableRef = useRef<boolean>(false);
-    const eventDataRef = useRef<EventDataType>();
-    const [eventData, setEventData] = useState<EventDataType>();
-
-    const axisRef = useRef<string>(ResizeAxis.AUTO);
-
-    useImperativeHandle(ref, () => (nodeRef.current));
-
-
-    // 更新width,height
-    useEffect(() => {
-        if (props?.width != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { width: props?.width })
+    componentDidUpdate(prevProps: DragResizeProps, prevState: DragResizeState) {
+        const widthChanged = this.props.width !== prevProps.width;
+        const heightChanged = this.props.height !== prevProps.height;
+        if (widthChanged || heightChanged) {
+            this.updateState()
         }
-        if (props?.height != undefined && !isDraggableRef?.current) {
-            eventDataUpdate(eventDataRef.current, { height: props?.height })
-        }
-    }, [props?.width, props?.height, isDraggableRef?.current]);
+    }
 
-    // 更新axis
-    useEffect(() => {
-        if (props?.axis) axisRef.current = props?.axis;
-    }, [props.axis])
+    static getDerivedStateFromProps(nextProps: DragResizeProps, prevState: DragResizeState) {
+        const widthChanged = nextProps.width !== prevState.prevWidth;
+        const heightChanged = nextProps.height !== prevState.prevHeight;
+        if (widthChanged) {
+            return {
+                ...prevState,
+                prevWidth: nextProps.width,
+            };
+        }
+
+        if (heightChanged) {
+            return {
+                ...prevState,
+                prevHeight: nextProps.height,
+            };
+        }
+        return null;
+    }
+
+    componentDidMount() {
+        const node = this.findDOMNode();
+        this.setState({
+            eventData: {
+                node,
+                width: this.props?.width,
+                height: this.props?.height
+            }
+        })
+
+        addEvent(node, dragEventFor.start, this.onResizeStart);
+        addEvent(node, dragEventFor.move, this.mouseOver);
+    }
+
+    componentWillUnmount() {
+        const node = this.findDOMNode();
+        removeEvent(node, dragEventFor.start, this.onResizeStart);
+        removeEvent(node, dragEventFor.move, this.mouseOver);
+        this.removeEvents();
+    }
+
+    findDOMNode() {
+        return this.props?.forwardedRef.current || ReactDOM.findDOMNode(this);
+    }
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
-    const findOwnerDocument = (): Document => {
-        const node = nodeRef?.current;
+    findOwnerDocument = (): Document => {
+        const node = this.findDOMNode();
         const nodeStyle = node?.ownerDocument?.defaultView?.getComputedStyle(node);
         if (nodeStyle?.display === "inline") {
             throw new Error("the style of `props.children` cannot is `inline`!");
@@ -63,37 +98,42 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
         return node?.ownerDocument;
     };
 
-    useEffect(() => {
-        const ownerDocument = findOwnerDocument();
-        addEvent(nodeRef.current, dragEventFor.start, onResizeStart);
-        addEvent(ownerDocument, dragEventFor.move, onMove);
-        return () => {
-            removeEvent(nodeRef.current, dragEventFor.start, onResizeStart);
-            removeEvent(ownerDocument, dragEventFor.move, onMove);
+    updateState = () => {
+        if (!this.dragging) {
+            this.setState({
+                eventData: {
+                    ...this.state.eventData,
+                    width: this.props?.width,
+                    height: this.props?.height
+                }
+            })
         }
-    }, []);
-
-    // 监听停止事件
-    const addStopEvents = () => {
-        const ownerDocument = findOwnerDocument();
-        addEvent(ownerDocument, dragEventFor.stop, onResizeEnd);
-        addEvent(ownerDocument, dragEventFor.cancel, onResizeEnd);
     }
 
-    // 移除停止事件
-    const removeStopEvents = () => {
-        const ownerDocument = findOwnerDocument();
-        removeEvent(ownerDocument, dragEventFor.move, onMove);
-        removeEvent(ownerDocument, dragEventFor.stop, onResizeEnd);
-        removeEvent(ownerDocument, dragEventFor.cancel, onResizeEnd);
+    // 监听事件
+    addEvents = () => {
+        const ownerDocument = this.findOwnerDocument();
+        addEvent(ownerDocument, dragEventFor.move, this.onMove);
+        addEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
+        addEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
     }
 
+    // 移除事件
+    removeEvents = () => {
+        const ownerDocument = this.findOwnerDocument();
+        removeEvent(ownerDocument, dragEventFor.move, this.onMove);
+        removeEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
+        removeEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
+    }
 
     // 返回鼠标所在的边
-    const getDirection = (e: EventType): string => {
-        const element = nodeRef.current;
+    getDirection = (e: EventType) => {
+        const element = this.findDOMNode();
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
+        const {
+            offset
+        } = this.props;
         if (!position || !offsetWH) return '';
         const distance = offset;
         const { x, y } = position;
@@ -111,61 +151,67 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
     };
 
     // 返回鼠标的样式
-    const getMouseCursor = (direction: string): string => {
-        if (direction === Direction.S && ([ResizeAxis.AUTO, ResizeAxis.Y] as string[]).includes(axisRef.current)) {
+    getMouseCursor = (direction: string): string => {
+        const {
+            axis
+        } = this.props;
+        if (direction === Direction.S && ([ResizeAxis.AUTO, ResizeAxis.Y] as string[]).includes(axis)) {
             return 'row-resize';
-        } else if (direction === Direction.E && ([ResizeAxis.AUTO, ResizeAxis.X] as string[]).includes(axisRef.current)) {
+        } else if (direction === Direction.E && ([ResizeAxis.AUTO, ResizeAxis.X] as string[]).includes(axis)) {
             return 'col-resize';
-        } else if (direction?.length === 2 && ([ResizeAxis.ANGLE, ResizeAxis.AUTO] as string[]).includes(axisRef.current)) {
+        } else if (direction?.length === 2 && ([ResizeAxis.ANGLE, ResizeAxis.AUTO] as string[]).includes(axis)) {
             return direction + '-resize';
         } else {
             return 'default';
         }
     }
 
-
-    const canDragX = (dir: string): boolean => {
-        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.X] as string[]).includes(axisRef.current) && dir.indexOf(Direction.E) > -1;
+    canDragX = (dir: string): boolean => {
+        const {
+            axis
+        } = this.props;
+        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.X] as string[]).includes(axis) && dir.indexOf(Direction.E) > -1;
     };
 
-    const canDragY = (dir: string): boolean => {
-        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.Y] as string[]).includes(axisRef.current) && dir.indexOf(Direction.S) > -1;
+    canDragY = (dir: string): boolean => {
+        const {
+            axis
+        } = this.props;
+        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.Y] as string[]).includes(axis) && dir.indexOf(Direction.S) > -1;
     };
 
-    const eventDataChange = (value: EventDataType) => {
-        eventDataRef.current = value;
-        setEventData(value);
+    mouseOver: EventHandler = (e) => {
+        const element = this.findDOMNode();
+        const direction = this.getDirection(e);
+        const mouseCursor = this.getMouseCursor(direction);
+        element.style.cursor = mouseCursor;
     }
 
-    const eventDataUpdate = (eventData: EventDataType | undefined, data: any) => {
-        const value = { ...eventData, ...data };
-        eventDataRef.current = value;
-        setEventData(value);
-    }
-
-    const onResizeStart: EventHandler = (e) => {
-        if (props?.forbid) return;
-        const direction = getDirection(e);
-        const mouseCursor = getMouseCursor(direction);
+    onResizeStart: EventHandler = (e) => {
+        const {
+            forbid,
+            zIndexRange
+        } = this.props;
+        if (forbid) return;
+        const direction = this.getDirection(e);
+        const mouseCursor = this.getMouseCursor(direction);
         if (mouseCursor === 'default') {
             return;
         } else {
             e.stopImmediatePropagation();
         };
         e.preventDefault();
-        const element = nodeRef?.current;
+        const element = this.findDOMNode();
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
 
         const eventData = {
             node: element,
-            mouseCursor: mouseCursor,
             dir: direction,
             width: offsetWH?.width,
             height: offsetWH?.height,
-            zIndex: props?.zIndexRange?.[1],
-            lastDir: direction,
+            zIndex: zIndexRange?.[1],
             eventX: position?.x,
             eventY: position?.y,
             lastEventX: position?.x,
@@ -173,75 +219,103 @@ const DragResize = React.forwardRef<any, DragResizeProps>((props, ref) => {
             lastW: offsetWH?.width,
             lastH: offsetWH?.height
         }
-        props?.onResizeStart && props?.onResizeStart(e, eventData);
-        isDraggableRef.current = true;
-        eventDataChange(eventData);
-        addStopEvents();
+        this.props?.onResizeStart && this.props?.onResizeStart(e, eventData);
+        this.dragging = true;
+        this.setState({
+            eventData
+        })
+        this.addEvents();
     }
 
-    const onMove: EventHandler = (e) => {
-        if (props?.forbid) return;
+    onMove: EventHandler = (e) => {
+        const {
+            forbid,
+            zIndexRange
+        } = this.props;
+        if (forbid) return;
         e.preventDefault();
-        const element = nodeRef?.current;
-        const direction = getDirection(e);
-        const mouseCursor = getMouseCursor(direction);
-        element.style.cursor = mouseCursor;
-        if (!isDraggableRef.current) return;
+        const element = this.findDOMNode();
+        if (!this.dragging) return;
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
-        const { lastDir = ResizeAxis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = eventDataRef.current || {};
+        const { dir = ResizeAxis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = this.state.eventData || {};
 
         let deltaX, deltaY;
         deltaX = position?.x - lastEventX;
         deltaY = position?.y - lastEventY;
 
         const eventData = {
-            ...eventDataRef.current,
+            ...this.state.eventData,
             node: element,
-            mouseCursor: mouseCursor,
-            dir: direction,
             eventX: position?.x,
             eventY: position?.y,
-            width: canDragX(lastDir) ? (lastW + deltaX) : lastW,
-            height: canDragY(lastDir) ? (lastH + deltaY) : lastH,
-            zIndex: props?.zIndexRange?.[1]
+            width: this.canDragX(dir) ? (lastW + deltaX) : lastW,
+            height: this.canDragY(dir) ? (lastH + deltaY) : lastH,
+            zIndex: zIndexRange?.[1]
         }
-        props?.onResizeMoving && props?.onResizeMoving(e, eventData);
-        eventDataChange(eventData);
+        this.props?.onResizeMoving && this.props?.onResizeMoving(e, eventData);
+        this.setState({
+            eventData
+        })
     }
 
-    const onResizeEnd: EventHandler = (e) => {
-        if (props?.forbid) return;
+    onResizeEnd: EventHandler = (e) => {
+        const {
+            forbid,
+            zIndexRange
+        } = this.props;
+        if (forbid) return;
         e.preventDefault();
-        if (!isDraggableRef.current || !eventDataRef.current) return;
+        if (!this.dragging || !this.state.eventData) return;
         const eventData = {
-            ...eventDataRef.current,
-            zIndex: props?.zIndexRange?.[0]
+            ...this.state.eventData,
+            zIndex: zIndexRange?.[0]
         }
-        props.onResizeEnd && props.onResizeEnd(e, eventData);
-        isDraggableRef.current = false;
-        eventData && eventDataChange(eventData);
-        const ownerDocument = findOwnerDocument();
-        removeStopEvents();
-        addEvent(ownerDocument, dragEventFor.move, onMove);
+        this.props.onResizeEnd && this.props.onResizeEnd(e, eventData);
+        this.dragging = false;
+        this.setState({
+            eventData
+        })
+        this.removeEvents();
     }
 
-    const originStyle = (attr: string) => {
-        return props?.style?.[attr] ?? props?.children.props.style[attr];
-    }
+    render() {
+        const {
+            children,
+            forwardedRef,
+            className,
+            style
+        } = this.props;
 
-    return React.cloneElement(React.Children.only(props?.children), {
-        className: props?.className ?? props?.children.props?.className,
-        ref: nodeRef,
-        style: {
-            ...props?.children.props?.style,
-            ...props?.style,
-            width: eventData?.width ?? originStyle('width'),
-            height: eventData?.height ?? originStyle('height'),
-            zIndex: eventData?.zIndex ?? originStyle('zIndex')
+        const {
+            eventData
+        } = this.state;
+
+        const originStyle = (attr: string) => {
+            return style?.[attr] ?? children.props.style[attr];
         }
-    });
-})
 
-export default React.memo(DragResize);
+        return React.cloneElement(React.Children.only(children), {
+            className: className ?? children.props?.className,
+            ref: forwardedRef,
+            style: {
+                ...children.props?.style,
+                ...style,
+                width: eventData?.width ?? originStyle('width'),
+                height: eventData?.height ?? originStyle('height'),
+                zIndex: eventData?.zIndex ?? originStyle('zIndex')
+            }
+        });
+    }
+}
+
+const wrapper = function (InnerComponent: any) {
+    return React.forwardRef((props, ref) => {
+        return (
+            <InnerComponent forwardedRef={ref} {...props} />
+        )
+    })
+}
+
+export default wrapper(DragResize)

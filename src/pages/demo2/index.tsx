@@ -5,73 +5,35 @@ import InfiniteScroll from '@/components/react-awesome-infinite-scroll';
 
 const demo2: React.FC<any> = (props) => {
 
-    const [state, setState] = useState({
-        total: 800,
-        maxLength: 800,
-        list: [],
-        isError: true,
-        hasMore: true
-    })
+    const total = 150;
+    const [list, setList] = useState([]);
+    const [hasMore, setHasMore] = useState<boolean>();
+    const [isRefreshing, setIsRefreshing] = useState<boolean>();
 
     useEffect(() => {
         const res = Array.from({ length: 100 })
-
-        setState(state => {
-            return {
-                ...state,
-                list: res,
-                hasMore: res?.length < state?.total
-            }
-        })
+        setList(res);
+        setHasMore(res?.length < total);
     }, [])
 
     // loading more
     const fetchMoreData = () => {
-
-        setState(state => {
-            if (state?.list?.length > state?.maxLength || state?.list?.length > state?.total) {
-                return {
-                    ...state,
-                    hasMore: false
-                }
+        setTimeout(() => {
+            const next = list?.concat(Array.from({ length: 20 }))
+            setList(next);
+            if (next?.length > 160) {
+                setHasMore(false)
             }
-
-            // simulate request
-            new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // creat a fake 'error' ,so not Use this in real life ;
-                    if (state?.list?.length >= 300) {
-                        reject();
-                        return;
-                    };
-
-                    resolve(state?.list?.concat(Array.from({ length: 20 })))
-                }, 1000);
-            }).then((res: any) => {
-                return {
-                    ...state,
-                    list: res
-                };
-            }).catch(err => {
-                return {
-                    ...state,
-                    isError: true
-                }
-            })
-            return state;
-        })
+        }, 1000);
     };
 
     const reload = () => {
-        // new Promise((resolve, reject) => {
-        //     setTimeout(() => {
-        //         resolve(listRef.current.concat(Array.from({ length: 20 })))
-        //     }, 1000);
-        // }).then((res: any) => {
-        //     return listChange(res);
-        // }).catch(err => {
-        //     isErrorChange(true);
-        // })
+        setIsRefreshing(true)
+        setTimeout(() => {
+            const res = Array.from({ length: 100 })
+            setList(res);
+            setIsRefreshing(false)
+        }, 1000);
     }
 
     const renderItem = (_, index: number) => {
@@ -87,51 +49,49 @@ const demo2: React.FC<any> = (props) => {
             <div>外部容器滚动</div>
             <div className="cart-index" style={{ height: "300px", overflow: "auto" }}>
                 <InfiniteScroll
-                    length={state?.list?.length}
+                    length={list?.length}
                     next={fetchMoreData}
                     scrollableParent={document.querySelector(".cart-index")}
-                    hasMore={state?.hasMore}
-                    isError={state?.isError}
+                    hasMore={hasMore}
+                    isRefreshing={isRefreshing}
                     pullDownToRefresh
-                    refreshFunction={fetchMoreData}
+                    refreshFunction={reload}
                     pullDownComponent={<div style={{ height: "50px", background: "green" }}>下拉</div>}
                     releaseComponent={<div style={{ height: "50px", background: "red" }}>释放</div>}
                     refreshingComponent={<div style={{ height: "50px", background: "green" }}>加载中</div>}
                     refreshEndComponent={<div style={{ height: "50px", background: "red" }}>加载完成</div>}
                     loadingComponent={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
-                    errorComponent={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={reload}>重新加载</a></span></div>}
                     endComponent={
-                        (state?.list?.length && !state?.maxLength) ?
+                        (list?.length) ?
                             <div style={{ textAlign: 'center', fontWeight: 'normal', color: '#999' }}>
                                 <span>没有更多内容了</span>
                             </div> : null
                     }
                 >
                     {
-                        state?.list?.map((item, index) => {
+                        list?.map((item, index) => {
                             return renderItem(item, index);
                         })
                     }
                 </InfiniteScroll>
             </div>
             <div>内部固定高度滚动</div>
-            {/* <div>
+            <div>
                 <InfiniteScroll
                     length={list?.length}
                     next={fetchMoreData}
                     hasMore={hasMore}
-                    isError={isError}
+                    isRefreshing={isRefreshing}
                     pullDownToRefresh
                     height={300}
-                    refreshFunction={fetchMoreData}
+                    refreshFunction={reload}
                     pullDownComponent={<div style={{ height: "50px", background: "green" }}>下拉</div>}
                     releaseComponent={<div style={{ height: "50px", background: "red" }}>释放</div>}
                     refreshingComponent={<div style={{ height: "50px", background: "green" }}>加载中</div>}
                     refreshEndComponent={<div style={{ height: "50px", background: "red" }}>加载完成</div>}
                     loadingComponent={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
-                    errorComponent={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={reload}>重新加载</a></span></div>}
                     endComponent={
-                        (list?.length && !maxLength) ?
+                        (list?.length) ?
                             <div style={{ textAlign: 'center', fontWeight: 'normal', color: '#999' }}>
                                 <span>没有更多内容了</span>
                             </div> : null
@@ -151,18 +111,17 @@ const demo2: React.FC<any> = (props) => {
                     inverse
                     next={fetchMoreData}
                     hasMore={hasMore}
-                    isError={isError}
+                    isRefreshing={isRefreshing}
                     pullDownToRefresh
                     height={300}
-                    refreshFunction={fetchMoreData}
+                    refreshFunction={reload}
                     pullDownComponent={<div style={{ height: "50px", background: "green" }}>下拉</div>}
                     releaseComponent={<div style={{ height: "50px", background: "red" }}>释放</div>}
                     refreshingComponent={<div style={{ height: "50px", background: "green" }}>加载中</div>}
                     refreshEndComponent={<div style={{ height: "50px", background: "red" }}>加载完成</div>}
                     loadingComponent={<div style={{ textAlign: 'center' }}><h4>Loading...</h4></div>}
-                    errorComponent={<div style={{ textAlign: "center" }}><span>加载失败？点击<a onClick={reload}>重新加载</a></span></div>}
                     endComponent={
-                        (list?.length && !maxLength) ?
+                        (list?.length) ?
                             <div style={{ textAlign: 'center', fontWeight: 'normal', color: '#999' }}>
                                 <span>没有更多内容了</span>
                             </div> : null
@@ -174,7 +133,7 @@ const demo2: React.FC<any> = (props) => {
                         })
                     }
                 </InfiniteScroll>
-            </div> */}
+            </div>
         </>
     );
 

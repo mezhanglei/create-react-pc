@@ -27,13 +27,13 @@ export interface TagInterface extends DraggerItemEvent {
 // 拖拽回调函数
 export type DragMoveHandle = (tag: TagInterface, coverChild?: ChildTypes, e?: EventType) => void | boolean;
 // 被监听的事件类型
-export type listenEventFunc = (tag: TagInterface, e: EventType) => void | boolean;
+export type listenEvent = { callback: (tag: TagInterface, e: EventType) => void | boolean, area: HTMLElement | null };
 // 容器触发事件的类型
 export type TriggerFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) => boolean;
 // 容器监听事件的类型
-export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEventFunc, noAddEvent: listenEventFunc) => void;
+export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEvent['callback'], noAddEvent: listenEvent['callback']) => void;
 // 拖拽类
-export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; listenFunc: ListenFuncHandle }) => React.ForwardRefExoticComponent<DraggableAreaProps & React.RefAttributes<any>>;
+export type DraggableAreaBuilder = (props: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void }) => any;
 
 // context
 export interface DraggerContextInterface {
@@ -60,9 +60,13 @@ export interface DraggableAreaProps {
     style?: CSSProperties;
     children: any;
     dataSource: any; // 列表渲染的数据源
-    mounted?: (dataSource: any[]) => any; // 数据渲染完成之后触发的函数
     onDragMove?: DragMoveHandle; // 容器内拖拽时触发的函数
     onDragMoveEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
     onMoveOutChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖出触发的函数
     onMoveInChange?: (triggerInfo: TriggerInfo) => void | boolean; // 跨容器拖拽进触发的函数
+}
+
+export interface DraggableAreaState {
+    dragType?: `${DragTypes}`,
+    coverChild?: ChildTypes
 }

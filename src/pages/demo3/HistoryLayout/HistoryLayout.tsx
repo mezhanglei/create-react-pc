@@ -86,7 +86,7 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
         if (GridX === layoutItem.GridX && GridY === layoutItem.GridY && h === layoutItem.h && w === layoutItem.w) {
             return;
         }
-        // 重置缓存
+        // 缓存截取
         const index = activeIndexRef.current;
         if (index !== undefined && index < cacheLayoutArrRef.current?.length - 1) {
             cacheLayoutArrRef.current = cacheLayoutArrRef.current?.slice?.(0, index + 1);
@@ -100,5 +100,5 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
         props.onDragEnd && props.onDragEnd(layoutItem, oldLayout, newLayout);
     }
 
-    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onDragEnd={onDragEnd} onResizeEnd={onDragEnd} />
 })
