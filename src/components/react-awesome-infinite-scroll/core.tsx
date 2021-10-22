@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ReactNode, CSSProperties } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 import { throttle } from './utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "./utils/requestAnimationFrame";
@@ -97,34 +97,36 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
         maxPullDown: 50
     }
     componentDidMount() {
-        setTimeout(() => {
-            this.scrollRoot = this.getScrollableTarget();
-            // 绑定事件
-            const {
-                scrollableParent,
-                height
-            } = this.props;
-            const target = this.scrollRoot;
-            if (target) {
-                this.initDom(target);
-                // 节点设置警告
-                if (scrollableParent && height) {
-                    console.error(`"scrollableParent" and "height" only need one`);
-                }
-            }
-        }, 0);
+        this.addEvents();
     }
     componentWillUnmount() {
         this.removeEvents()
     }
+
+    addEvents = () => {
+        this.scrollRoot = this.getScrollableTarget();
+        // 绑定事件
+        const {
+            scrollableParent,
+            height
+        } = this.props;
+        const target = this.scrollRoot;
+        if (target) {
+            this.initDom(target);
+            // 节点设置警告
+            if (scrollableParent && height) {
+                console.error(`"scrollableParent" and "height" only need one`);
+            }
+        }
+    }
+
     removeEvents = () => {
         const {
             pullDownToRefresh
         } = this.props;
         const event = this.event;
         if (event) {
-            const throttledOnScrollListener = throttle(this.onScrollListener);
-            removeEvent(event, 'scroll', throttledOnScrollListener);
+            removeEvent(event, 'scroll', this.onScrollListener);
             if (pullDownToRefresh) {
                 removeEvent(event, dragEventFor.start, this.onStart);
                 removeEvent(event, dragEventFor.move, this.onMove);
@@ -160,8 +162,7 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
         const el: any = [document.documentElement, document.body].includes(scrollableParent) ? (document || window) : scrollableParent;
         this.event = el;
         if (el) {
-            const throttledOnScrollListener = throttle(this.onScrollListener);
-            addEvent(el, 'scroll', throttledOnScrollListener);
+            addEvent(el, 'scroll', this.onScrollListener);
         }
         if (pullDownToRefresh && el) {
             addEvent(document, dragEventFor.start, this.onStart);
@@ -182,8 +183,15 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
             }
         }
         if (lengthNoChange) return;
+        // 滚动节点出现后再重新监听事件
+        const newScrollRoot = this.getScrollableTarget();
+        if (newScrollRoot !== this.scrollRoot) {
+            removeEvent(this.event, 'scroll', this.onScrollListener);
+            this.addEvents();
+        }
         this.updateList();
     }
+
     static getDerivedStateFromProps(nextProps: ListProps, prevState: ListState) {
         const dataLengthChanged = nextProps.length !== prevState.prevLength;
         if (dataLengthChanged) {
@@ -194,6 +202,7 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
         }
         return null;
     }
+
     // 更新列表
     updateList = () => {
         // 加载下一个列表时重置状态
