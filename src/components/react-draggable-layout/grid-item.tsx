@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { checkInContainer, checkWidthHeight } from './utils/dom';
 import ResizeZoom, { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom";
 import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
