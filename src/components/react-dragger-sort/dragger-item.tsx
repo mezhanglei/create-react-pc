@@ -4,7 +4,7 @@ import { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/rea
 import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
-import { getInsidePosition, getOffsetWH, setStyle, getClientXY } from "@/utils/dom";
+import { getInsidePosition, getOffsetWH } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 import ReactDOM from 'react-dom';
 
@@ -51,8 +51,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     } = props;
 
     const [dragType, setDragType] = useState<`${DragTypes}`>();
-    const lastXRef = useRef<number>();
-    const lastYRef = useRef<number>();
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
@@ -61,7 +59,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const listenChild = context?.listenChild ?? props?.listenChild;
     const nodeRef = useRef<any>();
     const [node, setNode] = useState<any>();
-    const draggerRef = useRef<any>();
 
     useImperativeHandle(ref, () => ({
         node: nodeRef?.current
@@ -91,47 +88,11 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         return !([ResizeAxis.NONE] as string[])?.includes(resizeAxis)
     }
 
-    const findOwnerDocument = () => {
-        return document;
-    };
-
-    // 位置相对比较的父元素
-    const findParent = () => {
-        const ownerDocument = findOwnerDocument();
-        const node = ownerDocument?.documentElement;
-        return node;
-    };
-
-    useEffect(() => {
-        return () => {
-            draggerRef.current?.parentNode?.removeChild(draggerRef.current);
-        }
-    }, [])
-
     const onDragStart: DragEventHandler = (e, data) => {
         if (!data || !canDrag()) return false;
         setDragType(DragTypes.dragStart);
         const node = data?.node;
         const offsetWH = getOffsetWH(node);
-        const clientXY = getClientXY(node);
-        const parent = findParent();
-        const ownerDocument = findOwnerDocument();
-        const div = ownerDocument.createElement('div');
-        parent?.appendChild(div);
-        ReactDOM.render(DragCopyItem, div);
-        lastXRef.current = clientXY?.x || 0;
-        lastYRef.current = clientXY?.y || 0;
-        setStyle({
-            boxSizing: 'border-box',
-            height: `${offsetWH?.height}px`,
-            left: `${lastXRef.current}px`,
-            top: `${lastYRef.current}px`,
-            pointerEvents: 'none',
-            position: 'fixed',
-            width: `${offsetWH?.width}px`,
-            opacity: '0.8',
-            zIndex: zIndexRange?.[1]
-        }, draggerRef.current);
         if (!offsetWH) return false;
         return context?.onDragStart && context?.onDragStart(e, {
             width: offsetWH?.width,
@@ -151,21 +112,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         const node = data?.node;
         setDragType(DragTypes.draging);
         const offsetWH = getOffsetWH(node);
-        const nowX = (lastXRef.current || 0) + (data?.deltaX || 0);
-        const nowY = (lastYRef.current || 0) + (data?.deltaY || 0);
-        setStyle({
-            boxSizing: 'border-box',
-            height: `${offsetWH?.height}px`,
-            left: `${nowX}px`,
-            top: `${nowY}px`,
-            pointerEvents: 'none',
-            position: 'fixed',
-            width: `${offsetWH?.width}px`,
-            opacity: '0.8',
-            zIndex: zIndexRange?.[1]
-        }, draggerRef.current);
-        lastXRef.current = nowX;
-        lastYRef.current = nowY;
         if (!offsetWH) return false;
         return context?.onDrag && context?.onDrag(e, {
             width: offsetWH?.width,
@@ -184,7 +130,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         if (!data || !canDrag()) return false;
         setDragType(DragTypes.dragEnd);
         const node = data?.node;
-        draggerRef.current?.parentNode?.removeChild(draggerRef.current);
         const offsetWH = getOffsetWH(node);
         if (!offsetWH) return false;
         return context?.onDragEnd && context?.onDragEnd(e, {
@@ -275,7 +220,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                         style: {
                             ...children.props.style,
                             ...style,
-                            opacity: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) ? '0' : isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
+                            opacity: isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
                             transition: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) || parentDragType === DragTypes.dragEnd ? '' : 'all .2s ease-out',
                             zIndex: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
                         }
@@ -284,16 +229,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             </ResizeZoom>
         </Draggable>
     );
-
-    // 子元素动态生成的拖拽显示副本
-    const DragCopyItem = React.cloneElement(React.Children.only(children), {
-        className: cls,
-        ref: (node: any) => draggerRef.current = node,
-        style: {
-            ...children.props.style,
-            ...style
-        }
-    });
 
     return NormalItem;
 });
