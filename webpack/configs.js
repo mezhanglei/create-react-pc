@@ -55,16 +55,6 @@ const baseConfig = {
     }
 };
 
-// 项目全局自定义变量
-const globalDefine = {
-    'process.env': {
-        // mock数据环境
-        MOCK: process.env.MOCK,
-        // 资源引用的公共路径字符串
-        PUBLIC_PATH: JSON.stringify(publicPath || '/'),
-    }
-};
-
 // 开发环境配置
 const devConfig = {
     // 是否使用eslint true表示使用
@@ -100,16 +90,6 @@ const prodConfig = {
     staticOutPath: path.join(outputPath, 'static')
 };
 
-// script引入的公共js文件
-const commonJs = [
-    // 预编译文件
-    // 'static/dll/base_dll.js'
-];
-// link引入的公共css文件
-const commonCSS = [
-    // `static/fonts/iconfont.css?time=${new Date().getTime()}`
-];
-
 // 预编译文件配置
 const dllConfig = {
     // 预编译之后输出的文件
@@ -118,7 +98,6 @@ const dllConfig = {
 
 // 合并为一个对象输出
 module.exports = {
-    globalDefine,
     root,
     htmlPages,
     srcPath,
@@ -126,8 +105,6 @@ module.exports = {
     outputPath,
     dllOutputPath,
     publicPath,
-    commonJs,
-    commonCSS,
     ...baseConfig,
     ...devConfig,
     ...prodConfig,

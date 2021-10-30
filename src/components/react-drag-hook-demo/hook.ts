@@ -8,7 +8,7 @@ export interface UseDragProps {
 export function useDrag(props: UseDragProps) {
 
   const { DragAndDropManager } = useContext(DragAndDropContext)
-  let dragRef = useRef()
+  let dragRef = useRef<HTMLDivElement | null>()
 
   const handleDragStart = (e) => {
     DragAndDropManager.setActive(props.collection)
@@ -29,7 +29,7 @@ export function useDrag(props: UseDragProps) {
       current.addEventListener("dragstart", handleDragStart)
     }
     return () => {
-      current.removeEventListener("dragstart", handleDragStart)
+      current?.removeEventListener("dragstart", handleDragStart)
     }
   }, [dragRef.current])
 
@@ -50,9 +50,9 @@ export interface UseDropProps {
 export function useDrop(props: UseDropProps) {
   // 获取最外层store里的数据
   const { DragAndDropManager } = useContext(DragAndDropContext)
-  let dropRef = useRef(null);
+  let dropRef = useRef<HTMLDivElement | null>(null);
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent) => {
     // e就是拖拽的event对象
     e.preventDefault()
     // getBoundingClientRect的图请看下面
@@ -92,9 +92,9 @@ export function useDrop(props: UseDropProps) {
       current.addEventListener("dragleave", handledragLeave)
     }
     return () => {
-      current.removeEventListener("dragover", handleDragOver)
-      current.removeEventListener("drop", handledDrop)
-      current.removeEventListener("dragleave", handledragLeave)
+      current?.removeEventListener("dragover", handleDragOver)
+      current?.removeEventListener("drop", handledDrop)
+      current?.removeEventListener("dragleave", handledragLeave)
     }
   }, [dropRef.current])
 

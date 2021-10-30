@@ -30,5 +30,8 @@ export default {
     },
     error: (message: any, config?: ToastProps) => {
         renderToast({ ...config, type: ToastType.ERROR, message });
+    },
+    fail: (message: any, config?: ToastProps) => {
+        renderToast({ ...config, type: ToastType.ERROR, message });
     }
 };

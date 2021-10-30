@@ -1,6 +1,8 @@
-import { DragAndDrop, useDrag, useDrop } from '@/components/react-drag';
-import React, { Component, useState, useEffect, useRef } from 'react';
+import { DragAndDrop, useDrag, useDrop } from '@/components/react-drag-hook-demo';
+import React, { Component, useState, useEffect, useRef, useCallback } from 'react';
 import "./index.less";
+import useUpload from '@/components/react-upload/hook';
+import AddIcon from 'static/images/fail.png'
 
 function DragAndDropElement(props: any): any {
     const [, setDragRef] = useDrag({
@@ -41,12 +43,48 @@ function DragAndDropElement(props: any): any {
 const demo4: React.FC<any> = (props) => {
 
 
+    const [postParams, setPostParams] = useState({});
+
+    const getUploadList = useCallback((file: File[]) => {
+        setPostParams(postParams => {
+            if (file.length + postParams.file.length > 9) {
+                Toast.fail('最多上传9张图片')
+                return postParams
+            }
+            return {
+                ...postParams,
+                file: postParams.file.concat(file),
+            }
+        })
+    }, []);
+
+    const imgUploader = useUpload({ callback: getUploadList, count: 9 });
+
+    const mediaUploader = useUpload({
+        callback: file => {
+            console.log(file)
+        },
+        type: 'video',
+    })
+
+    function addImg() {
+        imgUploader?.current?.click()
+    }
+
+    function addMedia() {
+        mediaUploader?.current?.click()
+    }
+
     return (
         <div>
             <DragAndDrop>
                 <DragAndDropElement title='第一个元素' />
                 <DragAndDropElement title='第二个元素' />
             </DragAndDrop>
+            <div className="newpost">
+                <div onClick={addMedia}>upload</div>
+                <img src={AddIcon} onClick={addImg} className="cover" />
+            </div>
         </div>
     );
 

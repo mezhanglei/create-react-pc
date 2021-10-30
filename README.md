@@ -2,7 +2,7 @@
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + redux-saga + ant-design等web开发脚手架,支持typescript
+说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + ant-design等web开发脚手架,支持typescript
 依赖：下载项目后在项目根目录运行命令：
       1. 设置依赖镜像源：
          如果镜像源为国内淘宝镜像https://registry.npm.taobao.org,则:

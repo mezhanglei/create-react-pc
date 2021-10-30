@@ -22,6 +22,7 @@
         }
       }
     ],
+    // 和ts-loader方案二选一，目的是把ts转为js
     "@babel/preset-typescript",
     // 转换react语法
     "@babel/preset-react"

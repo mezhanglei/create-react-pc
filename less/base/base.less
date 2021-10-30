@@ -12,7 +12,7 @@ body {
   /* 解决IOS默认滑动卡住的情况,同时不能设置body为overflow:hidden会使界面偏移抖动 */
   -webkit-overflow-scrolling: touch;
   /* 背景颜色 */
-  background: #F5F5F5;
+  background: @mine-body-background;
   // height: 100vh;
   width: 100%;
   // 动态计算向右移动一个滚动条宽度，防止出现滚动条时body内容抖动
@@ -60,7 +60,7 @@ i,
 section {
   margin: 0;
   padding: 0;
-  font-size: 12px;
+  font-size: @base-size;
   font-style: normal;
   font-family: Helvetica, "Hiragino Sans GB", "Microsoft YaHei", Simsun, "Droid Sans Fallback", sans-serif;
   /* 设置颜色会影响vant组件的字体图标颜色 */

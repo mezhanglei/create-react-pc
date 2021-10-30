@@ -149,7 +149,7 @@ module.exports = {
                                 // 引入antd 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
-                                    "less/constants/theme.less"
+                                    "less/constants/ant-design-theme.less"
                                 )}";`,
                             },
                             javascriptEnabled: true,
@@ -212,7 +212,14 @@ module.exports = {
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
         new FriendlyErrorsWebpackPlugin(),
         // 设置项目的全局变量, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
-        new webpack.DefinePlugin(configs.globalDefine),
+        new webpack.DefinePlugin({
+            'process.env': {
+                // mock数据环境
+                MOCK: process.env.MOCK,
+                // 资源引用的公共路径字符串
+                PUBLIC_PATH: JSON.stringify(configs.publicPath || '/'),
+            }
+        }),
         // 将目标目录里的文件直接拷贝到输出dist目录
         new CopyWebpackPlugin([
             {
@@ -269,8 +276,14 @@ module.exports = {
             // hash: false,
             // 错误详细信息将写入html
             // showErrors: true,
-            commonJs: configs.commonJs,
-            commonCSS: configs.commonCSS
+            // script引入的公共js文件
+            commonJs: [
+                // 'static/dll/base_dll.js'
+            ],
+            // link引入的公共css文件
+            commonCSS: [
+                // `static/fonts/iconfont.css?time=${new Date().getTime()}`
+            ]
         })
     ],
     // require 引用入口配置
@@ -367,6 +380,7 @@ function handleRequest(req, res) {
     let reqQuery = req.query;
     // 协议
     let protocol = req.protocol;
+    // 方法
     let method = reqQuery['method'];
     // mock数据存放的文件路径作为mock请求的接口路径
     let fileUrl = path.join(configs.mock, reqPath.replace(/\/mock/ig, "") + '.json');

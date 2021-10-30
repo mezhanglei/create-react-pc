@@ -1,5 +1,5 @@
 import { setUrlQuery } from "@/utils/url";
-import DefineEvent from "@/utils/event";
+import ClickListen from "@/utils/listen-click";
 
 /**
  * 全局手工埋点函数
@@ -7,12 +7,12 @@ import DefineEvent from "@/utils/event";
  * @param {*} data 默认传输的参数，选填
  * 使用说明: 
  * 1. 在入口文件处调用函数：Dpoint(url, data = {});
- * 2. 拥有event-name="point"自定义属性的标签将会被拦截点击事件，触发埋点发送请求的操作
+ * 2. 将name作为自定属性的标签将会被拦截点击事件，触发埋点发送请求的操作
  */
 export function Dpoint(url: string, data = {}) {
-    const event = new DefineEvent({
-        eventName: "point",
-        eventFn: function (e) {
+    const event = new ClickListen({
+        name: "click-type=point",
+        callback: function (e) {
             let cpImg = new Image();
             data = data || "";
             // 销毁img

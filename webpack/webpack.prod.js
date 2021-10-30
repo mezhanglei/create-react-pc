@@ -34,14 +34,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const configs = require('./configs.js');
 
 
-// === webpack的loader扩展 === //
-
-
-// === webpack的plugins扩展(plugins中不允许空值存在) === //
-
-
-// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包(这里循环是为了当有多个dll文件时进行循环操作)
-const dllArr = configs.manifestPathArr.map((path) => {
+// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包,多个dll文件则循环
+const dllList = configs.manifestPathArr.map((path) => {
     return new webpack.DllReferencePlugin({
         // 上下文环境路径(与dllplugin在同一目录)
         context: configs.root,
@@ -156,7 +150,7 @@ const webpackConfig = {
                                 // 引入antd 主题颜色覆盖文件
                                 hack: `true; @import "${path.join(
                                     configs.root,
-                                    "less/constants/theme.less"
+                                    "less/constants/ant-design-theme.less"
                                 )}";`,
                             },
                             javascriptEnabled: true,
@@ -270,7 +264,14 @@ const webpackConfig = {
     plugins: [
         new webpack.ProvidePlugin(configs.providePlugin),
         // 设置项目的全局变量,String类型, 如果值是个字符串会被当成一个代码片段来使用, 如果不是,它会被转化为字符串(包括函数)
-        new webpack.DefinePlugin(configs.globalDefine),
+        new webpack.DefinePlugin({
+            'process.env': {
+                // mock数据环境
+                MOCK: process.env.MOCK,
+                // 资源引用的公共路径字符串
+                PUBLIC_PATH: JSON.stringify(configs.publicPath || '/'),
+            }
+        }),
         // 清理dsit目录
         new CleanWebpackPlugin(),
         // 统计信息提示插件(比如错误或者警告会用带颜色的字体来显示,更加友好)
@@ -350,10 +351,16 @@ const webpackConfig = {
             // hash: false,
             // 错误详细信息将写入html
             // showErrors: true,
-            commonJs: configs.commonJs,
-            commonCSS: configs.commonCSS
+            // script引入的公共js文件
+            commonJs: [
+                // 'static/dll/base_dll.js'
+            ],
+            // link引入的公共css文件
+            commonCSS: [
+                // `static/fonts/iconfont.css?time=${new Date().getTime()}`
+            ]
         }),
-        ...dllArr,
+        ...dllList,
         ...bundleAnalyze
     ],
     // require 引用入口配置
