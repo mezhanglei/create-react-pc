@@ -4,6 +4,7 @@ export const Demo1 = loadable({ loader: () => import(/* webpackChunkName: "demo1
 const Demo2 = loadable({ loader: () => import(/* webpackChunkName: "demo2" */ '@/pages/demo2/index') });
 const Demo3 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo3/index') });
 const Demo4 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo4/index') });
+const Demo5 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo5/index') });
 
 // 首页
 export const DemoRoute = [
@@ -42,6 +43,14 @@ export const DemoRoute = [
         // 自定义字段，额外的组件信息
         meta: {
             title: "拖拽排序",
+        }
+    },
+    {
+        path: "/demo5",
+        component: Demo5,
+        // 自定义字段，额外的组件信息
+        meta: {
+            title: "表单",
         }
     }
 ];
