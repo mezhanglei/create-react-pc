@@ -1,6 +1,7 @@
-import { deepCopy, deepGet, deepSet } from './utils'
 
-export type FormListener = (name: string) => void
+import { deepCopy, deepGetForm, deepSetForm } from './utils'
+
+export type FormListener = { name: string, onChange: () => void }
 
 export type FormValidator = (value: any, values: any) => void | Promise<void>
 
@@ -32,27 +33,34 @@ export class FormStore<T extends Object = any> {
     this.subscribe = this.subscribe.bind(this)
   }
 
-  // 触发所有订阅
-  private notify(name: string) {
-    this.listeners.forEach((listener) => listener(name))
+  // 触发所有订阅, 同步表单ui和数据
+  private notify(name?: string) {
+    if (name) {
+      this.listeners.forEach((listener) => {
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange()
+        }
+      })
+    } else {
+      this.listeners.forEach((listener) => listener.onChange())
+    }
   }
 
-  // 获取所有表单值，或者单个表单值或者多个表单值（以.分割的表单名字符串），并
+  // 获取所有表单值，或者单个表单值
   public get(name?: string) {
-    return name === undefined ? { ...this.values } : deepGet(this.values, name)
+    return name === undefined ? { ...this.values } : deepGetForm(this.values, name)
   }
 
-  // 设置表单值，单个表单值或多个表单值（以.分割的表单名）或者对象方式设置值
+  // 设置表单值，单个表单值或多个表单值
   public async set(values: Partial<T>): Promise<void>
   public async set(name: string, value: any, validate?: boolean): Promise<void>
   public async set(name: any, value?: any, validate?: boolean) {
     if (typeof name === 'string') {
-      deepSet(this.values, name, value)
+      this.values = deepSetForm(this.values, name, value);
       this.notify(name)
 
       if (validate) {
         await this.validate(name).catch((err) => err)
-        this.notify(name)
       }
     } else if (name) {
       await Promise.all(Object.keys(name).map((n) => this.set(n, name[n])))
@@ -62,7 +70,7 @@ export class FormStore<T extends Object = any> {
   public reset() {
     this.errors = {}
     this.values = deepCopy(this.initialValues)
-    this.notify('*')
+    this.notify()
   }
 
   public error(): FormErrors
@@ -101,7 +109,6 @@ export class FormStore<T extends Object = any> {
         error = err
       }
 
-      this.notify('*')
       if (error) throw error
 
       return this.get()
@@ -126,12 +133,14 @@ export class FormStore<T extends Object = any> {
   }
 
   // 订阅表单变动
-  public subscribe(listener: FormListener) {
-    this.listeners.push(listener)
+  public subscribe(name: string, listener: FormListener['onChange']) {
+    this.listeners.push({
+      onChange: listener,
+      name: name
+    })
 
     return () => {
-      const index = this.listeners.indexOf(listener)
-      if (index > -1) this.listeners.splice(index, 1)
+      this.listeners = this.listeners.filter((sub) => sub.name !== name)
     }
   }
 }

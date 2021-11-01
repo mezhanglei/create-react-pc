@@ -22,8 +22,43 @@ class demo5 extends React.Component {
     render() {
         return (
             <Form store={this.store}>
-                <Form.Field label="Name" name="name1">
-                    <Input />
+                <Form.Field label="Name1" name="name1.label">
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        labelInValue
+                    >
+                        {
+                            this.state.list?.map((item) => {
+                                return (
+                                    <Select.Option key={item.key}>
+                                        {item.value}
+                                    </Select.Option>
+                                )
+                            })
+                        }
+                    </Select>
+                </Form.Field>
+                <Form.Field label="Name2" name="name2">
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        labelInValue
+                    >
+                        {
+                            this.state.list?.map((item) => {
+                                return (
+                                    <Select.Option key={item.key}>
+                                        {item.value}
+                                    </Select.Option>
+                                )
+                            })
+                        }
+                    </Select>
                 </Form.Field>
                 <Form.Field label="">
                     <button onClick={this.onSubmit}>Submit</button>

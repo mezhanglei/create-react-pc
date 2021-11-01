@@ -69,3 +69,13 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
     const entries = Object.entries(obj)?.filter((item) => (callback(item[1], item[0])));
     return Object.fromEntries(entries);
 }
+
+// 根据路径获取目标对象中的值
+export function deepGet(obj: object, keys: string | string[], defaultVal?: any): any {
+    return (
+      (!Array.isArray(keys)
+        ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
+         : keys
+      ).reduce((o, k) => (o || {})[k], obj) || defaultVal
+    );
+  }
