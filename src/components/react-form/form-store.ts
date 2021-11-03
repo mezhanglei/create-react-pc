@@ -1,36 +1,60 @@
 
+import { asyncSequentialExe } from '@/utils/common';
+import { isEmpty } from '@/utils/type';
 import { deepCopy, deepGetForm, deepSetForm } from './utils'
 
 export type FormListener = { name: string, onChange: () => void }
 
-export type FormValidator = (value: any, values: any) => void | Promise<void>
+export type FormValidatorCallBack = (message?: string) => void;
 
-export type FormRules = { [key: string]: FormValidator }
+export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => boolean | undefined | Promise<boolean>;
 
-export type FormErrors = { [key: string]: string | undefined }
+export type FormRule = { required?: boolean, message?: string; validator?: FormValidator }
+
+export type FormRules<T> = { [key in keyof T]?: FormRule[] };
+
+export type FormErrors<T> = { [key in keyof T]?: T[key] }
+
+export type ValidateResult<T> = { error?: string, values: T }
 
 export class FormStore<T extends Object = any> {
-  private initialValues: T
+  private initialValues: Partial<T>
 
   private listeners: FormListener[] = []
 
-  private values: T
+  private values: Partial<T>
 
-  private rules: FormRules
+  private formRules: FormRules<T>
 
-  private errors: FormErrors = {}
+  private formErrors: FormErrors<T> = {}
 
-  public constructor(values: Partial<T> = {}, rules: FormRules = {}) {
-    this.initialValues = values as any
-    this.values = deepCopy(values) as any
-    this.rules = rules
+  public constructor(values: Partial<T> = {}, rules?: FormRules<T>) {
+    this.initialValues = values
+    this.values = deepCopy(values)
+    this.formRules = rules || {}
 
-    this.get = this.get.bind(this)
-    this.set = this.set.bind(this)
+    this.getFieldValue = this.getFieldValue.bind(this)
+    this.setFieldValue = this.setFieldValue.bind(this)
+    this.setFieldsValue = this.setFieldsValue.bind(this)
+    this.setFieldRules = this.setFieldRules.bind(this)
+    this.setFieldsRules = this.setFieldsRules.bind(this)
     this.reset = this.reset.bind(this)
-    this.error = this.error.bind(this)
+    this.getFieldError = this.getFieldError.bind(this)
+    this.setFieldError = this.setFieldError.bind(this)
+    this.setFieldsError = this.setFieldsError.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribe = this.subscribe.bind(this)
+  }
+
+  // 更新表单中的校验规则
+  public setFieldRules(name: string, rules?: FormRule[]) {
+    if (!name) return;
+    this.formRules[name] = rules;
+  }
+
+  // 设置表单中的校验规则
+  public setFieldsRules(values: FormRules<T>) {
+    this.formRules = deepCopy(values)
   }
 
   // 触发所有订阅, 同步表单ui和数据
@@ -46,89 +70,112 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 获取所有表单值，或者单个表单值
-  public get(name?: string) {
+  // 获取所有表单值，或者单个表单值,或者多个表单值
+  public getFieldValue(name?: string | string[]) {
     return name === undefined ? { ...this.values } : deepGetForm(this.values, name)
   }
 
-  // 设置表单值，单个表单值或多个表单值
-  public async set(values: Partial<T>): Promise<void>
-  public async set(name: string, value: any, validate?: boolean): Promise<void>
-  public async set(name: any, value?: any, validate?: boolean) {
+  // 更新表单值，单个表单值或多个表单值
+  public async setFieldValue(name: any, value?: any) {
     if (typeof name === 'string') {
-      this.values = deepSetForm(this.values, name, value);
+      // 设置表单值
+      this.setFieldsValue(deepSetForm(this.values, name, value));
+      // 同步ui
       this.notify(name)
 
-      if (validate) {
-        await this.validate(name).catch((err) => err)
+      if (this.formRules?.[name]?.length) {
+        // 校验规则
+        await this.validate(name);
       }
     } else if (name) {
-      await Promise.all(Object.keys(name).map((n) => this.set(n, name[n])))
+      await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name[n])))
     }
+  }
+
+  // 设置表单值
+  public async setFieldsValue(values: Partial<T>) {
+    this.values = deepCopy(values);
   }
 
   public reset() {
-    this.errors = {}
-    this.values = deepCopy(this.initialValues)
+    this.setFieldsError({});
+    this.setFieldsValue(this.initialValues)
     this.notify()
   }
 
-  public error(): FormErrors
-  public error(name: number | string): string | undefined
-  public error(name: string, value: string | undefined): string | undefined
-  public error(...args: any[]) {
-    let [name, value] = args
-
-    if (args.length === 0) return this.errors
-
-    if (typeof name === 'number') {
-      name = Object.keys(this.errors)[name]
+  // 获取error信息
+  public getFieldError(name?: string) {
+    if (name) {
+      return this.formErrors[name]
+    } else {
+      return this.formErrors
     }
-
-    if (args.length === 2) {
-      if (value === undefined) {
-        delete this.errors[name]
-      } else {
-        this.errors[name] = value
-      }
-    }
-
-    return this.errors[name]
   }
 
+  // 更新error信息
+  public setFieldError(name: string, value: any) {
+    if (!name) return;
+    if (value === undefined) {
+      delete this.formErrors[name]
+    } else {
+      this.formErrors[name] = value
+    }
+  }
 
-  public async validate(): Promise<T>
-  public async validate(name: string): Promise<any>
+  // 设置error信息
+  public async setFieldsError(erros: FormErrors<T>) {
+    this.formErrors = deepCopy(erros);
+  }
+
+  // 校验整个表单或校验表单中的某个控件
+  public async validate(): Promise<ValidateResult<T>>
+  public async validate(name: string): Promise<string>
   public async validate(name?: string) {
     if (name === undefined) {
-      let error: Error | undefined = undefined
-
-      try {
-        await Promise.all(Object.keys(this.rules).map((n) => this.validate(n)))
-      } catch (err) {
-        error = err
+      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.validate(n)))
+      const currentError = result?.filter((message) => message !== undefined)?.[0]
+      return {
+        error: currentError,
+        values: this.getFieldValue()
       }
-
-      if (error) throw error
-
-      return this.get()
     } else {
-      const validator = this.rules[name]
-      const value = this.get(name)
-      let error: Error | undefined = undefined
+      // 清空错误信息
+      this.setFieldError(name, undefined);
+      this.notify(name)
+      const value = this.getFieldValue(name);
+      const rules = this.formRules[name];
 
-      if (validator) {
-        try {
-          await validator(value, this.values)
-        } catch (err) {
-          error = err
+      // 表单校验处理规则
+      const handleRule = async (rule: FormRule) => {
+        // 固定方式校验
+        if (rule.required === true && isEmpty(value)) {
+          return rule.message || true;
+          // 自定义校验函数
+        } else if (rule.validator) {
+          let callbackExe;
+          let message;
+          const flag = await rule.validator(value, (msg?: string) => {
+            // callback方式校验
+            callbackExe = true;
+            message = msg;
+          });
+          // 非callback方式校验
+          if (!callbackExe && !flag) {
+            message = rule.message;
+          }
+          return message;
         }
       }
 
-      this.error(name, error && error.message)
-      if (error) throw error
+      // 按rules的索引顺序执行，校验不通过就终止继续校验
+      const messageList = await asyncSequentialExe(rules?.map((rule: FormRule) => () => handleRule(rule)), (msg: string) => msg);
+      const currentError = messageList?.[0];
+      if (currentError) {
+        this.setFieldError(name, currentError);
+        this.notify(name);
+      }
 
-      return value
+      return currentError;
     }
   }
 
@@ -137,7 +184,7 @@ export class FormStore<T extends Object = any> {
     this.listeners.push({
       onChange: listener,
       name: name
-    })
+    });
 
     return () => {
       this.listeners = this.listeners.filter((sub) => sub.name !== name)

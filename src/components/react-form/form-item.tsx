@@ -2,45 +2,55 @@ import React, { cloneElement, isValidElement, useCallback, useContext, useState 
 
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
-import { getPropName, getValueFromEvent } from './utils'
+import { getPropValueName, getValueFromEvent } from './utils'
 import { FormOptionsContext } from './form-options-context'
+import { FormRule } from './form-store'
 
 export interface FormItemProps {
   name?: string
   valueProp?: string | ((type: any) => string)
   valueGetter?: (...args: any[]) => any
   children?: React.ReactNode
+  rules?: FormRule[]
 }
 
-export function FormItem (props: FormItemProps) {
-  const { name, valueProp = 'value', valueGetter = getValueFromEvent, children } = props
+export function FormItem(props: FormItemProps) {
+  const { name, valueProp = 'value', valueGetter = getValueFromEvent, children, rules } = props
 
   const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
-  const [value, setValue] = useState(name && store ? store.get(name) : undefined)
-  const [error, setError] = useState(name && store ? store.error(name) : undefined)
+  const [value, setValue] = useState(name && store ? store.getFieldValue(name) : undefined)
+  const [error, setError] = useState(name && store ? store.getFieldError(name) : undefined)
 
   const onChange = useCallback(
-    (...args: any[]) => name && store && store.set(name, valueGetter(...args), true),
+    (...args: any[]) => {
+      name && store && store.setFieldValue(name, valueGetter(...args))
+    },
     [name, store, valueGetter]
   )
 
-  useFieldChange(store, name, () => {
-    setValue(store!.get(name!))
-    setError(store!.error(name!))
+  useFieldChange({
+    store,
+    name,
+    rules,
+    onChange: () => {
+      setValue(store!.getFieldValue(name!))
+      setError(store!.getFieldError(name!))
+    }
   })
 
   let child: any = children
 
   if (name && store && isValidElement(child)) {
     const { errorClassName = 'error' } = options
-    const prop = getPropName(valueProp, child && child.type)
+    const valueKey = getPropValueName(valueProp, child && child.type)
+    const oldProps = child?.props as any;
 
-    let className = (child.props && (child.props as any).className) || ''
+    let className = oldProps?.className || ''
     if (error) className += ' ' + errorClassName
 
-    const childProps = { className, [prop]: value, onChange }
-    child = cloneElement(child, childProps)
+    const newChildProps = { className, [valueKey]: value, onChange: oldProps?.onChange || onChange }
+    child = cloneElement(child, newChildProps)
   }
 
   return child

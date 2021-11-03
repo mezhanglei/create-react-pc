@@ -1,3 +1,4 @@
+import { isEmpty } from "./type";
 
 /**
  * 单例模式
@@ -73,10 +74,10 @@ export function throttle(fn: any, time: number = 500): any {
 /**
  * 顺序执行数组中的函数或promise，返回对应的结果数组
  */
-export const asyncSequentializer = (() => {
+export const asyncSequentialExe = (queues: any[], forbidFn?: Function) => {
 
     // 包装成Promise
-    const toPromise = (x: Promise<any> | ((...rest: any[]) => any)) => {
+    const promiseWrapper = (x: Promise<any> | ((...rest: any[]) => any)) => {
         if (x instanceof Promise) { // if promise just return it
             return x;
         }
@@ -88,30 +89,31 @@ export const asyncSequentializer = (() => {
         return Promise.resolve(x)
     }
 
-    return (list: any[]) => {
-        const results: any[] = [];
-        return list
-            .reduce((lastPromise, currentPromise) => {
-                return lastPromise.then((res: any) => {
-                    results.push(res); // collect the results
-                    return toPromise(currentPromise);
-                });
-            }, toPromise(list.shift()))
-            // collect the final result and return the array of results as resolved promise
-            .then((res: any) => Promise.resolve([...results, res]));
-    }
-})();
+    // 异步队列顺序执行，可以根据条件是否终止执行
+    const results: any[] = [];
+    return queues?.reduce((lastPromise, currentPromise, index) => {
+        return lastPromise?.then(async (res: any) => {
+            results.push(res);
+            const valid = await forbidFn?.(res, results, index);
+            if (valid) {
+                return null;
+            } else {
+                return promiseWrapper(currentPromise)
+            }
+        });
+    }, promiseWrapper(queues?.[0])).then((res: any) => Promise.resolve([...results, res]?.filter((val) => !isEmpty(val))));
+};
 
 // settimeout模拟的循环方法
-export async function poll(fn: () => any, validate: (val: any) => boolean, interval = 2500) {
+export async function poll(fn: () => any, forbidFn: (val: any) => boolean, interval = 2500) {
     const resolver = async (resolve: (arg0: any) => void, reject: (arg0: any) => void) => {
         try {
             const result = await fn();
             // call validator to see if the data is at the state to stop the polling
-            const valid = validate(result);
+            const valid = forbidFn(result);
             if (valid === true) {
                 resolve(result);
-            } else if (valid === false) {
+            } else {
                 setTimeout(resolver, interval, resolve, reject);
             }
         } catch (e) {
@@ -121,5 +123,4 @@ export async function poll(fn: () => any, validate: (val: any) => boolean, inter
     };
     return new Promise(resolver);
 }
-
 

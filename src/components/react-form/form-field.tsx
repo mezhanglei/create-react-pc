@@ -3,7 +3,9 @@ import React, { cloneElement, isValidElement, useCallback, useContext, useState 
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
 import { FormOptions, FormOptionsContext } from './form-options-context'
-import { getPropName, getValueFromEvent } from './utils'
+import { getPropValueName, getValueFromEvent } from './utils'
+import { FormRule } from './form-store'
+import classnames from 'classnames';
 
 export interface FormFieldProps extends FormOptions {
   className?: string
@@ -13,9 +15,12 @@ export interface FormFieldProps extends FormOptions {
   valueGetter?: (...args: any[]) => any
   suffix?: React.ReactNode
   children?: React.ReactNode
+  rules?: FormRule[]
 }
 
-export function FormField (props: FormFieldProps) {
+const prefixCls = 'rh-form-field';
+
+export function FormField(props: FormFieldProps) {
   const {
     className,
     label,
@@ -24,22 +29,32 @@ export function FormField (props: FormFieldProps) {
     valueGetter = getValueFromEvent,
     suffix,
     children,
+    rules,
     ...restProps
   } = props
 
   const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
-  const [value, setValue] = useState(name && store ? store.get(name) : undefined)
-  const [error, setError] = useState(name && store ? store.error(name) : undefined)
+  const [value, setValue] = useState(name && store ? store.getFieldValue(name) : undefined)
+  const [error, setError] = useState(name && store ? store.getFieldError(name) : undefined)
 
+  // onChange监听
   const onChange = useCallback(
-    (...args: any[]) => name && store && store.set(name, valueGetter(...args), true),
+    (...args: any[]) => {
+      return name && store && store.setFieldValue(name, valueGetter(...args))
+    },
     [name, store, valueGetter]
   )
 
-  useFieldChange(store, name, () => {
-    setValue(store!.get(name!))
-    setError(store!.error(name!))
+  useFieldChange({
+    store,
+    name,
+    rules,
+    // 监听onChange事件
+    onChange: () => {
+      setValue(store!.getFieldValue(name!))
+      setError(store!.getFieldError(name!))
+    }
   })
 
   const { inline, compact, required, labelWidth, gutter, errorClassName = 'error' } = {
@@ -50,23 +65,25 @@ export function FormField (props: FormFieldProps) {
   let child: any = children
 
   if (name && store && isValidElement(child)) {
-    const prop = getPropName(valueProp, child && child.type)
+    const valueKey = getPropValueName(valueProp, child && child.type)
+    const oldProps = child?.props as any;
 
-    let childClassName = (child.props && (child.props as any).className) || ''
+    let childClassName = oldProps.className || '';
     if (error) childClassName += ' ' + errorClassName
 
-    const childProps = { className: childClassName, [prop]: value, onChange }
-    child = cloneElement(child, childProps)
+
+    const newChildProps = { className: childClassName, [valueKey]: value, onChange: oldProps?.onChange || onChange }
+    child = cloneElement(child, newChildProps)
   }
 
-  const classNames = [
+  const cls = classnames(
     classes.field,
     inline ? classes.inline : '',
     compact ? classes.compact : '',
     required ? classes.required : '',
     error ? classes.error : '',
     className ? className : ''
-  ].join('')
+  )
 
   const headerStyle = {
     width: labelWidth,
@@ -74,13 +91,13 @@ export function FormField (props: FormFieldProps) {
   }
 
   return (
-    <div className={classNames}>
+    <div className={cls}>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
           {label}
         </div>
       )}
-      <div className={classes.container}>
+      <div className={classnames(classes.container, error && classes.containerError)}>
         <div className={classes.control}>{child}</div>
         <div className={classes.message}>{error}</div>
       </div>
@@ -90,15 +107,16 @@ export function FormField (props: FormFieldProps) {
 }
 
 const classes = {
-  field: 'rh-form-field ',
-  inline: 'rh-form-field--inline ',
-  compact: 'rh-form-field--compact ',
-  required: 'rh-form-field--required ',
-  error: 'rh-form-field--error ',
+  field: prefixCls,
+  inline: `${prefixCls}--inline`,
+  compact: `${prefixCls}--compact`,
+  required: `${prefixCls}--required`,
+  error: `${prefixCls}--error`,
 
-  header: 'rh-form-field__header',
-  container: 'rh-form-field__container',
-  control: 'rh-form-field__control',
-  message: 'rh-form-field__message',
-  footer: 'rh-form-field__footer'
+  header: `${prefixCls}__header`,
+  container: `${prefixCls}__container`,
+  containerError: `${prefixCls}__container__error`,
+  control: `${prefixCls}__control`,
+  message: `${prefixCls}__message`,
+  footer: `${prefixCls}__footer`
 }

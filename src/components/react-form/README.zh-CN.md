@@ -26,7 +26,7 @@ class App extends React.Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const values = this.store.get();
+    const values = this.store.getFieldValue();
     console.log(values);
   };
 
@@ -57,27 +57,43 @@ store.reset();
 
 ## 表单校验
 
-第二个参数用于设置校验规则，当校验函数抛出异常时，代表校验不通过。
-
-使用`store.validate()`可以校验整个表单，并且返回一个包含错误信息和表单值的数组。
 
 ```javascript
-function assert(condition, message) {
-  if (!condition) throw new Error(message)
+
+import React from 'react';
+import { Form, FormStore } from "react-form";
+import { Input, Select } from 'antd'
+
+class demo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.store = new FormStore();
+        this.state = {
+        }
+    }
+
+    onSubmit = async (e) => {
+        const { error, values } = await this.store.validate()
+        console.log(error, values, '当前报错以及表单所有控件的值')
+    };
+
+    render() {
+        return (
+            <Form store={this.store} onSubmit={this.onSubmit}>
+                <Form.Field label="Name1" name="name1" rules={[{ required: true, message: '不能为空1' }]}>
+                  <Input />
+                </Form.Field>
+                <Form.Field label="Name2" name="name2" rules={[{ required: true, message: '不能为空2' }]}>
+                   <Input />
+                </Form.Field>
+                <Form.Field label="">
+                    <button>Submit</button>
+                </Form.Field>
+            </Form>
+        );
+    }
 }
 
-const rules = {
-  name: (val) => assert(!!val && !!val.trim(), "Name is required")
-};
-
-const store = new FormStore({}, rules);
-// ...
-try {
-  const values = await store.validate();
-  console.log('values:', values);
-} catch (error) {
-  console.log('error:', error);
-}
 ```
 
 ## APIs
@@ -105,22 +121,22 @@ try {
 
 ### FormStore Methods
 
-- `new FormStore(defaultValues?, rules?)` 创建表单存储。
-- `store.get()` 返回整个表单的值。
-- `store.get(name)` 根据字段名返回表单域的值。
-- `store.set()` 设置整个表单的值。
-- `store.set(name, value)` 根据字段名设置表单域的值。
-- `store.set(name, value, true)` 根据字段名设置表单域的值，并校验。
+- `new FormStore(defaultValues?, rules?: FormRule[])` 创建表单存储。
+- `store.getFieldValue()` 返回整个表单的值。
+- `store.getFieldValue(name: string | string[])` 根据字段名返回表单域的值。当name为数组时，返回多个表单域的值
+- `store.setFieldValue(name, value)` 更新表单域的值
+- `store.setFieldsValue(obj: Partial<T>)` 设置表单域的值
 - `store.reset()` 重置表单。
 - `store.validate()` 校验整个表单，并返回错误信息和表单值。
 - `store.validate(name)` 根据字段名校验表单域的值，并返回错误信息和表单值。
-- `store.error()` 返回所有错误信息。
-- `store.error(index)` 返回第 index 条错误信息。
-- `store.error(name)` 根据字段名返回错误信息。
-- `store.error(name, message)` 根据字段名设置错误信息。
+- `store.getFieldError(name?: string)` 返回单个表单域的错误信息或表单所有的错误信息。
+- `store.setFieldError(name: string, message: string | undefined)` 更新表单域的错误信息
+- `store.setFieldsError(erros: FormErrors<T>)` 设置表单域的错误信息。
+- `store.setFieldRules(name: string, rules?: FormRule[])` 更新表单域的校验规则。
+- `store.setFieldsRules(values: FormRules<T>)` 设置表单域的校验规则。
 - `store.subscribe(name: string, onChange: () => void)` 订阅表单变动，并返回一个用于取消订阅的函数。
 
 ### Hooks
 
-- `useFormStore(defaultValues?, rules?)` 使用 hooks 创建 FormStore。
-- `useFieldChange(store, name, onChange)` 使用 hooks 创建表单域监听。
+- `useFormStore(defaultValues?, rules?: FormRule[])` 使用 hooks 创建 FormStore。
+- `useFieldChange(props: FieldChangeProps)` 使用 hooks 创建表单域监听。

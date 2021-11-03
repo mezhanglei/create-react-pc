@@ -1,31 +1,31 @@
-import { isArray, isObject } from "@/utils/type";
+import { isObject } from "@/utils/type";
 import { produce } from "immer"
 
 // 获取表单值中指定的字段值
-export function deepGetForm (obj: any, path: string) {
-  const parts = path.split('.')
-  const length = parts.length
-
-  for (let i = 0; i < length; i++) {
-    if (!isObject(obj)) return undefined
-    obj = obj[parts[i]]
+export function deepGetForm(obj: any, name: string | string[]) {
+  if (!isObject(obj) || !name) return obj;
+  if (Array.isArray(name)) {
+    const ret: any[] = [];
+    name?.forEach(key => {
+      if (key) {
+        ret?.push(obj[key])
+      }
+    });
+    return ret;
   }
-
-  return obj
+  return obj[name]
 }
 
 // 给表单设置的值
-export function deepSetForm (obj: any, path: string, value: any) {
-  const parts = path.split('.');
-  const key = parts?.[0];
-  if (!isObject(obj) || !key) return obj
+export function deepSetForm(obj: any, name: string, value: any) {
+  if (!isObject(obj) || !name) return obj
   const newObj = produce(obj, (draft: any) => {
-    draft[key] = value
+    draft[name] = value
   })
   return newObj;
 }
 
-export function deepCopy<T> (target: T): T {
+export function deepCopy<T>(target: T): T {
   const type = typeof target
 
   if (target === null || type === 'boolean' || type === 'number' || type === 'string') {
@@ -53,13 +53,13 @@ export function deepCopy<T> (target: T): T {
   return undefined as any
 }
 
-// 获取表单的值的props的变量
-export function getPropName (valueProp: string | ((type: any) => string), type: any) {
+// 表单值的键名
+export function getPropValueName(valueProp: string | ((type: any) => string), type: any) {
   return typeof valueProp === 'function' ? valueProp(type) : valueProp
 }
 
-// 根据表单的onChange获取值
-export function getValueFromEvent (...args: any[]) {
+// 表单的值
+export function getValueFromEvent(...args: any[]) {
   const e = args[0] as React.ChangeEvent<any>
   return e && e.target ? (e.target.type === 'checkbox' ? e.target.checked : e.target.value) : e
 }

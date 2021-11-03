@@ -12,17 +12,30 @@ class demo5 extends React.Component {
         }
     }
 
-    onSubmit = e => {
-        e.preventDefault();
+    componentDidMount() {
 
-        const values = this.store.get();
-        console.log(values);
+    }
+
+    onSubmit = async (e) => {
+        const result = await this.store.validate()
+        console.log(result, 222)
     };
+
+    onReset = () => {
+        console.log(this.store.getFieldValue(), '重置')
+    }
+
+    validator = (value, callBack) => {
+        if(value?.length < 2) {
+            return false
+        }
+        return true;
+    }
 
     render() {
         return (
-            <Form store={this.store}>
-                <Form.Field label="Name1" name="name1.label">
+            <Form store={this.store} onSubmit={this.onSubmit} onReset={this.onReset}>
+                <Form.Field label="Name1" name="name1" rules={[{ required: true }, { validator: this.validator, message: '自定义校验' }]}>
                     <Select
                         mode="multiple"
                         allowClear
@@ -41,7 +54,7 @@ class demo5 extends React.Component {
                         }
                     </Select>
                 </Form.Field>
-                <Form.Field label="Name2" name="name2">
+                <Form.Field label="Name2" name="name2" rules={[{ required: true, message: '不能为空2' }]}>
                     <Select
                         mode="multiple"
                         allowClear
@@ -61,7 +74,7 @@ class demo5 extends React.Component {
                     </Select>
                 </Form.Field>
                 <Form.Field label="">
-                    <button onClick={this.onSubmit}>Submit</button>
+                    <button>Submit</button>
                 </Form.Field>
             </Form>
         );
