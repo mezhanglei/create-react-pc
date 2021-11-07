@@ -17,7 +17,7 @@ export class Uploader {
     private total: number
     private dom: HTMLInputElement
 
-    constructor(type: 'image' | 'video', setter: Function, total: number = 1) {
+    constructor(type: 'image' | 'video', setter: Function, total: number = 2) {
         let input = document.createElement('input')
         input.setAttribute('type', 'file')
         input.setAttribute('id', `uploader-${++id}`)
@@ -57,7 +57,7 @@ export class Uploader {
 
             const files = input.files,
                 proList = []
-
+                console.log(files, 222)
             if (files.length > this.total) {
                 Toast.fail(`最多上传${this.total}张图片`)
                 return
