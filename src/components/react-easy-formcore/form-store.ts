@@ -28,10 +28,10 @@ export class FormStore<T extends Object = any> {
 
   private formErrors: FormErrors<T> = {}
 
-  public constructor(values: Partial<T> = {}, rules?: FormRules<T>) {
+  public constructor(values: Partial<T> = {}, formRules?: FormRules<T>) {
     this.initialValues = values
     this.values = deepCopy(values)
-    this.formRules = rules || {}
+    this.formRules = formRules || {}
 
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
@@ -97,6 +97,7 @@ export class FormStore<T extends Object = any> {
     this.values = deepCopy(values);
   }
 
+  // 重置表单
   public reset() {
     this.setFieldsError({});
     this.setFieldsValue(this.initialValues)
@@ -159,22 +160,22 @@ export class FormStore<T extends Object = any> {
             callbackExe = true;
             message = msg;
           });
-          // 非callback方式校验
+
+          // 返回值方式校验
           if (!callbackExe && !flag) {
-            message = rule.message;
+            message = rule.message || true;
           }
           return message;
         }
       }
 
-      // 按rules的索引顺序执行，校验不通过就终止继续校验
+      // 按rules的索引顺序执行，有结果则终止执行
       const messageList = await asyncSequentialExe(rules?.map((rule: FormRule) => () => handleRule(rule)), (msg: string) => msg);
       const currentError = messageList?.[0];
       if (currentError) {
         this.setFieldError(name, currentError);
         this.notify(name);
       }
-
       return currentError;
     }
   }
@@ -185,7 +186,6 @@ export class FormStore<T extends Object = any> {
       onChange: listener,
       name: name
     });
-
     return () => {
       this.listeners = this.listeners.filter((sub) => sub.name !== name)
     }

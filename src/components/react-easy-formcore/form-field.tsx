@@ -50,14 +50,18 @@ export function FormField(props: FormFieldProps) {
     store,
     name,
     rules,
-    // 监听onChange事件
+    // 监听FormStore中的value变化
     onChange: () => {
-      setValue(store!.getFieldValue(name!))
-      setError(store!.getFieldError(name!))
+      const value = store!.getFieldValue(name!);
+      const values = store!.getFieldValue();
+      const error = store!.getFieldError(name!);
+      setValue(value);
+      setError(error);
+      options?.onValuesChange && options?.onValuesChange({ value: value, values: values, error: error })
     }
   })
 
-  const { inline, compact, required, labelWidth, gutter, errorClassName = 'error' } = {
+  const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = {
     ...options,
     ...restProps
   }
@@ -66,13 +70,13 @@ export function FormField(props: FormFieldProps) {
 
   if (name && store && isValidElement(child)) {
     const valueKey = getPropValueName(valueProp, child && child.type)
-    const oldProps = child?.props as any;
+    const childProps = child?.props as any;
+    const childOnChange = childProps?.onChange;
 
-    let childClassName = oldProps.className || '';
+    let childClassName = childProps.className || '';
     if (error) childClassName += ' ' + errorClassName
 
-
-    const newChildProps = { className: childClassName, [valueKey]: value, onChange: oldProps?.onChange || onChange }
+    const newChildProps = { className: childClassName, [valueKey]: value, onChange: childOnChange || onChange }
     child = cloneElement(child, newChildProps)
   }
 
@@ -87,7 +91,8 @@ export function FormField(props: FormFieldProps) {
 
   const headerStyle = {
     width: labelWidth,
-    marginRight: gutter
+    marginRight: gutter,
+    textAlign: labelAlign
   }
 
   return (
@@ -97,7 +102,7 @@ export function FormField(props: FormFieldProps) {
           {label}
         </div>
       )}
-      <div className={classnames(classes.container, error && classes.containerError)}>
+      <div className={classes.container}>
         <div className={classes.control}>{child}</div>
         <div className={classes.message}>{error}</div>
       </div>
@@ -115,7 +120,6 @@ const classes = {
 
   header: `${prefixCls}__header`,
   container: `${prefixCls}__container`,
-  containerError: `${prefixCls}__container__error`,
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
   footer: `${prefixCls}__footer`

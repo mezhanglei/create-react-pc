@@ -93,6 +93,7 @@ export const asyncSequentialExe = (queues: any[], forbidFn?: Function) => {
     const results: any[] = [];
     return queues?.reduce((lastPromise, currentPromise, index) => {
         return lastPromise?.then(async (res: any) => {
+            if(res === null) return;
             results.push(res);
             const valid = await forbidFn?.(res, results, index);
             if (valid) {

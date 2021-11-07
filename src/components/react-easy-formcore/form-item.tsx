@@ -44,12 +44,13 @@ export function FormItem(props: FormItemProps) {
   if (name && store && isValidElement(child)) {
     const { errorClassName = 'error' } = options
     const valueKey = getPropValueName(valueProp, child && child.type)
-    const oldProps = child?.props as any;
+    const childProps = child?.props as any;
+    const childOnChange = childProps?.onChange;
 
-    let className = oldProps?.className || ''
+    let className = childProps?.className || ''
     if (error) className += ' ' + errorClassName
 
-    const newChildProps = { className, [valueKey]: value, onChange: oldProps?.onChange || onChange }
+    const newChildProps = { className, [valueKey]: value, onChange: childOnChange || onChange }
     child = cloneElement(child, newChildProps)
   }
 
