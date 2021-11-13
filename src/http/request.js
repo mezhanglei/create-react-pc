@@ -24,7 +24,7 @@ export function endLoading() {
 const http = axios.create({
     timeout: 1000 * 10,
     withCredentials: true,
-    baseURL: process.env.MOCK ? '/mock' : ""
+    baseURL: process.env.MOCK ? '/mock' : "/api"
 });
 
 
@@ -32,12 +32,12 @@ let pending = []; // 声明一个数组用于存储每个ajax请求的取消函�
 let cancelToken = axios.CancelToken;
 let removePending = (config) => {
     for (let p in pending) {
-        if (pending[p].u === config.url + '&' + config.method) { //当当前请求在数组中存在时执行函数体
-            pending[p].f(); // 执行取消操作
+        if (pending[p].key === config.url + '&' + config.method) { //当当前请求在数组中存在时执行函数体
+            pending[p].cancel(); // 执行取消操作
             pending.splice(p, 1); //把这条记录从数组中移除
         }
     }
-}
+};
 
 /**
  * 响应状态异常的处理
@@ -88,9 +88,9 @@ http.interceptors.request.use(
 
         startLoading();
         removePending(config); // 重复的请求取消掉
-        config.cancelToken = new cancelToken((c) => {
-            // 这里的ajax标识我是用请求地址&请求方式拼接的字符串，当然你可以选择其他的一些方式
-            pending.push({ u: config.url + '&' + config.method, f: c });
+        config.cancelToken = new cancelToken((cancel) => {
+            // 添加进已执行数组
+            pending.push({ key: config.url + '&' + config.method, cancel: cancel });
         });
         return config;
     },
@@ -131,11 +131,11 @@ http.interceptors.response.use(
 
 // 转换调用http请求的方式：例如http.post({}).then(res={})
 const request = {};
-['get', 'post', 'delete', 'put'].map(item => {
-    request[item] = function (configs) {
+['get', 'post', 'delete', 'put'].map(method => {
+    request[method] = function (configs) {
         return http({
             ...configs,
-            method: item
+            method: method
         });
     };
 });

@@ -24,7 +24,7 @@ const dllOutputPath = path.join(staticPath, 'dll');
 // 页面模板所在的根目录
 const htmlPages = path.join(root, 'public');
 // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
-const publicPath = '/public/';
+const publicPath = '/';
 
 // 公共配置(开发/生产均使用)
 const baseConfig = {

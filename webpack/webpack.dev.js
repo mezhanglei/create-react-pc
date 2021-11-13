@@ -335,9 +335,9 @@ module.exports = {
         proxy: [
             {
                 // 当以context里的任意一个字符串开头的接口都会通过本地代理访问目标接口域名下
-                context: ["/xx"],
+                context: ["/api"],
                 // 要代理访问的目标接口域名
-                target: "http://xxx.xxx.xxx.com",
+                target: "http://localhost:3000",
                 // 允许代理 websockets 协议
                 ws: true,
                 // true不接受运行在 HTTPS 上，且使用了无效证书的后端服务, false关闭安全检测
@@ -345,9 +345,9 @@ module.exports = {
                 // 需要虚拟托管的站点要设为true，开发时大部分情况都是虚拟托管的站点
                 changeOrigin: true,
                 // 实际请求中不存在代理字段则重写接口路径把api字符串去掉
-                // pathRewrite: {
-                // 	"^/api": "/xx",
-                // }
+                pathRewrite: {
+                	"^/api": "",
+                }
             },
         ],
         // 将错误或警告覆盖显示在浏览器屏幕上

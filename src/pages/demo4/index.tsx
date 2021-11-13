@@ -1,8 +1,10 @@
 import { DragAndDrop, useDrag, useDrop } from '@/components/react-drag-hook-demo';
 import React, { Component, useState, useEffect, useRef, useCallback } from 'react';
 import "./index.less";
-import useUpload from '@/components/react-upload/hook';
 import AddIcon from 'static/images/fail.png'
+import { Uploader } from '@/components/react-upload/uploader';
+import { Button } from 'antd';
+import http from '@/http/request';
 
 function DragAndDropElement(props: any): any {
     const [, setDragRef] = useDrag({
@@ -44,35 +46,56 @@ const demo4: React.FC<any> = (props) => {
 
 
     const [postParams, setPostParams] = useState({});
+    const imgUploader = useRef();
+    const uploadRef = useRef();
 
-    const getUploadList = useCallback((file: File[]) => {
-        setPostParams(postParams => {
-            if (file.length + postParams.file.length > 9) {
-                Toast.fail('最多上传9张图片')
-                return postParams
-            }
-            return {
-                ...postParams,
-                file: postParams.file.concat(file),
-            }
+    useEffect(() => {
+        uploadRef.current = new Uploader({
+            beforeUpload: beforeUpload,
+            uploading: uploading,
+            afterUpload: afterUpload
         })
-    }, []);
+        imgUploader.current = uploadRef.current?.dom;
+    }, [beforeUpload, uploading, afterUpload]);
 
-    const imgUploader = useUpload({ callback: getUploadList, count: 9 });
+    const beforeUpload = useCallback(async (params) => {
+        const ret = await http.post({ url: '/verify', data: { filename: params?.file?.name, hash: params?.fileHash } });
+        return {uploaded: ret?.uploaded, uploadedList: ret?.uploadedList };
+    }, [])
 
-    const mediaUploader = useUpload({
-        callback: file => {
-            console.log(file)
-        },
-        type: 'video',
-    })
+    const uploading = useCallback((params) => {
+        const data = new FormData();
+        data.append("chunk", params?.chunk?.chunk);
+        data.append("hash", params?.chunk?.chunkName);
+        data.append("filename", params?.file?.name);
+        data.append("fileHash", params?.fileHash);
+        return http.post({ url: '/upload', data: data });
+    }, [])
+
+    const afterUpload = useCallback((params) => {
+        http.post({
+            url: '/merge', data: {
+                filename: params.file.name,
+                size: params.size,
+                fileHash: params.fileHash
+            }
+        });
+    }, [])
 
     function addImg() {
         imgUploader?.current?.click()
     }
 
-    function addMedia() {
-        mediaUploader?.current?.click()
+    const handleUpload = () => {
+        uploadRef.current?.handleUpload?.()
+    }
+
+    const handlePause = () => {
+
+    }
+
+    const handleContinue = () => {
+
     }
 
     return (
@@ -82,8 +105,10 @@ const demo4: React.FC<any> = (props) => {
                 <DragAndDropElement title='第二个元素' />
             </DragAndDrop>
             <div className="newpost">
-                <div onClick={addMedia}>upload</div>
                 <img src={AddIcon} onClick={addImg} className="cover" />
+                <Button onClick={handleUpload}>上传</Button>
+                <Button onClick={handlePause}>暂停</Button>
+                <Button onClick={handleContinue}>继续</Button>
             </div>
         </div>
     );
