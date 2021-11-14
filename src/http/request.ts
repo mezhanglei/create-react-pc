@@ -1,5 +1,5 @@
-import axios from "axios";
-import { STATUS_ERROR, CODE_ERROR } from "./config";
+import axios, { Method } from "axios";
+import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig } from "./config";
 import { message } from "antd";
 import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/common";
@@ -27,10 +27,9 @@ const http = axios.create({
     baseURL: process.env.MOCK ? '/mock' : "/api"
 });
 
-
-let pending = []; // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
+let pending: CancelPending[] = []; // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
 let cancelToken = axios.CancelToken;
-let removePending = (config) => {
+let removePending = (config: CustomConfig) => {
     for (let p in pending) {
         if (pending[p].key === config.url + '&' + config.method) { //当当前请求在数组中存在时执行函数体
             pending[p].cancel(); // 执行取消操作
@@ -44,11 +43,11 @@ let removePending = (config) => {
  * @param {Number} status 表示响应状态码
  * @param {String} msg 表示响应的信息
  */
-function statusError(status, msg) {
+function statusError(status: STATUS_ERROR, msg: string) {
     if (status === 401) {
         loginOut();
     }
-    status && message.info(STATUS_ERROR[status] || msg);
+    status && message.info(STATUS_ERROR_MAP[status] || msg);
 }
 
 /**
@@ -56,16 +55,16 @@ function statusError(status, msg) {
  * @param {Number} code 表示后台返回的code
  * @param {String} msg 表示后台返回的信息
  */
-function resultError(code, msg) {
+function resultError(code: CODE_ERROR, msg: string) {
     if (code == 401) {
         loginOut();
     }
-    code && message.info(CODE_ERROR[code] || msg);
+    code && message.info(CODE_ERROR_MAP[code] || msg);
 }
 
 // 请求拦截(axios自动对请求类型进行类型转换)
 http.interceptors.request.use(
-    (config) => {
+    (config: CustomConfig) => {
         // 公共的请求参数
         const defaults = {
             // t: new Date().getTime()
@@ -131,8 +130,8 @@ http.interceptors.response.use(
 
 // 转换调用http请求的方式：例如http.post({}).then(res={})
 const request = {};
-['get', 'post', 'delete', 'put'].map(method => {
-    request[method] = function (configs) {
+['get', 'post', 'delete', 'put'].map((method: Method) => {
+    request[method] = function (configs: CustomConfig) {
         return http({
             ...configs,
             method: method
