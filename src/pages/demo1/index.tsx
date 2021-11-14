@@ -3,11 +3,8 @@ import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
 import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
-import VirtualList from '@/components/react-mini-virtual-list';
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
-import produce from "immer";
-import Modal from '@/components/antd-modal';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -16,7 +13,6 @@ const DraggableArea2 = DraggableAreaGroups.create()
 const Demo1: React.FC<any> = (props) => {
     const [x, setX] = useState<any>(10);
     const [y, setY] = useState<any>(10);
-    const [dataSource, setDataSource] = useState([...new Array(100).keys()]);
     const [arr1, setArr1] = useState([1, 2, 3, 4, 5, 6, 7]);
     const [arr2, setArr2] = useState([8, 9, 10, 11, 12, 13, 14]);
 
@@ -61,18 +57,6 @@ const Demo1: React.FC<any> = (props) => {
             setArr2(newArr2);
         }
     }
-
-    const renderOn = (startIndex, stopIndex) => {
-        // console.log(startIndex, stopIndex);
-    };
-
-    const renderItem = (item: any, index: number) => {
-        return (
-            <div className="Row" key={index}>
-                Row #{item}
-            </div>
-        );
-    };
 
     return (
         <div className="boxx" style={{ marginTop: '0px' }}>
@@ -122,24 +106,6 @@ const Demo1: React.FC<any> = (props) => {
                     }
                 </DraggableArea2>
             </div>
-            <VirtualList
-                width="auto"
-                // scrollToAlignment="start"
-                // scrollToIndex={30}
-                scrollOffset={500}
-                height={400}
-                limit={200}
-                dataSource={dataSource}
-                onItemsRendered={renderOn}
-                itemSize={50}
-                className="VirtualList"
-            >
-                {
-                    dataSource?.map((item, index) => {
-                        return renderItem(item, index);
-                    })
-                }
-            </VirtualList>
         </div>
     );
 }

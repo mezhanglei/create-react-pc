@@ -1,69 +1,19 @@
+import { UploadParams, Status, UploadChunk, AsyncQueues, QueueParams, UploadChunksParams } from "./types";
 import { calculateHashSample, createFileChunk } from "./utils";
 
-export interface UploadParams {
-    type?: 'image' | 'video'
-    multiple?: boolean
-    beforeUpload: (params: { file: File, fileHash: string }) => Promise<{ uploaded: boolean, uploadedList: string[] }>
-    uploading: (params: UploadingParams) => Promise<any>
-    afterUpload: (params: { file: File, size: number, fileHash: string }) => void
-}
-
-// 上传状态
-export enum Status {
-    wait = "wait",
-    pause = "pause",
-    uploading = "uploading",
-    error = "error",
-    done = "done"
-};
-
-// 文件块操作格式
-export interface UploadChunk {
-    index: number // 分割的文件块的序号，后端拿到后可以用来排序
-    chunk: File // 文件块
-    chunkName: string; // 文件块的name
-    chunkSize: number // 文件块的大小
-    progress: number // 文件块的上传进度
-    fileHash: string // 文件hash值
-}
-
-// 上传文件请求的参数
-export interface UploadingParams {
-    chunk: UploadChunk,
-    file: File,
-    fileHash: string
-}
-
-// 上传文件操作的参数
-export interface UploadChunksParams {
-    chunks: UploadChunk[],
-    uploadedList: string[],
-    file: File,
-    fileHash: string
-}
-
-// 异步队列类型
-export interface AsyncQueues {
-    callback: (...arg: any[]) => Promise<any>
-    chunk: UploadChunk
-    file: File
-    status: Status
-}
-
 let id = 0
-const SIZE = 2 * 1024 * 1024;
 
 export class Uploader {
 
-    private dom: HTMLInputElement
+    public dom: HTMLInputElement
     beforeUpload: UploadParams['beforeUpload'];
     uploading: UploadParams['uploading'];
     afterUpload: UploadParams['afterUpload'];
+    chunkSize: number;
     files: FileList | null;
     status: Status;
     hashMap: { [key: string]: string };
     chunksMap: { [key: string]: UploadChunk[] };
-    cancels: any[];
     progress: number;
 
     constructor(props: UploadParams) {
@@ -71,7 +21,7 @@ export class Uploader {
         input.setAttribute('type', 'file');
         input.setAttribute('id', `uploader-${++id}`);
         props.type && input.setAttribute('accept', `${props.type}/*`);
-        if(props?.multiple) input.multiple = true;
+        if (props?.multiple) input.multiple = true;
 
         // 产生实例的同时会向document添加一个隐藏的input:file元素
         document.body.appendChild(input)
@@ -82,6 +32,7 @@ export class Uploader {
         input.addEventListener('input', this.handleFileChange.bind(this))
 
         this.dom = input;
+        this.chunkSize = 2 * 1024 * 1024;
         this.beforeUpload = props?.beforeUpload;
         this.uploading = props?.uploading;
         this.afterUpload = props?.afterUpload;
@@ -90,7 +41,6 @@ export class Uploader {
         this.status = Status.wait;
         this.chunksMap = {};
         this.hashMap = {};
-        this.cancels = [];
         this.progress = 0;
 
     }
@@ -119,7 +69,7 @@ export class Uploader {
                 this.reset();
             } else {
                 // 所有的文件分块
-                const chunks = this.formatChunks({ chunks: createFileChunk(file, SIZE), fileHash: fileHash, uploadedList });
+                const chunks = this.formatChunks({ chunks: createFileChunk(file, this.chunkSize), fileHash: fileHash, uploadedList });
                 this.chunksMap[file.name] = chunks;
                 await this.uploadChunks({ chunks: chunks, uploadedList, file, fileHash: fileHash });
             }
@@ -209,21 +159,9 @@ export class Uploader {
         } = params;
 
         try {
-            const queues = this.createUploadQueue((param) => {
-                // // xhr的配置
-                // const createProgresshandler = (item: UploadChunk) => {
-                //     // 执行中实时计算进度
-                //     this.fileProgress(chunks, file);
-                //     return (e) => item.progress = parseInt(String((e.loaded / e.total) * 100))
-                // }
-                // const chunks = this.chunksMap[param.file.name];
-                // const index = param.chunk.index;
-                // const config = {
-                //     onProgress: createProgresshandler(chunks[index]), // xhr的监听api
-                //     onUploadProgress: createProgresshandler(chunks[index]), // axios的监听
-                //     cancelToken: new Axios.CancelToken((cancel) => this.cancels.push(cancel)),
-                // }
-                return this.uploading?.(param)
+            const queues = this.createUploadQueue((filAndChunk) => {
+                const progress = this.fileProgress(chunks, file);
+                return this.uploading?.({ ...filAndChunk, progress, chunks })
             }, { chunks: chunks, file, fileHash, uploadedList });
             await this.concurrentExe(queues);
             // 结束后在计算一次进度
@@ -242,7 +180,7 @@ export class Uploader {
     async mergeRequest(file: File) {
         const params = {
             file: file,
-            size: SIZE,
+            size: this.chunkSize,
             fileHash: this.hashMap[file.name]
         }
         console.log('通知服务端合并分块请求')
@@ -251,7 +189,7 @@ export class Uploader {
     }
 
     // 构建上传的队列
-    createUploadQueue(fn: (params: UploadingParams) => Promise<any>, params: UploadChunksParams) {
+    createUploadQueue(fn: (filAndChunk: QueueParams) => Promise<any>, params: UploadChunksParams) {
         const {
             chunks,
             file,
@@ -293,20 +231,12 @@ export class Uploader {
         return ret;
     }
 
-    // 恢复上传
+    // 继续上传
     async handleResume(file: File) {
         this.status = Status.uploading;
         const fileHash = this.hashMap[file.name];
         const chunks = this.chunksMap[file.name];
         const { uploadedList } = await this.verify(file, fileHash);
         await this.uploadChunks({ chunks: chunks, uploadedList, file, fileHash: fileHash });
-    }
-
-    // 暂停。通过axios暂停
-    handlePause() {
-        this.status = Status.pause;
-        while (this.cancels.length > 0) {
-            this.cancels.pop()();
-        }
     }
 }

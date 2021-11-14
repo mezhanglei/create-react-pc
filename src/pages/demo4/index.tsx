@@ -46,17 +46,8 @@ const demo4: React.FC<any> = (props) => {
 
 
     const [postParams, setPostParams] = useState({});
-    const imgUploader = useRef();
-    const uploadRef = useRef();
-
-    useEffect(() => {
-        uploadRef.current = new Uploader({
-            beforeUpload: beforeUpload,
-            uploading: uploading,
-            afterUpload: afterUpload
-        })
-        imgUploader.current = uploadRef.current?.dom;
-    }, [beforeUpload, uploading, afterUpload]);
+    const imgUploader = useRef<HTMLElement>();
+    const uploadRef = useRef<Uploader>();
 
     const beforeUpload = useCallback(async (params) => {
         const ret = await http.post({ url: '/verify', data: { filename: params?.file?.name, hash: params?.fileHash } });
@@ -81,6 +72,15 @@ const demo4: React.FC<any> = (props) => {
             }
         });
     }, [])
+
+    useEffect(() => {
+        uploadRef.current = new Uploader({
+            beforeUpload: beforeUpload,
+            uploading: uploading,
+            afterUpload: afterUpload
+        })
+        imgUploader.current = uploadRef.current?.dom;
+    }, [beforeUpload, uploading, afterUpload]);
 
     function addImg() {
         imgUploader?.current?.click()

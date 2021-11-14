@@ -37,16 +37,16 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     }
 
     componentDidUpdate(prevProps: DragResizeProps, prevState: DragResizeState) {
-        const widthChanged = this.props.width !== prevProps.width;
-        const heightChanged = this.props.height !== prevProps.height;
+        const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.eventData?.width);
+        const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.eventData?.height);
         if (widthChanged || heightChanged) {
             this.updateState()
         }
     }
 
     static getDerivedStateFromProps(nextProps: DragResizeProps, prevState: DragResizeState) {
-        const widthChanged = nextProps.width !== prevState.prevWidth;
-        const heightChanged = nextProps.height !== prevState.prevHeight;
+        const widthChanged = nextProps.width !== undefined && (nextProps.width !== prevState.prevWidth || nextProps.width !== prevState.eventData?.width);
+        const heightChanged = nextProps.height !== undefined && (nextProps.height !== prevState.prevHeight || nextProps.height !== prevState.eventData?.height);
         if (widthChanged) {
             return {
                 ...prevState,
