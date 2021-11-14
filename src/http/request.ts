@@ -1,5 +1,5 @@
 import axios, { Method } from "axios";
-import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig } from "./config";
+import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
 import { message } from "antd";
 import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/common";
@@ -139,4 +139,4 @@ const request = {};
     };
 });
 
-export default request;
+export default request as ReuestInstance;

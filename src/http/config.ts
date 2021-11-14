@@ -1,6 +1,6 @@
 // ===AXIOS请求的配置信息=== //
 
-import { AxiosRequestConfig, Canceler } from "axios";
+import { AxiosInstance, AxiosRequestConfig, Canceler } from "axios";
 
 export enum MESSAGE {
     SUCCESS = '更新成功',
@@ -57,3 +57,5 @@ export interface CancelPending {
 export interface CustomConfig extends AxiosRequestConfig {
     noTrim?: boolean
 }
+
+export type ReuestInstance = { [key: string]: AxiosInstance }
