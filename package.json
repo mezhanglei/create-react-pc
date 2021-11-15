@@ -83,11 +83,10 @@
   "dependencies": {
     "antd": "^4.4.2",
     "axios": "^0.21.1",
-    "bpmn-js": "^7.2.1",
     "classnames": "^2.2.6",
     "clipboard": "^2.0.6",
-    "core-decorators": "^0.20.0",
     "crypto-js": "^4.0.0",
+    "css-vars-ponyfill": "^2.4.7",
     "dayjs": "^1.9.1",
     "dva-core": "^2.0.4",
     "dva-loading": "^3.0.22",

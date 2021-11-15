@@ -17,6 +17,29 @@ export function endLoading() {
     Loader.end();
 }
 
+// axios取消请求（具有副作用）
+export function AxiosCancel() {
+    // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
+    let pending: CancelPending[] = [];
+    let cancelToken = axios.CancelToken;
+    return {
+        add: (config: CustomConfig) => {
+            config.cancelToken = new cancelToken((cancel) => {
+                // 添加进已执行数组
+                pending.push({ key: config.url + '&' + config.method, cancel: cancel });
+            });
+        },
+        remove: (config: CustomConfig) => {
+            const index = pending?.findIndex((item) => item.key === config.url + '&' + config.method)
+            const pend = pending[index]
+            if (pend) {
+                pend.cancel(); // 执行取消操作
+                pending.splice(index, 1); //把这条记录从数组中移除
+            }
+        }
+    }
+}
+
 // 实例化一个axios实例(浏览器自动设置content-type或者自己手动设置)
 // 1.默认application/x-www-form-urlencoded, form表单默认的方式,提交的数据按照key1=val1&key2=val2的方式进行编码，key和val都进行了URL转码(只支持表单键值对,不支持二进制文件)
 // 2.application/json,表示请求体中消息类型为序列化的json字符串
@@ -27,16 +50,8 @@ const http = axios.create({
     baseURL: process.env.MOCK ? '/mock' : "/api"
 });
 
-let pending: CancelPending[] = []; // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
-let cancelToken = axios.CancelToken;
-let removePending = (config: CustomConfig) => {
-    for (let p in pending) {
-        if (pending[p].key === config.url + '&' + config.method) { //当当前请求在数组中存在时执行函数体
-            pending[p].cancel(); // 执行取消操作
-            pending.splice(p, 1); //把这条记录从数组中移除
-        }
-    }
-};
+// 实例化取消axois的方法
+const axiosCancel = new AxiosCancel();
 
 /**
  * 响应状态异常的处理
@@ -86,11 +101,8 @@ http.interceptors.request.use(
         }
 
         startLoading();
-        removePending(config); // 重复的请求取消掉
-        config.cancelToken = new cancelToken((cancel) => {
-            // 添加进已执行数组
-            pending.push({ key: config.url + '&' + config.method, cancel: cancel });
-        });
+        axiosCancel.remove(config); // 重复的请求取消掉
+        axiosCancel.add(config); // 添加请求
         return config;
     },
     (error) => {
@@ -114,7 +126,7 @@ http.interceptors.response.use(
         if (code != 200) {
             resultError(code, msg);
         }
-        removePending(response.config);  // 在一个ajax响应后再执行一下取消操作，把已经完成的请求从pending中移除
+        axiosCancel.remove(response.config) // 在一个ajax响应后再执行一下取消操作，把已经完成的请求从pending中移除
         return result;
     },
     (error) => {
