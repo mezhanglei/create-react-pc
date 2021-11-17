@@ -1,7 +1,7 @@
 import React from "react";
 import { checkInContainer, checkWidthHeight } from './utils/dom';
-import ResizeZoom, { EventHandler as ResizeEventHandler, ResizeAxis } from "@/components/react-resize-zoom";
-import Draggable, { DragHandler as DragEventHandler, DragAxis } from "@/components/react-free-draggable";
+import ResizeZoom, { EventHandler as ResizeEventHandler, DirectionCode } from "@/components/react-resize-zoom";
+import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
 import classNames from "classnames";
 import { GridItemProps, DragTypes } from './grid-item-types';
 
@@ -21,8 +21,8 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         rowHeight: 30,
         w: 1,
         h: 1,
-        dragAxis: DragAxis.both,
-        resizeAxis: ResizeAxis.AUTO
+        dragAxis: DragAxisCode,
+        resizeAxis: DirectionCode
     }
 
     // shouldComponentUpdate(props: GridItemProps, state: any) {
@@ -148,13 +148,15 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     // 可以拖拽
     canDrag = () => {
         const { dragAxis, forbid } = this.props;
-        return !forbid && (!dragAxis || !([DragAxis.none] as string[])?.includes(dragAxis))
+        const canUse = DragAxisCode?.some((axis) => dragAxis?.includes(axis))
+        return !forbid && (!dragAxis || canUse)
     }
 
     // 可以调整尺寸
     canResize = () => {
         const { resizeAxis, forbid } = this.props;
-        return !forbid && (!resizeAxis || !([ResizeAxis.NONE] as string[])?.includes(resizeAxis))
+        const canUse = DirectionCode?.some((dir) => resizeAxis?.includes(dir));
+        return !forbid && (!resizeAxis || canUse)
     }
 
     render() {
@@ -167,7 +169,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         return (
             <Draggable
                 className={cls}
-                axis={this.canDrag() ? dragAxis : DragAxis.none}
+                axis={this.canDrag() ? dragAxis : []}
                 bounds={bounds}
                 handle={handle}
                 onDragStart={this.onDragStart}
@@ -180,7 +182,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
                     onResizeStart={this.onResizeStart}
                     onResizeMoving={this.onResizing}
                     onResizeEnd={this.onResizeEnd}
-                    axis={this.canResize() ? resizeAxis : ResizeAxis.NONE}
+                    axis={this.canResize() ? resizeAxis : []}
                     width={wPx}
                     height={hPx}
                 >

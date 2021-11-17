@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler, PositionType, DragAxis, BoundsInterface, EventData } from "./utils/types";
+import { DraggableProps, DragData, EventHandler, PositionType, DragAxisCode, DragAxis, BoundsInterface, EventData } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
@@ -17,7 +17,7 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
         x,
         y,
         scale = 1,
-        axis = DragAxis.both,
+        axis = DragAxisCode,
         positionOffset,
         bounds,
         zIndexRange = [],
@@ -220,11 +220,11 @@ const Draggable = React.forwardRef<any, DraggableProps>((props, ref) => {
     });
 
     const canDragX = () => {
-        return axis === DragAxis.both || axis === DragAxis.x;
+        return axis?.includes(DragAxis.x);
     };
 
     const canDragY = () => {
-        return axis === DragAxis.both || axis === DragAxis.y;
+        return axis?.includes(DragAxis.y);
     };
 
     // 当前位置

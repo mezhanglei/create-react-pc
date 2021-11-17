@@ -19,39 +19,17 @@ function repeatCheck(str?: string) {
   return regRepeat.test(str);
 }
 
-// 是否连续字符（如abc）连续3位以上
-function LxCharCheck(str?: string) {
+// 是否连续字符（如abc, 123）连续3位以上
+function LxCheck(str?: string) {
   if (!str) return false;
   let lcontinuity = 0; //用于连贯个数的计数
   for (let i = 1; i < str.length; i++) {
     //1正序连贯；-1倒序连贯
-    if (((str[i].charCodeAt()) - (str[i - 1].charCodeAt()) == 1) || ((str[i].charCodeAt()) - (str[i - 1].charCodeAt()) == -1)) {
+    if (((str[i].charCodeAt(0)) - (str[i - 1].charCodeAt(0)) == 1) || ((str[i].charCodeAt(0)) - (str[i - 1].charCodeAt(0)) == -1)) {
       lcontinuity += 1; //存在连贯：计数+1
     }
   }
   if (lcontinuity > 3) {
-    return true;
-  }
-}
-
-// 是否连续字符（如123）连续3位以上
-function LxNumCheck(str?: string) {
-  if (!str) return false;
-  let ncontinuity = 0; //用于连续个数的统计
-  for (let i = 1; i < str.length; i++) {
-    if ((Number(str[i]) - Number(str[i - 1]) == 1) || (Number(str[i]) - Number(str[i - 1]) == -1)) { //等于1代表升序连贯   等于-1代表降序连贯
-      ncontinuity += 1; //存在连贯：计数+1
-    }
-  }
-  if (ncontinuity > 3) {
-    return true;
-  }
-}
-
-// 是否连续字符或数字（如123，abc）连续3位以上
-function LxCheck(str?: string) {
-  if (!str) return false;
-  if (LxNumCheck(str) || LxCharCheck(str)) {
     return true;
   }
 }

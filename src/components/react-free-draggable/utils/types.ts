@@ -37,10 +37,10 @@ export interface PositionType {
 // 轴的类型
 export enum DragAxis {
     x = 'x',
-    y = 'y',
-    both = 'both',
-    none = 'none'
+    y = 'y'
 }
+
+export const DragAxisCode = Object.values(DragAxis);
 
 // 限制范围的类型
 export interface BoundsInterface {
@@ -79,7 +79,7 @@ export interface DraggableProps {
     scale?: number; // 拖拽灵敏度
     x?: number; // 在页面中的位置
     y?: number; // 在页面中的位置
-    axis?: `${DragAxis}`; // 限制拖拽的方向
+    axis?: string[]; // 限制拖拽的方向
     positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
     bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
     zIndexRange?: [number, number]; // zIndex的变化范围

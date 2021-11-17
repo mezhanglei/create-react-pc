@@ -27,19 +27,18 @@ export enum Direction {
     N = "n", // 上边
     S = "s", // 下边
     W = "w", // 左边
-    E = "e" // 右边
+    E = "e", // 右边
+    NE = "ne", // 右上
+    NW = "nw", // 左上
+    SE = "se", // 右下
+    SW = "sw", // 左下
 }
-export enum ResizeAxis {
-    AUTO = 'auto', // 所有轴
-    X = 'x', // x轴
-    Y = 'y', // y轴
-    ANGLE = 'angle', // 角
-    NONE = 'none'
-}
+export const DirectionCode = Object.values(Direction);
+
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis: `${ResizeAxis}`;
+    axis: string[];
     forbid?: boolean;
     children: any;
     offset: number; // 鼠标距离边的可以拖拽的偏差

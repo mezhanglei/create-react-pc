@@ -1,7 +1,7 @@
 import React from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "@/utils/dom";
-import { EventType, EventHandler, Direction, ResizeAxis, DragResizeProps, DragResizeState } from "./type";
+import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode } from "./type";
 import ReactDOM from 'react-dom';
 
 // Simple abstraction for dragging events names.
@@ -33,7 +33,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     }
     static defaultProps = {
         offset: 10,
-        axis: ResizeAxis.AUTO
+        axis: DirectionCode
     }
 
     componentDidUpdate(prevProps: DragResizeProps, prevState: DragResizeState) {
@@ -85,7 +85,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     }
 
     findDOMNode() {
-        return this.props?.forwardedRef.current || ReactDOM.findDOMNode(this);
+        return this.props?.forwardedRef?.current || ReactDOM.findDOMNode(this);
     }
 
     // 顶层document对象（有的环境可能删除了document顶层环境）
@@ -155,11 +155,11 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         const {
             axis
         } = this.props;
-        if (direction === Direction.S && ([ResizeAxis.AUTO, ResizeAxis.Y] as string[]).includes(axis)) {
+        if (([Direction.N, Direction.S] as string[])?.includes(direction) && (axis?.includes(Direction.N) || axis?.includes(Direction.S))) {
             return 'row-resize';
-        } else if (direction === Direction.E && ([ResizeAxis.AUTO, ResizeAxis.X] as string[]).includes(axis)) {
+        } else if (([Direction.W, Direction.E] as string[])?.includes(direction) && (axis?.includes(Direction.W) || axis?.includes(Direction.E))) {
             return 'col-resize';
-        } else if (direction?.length === 2 && ([ResizeAxis.ANGLE, ResizeAxis.AUTO] as string[]).includes(axis)) {
+        } else if (direction?.length === 2 && (axis?.includes(Direction.NE) || axis?.includes(Direction.NW) || axis?.includes(Direction.SE) || axis?.includes(Direction.SW))) {
             return direction + '-resize';
         } else {
             return 'default';
@@ -170,14 +170,16 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         const {
             axis
         } = this.props;
-        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.X] as string[]).includes(axis) && dir.indexOf(Direction.E) > -1;
+        const canUse = axis?.includes(Direction.W) || axis?.includes(Direction.E) || axis?.includes(Direction.NW) || axis?.includes(Direction.NE) || axis?.includes(Direction.SW) || axis?.includes(Direction.SE);
+        return canUse && (dir.indexOf(Direction.W) > -1 || dir.indexOf(Direction.E) > -1);
     };
 
     canDragY = (dir: string): boolean => {
         const {
             axis
         } = this.props;
-        return ([ResizeAxis.AUTO, ResizeAxis.ANGLE, ResizeAxis.Y] as string[]).includes(axis) && dir.indexOf(Direction.S) > -1;
+        const canUse = axis?.includes(Direction.S) || axis?.includes(Direction.N) || axis?.includes(Direction.NW) || axis?.includes(Direction.NE) || axis?.includes(Direction.SW) || axis?.includes(Direction.SE);
+        return canUse && (dir.indexOf(Direction.S) > -1 || dir.indexOf(Direction.N) > -1);
     };
 
     mouseOver: EventHandler = (e) => {
@@ -239,8 +241,8 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
-        const { dir = ResizeAxis.AUTO, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = this.state.eventData || {};
-
+        const { dir, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = this.state.eventData || {};
+        if (!dir) return;
         let deltaX, deltaY;
         deltaX = position?.x - lastEventX;
         deltaY = position?.y - lastEventY;
