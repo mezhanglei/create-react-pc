@@ -1,4 +1,5 @@
 import { BoundsInterface } from "@/components/react-free-draggable";
+import { Direction } from "@/components/react-resize-zoom";
 
 export type EventType = MouseEvent | TouchEvent;
 // 拖拽类型
@@ -22,7 +23,7 @@ export interface GridItemEvent {
     bounds?: string | HTMLElement | BoundsInterface; // 定位父元素
     handle?: string | HTMLElement; // 拖拽句柄
     dragAxis?: string[]; // 允许的拖拽类型
-    resizeAxis?: string[]; // 允许缩放类型
+    resizeAxis?: Direction[]; // 允许缩放类型
     zIndexRange?: [number, number];
 }
 export type GridItemEventHandle = (data: GridItemEvent, e: EventType) => void;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { isMobile } from "@/utils/verify";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "@/utils/dom";
-import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode } from "./type";
+import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode, LastStyle } from "./type";
 import ReactDOM from 'react-dom';
 
 // Simple abstraction for dragging events names.
@@ -25,6 +25,8 @@ let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     dragging: boolean;
+    lastStyle?: LastStyle;
+    direction?: string;
     constructor(props: DragResizeProps) {
         super(props);
         this.dragging = false;
@@ -37,16 +39,16 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     }
 
     componentDidUpdate(prevProps: DragResizeProps, prevState: DragResizeState) {
-        const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.eventData?.width);
-        const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.eventData?.height);
+        const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.nowStyle?.width);
+        const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.nowStyle?.height);
         if (widthChanged || heightChanged) {
             this.updateState()
         }
     }
 
     static getDerivedStateFromProps(nextProps: DragResizeProps, prevState: DragResizeState) {
-        const widthChanged = nextProps.width !== undefined && (nextProps.width !== prevState.prevWidth || nextProps.width !== prevState.eventData?.width);
-        const heightChanged = nextProps.height !== undefined && (nextProps.height !== prevState.prevHeight || nextProps.height !== prevState.eventData?.height);
+        const widthChanged = nextProps.width !== undefined && (nextProps.width !== prevState.prevWidth || nextProps.width !== prevState.nowStyle?.width);
+        const heightChanged = nextProps.height !== undefined && (nextProps.height !== prevState.prevHeight || nextProps.height !== prevState.nowStyle?.height);
         if (widthChanged) {
             return {
                 ...prevState,
@@ -66,8 +68,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     componentDidMount() {
         const node = this.findDOMNode();
         this.setState({
-            eventData: {
-                node,
+            nowStyle: {
                 width: this.props?.width,
                 height: this.props?.height
             }
@@ -101,8 +102,8 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     updateState = () => {
         if (!this.dragging) {
             this.setState({
-                eventData: {
-                    ...this.state.eventData,
+                nowStyle: {
+                    ...this.state.nowStyle,
                     width: this.props?.width,
                     height: this.props?.height
                 }
@@ -196,6 +197,8 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         } = this.props;
         if (forbid) return;
         const direction = this.getDirection(e);
+        this.direction = direction;
+        this.dragging = true;
         const mouseCursor = this.getMouseCursor(direction);
         if (mouseCursor === 'default') {
             return;
@@ -208,24 +211,28 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         const offsetWH = getOffsetWH(element);
         if (!position || !offsetWH) return;
 
-        const eventData = {
+        this.props?.onResizeStart && this.props?.onResizeStart(e, {
             node: element,
             dir: direction,
             width: offsetWH?.width,
             height: offsetWH?.height,
-            zIndex: zIndexRange?.[1],
+            zIndex: zIndexRange?.[1]
+        });
+        
+        this.setState({
+            nowStyle: {
+                width: offsetWH?.width,
+                height: offsetWH?.height,
+                zIndex: zIndexRange?.[1]
+            }
+        });
+
+        this.lastStyle = {
+            width: offsetWH?.width,
+            height: offsetWH?.height,
             eventX: position?.x,
             eventY: position?.y,
-            lastEventX: position?.x,
-            lastEventY: position?.y,
-            lastW: offsetWH?.width,
-            lastH: offsetWH?.height
         }
-        this.props?.onResizeStart && this.props?.onResizeStart(e, eventData);
-        this.dragging = true;
-        this.setState({
-            eventData
-        })
         this.addEvents();
     }
 
@@ -240,26 +247,36 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         if (!this.dragging) return;
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
-        if (!position || !offsetWH) return;
-        const { dir, lastEventX = 0, lastEventY = 0, lastW = 0, lastH = 0 } = this.state.eventData || {};
-        if (!dir) return;
+        const dir = this.direction;
+        const lastEventX = this.lastStyle?.eventX;
+        const lastEventY = this.lastStyle?.eventY;
+        const lastW = this.lastStyle?.width;
+        const lastH = this.lastStyle?.height;
+        if (!position || !offsetWH || !dir || lastW === undefined || lastH === undefined || lastEventX === undefined || lastEventY === undefined) return;
+
         let deltaX, deltaY;
         deltaX = position?.x - lastEventX;
         deltaY = position?.y - lastEventY;
 
-        const eventData = {
-            ...this.state.eventData,
+        const nowW = this.canDragX(dir) ? (lastW + deltaX) : lastW;
+        const nowH = this.canDragY(dir) ? (lastH + deltaY) : lastH;
+        const zIndex = zIndexRange?.[1];
+
+        this.props?.onResizeMoving && this.props?.onResizeMoving(e, {
             node: element,
-            eventX: position?.x,
-            eventY: position?.y,
-            width: this.canDragX(dir) ? (lastW + deltaX) : lastW,
-            height: this.canDragY(dir) ? (lastH + deltaY) : lastH,
-            zIndex: zIndexRange?.[1]
-        }
-        this.props?.onResizeMoving && this.props?.onResizeMoving(e, eventData);
+            dir: dir,
+            width: nowW,
+            height: nowH,
+            zIndex: zIndex
+        });
         this.setState({
-            eventData
-        })
+            nowStyle: {
+                ...this.state.nowStyle,
+                width: nowW,
+                height: nowH,
+                zIndex: zIndex
+            }
+        });
     }
 
     onResizeEnd: EventHandler = (e) => {
@@ -269,16 +286,23 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         } = this.props;
         if (forbid) return;
         e.preventDefault();
-        if (!this.dragging || !this.state.eventData) return;
-        const eventData = {
-            ...this.state.eventData,
+        if (!this.dragging || !this.state.nowStyle) return;
+
+        const nowStyle = {
+            ...this.state.nowStyle,
             zIndex: zIndexRange?.[0]
         }
-        this.props.onResizeEnd && this.props.onResizeEnd(e, eventData);
+
+        const element = this.findDOMNode();
+        this.props.onResizeEnd && this.props.onResizeEnd(e, {
+            ...nowStyle,
+            node: element,
+            dir: this.direction
+        });
         this.dragging = false;
         this.setState({
-            eventData
-        })
+            nowStyle: nowStyle
+        });
         this.removeEvents();
     }
 
@@ -291,7 +315,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         } = this.props;
 
         const {
-            eventData
+            nowStyle
         } = this.state;
 
         const originStyle = (attr: string) => {
@@ -304,9 +328,9 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
             style: {
                 ...children.props?.style,
                 ...style,
-                width: eventData?.width ?? originStyle('width'),
-                height: eventData?.height ?? originStyle('height'),
-                zIndex: eventData?.zIndex ?? originStyle('zIndex')
+                width: nowStyle?.width ?? originStyle('width'),
+                height: nowStyle?.height ?? originStyle('height'),
+                zIndex: nowStyle?.zIndex ?? originStyle('zIndex')
             }
         });
     }

@@ -10,18 +10,18 @@ export enum ResizeDragTypes {
     resizing = 'resizing',
     resizeEnd = 'resizeEnd'
 }
-export interface EventDataType {
-    lastEventX?: number;
-    lastEventY?: number;
-    lastW?: number;
-    lastH?: number;
-    dir?: string;
-    eventX: number;
-    eventY: number;
-    width: number;
-    height: number;
-    zIndex?: number;
-    node: HTMLElement;
+
+export interface LastStyle {
+    width?: number
+    height?: number
+    eventX: number
+    eventY: number
+}
+
+export interface NowStyle {
+    width?: number
+    height?: number
+    zIndex?: number
 }
 export enum Direction {
     N = "n", // 上边
@@ -38,7 +38,7 @@ export const DirectionCode = Object.values(Direction);
 export interface DragResizeProps {
     className?: string;
     style?: CSSProperties;
-    axis: string[];
+    axis: Direction[];
     forbid?: boolean;
     children: any;
     offset: number; // 鼠标距离边的可以拖拽的偏差
@@ -52,9 +52,18 @@ export interface DragResizeProps {
 }
 
 export interface DragResizeState {
-    eventData?: EventDataType
+    nowStyle?: NowStyle
     prevWidth?: number;
     prevHeight?: number;
 }
+
+export interface EventData {
+    node: HTMLElement
+    dir: string
+    width: number
+    height: number
+    zIndex?: number
+}
+
 // 事件处理函数的type
-export type EventHandler<E = EventType, T = EventDataType> = (e: E, data?: T) => void | boolean;
+export type EventHandler<E = EventType, T = EventData> = (e: E, data?: T) => void | boolean;
