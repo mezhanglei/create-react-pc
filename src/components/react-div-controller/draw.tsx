@@ -3,7 +3,8 @@ import React, { CSSProperties } from 'react';
 import { Direction, DirectionCode, DrawItemProps, DrawItemState, EventHandler, EventType, LastStyle } from './types';
 import "./index.less"
 import ReactDOM from 'react-dom';
-import { addEvent, getEventPosition, getOffsetWH, removeEvent } from '@/utils/dom';
+import { addEvent, getEventPosition, getInsidePosition, getOffsetWH, removeEvent } from '@/utils/dom';
+import classNames from 'classnames';
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -30,9 +31,9 @@ export interface BoardContextInterface {
 
 export const BoardContext = React.createContext<BoardContextInterface | null>(null);
 
-export const DrawBoard = (props: { children: any }) => {
+export const DrawBoard = (props: { children: any, style?: CSSProperties, className?: string }) => {
     return (
-        <div className="drawing-wrap">
+        <div className={classNames("drawing-wrap", props?.className)} style={props?.style}>
             {props?.children}
         </div>
     );
@@ -60,23 +61,22 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
 
     componentDidMount() {
         const node = this.findDOMNode();
-        const nodeStyle = node?.style;
         this.setState({
             nowStyle: {
-                left: this.props.left || nodeStyle?.left,
-                top: this.props.top || nodeStyle?.top,
-                width: this.props.width || nodeStyle?.width,
-                height: this.props.height || nodeStyle?.height
+                left: this.props.left,
+                top: this.props.top,
+                width: this.props.width,
+                height: this.props.height
             }
         })
 
-        addEvent(node, dragEventFor.start, this.onResizeStart);
+        addEvent(node, dragEventFor.start, this.onMoveStart);
         addEvent(node, dragEventFor.move, this.mouseOver);
     }
 
     componentWillUnmount() {
         const node = this.findDOMNode();
-        removeEvent(node, dragEventFor.start, this.onResizeStart);
+        removeEvent(node, dragEventFor.start, this.onMoveStart);
         removeEvent(node, dragEventFor.move, this.mouseOver);
         this.removeEvents();
     }
@@ -95,16 +95,71 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
     addEvents = () => {
         const ownerDocument = this.findOwnerDocument();
         addEvent(ownerDocument, dragEventFor.move, this.onMove);
-        addEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
-        addEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
+        addEvent(ownerDocument, dragEventFor.stop, this.onMoveEnd);
+        addEvent(ownerDocument, dragEventFor.cancel, this.onMoveEnd);
     }
 
     // 移除事件
     removeEvents = () => {
         const ownerDocument = this.findOwnerDocument();
         removeEvent(ownerDocument, dragEventFor.move, this.onMove);
-        removeEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
-        removeEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
+        removeEvent(ownerDocument, dragEventFor.stop, this.onMoveEnd);
+        removeEvent(ownerDocument, dragEventFor.cancel, this.onMoveEnd);
+    }
+
+    componentDidUpdate(prevProps: DrawItemProps, prevState: DrawItemState) {
+        const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.nowStyle?.width);
+        const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.nowStyle?.height);
+        const leftChanged = this.props.left !== undefined && (this.props.left !== prevProps.left || this.props.left !== prevState.nowStyle?.left);
+        const topChanged = this.props.top !== undefined && (this.props.top !== prevProps.top || this.props.top !== prevState.nowStyle?.top);
+        if (widthChanged || heightChanged || leftChanged || topChanged) {
+            if (!this.dragging) {
+                this.setState({
+                    nowStyle: {
+                        ...this.state.nowStyle,
+                        width: this.props?.width,
+                        height: this.props?.height,
+                        left: this.props?.left,
+                        top: this.props?.top
+                    }
+                })
+            }
+        }
+    }
+
+    static getDerivedStateFromProps(nextProps: DrawItemProps, prevState: DrawItemState) {
+        const widthChanged = nextProps.width !== undefined && (nextProps.width !== prevState.prevWidth || nextProps.width !== prevState.nowStyle?.width);
+        const heightChanged = nextProps.height !== undefined && (nextProps.height !== prevState.prevHeight || nextProps.height !== prevState.nowStyle?.height);
+        const leftChanged = nextProps.left !== undefined && (nextProps.left !== prevState.prevLeft || nextProps.left !== prevState.nowStyle?.left);
+        const topChanged = nextProps.top !== undefined && (nextProps.top !== prevState.prevTop || nextProps.top !== prevState.nowStyle?.top);
+        if (widthChanged) {
+            return {
+                ...prevState,
+                prevWidth: nextProps.width,
+            };
+        }
+
+        if (heightChanged) {
+            return {
+                ...prevState,
+                prevHeight: nextProps.height,
+            };
+        }
+
+        if (leftChanged) {
+            return {
+                ...prevState,
+                prevLeft: nextProps.left,
+            };
+        }
+
+        if (topChanged) {
+            return {
+                ...prevState,
+                prevTop: nextProps.top
+            };
+        }
+        return null;
     }
 
     // 返回鼠标所在的边
@@ -139,7 +194,7 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
             axis
         } = this.props;
         if (direction === 'move' && (axis?.includes(Direction.X) || axis?.includes(Direction.Y))) {
-            return 'pointer'
+            return 'move'
         } else if (([Direction.N, Direction.S] as string[])?.includes(direction) && (axis?.includes(Direction.N) || axis?.includes(Direction.S))) {
             return 'row-resize';
         } else if (([Direction.W, Direction.E] as string[])?.includes(direction) && (axis?.includes(Direction.W) || axis?.includes(Direction.E))) {
@@ -158,12 +213,13 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         element.style.cursor = mouseCursor;
     }
 
-    onResizeStart: EventHandler = (e) => {
+    onMoveStart: EventHandler = (e) => {
         const {
             forbid
         } = this.props;
         if (forbid) return;
         const direction = this.getDirection(e);
+        const eventPosition = getEventPosition(e)
         this.direction = direction;
         this.dragging = true;
         const mouseCursor = this.getMouseCursor(direction);
@@ -174,38 +230,36 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         };
         e.preventDefault();
         const element = this.findDOMNode();
-        const nodeStyle = element?.style;
+        const inside = getInsidePosition(element, element?.parentNode)
         const position = getEventPosition(e, element);
         const offsetWH = getOffsetWH(element);
-        const left = element?.style?.left;
-        const top = element?.style?.top;
-        if (!position || !offsetWH) return;
+        if (!position || !offsetWH || !inside || !eventPosition) return;
 
-        this.props?.onResizeStart && this.props?.onResizeStart(e, {
+        this.props?.onMoveStart && this.props?.onMoveStart(e, {
             node: element,
             dir: direction,
-            width: offsetWH?.width || nodeStyle?.width,
-            height: offsetWH?.height || nodeStyle?.height,
-            left: left || nodeStyle?.left,
-            top: top || nodeStyle?.top
+            width: offsetWH?.width,
+            height: offsetWH?.height,
+            left: inside?.left,
+            top: inside?.top
         });
 
         this.setState({
             nowStyle: {
-                width: offsetWH?.width || nodeStyle?.width,
-                height: offsetWH?.height || nodeStyle?.height,
-                left: left || nodeStyle?.left,
-                top: top || nodeStyle?.top
+                width: offsetWH?.width,
+                height: offsetWH?.height,
+                left: inside?.left,
+                top: inside?.top
             }
         });
 
         this.lastStyle = {
-            width: offsetWH?.width || nodeStyle?.width,
-            height: offsetWH?.height || nodeStyle?.height,
-            left: left || nodeStyle?.left,
-            top: top || nodeStyle?.top,
-            eventX: e.clientX,
-            eventY: e.clientY,
+            width: offsetWH?.width,
+            height: offsetWH?.height,
+            left: inside?.left,
+            top: inside?.top,
+            eventX: eventPosition?.x,
+            eventY: eventPosition?.y,
         }
         this.addEvents();
     }
@@ -220,20 +274,22 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         const element = this.findDOMNode();
         if (!this.dragging) return;
         const offsetWH = getOffsetWH(element);
+        const eventPosition = getEventPosition(e)
         const dir = this.direction;
         const lastStyle = this.lastStyle;
-        if (!offsetWH || !dir || !lastStyle) return;
+        const parentNodeOffsetWH = getOffsetWH(element?.parentNode);
+        if (!offsetWH || !dir || !lastStyle || !parentNodeOffsetWH || !eventPosition) return;
 
         const newStyle = this.transform({
             direction: dir,
             axis: axis,
             lastStyle: lastStyle,
-            eventX: e?.clientX,
-            eventY: e?.clientY,
-            wrapStyle: element?.parentNode?.style
+            eventX: eventPosition?.x,
+            eventY: eventPosition?.y,
+            wrapStyle: parentNodeOffsetWH
         })
 
-        this.props?.onResizeMoving && this.props?.onResizeMoving(e, {
+        this.props?.onMove && this.props?.onMove(e, {
             ...newStyle,
             node: element,
             dir: dir
@@ -243,7 +299,7 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         });
     }
 
-    onResizeEnd: EventHandler = (e) => {
+    onMoveEnd: EventHandler = (e) => {
         const {
             forbid
         } = this.props;
@@ -256,7 +312,7 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         }
 
         const element = this.findDOMNode();
-        this.props.onResizeEnd && this.props.onResizeEnd(e, {
+        this.props.onMoveEnd && this.props.onMoveEnd(e, {
             ...nowStyle,
             node: element,
             dir: this.direction
@@ -265,69 +321,74 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         this.removeEvents();
     }
 
-    transform(props: { direction: string, axis: Direction[], lastStyle: LastStyle, eventX: number, eventY: number, wrapStyle: CSSProperties }) {
+    transform(props: { direction: string, axis: Direction[], lastStyle: LastStyle, eventX: number, eventY: number, wrapStyle: { width: number, height: number } }) {
         const direction = props?.direction;
         const lastStyle = props?.lastStyle;
         const wrapStyle = props?.wrapStyle;
         const eventX = props?.eventX;
         const eventY = props?.eventY;
         const style = { ...lastStyle }
-        const deltaX = eventX - lastStyle.eventX;
-        const deltaY = eventY - lastStyle.eventY;
-
+        const deltalX = eventX - lastStyle.eventX;
+        const deltalY = eventY - lastStyle.eventY;
+        const rightDeltalX = Math.min(deltalX, wrapStyle.width - lastStyle?.width - lastStyle?.left);
+        const leftDeltalX = Math.max(deltalX, -lastStyle?.left);
+        const bottomDeltalY = Math.min(deltalY, wrapStyle.height - lastStyle?.height - lastStyle?.top);
+        const topDeltalY = Math.max(deltalY, -lastStyle?.top);
         switch (direction) {
             // 拖拽移动
             case 'move':
-                // 元素当前位置 + 偏移量
-                const top = lastStyle.top + deltaY;
-                const left = lastStyle.left + deltaX;
-                // 限制必须在这个范围内移动 画板的高度-元素的高度
-                style.top = Math.max(0, Math.min(top, wrapStyle.height - style.height));
-                style.left = Math.max(0, Math.min(left, wrapStyle.width - style.width));
+                if (props?.axis?.includes(Direction.X)) {
+                    const left = lastStyle.left + deltalX;
+                    style.left = Math.max(0, Math.min(left, wrapStyle.width - style.width));
+                }
+                if (props?.axis?.includes(Direction.Y)) {
+                    const top = lastStyle.top + deltalY;
+                    style.top = Math.max(0, Math.min(top, wrapStyle.height - style.height));
+                }
                 break
             // 东
             case 'e':
                 // 向右拖拽添加宽度
-                style.width += deltaX;
+                style.width += rightDeltalX;
                 return style
             // 西
             case 'w':
                 // 增加宽度、位置同步左移
-                style.width -= deltaX;
-                style.left += deltaX;
+                style.width -= leftDeltalX;
+                style.left += leftDeltalX;
                 return style
             // 南
             case 's':
-                style.height += deltaY;
+                style.height += bottomDeltalY;
                 return style
             // 北
             case 'n':
-                style.height -= deltaY;
-                style.top += deltaY;
+                style.height -= topDeltalY;
+                style.top += topDeltalY;
                 break
             // 东北
             case 'ne':
-                style.height -= deltaY;
-                style.top += deltaY;
-                style.width += deltaX;
+                style.height -= topDeltalY;
+                style.top += topDeltalY;
+                style.width += rightDeltalX;
                 break
             // 西北
             case 'nw':
-                style.height -= deltaY;
-                style.top += deltaY;
-                style.width -= deltaX;
-                style.left += deltaX;
+                style.height -= topDeltalY;
+                style.top += topDeltalY;
+                style.width -= leftDeltalX;
+                style.left += leftDeltalX;
                 break
             // 东南
             case 'se':
-                style.height += deltaY;
-                style.width += deltaX;
+                style.height += bottomDeltalY;
+                style.width += rightDeltalX;
                 break
             // 西南
             case 'sw':
-                style.height += deltaY;
-                style.width -= deltaX;
-                style.left += deltaX;
+                style.height += bottomDeltalY;
+                style.width -= leftDeltalX;
+                style.left += leftDeltalX;
                 break
             // 拖拽移动
             case 'rotate':
@@ -349,7 +410,8 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         const {
             children,
             forwardedRef,
-            className
+            className,
+            style
         } = this.props;
 
 
@@ -357,13 +419,21 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
             nowStyle
         } = this.state;
 
+        const originStyle = (attr: string) => {
+            return style?.[attr] ?? children.props.style?.[attr];
+        }
+
         return React.cloneElement(React.Children.only(children), {
             className: className ?? children.props?.className,
             ref: forwardedRef,
             style: {
                 ...children.props?.style,
-                ...nowStyle,
-                position: 'absolute'
+                ...style,
+                position: 'absolute',
+                width: nowStyle?.width ?? originStyle('width'),
+                height: nowStyle?.height ?? originStyle('height'),
+                left: nowStyle?.left ?? originStyle('left'),
+                top: nowStyle?.top ?? originStyle('top')
             }
         });
     }

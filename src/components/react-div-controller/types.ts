@@ -36,6 +36,10 @@ export interface NowStyle {
 
 export interface DrawItemState {
     nowStyle?: NowStyle
+    prevWidth?: number
+    prevHeight?: number
+    prevLeft?: number
+    prevTop?: number
 }
 
 export enum Direction {
@@ -48,7 +52,8 @@ export enum Direction {
     SE = "se", // 右下
     SW = "sw", // 左下
     X = "x", // 左右拖拽
-    Y = "y" // 上下拖拽
+    Y = "y", // 上下拖拽
+    Rotate="rotate" // 旋转
 }
 export const DirectionCode = Object.values(Direction);
 

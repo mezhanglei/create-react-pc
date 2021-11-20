@@ -42,7 +42,15 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.nowStyle?.width);
         const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.nowStyle?.height);
         if (widthChanged || heightChanged) {
-            this.updateState()
+            if (!this.dragging) {
+                this.setState({
+                    nowStyle: {
+                        ...this.state.nowStyle,
+                        width: this.props?.width,
+                        height: this.props?.height
+                    }
+                })
+            }
         }
     }
 
@@ -98,18 +106,6 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         }
         return node?.ownerDocument;
     };
-
-    updateState = () => {
-        if (!this.dragging) {
-            this.setState({
-                nowStyle: {
-                    ...this.state.nowStyle,
-                    width: this.props?.width,
-                    height: this.props?.height
-                }
-            })
-        }
-    }
 
     // 监听事件
     addEvents = () => {
@@ -319,7 +315,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
         } = this.state;
 
         const originStyle = (attr: string) => {
-            return style?.[attr] ?? children.props.style[attr];
+            return style?.[attr] ?? children.props.style?.[attr];
         }
 
         return React.cloneElement(React.Children.only(children), {
