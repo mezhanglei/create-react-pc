@@ -42,6 +42,19 @@ export interface DrawItemState {
     prevTop?: number
 }
 
+export enum Pointer {
+    N = "n", // 上边
+    S = "s", // 下边
+    W = "w", // 左边
+    E = "e", // 右边
+    NE = "ne", // 右上
+    NW = "nw", // 左上
+    SE = "se", // 右下
+    SW = "sw", // 左下
+    Rotate="rotate" // 旋转
+}
+export const PointerCode = Object.values(Pointer);
+
 export enum Direction {
     N = "n", // 上边
     S = "s", // 下边
@@ -56,6 +69,5 @@ export enum Direction {
     Rotate="rotate" // 旋转
 }
 export const DirectionCode = Object.values(Direction);
-
 // 事件处理函数的type
 export type EventHandler<E = EventType> = (e: E) => void | boolean;

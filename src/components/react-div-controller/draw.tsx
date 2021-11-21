@@ -1,6 +1,6 @@
 import { isMobile } from '@/utils/verify';
 import React, { CSSProperties } from 'react';
-import { Direction, DirectionCode, DrawItemProps, DrawItemState, EventHandler, EventType, LastStyle } from './types';
+import { Direction, DirectionCode, PointerCode, DrawItemProps, DrawItemState, EventHandler, EventType, LastStyle } from './types';
 import "./index.less"
 import ReactDOM from 'react-dom';
 import { addEvent, getEventPosition, getInsidePosition, getOffsetWH, removeEvent } from '@/utils/dom';
@@ -24,12 +24,6 @@ const eventsFor = {
 
 // 根据当前设备看是否触发
 let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
-
-export interface BoardContextInterface {
-
-}
-
-export const BoardContext = React.createContext<BoardContextInterface | null>(null);
 
 export const DrawBoard = (props: { children: any, style?: CSSProperties, className?: string }) => {
     return (
@@ -183,7 +177,7 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         // 右边
         else if (x > offsetWH?.width - distance && x < offsetWH?.width + distance) direction += Direction.E;
         // 内部
-        else if (x > distance && x < offsetWH.width - distance && y > distance && y < offsetWH.height - distance) direction = 'move'
+        else if (x > distance && x < offsetWH.width - distance && y > distance && y < offsetWH.height - distance) direction = Direction.X + Direction.Y
 
         return direction;
     };
@@ -193,7 +187,8 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         const {
             axis
         } = this.props;
-        if (direction === 'move' && (axis?.includes(Direction.X) || axis?.includes(Direction.Y))) {
+
+        if (direction === (Direction.X + Direction.Y) && (axis?.includes(Direction.X) || axis?.includes(Direction.Y))) {
             return 'move'
         } else if (([Direction.N, Direction.S] as string[])?.includes(direction) && (axis?.includes(Direction.N) || axis?.includes(Direction.S))) {
             return 'row-resize';
@@ -336,7 +331,7 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
         const topDeltalY = Math.max(deltalY, -lastStyle?.top);
         switch (direction) {
             // 拖拽移动
-            case 'move':
+            case Direction.X + Direction.Y:
                 if (props?.axis?.includes(Direction.X)) {
                     const left = lastStyle.left + deltalX;
                     style.left = Math.max(0, Math.min(left, wrapStyle.width - style.width));
@@ -414,27 +409,28 @@ export class DrawItem extends React.Component<DrawItemProps, DrawItemState> {
             style
         } = this.props;
 
-
         const {
             nowStyle
         } = this.state;
 
         const originStyle = (attr: string) => {
-            return style?.[attr] ?? children.props.style?.[attr];
+            return style?.[attr];
         }
 
-        return React.cloneElement(React.Children.only(children), {
-            className: className ?? children.props?.className,
-            ref: forwardedRef,
-            style: {
-                ...children.props?.style,
-                ...style,
-                position: 'absolute',
-                width: nowStyle?.width ?? originStyle('width'),
-                height: nowStyle?.height ?? originStyle('height'),
-                left: nowStyle?.left ?? originStyle('left'),
-                top: nowStyle?.top ?? originStyle('top')
-            }
-        });
+        const styleRet = {
+            ...style,
+            position: 'absolute',
+            width: nowStyle?.width ?? originStyle('width'),
+            height: nowStyle?.height ?? originStyle('height'),
+            left: nowStyle?.left ?? originStyle('left'),
+            top: nowStyle?.top ?? originStyle('top')
+        }
+
+        return (
+            <div ref={forwardedRef} className={classNames("drawing-item", className)} style={styleRet}>
+                {children}
+                {PointerCode?.map((item) => (<div key={item} className={`control-point point-${item}`}></div>))}
+            </div>
+        );
     }
 }

@@ -1,6 +1,11 @@
 .drawing-wrap {
   position: relative;
 }
+
+.drawing-item {
+  position: absolute;
+}
+
 .control-point {
   position: absolute;
   box-sizing: border-box;
@@ -13,40 +18,51 @@
   margin-top: -8px !important;
   margin-left: -8px !important;
   user-select: none; // 注意禁止鼠标选中控制点元素，不然拖拽事件可能会因此被中断
+
   &.point-e {
     cursor: ew-resize;
     left: 100%;
     top: 50%;
     margin-left: 1px;
   }
+
   &.point-n {
     cursor: ns-resize;
     left: 50%;
+    top: 0;
     margin-top: -1px;
   }
+
   &.point-s {
     cursor: ns-resize;
     left: 50%;
     top: 100%;
     margin-top: 1px;
   }
+
   &.point-w {
     cursor: ew-resize;
     top: 50%;
     left: 0;
     margin-left: -1px;
   }
+
   &.point-ne {
     cursor: nesw-resize;
     left: 100%;
+    top: 0;
     margin-top: -1px;
     margin-left: 1px;
   }
+
   &.point-nw {
     cursor: nwse-resize;
+    left: 0;
+    top: 0;
     margin-left: -1px;
     margin-top: -1px;
   }
+
   &.point-se {
     cursor: nwse-resize;
     left: 100%;
@@ -54,12 +70,15 @@
     margin-left: 1px;
     margin-top: 1px;
   }
+
   &.point-sw {
     cursor: nesw-resize;
     top: 100%;
+    left: 0;
     margin-left: -1px;
     margin-top: 1px;
   }
+
   &.point-rotate {
     cursor: pointer;
     position: absolute;

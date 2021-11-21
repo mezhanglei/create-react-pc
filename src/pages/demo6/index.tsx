@@ -1,7 +1,8 @@
-import { DirectionCode, DrawBoard, DrawItem } from '@/components/react-div-controller';
+import { DrawBoard, DrawItem } from '@/components/react-div-controller';
 import { Collapse } from '@/components/react-collapse';
 import React from 'react';
 import "./index.less"
+import { Button } from 'antd';
 
 class Drawing extends React.Component<{}, {}> {
     constructor(props: any) {
@@ -15,17 +16,17 @@ class Drawing extends React.Component<{}, {}> {
         return (
             <>
                 <DrawBoard className="wrap">
-                    <DrawItem width={500}>
-                        <div className="drawing-item">
-                            {DirectionCode?.map((item) => (<div className={`control-point point-${item}`}></div>))}
+                    <DrawItem className="wrap-item">
+                        <div>
+                            22222222
                         </div>
                     </DrawItem>
                 </DrawBoard>
-                <div onClick={() => this.setState({isOpended: true})}>
-                    button
-                </div>
+                <Button onClick={() => this.setState({isOpended: !this.state.isOpended})}>
+                    展开
+                </Button>
                 <Collapse isOpened={this.state.isOpended}>
-                    11111111111111111111111111111111111111111111111111111111111
+                    11111111111111111111111111
                 </Collapse>
             </>
         )

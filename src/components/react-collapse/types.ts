@@ -11,7 +11,7 @@ export interface CollapseProps {
 }
 
 export interface UnmountCollapseState {
-    isResting?: boolean
-    isOpened?: boolean
-    isInitialRender?: boolean
+    isResting?: boolean // 是否调整结束
+    isOpened?: boolean // 控制打开或关闭
+    isInitialRender?: boolean // 是不是初始化操作
 }

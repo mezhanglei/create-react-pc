@@ -69,7 +69,7 @@ export class Collapse extends React.Component<CollapseProps, {}> {
     clearTimeout(this.timeout);
   }
 
-
+  // 展开或关闭
   onResize = () => {
     clearTimeout(this.timeout);
 
@@ -92,7 +92,7 @@ export class Collapse extends React.Component<CollapseProps, {}> {
     }
   };
 
-
+  // 完全打开或完全关闭
   onRest = ({ isFullyOpened, isFullyClosed, isOpened, containerHeight, contentHeight }) => {
     if (!this.container || !this.content) {
       return;
@@ -112,7 +112,7 @@ export class Collapse extends React.Component<CollapseProps, {}> {
     }
   };
 
-
+  // 展开途中
   onWork = ({ isFullyOpened, isFullyClosed, isOpened, containerHeight, contentHeight }) => {
     if (!this.container || !this.content) {
       return;

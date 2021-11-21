@@ -17,6 +17,7 @@ class demo5 extends React.Component {
     }
 
     onSubmit = async (e) => {
+        e.preventDefault();
         const result = await this.store.validate()
         console.log(result, '表单结果')
     };
