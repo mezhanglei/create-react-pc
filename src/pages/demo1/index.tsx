@@ -5,6 +5,8 @@ import Button from '@/components/button';
 import { DraggableAreaGroup, DraggerItem } from "@/components/react-dragger-sort";
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
+import { renderToStaticMarkup } from 'react-dom/server';
+import demo2 from '../demo2';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -19,7 +21,7 @@ const Demo1: React.FC<any> = (props) => {
     const onDrag = (e, data) => {
         // setX(data?.x)
         // setY(data?.y)
-    }
+    };
 
     const onDragMoveEnd1: DragMoveHandle = (tag, coverChild) => {
         if (tag && coverChild) {
@@ -28,7 +30,7 @@ const Demo1: React.FC<any> = (props) => {
             const newArr = arrayMove(arr1, preIndex, nextIndex);
             setArr1(newArr);
         }
-    }
+    };
 
     const onDragMoveEnd2: DragMoveHandle = (tag, coverChild, e) => {
         if (tag && coverChild) {
@@ -37,7 +39,7 @@ const Demo1: React.FC<any> = (props) => {
             const newArr = arrayMove(arr2, preIndex, nextIndex);
             setArr2(newArr);
         }
-    }
+    };
 
     const onMoveOutChange = (data) => {
         if (data) {
@@ -46,7 +48,7 @@ const Demo1: React.FC<any> = (props) => {
             newArr1?.splice(index, 1)
             setArr1(newArr1);
         }
-    }
+    };
 
     const onMoveInChange = (data) => {
         if (data) {
@@ -56,7 +58,10 @@ const Demo1: React.FC<any> = (props) => {
             newArr2?.splice(nextIndex, 0, arr1?.[index]);
             setArr2(newArr2);
         }
-    }
+    };
+
+    const onClick = () => {
+    };
 
     return (
         <div className="boxx" style={{ marginTop: '0px' }}>
@@ -105,6 +110,9 @@ const Demo1: React.FC<any> = (props) => {
                     }
                 </DraggableArea2>
             </div>
+            <Button onClick={onClick}>
+                导出
+            </Button>
         </div>
     );
 }

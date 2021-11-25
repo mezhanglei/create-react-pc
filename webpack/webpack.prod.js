@@ -117,7 +117,7 @@ const webpackConfig = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            // 修改css文件中静态资源的引用相对路径
+                            // 修改打包后目录中css文件中静态资源的引用的基础路径
                             publicPath: configs.assetsPath,
                         },
                     },
@@ -353,6 +353,7 @@ const webpackConfig = {
             // showErrors: true,
             // script引入的公共js文件
             commonJs: [
+                // 如果执行了npm run dll生成了static/dll文件，则必须在这里进行引入
                 // 'static/dll/base_dll.js'
             ],
             // link引入的公共css文件

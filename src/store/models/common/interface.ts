@@ -13,7 +13,7 @@ export interface CommonState {
 
 export enum ActionKeys {
     FetchUserInfo = 'fetchUserInfo',
-    SetUserInfo = 'setUserInfo',
+    SetUserInfo = 'setUserInfo'
 }
 
 // action的payload类型

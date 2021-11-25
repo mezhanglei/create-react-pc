@@ -1,5 +1,6 @@
 import { UploadParams, Status, UploadChunk, AsyncQueues, QueueParams, UploadChunksParams } from "./types";
 import { calculateHashSample, createFileChunk } from "./utils";
+import CreateWorker from 'worker-loader!./md5-worker.js';
 
 let id = 0
 
@@ -9,6 +10,7 @@ export class Uploader {
     beforeUpload: UploadParams['beforeUpload'];
     uploading: UploadParams['uploading'];
     afterUpload: UploadParams['afterUpload'];
+    onError: UploadParams['onError'];
     chunkSize: number;
     files: FileList | null;
     status: Status;
@@ -36,6 +38,7 @@ export class Uploader {
         this.beforeUpload = props?.beforeUpload;
         this.uploading = props?.uploading;
         this.afterUpload = props?.afterUpload;
+        this.onError = props?.onError;
 
         this.files = null;
         this.status = Status.wait;
@@ -57,10 +60,17 @@ export class Uploader {
     async handleUpload() {
         if (!this.files) return;
         this.status = Status.uploading;
-
+        // 计算hash的wroker子线程
+        // const worker = new CreateWorker();
         for (let file of this.files) {
             // 生成hash
             const fileHash = await calculateHashSample(file);
+            // 利用worker计算hash
+            // worker.postMessage(file);
+            // worker.onmessage = async (event) => {
+            // 子线程中计算的md5
+            //   const fileHash = event.data;
+            // };
             this.hashMap[file.name] = fileHash;
             // 判断文件是否存在,如果不存在，获取已经上传的切片
             const { uploaded, uploadedList } = await this.verify(file, fileHash);
@@ -125,6 +135,7 @@ export class Uploader {
                             errorMap[chunkName] = newCount;
                             // 一个请求报错三次就会reject
                             if (newCount >= 2) {
+                                this.onError?.(execItem)
                                 return reject(err)
                             }
                         }
@@ -171,7 +182,7 @@ export class Uploader {
                 await this.mergeRequest(file);
             }
         } catch (e) {
-            console.log('上传失败，请重试')
+            console.log('上传失败，请重试', e)
             this.reset();
         }
     }

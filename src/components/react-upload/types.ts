@@ -10,6 +10,7 @@ export interface UploadParams {
     beforeUpload: (params: { file: File, fileHash: string }) => Promise<{ uploaded: boolean, uploadedList: string[] }>
     uploading: (params: UploadingParams) => Promise<any>
     afterUpload: (params: { file: File, size: number, fileHash: string }) => void
+    onError?: (params: AsyncQueues) => void // 上传出错
 }
 
 // 上传状态

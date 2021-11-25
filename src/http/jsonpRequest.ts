@@ -3,9 +3,9 @@
  * jsonp请求跨域
  */
 export interface JSONP_CONFIG {
-    url: string // 接口
-    jsonpKey?: string // 请求参数的key
-    jsonpName?: string // 请求参数的名--后台执行函数名
+    url: string; // 接口
+    jsonpKey?: string; // 请求参数的key
+    jsonpName?: string; // 请求参数的名--后台执行函数名
     data: object // 参数
 }
 export function jsonpRequest<T>(configs: JSONP_CONFIG): Promise<T> {

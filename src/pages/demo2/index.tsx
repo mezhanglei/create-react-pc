@@ -47,7 +47,7 @@ const demo2: React.FC<any> = (props) => {
     return (
         <>
             <div>外部容器滚动</div>
-            <div className="cart-index" style={{ height: "300px", overflow: "auto" }}>
+            <div className="cart-index">
                 <InfiniteScroll
                     length={list?.length}
                     next={fetchMoreData}

@@ -1,7 +1,7 @@
 import { DrawBoard, DrawItem } from '@/components/react-div-controller';
 import { Collapse } from '@/components/react-collapse';
 import React from 'react';
-import "./index.less"
+import "./index.less";
 import { Button } from 'antd';
 
 class Drawing extends React.Component<{}, {}> {

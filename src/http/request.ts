@@ -108,8 +108,7 @@ http.interceptors.request.use(
         }
 
         startLoading();
-        if(config.unique) {
-            console.log(111)
+        if (config.unique) {
             axiosCancel.cancel(config); // 重复的请求取消掉
             axiosCancel.add(config); // 添加请求
         }
@@ -152,11 +151,11 @@ http.interceptors.response.use(
 
 // 转换调用http请求的方式：例如http.post({}).then(res={})
 const request = {};
-['get', 'post', 'delete', 'put'].map((method: Method) => {
+['get', 'post', 'delete', 'put'].map((method: string) => {
     request[method] = function (configs: CustomConfig) {
         return http({
             ...configs,
-            method: method
+            method: (method as Method)
         });
     };
 });

@@ -5,7 +5,8 @@ import AddIcon from 'static/images/fail.png'
 import { Uploader } from '@/components/react-upload/uploader';
 import { Button } from 'antd';
 import http from '@/http/request';
-import { composeCheck } from '@/utils/check-pwd';
+import { renderToStaticMarkup } from 'react-dom/server';
+import demo2 from '../demo2';
 
 function DragAndDropElement(props: any): any {
     const [, setDragRef] = useDrag({
@@ -75,7 +76,6 @@ const demo4: React.FC<any> = (props) => {
     }, [])
 
     useEffect(() => {
-        console.log(composeCheck('Yc00920@111'))
         uploadRef.current = new Uploader({
             beforeUpload: beforeUpload,
             uploading: uploading,
@@ -97,7 +97,8 @@ const demo4: React.FC<any> = (props) => {
     }
 
     const handleContinue = () => {
-
+        const str = renderToStaticMarkup(React.createElement(demo2));
+        console.log(str, 2222)
     }
 
     return (

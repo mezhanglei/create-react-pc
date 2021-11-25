@@ -8,6 +8,7 @@ const globAll = require("glob-all");
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
 const path = require("path");
+const versionShell = require('./version.js');
 
 // 整个项目的根目录
 const root = path.join(__dirname, '..');
@@ -23,12 +24,14 @@ const outputPath = path.join(root, "dist");
 const dllOutputPath = path.join(staticPath, 'dll');
 // 页面模板所在的根目录
 const htmlPages = path.join(root, 'public');
+// 版本信息
+const versionInfo = versionShell.getBranchVersionInfo();
 // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
-const publicPath = '/';
-
+const defaultPath = process.env.NODE_ENV === "development" ? '/' : 'public/';
+const publicPath = defaultPath;
 // 公共配置(开发/生产均使用)
 const baseConfig = {
-    // css文件中静态资源的引用路径
+    // 修改打包后目录中css文件中静态资源的引用的基础路径
     assetsPath: '../',
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
     resolve: {
