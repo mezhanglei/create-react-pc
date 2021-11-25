@@ -7,6 +7,7 @@ import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { arrayMove } from '@/utils/array';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
+import { GetUrlRelativePath } from '@/utils/url';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -77,7 +78,7 @@ const Demo1: React.FC<any> = (props) => {
                 >
                     <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
                         <Button className="handle" type="default">
-                            拖拽元素1
+                            拖拽元素
                         </Button>
                     </div>
                 </Draggable>

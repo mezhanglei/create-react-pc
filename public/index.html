@@ -1,74 +1,82 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=11;IE=8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-    <!-- 点击无高光 -->
-    <meta name="msapplication-tap-highlight" content="no" />
-    <!-- uc强制全屏,目的是隐藏工具栏 -->
-    <meta name="full-screen" content="true" />
-    <!-- uc强制竖屏 -->
-    <meta name="screen-orientation" content="portrait" />
-    <!-- uc应用模式 -->
-    <meta name="browsermode" content="application" />
-    <!-- qq强制全屏,目的是隐藏工具栏 -->
-    <meta name="x5-fullscreen" content="true" />
-    <!-- qq强制竖屏 -->
-    <meta name="x5-orientation" content="portrait" />
-    <!-- qq应用模式 -->
-    <meta name="x5-page-mode" content="app" />
-    <!-- 启用360浏览器的极速模式(webkit) -->
-    <meta name="renderer" content="webkit" />
-    <!-- 忽略页面中数字识别为电话,忽略email识别 -->
-    <meta name="format-detection" content="telephone=no, email=no" />
-    <!-- IOS隐藏浏览器默认的工具栏和菜单栏,一般不需要 -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <!-- qq移动端分享的标题,副标题,分享图 -->
-    <meta itemprop="name" content="qq分享标题" />
-    <meta name="HandheldFriendly" content="true" />
-    <meta itemprop="description" content="qq分享描述" />
-    <meta itemprop="image" content="qq分享缩略图" />
-    <!-- 禁止ios上显示电话号码和邮箱为超链接 -->
-    <meta name="format-detection" content="telephone=no,email=no" />
-    <!-- 适应手机端并解决刘海手机让页面铺满全屏并且让ios上滚动时页面导致页面偏离屏幕, 并且user-scalable=no还使移动端网页没有了300ms延迟 -->
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale= 1.0, minimum-scale=1.0, viewport-fit=cover"
-    />
-    <!-- 手持设备优化让其识别viewport -->
-    <meta name="HandheldFriendly" content="true" />
-    <!-- 禁止转码 -->
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <meta name="keywords" content="seo的关键字" />
-    <meta name="description" content="seo的描述" />
-    <!-- <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon"> -->
-    <% var commonCSS = htmlWebpackPlugin.options.commonCSS; for(var i = 0; i <
-    commonCSS.length; i++){ %>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=11;IE=8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+  <!-- 点击无高光 -->
+  <meta name="msapplication-tap-highlight" content="no" />
+  <!-- uc强制全屏,目的是隐藏工具栏 -->
+  <meta name="full-screen" content="true" />
+  <!-- uc强制竖屏 -->
+  <meta name="screen-orientation" content="portrait" />
+  <!-- uc应用模式 -->
+  <meta name="browsermode" content="application" />
+  <!-- qq强制全屏,目的是隐藏工具栏 -->
+  <meta name="x5-fullscreen" content="true" />
+  <!-- qq强制竖屏 -->
+  <meta name="x5-orientation" content="portrait" />
+  <!-- qq应用模式 -->
+  <meta name="x5-page-mode" content="app" />
+  <!-- 启用360浏览器的极速模式(webkit) -->
+  <meta name="renderer" content="webkit" />
+  <!-- 忽略页面中数字识别为电话,忽略email识别 -->
+  <meta name="format-detection" content="telephone=no, email=no" />
+  <!-- IOS隐藏浏览器默认的工具栏和菜单栏,一般不需要 -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <!-- qq移动端分享的标题,副标题,分享图 -->
+  <meta itemprop="name" content="qq分享标题" />
+  <meta name="HandheldFriendly" content="true" />
+  <meta itemprop="description" content="qq分享描述" />
+  <meta itemprop="image" content="qq分享缩略图" />
+  <!-- 禁止ios上显示电话号码和邮箱为超链接 -->
+  <meta name="format-detection" content="telephone=no,email=no" />
+  <!-- 适应手机端并解决刘海手机让页面铺满全屏并且让ios上滚动时页面导致页面偏离屏幕, 并且user-scalable=no还使移动端网页没有了300ms延迟 -->
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale= 1.0, minimum-scale=1.0, viewport-fit=cover" />
+  <!-- 手持设备优化让其识别viewport -->
+  <meta name="HandheldFriendly" content="true" />
+  <!-- 禁止转码 -->
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="keywords" content="seo的关键字" />
+  <meta name="description" content="seo的描述" />
+  <!-- <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon"> -->
+  <% var commonCSS=htmlWebpackPlugin.options.commonCSS; for(var i=0; i < commonCSS.length; i++){ %>
     <link rel="stylesheet" href="<%=commonCSS[i]%>" />
     <% } %>
-  </head>
+</head>
 
-  <body>
-    <div id="root"></div>
-    <% var commonJs = htmlWebpackPlugin.options.commonJs; for(var i = 0; i <
-    commonJs.length; i++){ %>
+<body>
+  <div id="root"></div>
+  <% var commonJs=htmlWebpackPlugin.options.commonJs; for(var i=0; i < commonJs.length; i++){ %>
     <script type="text/javascript" src="<%=commonJs[i]%>"></script>
     <% } %>
-  </body>
-  <script type="text/javascript">
-    window.onload = function () {
-      const allScript = document.getElementsByTagName("script");
-      for (let i = allScript?.length; i >= 0; i--) {
-        const element = allScript[i];
-        if (element?.src) {
-          console.log(element?.src);
-          const newElement = document.createElement("script");
-          newElement.setAttribute("type", "text/javascript");
-          newElement.src = element?.src + '.js';
-          element?.parentNode?.replaceChild(newElement, element);
-        }
+</body>
+<script type="text/javascript">
+
+  function GetUrlRelativePath(url) {
+    const arrUrl = url.split("//");
+    const start = arrUrl[1].indexOf("/");
+    let relUrl = arrUrl[1].substring(start);
+    if (relUrl.indexOf("?") != -1) {
+      relUrl = relUrl.split("?")[0];
+    }
+    return relUrl;
+  };
+
+  window.onload = function () {
+    const allScript = document.getElementsByTagName("script");
+    for (let i = allScript?.length; i >= 0; i--) {
+      const element = allScript[i];
+      if (element?.src) {
+        const newElement = document.createElement("script");
+        newElement.setAttribute("type", "text/javascript");
+        newElement.src = '.' + GetUrlRelativePath(element?.src)?.replace('v1', 'v2');
+        element?.parentNode?.replaceChild(newElement, element);
       }
-    };
-  </script>
+    }
+  };
+</script>
+
 </html>
