@@ -1,11 +1,11 @@
 import loadable from "@/components/lazy";
 
-export const Demo1 = loadable({ loader: () => import(/* webpackChunkName: "demo1" */ '@/pages/demo1/index') });
+const Demo1 = loadable({ loader: () => import(/* webpackChunkName: "demo1" */ '@/pages/demo1/index') });
 const Demo2 = loadable({ loader: () => import(/* webpackChunkName: "demo2" */ '@/pages/demo2/index') });
 const Demo3 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo3/index') });
-const Demo4 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo4/index') });
-const Demo5 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo5/index') });
-const Demo6 = loadable({ loader: () => import(/* webpackChunkName: "demo3" */ '@/pages/demo6/index') });
+const Demo4 = loadable({ loader: () => import(/* webpackChunkName: "demo4" */ '@/pages/demo4/index') });
+const Demo5 = loadable({ loader: () => import(/* webpackChunkName: "demo5" */ '@/pages/demo5/index') });
+const Demo6 = loadable({ loader: () => import(/* webpackChunkName: "demo6" */ '@/pages/demo6/index') });
 
 // 首页
 export const DemoRoute = [

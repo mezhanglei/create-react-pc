@@ -220,30 +220,7 @@ const webpackConfig = {
                             // 默认超出后file-loader
                             fallback: "file-loader"
                         },
-                    },
-                    // {
-                    //     // yarn官方镜像依赖丢失不可用，淘宝镜像正常
-                    //     loader: "image-webpack-loader",
-                    //     options: {
-                    //         mozjpeg: {
-                    //             progressive: true,
-                    //             quality: 65,
-                    //         },
-                    //         optipng: {
-                    //             enabled: false,
-                    //         },
-                    //         pngquant: {
-                    //             quality: [0.65, 0.9],
-                    //             speed: 4,
-                    //         },
-                    //         gifsicle: {
-                    //             interlaced: false,
-                    //         },
-                    //         webp: {
-                    //             quality: 75,
-                    //         },
-                    //     },
-                    // }
+                    }
                 ],
             },
             {
@@ -387,14 +364,14 @@ const webpackConfig = {
             // 配置规则(里面选项自定义, 默认选项有vendors基础资源包和default(即output输出)资源包)
             cacheGroups: {
                 // 重写vendors基础资源打包分组
-                vendors: {
-                    name: "vendors",
-                    test: /[\\/]node_modules[\\/]/,
-                    chunks: "initial",
-                    priority: 1,
-                    // 默认true时，该组复用引用的其他chunk，false时则不会复用而是重新创建一个新chunk
-                    reuseExistingChunk: false,
-                },
+                // vendors: {
+                //     name: "vendors",
+                //     test: /[\\/]node_modules[\\/]/,
+                //     chunks: "initial",
+                //     priority: 1,
+                //     // 默认true时，该组复用引用的其他chunk，false时则不会复用而是重新创建一个新chunk
+                //     reuseExistingChunk: false,
+                // },
                 // 不同的html公用的包
                 common: {
                     // 打包的chunks名，最终打包名称为${cacheGroup的key} ${automaticNameDelimiter} ${chunk的name},可以自定义

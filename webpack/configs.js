@@ -27,7 +27,7 @@ const htmlPages = path.join(root, 'public');
 // 版本信息
 const versionInfo = versionShell.getBranchVersionInfo();
 // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
-const defaultPath = process.env.NODE_ENV === "development" ? '/' : './v2/';
+const defaultPath = process.env.NODE_ENV === "development" ? '/' : './v1/';
 const publicPath = defaultPath;
 // 公共配置(开发/生产均使用)
 const baseConfig = {

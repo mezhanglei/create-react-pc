@@ -8,6 +8,7 @@ import { arrayMove } from '@/utils/array';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
+import { exportWord } from '@/components/export-word';
 
 const DraggableAreaGroups = new DraggableAreaGroup();
 const DraggableArea1 = DraggableAreaGroups.create()
@@ -62,6 +63,12 @@ const Demo1: React.FC<any> = (props) => {
     };
 
     const onClick = () => {
+        exportWord({
+            imgList: [
+                'http://bhyf-file.oss-cn-hangzhou.aliyuncs.com/4578/1636526930976_4fb0c795.jpeg',
+                'https://img-cloud.youjiaoyun.net/mp/0a802a40-4a4b-4121-aa88-1fc6367a7410.jpg'
+            ]
+        });
     };
 
     return (
@@ -78,7 +85,7 @@ const Demo1: React.FC<any> = (props) => {
                 >
                     <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
                         <Button className="handle" type="default">
-                            拖拽元素
+                            拖拽元素v1
                         </Button>
                     </div>
                 </Draggable>
@@ -116,6 +123,6 @@ const Demo1: React.FC<any> = (props) => {
             </Button>
         </div>
     );
-}
+};
 
 export default Demo1;
