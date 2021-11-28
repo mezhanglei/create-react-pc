@@ -158,14 +158,17 @@ export class FormStore<T extends Object = any> {
           const flag = await rule.validator(value, (msg?: string) => {
             // callback方式校验
             callbackExe = true;
-            message = msg;
+            if (msg) {
+              message = msg;
+            }
           });
 
-          // 返回值方式校验
-          if (!callbackExe && !flag) {
-            message = rule.message || true;
+          // 校验结果
+          if (callbackExe && message) {
+            return message;
+          } else if (flag) {
+            return rule.message || true;
           }
-          return message;
         }
       }
 

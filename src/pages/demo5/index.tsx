@@ -18,15 +18,15 @@ class demo5 extends React.Component {
 
     onSubmit = async (e) => {
         e.preventDefault();
-        const result = await this.store.validate()
-        console.log(result, '表单结果')
+        const result = await this.store.validate();
+        console.log(result, '表单结果');
     };
 
     validator = (value, callError) => {
         if (value?.length < 2) {
-            callError('主动报错')
+            callError('主动报错');
         }
-        callError()
+        callError();
     }
 
     render() {
