@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef, useCallback } from 'reac
 import "./index.less";
 import { Form, FormStore } from "@/components/react-easy-formcore";
 import { Input, Select } from 'antd'
-
+import { aop } from '@/utils/function-aop';
 class demo5 extends React.Component {
     constructor(props) {
         super(props);
@@ -29,6 +29,16 @@ class demo5 extends React.Component {
         callError();
     }
 
+    onChange = (value) => {
+
+    }
+
+    onClick = () => {
+        const fn = () => {
+            console.log(222)
+        };
+    }
+
     render() {
         return (
             <Form store={this.store} onSubmit={this.onSubmit}>
@@ -39,6 +49,7 @@ class demo5 extends React.Component {
                         style={{ width: '100%' }}
                         placeholder="Please select"
                         labelInValue
+                        onChange={this.onChange}
                     >
                         {
                             this.state.list?.map((item) => {
@@ -71,7 +82,7 @@ class demo5 extends React.Component {
                     </Select>
                 </Form.Field>
                 <Form.Field label="">
-                    <button>Submit</button>
+                    <button onClick={this.onClick}>Submit</button>
                 </Form.Field>
             </Form>
         );
