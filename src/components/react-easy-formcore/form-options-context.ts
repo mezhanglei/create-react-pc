@@ -8,7 +8,7 @@ export interface FormOptions {
   labelAlign?: 'left' | 'right'
   gutter?: number
   errorClassName?: string
-  onValuesChange?: (obj: {value: any, values: any, error: string[]}) => void
+  onFormChange?: (obj: {name: string, value: any, values: any, error: string[]}) => void
 }
 
 export const FormOptionsContext = React.createContext<FormOptions>({})

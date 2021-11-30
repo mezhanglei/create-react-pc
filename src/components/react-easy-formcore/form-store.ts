@@ -20,7 +20,8 @@ export type ValidateResult<T> = { error?: string, values: T }
 export class FormStore<T extends Object = any> {
   private initialValues: Partial<T>
 
-  private listeners: FormListener[] = []
+  private valueListeners: FormListener[] = []
+  private errorListeners: FormListener[] = []
 
   private values: Partial<T>
 
@@ -36,6 +37,7 @@ export class FormStore<T extends Object = any> {
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)
+    this.deepCopyValues = this.deepCopyValues.bind(this)
     this.setFieldRules = this.setFieldRules.bind(this)
     this.setFieldsRules = this.setFieldsRules.bind(this)
     this.reset = this.reset.bind(this)
@@ -43,7 +45,8 @@ export class FormStore<T extends Object = any> {
     this.setFieldError = this.setFieldError.bind(this)
     this.setFieldsError = this.setFieldsError.bind(this)
     this.validate = this.validate.bind(this)
-    this.subscribe = this.subscribe.bind(this)
+    this.subscribeValue = this.subscribeValue.bind(this)
+    this.subscribeError = this.subscribeError.bind(this)
   }
 
   // 更新表单中的校验规则
@@ -57,16 +60,29 @@ export class FormStore<T extends Object = any> {
     this.formRules = deepCopy(values)
   }
 
-  // 触发所有订阅, 同步表单ui和数据
-  private notify(name?: string) {
+  // 同步值的变化
+  private notifyValue(name?: string) {
     if (name) {
-      this.listeners.forEach((listener) => {
+      this.valueListeners.forEach((listener) => {
         if (listener?.name === name) {
           listener?.onChange && listener?.onChange()
         }
       })
     } else {
-      this.listeners.forEach((listener) => listener.onChange())
+      this.valueListeners.forEach((listener) => listener.onChange())
+    }
+  }
+
+  // 同步错误的变化
+  private notifyError(name?: string) {
+    if (name) {
+      this.errorListeners.forEach((listener) => {
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange()
+        }
+      })
+    } else {
+      this.errorListeners.forEach((listener) => listener.onChange())
     }
   }
 
@@ -78,10 +94,10 @@ export class FormStore<T extends Object = any> {
   // 更新表单值，单个表单值或多个表单值
   public async setFieldValue(name: any, value?: any) {
     if (typeof name === 'string') {
-      // 设置表单值
-      this.setFieldsValue(deepSetForm(this.values, name, value));
+      // 设置值
+      this.deepCopyValues(deepSetForm(this.values, name, value));
       // 同步ui
-      this.notify(name)
+      this.notifyValue(name)
 
       if (this.formRules?.[name]?.length) {
         // 校验规则
@@ -92,16 +108,25 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 设置表单值
+  // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
+    Object.entries(values)?.map(
+      ([name, value]) => {
+          this.setFieldValue(name, value);
+      });
+  }
+
+  // 设置表单值
+  private async deepCopyValues(values: Partial<T>) {
     this.values = deepCopy(values);
   }
 
   // 重置表单
   public reset() {
     this.setFieldsError({});
-    this.setFieldsValue(this.initialValues)
-    this.notify()
+    this.deepCopyValues(this.initialValues)
+    this.notifyValue()
+    this.notifyError()
   }
 
   // 获取error信息
@@ -142,7 +167,8 @@ export class FormStore<T extends Object = any> {
     } else {
       // 清空错误信息
       this.setFieldError(name, undefined);
-      this.notify(name)
+      this.notifyError(name)
+      
       const value = this.getFieldValue(name);
       const rules = this.formRules[name];
 
@@ -177,20 +203,31 @@ export class FormStore<T extends Object = any> {
       const currentError = messageList?.[0];
       if (currentError) {
         this.setFieldError(name, currentError);
-        this.notify(name);
+        this.notifyError(name);
       }
       return currentError;
     }
   }
 
-  // 订阅表单变动
-  public subscribe(name: string, listener: FormListener['onChange']) {
-    this.listeners.push({
+  // 订阅表单值的变动
+  public subscribeValue(name: string, listener: FormListener['onChange']) {
+    this.valueListeners.push({
       onChange: listener,
       name: name
     });
     return () => {
-      this.listeners = this.listeners.filter((sub) => sub.name !== name)
+      this.valueListeners = this.valueListeners.filter((sub) => sub.name !== name)
+    }
+  }
+
+  // 订阅表单错误的变动
+  public subscribeError(name: string, listener: FormListener['onChange']) {
+    this.errorListeners.push({
+      onChange: listener,
+      name: name
+    });
+    return () => {
+      this.errorListeners = this.errorListeners.filter((sub) => sub.name !== name)
     }
   }
 }

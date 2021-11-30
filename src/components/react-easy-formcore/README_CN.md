@@ -130,7 +130,7 @@ class demo extends React.Component {
 - `errorClassName` 所有Form.Field组件当有错误信息时，添加一个自定义类名，`可选`。
 - `onSubmit` 表单提交回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
-- `onValuesChange` 表单值变化时的事件函数，`可选`。
+- `onFormChange` 表单onChange变化时的事件函数，只会被控件主动onChange触发，不会被store.setFieldValue和store.setFieldsValue触发, 避免循环调用。`可选`。
 
 ### Form Field Props
 
@@ -164,7 +164,8 @@ class demo extends React.Component {
 - `store.setFieldsError(erros: FormErrors<T>)` 设置表单域的错误信息(覆盖)。
 - `store.setFieldRules(name: string, rules?: FormRule[])` 更新表单域的校验规则。
 - `store.setFieldsRules(values: FormRules<T>)` 设置表单域的校验规则(覆盖)。
-- `store.subscribe(name: string, onChange: () => void)` 订阅表单变动，并返回一个用于取消订阅的函数。
+- `store.subscribeValue(name: string, onChange: () => void)` 订阅表单项值的变动，并返回一个用于取消订阅的函数。
+- `store.subscribeError(name: string, onChange: () => void)` 订阅表单项错误的变动，并返回一个用于取消订阅的函数。
 
 ### Hooks
 

@@ -6,6 +6,7 @@ import { FormOptions, FormOptionsContext } from './form-options-context'
 import { getPropValueName, getValueFromEvent } from './utils'
 import { FormRule } from './form-store'
 import classnames from 'classnames';
+import { AopFactory } from '@/utils/function-aop'
 
 export interface FormFieldProps extends FormOptions {
   className?: string
@@ -41,10 +42,18 @@ export function FormField(props: FormFieldProps) {
   // onChange监听
   const onChange = useCallback(
     (...args: any[]) => {
-      return name && store && store.setFieldValue(name, valueGetter(...args))
+      const values = store!.getFieldValue();
+      const value = valueGetter(...args);
+      const error = store!.getFieldError(name!);
+      // 设置值
+      name && store && store.setFieldValue(name, value)
+      // 执行onFormChange事件
+      name && options?.onFormChange && options?.onFormChange({ name: name, value: value, values: values, error: error })
     },
     [name, store, valueGetter]
   )
+
+  const aopOnchange = new AopFactory(onChange);
 
   useFieldChange({
     store,
@@ -53,11 +62,12 @@ export function FormField(props: FormFieldProps) {
     // 监听FormStore中的value变化
     onChange: () => {
       const value = store!.getFieldValue(name!);
-      const values = store!.getFieldValue();
-      const error = store!.getFieldError(name!);
       setValue(value);
+    },
+    // 监听错误变化
+    onError: () => {
+      const error = store!.getFieldError(name!);
       setError(error);
-      options?.onValuesChange && options?.onValuesChange({ value: value, values: values, error: error })
     }
   })
 
@@ -71,12 +81,14 @@ export function FormField(props: FormFieldProps) {
   if (name && store && isValidElement(child)) {
     const valueKey = getPropValueName(valueProp, child && child.type)
     const childProps = child?.props as any;
+    // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
     const childOnChange = childProps?.onChange;
+    const aopAfterFn = aopOnchange.addAfter(childOnChange)
 
     let childClassName = childProps.className || '';
     if (error) childClassName += ' ' + errorClassName
 
-    const newChildProps = { className: childClassName, [valueKey]: value, onChange: childOnChange || onChange }
+    const newChildProps = { className: childClassName, [valueKey]: value, onChange: aopAfterFn }
     child = cloneElement(child, newChildProps)
   }
 
