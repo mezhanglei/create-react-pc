@@ -35,7 +35,7 @@ export function FormItem(props: FormItemProps) {
     },
     [name, store, valueGetter]
   )
-console.log(onChange)
+
   const aopOnchange = new AopFactory(onChange);
 
   useFieldChange({

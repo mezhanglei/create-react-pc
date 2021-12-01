@@ -44,7 +44,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         className,
         style,
         dragAxis = DragAxisCode,
-        resizeAxis = DirectionCode,
+        resizeAxis = [],
         handle,
         id
     } = props;

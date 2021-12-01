@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState } from 'react'
+import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties } from 'react'
 
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
@@ -17,6 +17,7 @@ export interface FormFieldProps extends FormOptions {
   suffix?: React.ReactNode
   children?: React.ReactNode
   rules?: FormRule[]
+  style?: CSSProperties
 }
 
 const prefixCls = 'rh-form-field';
@@ -31,6 +32,7 @@ export function FormField(props: FormFieldProps) {
     suffix,
     children,
     rules,
+    style,
     ...restProps
   } = props
 
@@ -108,7 +110,7 @@ export function FormField(props: FormFieldProps) {
   }
 
   return (
-    <div className={cls}>
+    <div className={cls} style={style}>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
           {label}

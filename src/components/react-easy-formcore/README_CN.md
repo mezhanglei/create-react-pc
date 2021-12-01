@@ -2,18 +2,18 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.0.2-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.0.4-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
-轻量级表单表单容器组件。只需简单地创建一个`FormStore`实例并传递到`Form`组件上。对于表单组件（如`input`），无需再传递`value`和`onChange`了,数据由`FormStore`统一管理。
+轻量级表单表单容器组件，目标控件只需要提供`value`(或通过`valueProp`设置)和`onChange`方法，其余的交给组件中的`FormStore`来管理数据的更新与绑定。使用非常简单
 
 # features
 
-- [x] Form.Item组件不提供样式，只提供`value`(或其他字段)和`onChange`双向绑定。
-- [x] Form.Field组件提供校验等表单控件外围容器的样式，以及`value`(或其他字段)和`onChange`双向绑定。
-- [x] 可以自定义`onChange`，但只能通过`FormStore`实例的`setFieldValue`等方法设置表单值
-- [x] 提供表单校验规则`rules`，可以自定义表单校验规则。
+- [x] Form.Item组件不提供样式，只提供`value`(或通过`valueProp`设置)和`onChange`双向绑定。
+- [x] Form.Field组件提供校验等表单控件外围容器的样式，以及`value`(或通过`valueProp`设置)和`onChange`双向绑定。
+- [x] 使用的控件也可以自定义`onChange`，但只能通过`store.setFieldValue`等实例方法设置表单值
+- [x] Form.Field和 Form.Field提供表单校验规则属性`rules`，可以自定义表单校验规则。
 
 ## 安装
 
@@ -130,7 +130,7 @@ class demo extends React.Component {
 - `errorClassName` 所有Form.Field组件当有错误信息时，添加一个自定义类名，`可选`。
 - `onSubmit` 表单提交回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
-- `onFormChange` 表单onChange变化时的事件函数，只会被控件主动onChange触发，不会被store.setFieldValue和store.setFieldsValue触发, 避免循环调用。`可选`。
+- `onFormChange` 表单onChange变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
 
 ### Form Field Props
 
