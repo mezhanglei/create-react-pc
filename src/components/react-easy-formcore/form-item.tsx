@@ -1,75 +1,156 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState } from 'react'
+import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties } from 'react'
 
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
+import { FormOptions, FormOptionsContext } from './form-options-context'
 import { getPropValueName, getValueFromEvent } from './utils'
-import { FormOptionsContext } from './form-options-context'
 import { FormRule } from './form-store'
+import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop'
 
-export interface FormItemProps {
+export interface FormItemProps extends FormOptions {
+  className?: string
+  label?: string
   name?: string
   valueProp?: string | ((type: any) => string)
   valueGetter?: (...args: any[]) => any
+  suffix?: React.ReactNode
   children?: React.ReactNode
   rules?: FormRule[]
+  style?: CSSProperties
+  path?: string;
 }
 
-export function FormItem(props: FormItemProps) {
-  const { name, valueProp = 'value', valueGetter = getValueFromEvent, children, rules } = props
+const prefixCls = 'rh-form-field';
 
+export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
+  const {
+    className,
+    label,
+    name,
+    valueProp = 'value',
+    valueGetter = getValueFromEvent,
+    suffix,
+    children,
+    rules,
+    style,
+    path,
+    ...restProps
+  } = props
+
+  const currentPath = path && name ? `${path}.${name}` : name;
   const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
-  const [value, setValue] = useState(name && store ? store.getFieldValue(name) : undefined)
-  const [error, setError] = useState(name && store ? store.getFieldError(name) : undefined)
+  const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined)
+  const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined)
 
+  // onChange监听
   const onChange = useCallback(
     (...args: any[]) => {
-      const values = store!.getFieldValue();
       const value = valueGetter(...args);
-      const error = store!.getFieldError(name!);
       // 设置值
-      name && store && store.setFieldValue(name, value);
-      // 执行onFormChange事件
-      name && options?.onFormChange && options?.onFormChange({ name: name, value: value, values: values, error: error })
+      currentPath && store && store.setFieldValue(currentPath, value)
+      // onFormChange事件
+      currentPath && options?.onFormChange && options?.onFormChange({ name: currentPath, value: value })
     },
-    [name, store, valueGetter]
+    [currentPath, store, valueGetter]
   )
 
   const aopOnchange = new AopFactory(onChange);
 
   useFieldChange({
     store,
-    name,
+    name: currentPath,
     rules,
     // 监听FormStore中的value变化
-    onChange: () => {
-      const value = store!.getFieldValue(name!);
+    onChange: (name) => {
+      const value = store!.getFieldValue(currentPath!);
       setValue(value);
     },
     // 监听错误变化
     onError: () => {
-      const error = store!.getFieldError(name!);
+      const error = store!.getFieldError(currentPath!);
       setError(error);
     }
   })
 
-  let child: any = children
-
-  if (name && store && isValidElement(child)) {
-    const { errorClassName = 'error' } = options
-    const valueKey = getPropValueName(valueProp, child && child.type)
-    const childProps = child?.props as any;
-    // 对onChange方法进行aop包装，在后面添加子元素自身的onChange
-    const childOnChange = childProps?.onChange;
-    const aopOnchangeRet = aopOnchange.addAfter(childOnChange)
-
-    let className = childProps?.className || ''
-    if (error) className += ' ' + errorClassName
-
-    const newChildProps = { className, [valueKey]: value, onChange: aopOnchangeRet }
-    child = cloneElement(child, newChildProps)
+  const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = {
+    ...options,
+    ...restProps
   }
 
-  return child
+  // 渲染控件
+  const formChild = (child: any) => {
+    if (!isValidElement(child) || !store) return;
+    if (currentPath) {
+      const valueKey = getPropValueName(valueProp, child && child.type);
+      const childProps = child?.props as any;
+      // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
+      const childOnChange = childProps?.onChange;
+      const aopAfterFn = aopOnchange.addAfter(childOnChange);
+
+      let childClassName = childProps.className || '';
+      if (error) childClassName += ' ' + errorClassName
+
+      const newChildProps = { className: childClassName, [valueKey]: value, onChange: aopAfterFn }
+      return cloneElement(child, newChildProps)
+    }
+  }
+
+  const FormItems = React.Children.map(children, (child: any, index) => {
+    const childDisplayName = child?.type?.displayName;
+    if ((childDisplayName === 'FormItem' || childDisplayName === 'FormList') && name) {
+      return cloneElement(child, {
+        path: currentPath
+      });
+    } else {
+      return formChild(child);
+    }
+  });
+
+  const cls = classnames(
+    classes.field,
+    inline ? classes.inline : '',
+    compact ? classes.compact : '',
+    required ? classes.required : '',
+    error ? classes.error : '',
+    className ? className : ''
+  )
+
+  const headerStyle = {
+    width: labelWidth,
+    marginRight: gutter,
+    textAlign: labelAlign
+  }
+
+  return (
+    <div ref={ref} className={cls} style={style}>
+      {label !== undefined && (
+        <div className={classes.header} style={headerStyle}>
+          {label}
+        </div>
+      )}
+      <div className={classes.container}>
+        <div className={classes.control}>{FormItems}</div>
+        <div className={classes.message}>{error}</div>
+      </div>
+      {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
+    </div>
+  )
+})
+
+FormItem.displayName = 'FormItem';
+
+const classes = {
+  field: prefixCls,
+  inline: `${prefixCls}--inline`,
+  compact: `${prefixCls}--compact`,
+  required: `${prefixCls}--required`,
+  error: `${prefixCls}--error`,
+
+  header: `${prefixCls}__header`,
+  container: `${prefixCls}__container`,
+  control: `${prefixCls}__control`,
+  message: `${prefixCls}__message`,
+  footer: `${prefixCls}__footer`
 }

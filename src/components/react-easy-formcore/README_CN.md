@@ -2,18 +2,22 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.0.4-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.1.0-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
 轻量级表单表单容器组件，目标控件只需要提供`value`(或通过`valueProp`设置)和`onChange`方法，其余的交给组件中的`FormStore`来管理数据的更新与绑定。使用非常简单
 
-# features
+# Form.Item
+表单中的组件最小单元，一个`Form.Item`包裹一个控件，作为一个对象的节点可以相互嵌套。
 
-- [x] Form.Item组件不提供样式，只提供`value`(或通过`valueProp`设置)和`onChange`双向绑定。
-- [x] Form.Field组件提供校验等表单控件外围容器的样式，以及`value`(或通过`valueProp`设置)和`onChange`双向绑定。
-- [x] 使用的控件也可以自定义`onChange`，但只能通过`store.setFieldValue`等实例方法设置表单值
-- [x] Form.Field和 Form.Field提供表单校验规则属性`rules`，可以自定义表单校验规则。
+- [x] 提供校验等表单控件外围容器的样式，以及`value`(或通过`valueProp`设置)和`onChange`双向绑定。
+- [x] 可以自定义`onChange`，但只能通过`store.setFieldValue`等实例方法设置表单值
+- [x] 可以提供表单校验规则属性`rules`，进行自定义表单校验规则。
+
+# Form.List
+给字段提供数组化管理。
+- [x] 
 
 ## 安装
 
@@ -46,15 +50,15 @@ class demo extends React.Component {
     render() {
         return (
             <Form store={this.store} onSubmit={this.onSubmit}>
-                <Form.Field label="Name1" name="name1" rules={[{ required: true, message: 'Name1不能为空' }]}>
+                <Form.Item label="Name1" name="name1" rules={[{ required: true, message: 'Name1不能为空' }]}>
                   <Input />
-                </Form.Field>
-                <Form.Field label="Name2" name="name2" rules={[{ required: true, message: 'Name2不能为空' }]}>
+                </Form.Item>
+                <Form.Item label="Name2" name="name2" rules={[{ required: true, message: 'Name2不能为空' }]}>
                    <Input />
-                </Form.Field>
-                <Form.Field label="">
+                </Form.Item>
+                <Form.Item label="">
                     <button>Submit</button>
-                </Form.Field>
+                </Form.Item>
             </Form>
         );
     }
@@ -100,15 +104,15 @@ class demo extends React.Component {
     render() {
         return (
             <Form store={this.store} onSubmit={this.onSubmit}>
-                <Form.Field label="Name1" name="name1" rules={[{ required: true, message: 'Name1不能为空' }, { validator: this.validator, message: '自定义校验固定提示' }]}>
+                <Form.Item label="Name1" name="name1" rules={[{ required: true, message: 'Name1不能为空' }, { validator: this.validator, message: '自定义校验固定提示' }]}>
                   <Input />
-                </Form.Field>
-                <Form.Field label="Name2" name="name2" rules={[{ required: true, message: 'Name2不能为空' }]}>
+                </Form.Item>
+                <Form.Item label="Name2" name="name2" rules={[{ required: true, message: 'Name2不能为空' }]}>
                    <Input />
-                </Form.Field>
-                <Form.Field label="">
+                </Form.Item>
+                <Form.Item label="">
                     <button>Submit</button>
-                </Form.Field>
+                </Form.Item>
             </Form>
         );
     }
@@ -122,27 +126,20 @@ class demo extends React.Component {
 
 - `className` 表单元素类名，`可选`。
 - `store` 表单数据存储，`必须`。
-- `inline` 所有Form.Field组件设置行内布局，默认值为`false`。
-- `compact` 所有Form.Field组件是否隐藏错误信息，默认值为`false`。
-- `required` 所有Form.Field组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
-- `labelWidth` 所有Form.Field组件自定义标签宽度，`可选`。
-- `gutter` 所有Form.Field组件自定义标签和表单组件间的距离，`可选`。
-- `errorClassName` 所有Form.Field组件当有错误信息时，添加一个自定义类名，`可选`。
+- `inline` 所有Form.Item组件设置行内布局，默认值为`false`。
+- `compact` 所有Form.Item组件是否隐藏错误信息，默认值为`false`。
+- `required` 所有Form.Item组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
+- `labelWidth` 所有Form.Item组件自定义标签宽度，`可选`。
+- `gutter` 所有Form.Item组件自定义标签和表单组件间的距离，`可选`。
+- `errorClassName` 所有Form.Item组件当有错误信息时，添加一个自定义类名，`可选`。
 - `onSubmit` 表单提交回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
 - `onFormChange` 表单onChange变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
 
-### Form Field Props
+### Form.Item Props
 
 - `className` 表单域类名，`可选`。
 - `label` 表单域标签，`可选`。
-- `name` 表单域字段名，`可选`。
-- `valueProp` 填写到子组件的值属性名，默认值为`'value'`。
-- `valueGetter` 从表单事件中获取表单值的方式，`可选`。
-- `suffix` 后缀节点，`可选`。
-- `rules` 表单域的校验规则 `可选`。
-
-### Form Item Props
 - `name` 表单域字段名，`可选`。
 - `valueProp` 填写到子组件的值属性名，默认值为`'value'`。
 - `valueGetter` 从表单事件中获取表单值的方式，`可选`。
@@ -160,14 +157,9 @@ class demo extends React.Component {
 - `store.validate()` 校验整个表单，并返回错误信息和表单值。
 - `store.validate(name)` 根据字段名校验表单域的值，并返回错误信息和表单值。
 - `store.getFieldError(name?: string)` 返回单个表单域的错误信息或表单所有的错误信息。
-- `store.setFieldError(name: string, message: string | undefined)` 更新表单域的错误信息
-- `store.setFieldsError(erros: FormErrors<T>)` 设置表单域的错误信息(覆盖)。
 - `store.setFieldRules(name: string, rules?: FormRule[])` 更新表单域的校验规则。
 - `store.setFieldsRules(values: FormRules<T>)` 设置表单域的校验规则(覆盖)。
-- `store.subscribeValue(name: string, onChange: () => void)` 订阅表单项值的变动，并返回一个用于取消订阅的函数。
-- `store.subscribeError(name: string, onChange: () => void)` 订阅表单项错误的变动，并返回一个用于取消订阅的函数。
 
 ### Hooks
 
 - `useFormStore(defaultValues?, rules?: FormRule[])` 使用 hooks 创建 FormStore。
-- `useFieldChange(props: FieldChangeProps)` 使用 hooks 创建表单域监听。

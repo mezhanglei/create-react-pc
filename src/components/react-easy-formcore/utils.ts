@@ -1,30 +1,3 @@
-import { isObject } from "@/utils/type";
-import { produce } from "immer"
-
-// 获取表单值中指定的字段值
-export function deepGetForm(obj: any, name: string | string[]) {
-  if (!isObject(obj) || !name) return obj;
-  if (Array.isArray(name)) {
-    const ret: any[] = [];
-    name?.forEach(key => {
-      if (key) {
-        ret?.push(obj[key])
-      }
-    });
-    return ret;
-  }
-  return obj[name]
-}
-
-// 给表单设置的值
-export function deepSetForm(obj: any, name: string, value: any) {
-  if (!isObject(obj) || !name) return obj
-  const newObj = produce(obj, (draft: any) => {
-    draft[name] = value
-  })
-  return newObj;
-}
-
 export function deepCopy<T>(target: T): T {
   const type = typeof target
 
@@ -52,6 +25,8 @@ export function deepCopy<T>(target: T): T {
 
   return undefined as any
 }
+
+// export function
 
 // 表单值的键名
 export function getPropValueName(valueProp: string | ((type: any) => string), type: any) {

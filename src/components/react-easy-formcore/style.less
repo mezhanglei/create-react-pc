@@ -1,8 +1,10 @@
-.rh-form-field {
+.rh-form-field,
+.rh-form-list {
   margin-bottom: 20px;
   display: flex;
   align-items: flex-start;
   min-height: 32px;
+  vertical-align: top;
 
   &__header {
     margin-right: 20px;
@@ -16,7 +18,7 @@
 
     &::before {
       display: none;
-      content: '*';
+      content: "*";
       color: red;
     }
   }
@@ -45,25 +47,25 @@
     font-size: 14px;
   }
 
-  & & {
-    margin-bottom: 0;
-  }
+  // & & {
+  //   margin-bottom: 0;
+  // }
 
-  &.rh-form-field--inline {
+  &--inline {
     display: inline-flex;
   }
 
-  &.rh-form-field--compact {
+  &--compact {
     margin-bottom: 0;
   }
 
-  &.rh-form-field--compact &__message {
+  &--compact &__message {
     display: none;
   }
 
-  &.rh-form-field--required &__header::before {
+  &--required &__header::before {
     display: inline;
-    content: '*';
+    content: "*";
     color: red;
   }
 }

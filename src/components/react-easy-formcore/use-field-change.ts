@@ -6,8 +6,8 @@ import { FormRule, FormStore } from './form-store'
 export interface FieldChangeProps<T> {
   store: FormStore<T> | undefined
   name: string | undefined
-  onChange: () => void
-  onError: () => void
+  onChange: (name: string) => void
+  onError: (name: string) => void
   rules?: FormRule[]
 }
 export function useFieldChange<T>(props: FieldChangeProps<T>) {
@@ -35,7 +35,6 @@ export function useFieldChange<T>(props: FieldChangeProps<T>) {
     if (!name || !store) return
     // 订阅目标控件
     const uninstall = store.subscribeError(name, onError)
-
     return () => {
       uninstall()
     }

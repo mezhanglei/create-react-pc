@@ -1,9 +1,10 @@
 
 import { asyncSequentialExe } from '@/utils/common';
 import { isEmpty } from '@/utils/type';
-import { deepCopy, deepGetForm, deepSetForm } from './utils'
+import { deepCopy } from './utils';
+import { deepGet, deepSet } from '@/utils/object';
 
-export type FormListener = { name: string, onChange: () => void }
+export type FormListener = { name: string, onChange: (name: string) => void }
 
 export type FormValidatorCallBack = (message?: string) => void;
 
@@ -37,7 +38,6 @@ export class FormStore<T extends Object = any> {
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)
-    this.deepCopyValues = this.deepCopyValues.bind(this)
     this.setFieldRules = this.setFieldRules.bind(this)
     this.setFieldsRules = this.setFieldsRules.bind(this)
     this.reset = this.reset.bind(this)
@@ -65,11 +65,11 @@ export class FormStore<T extends Object = any> {
     if (name) {
       this.valueListeners.forEach((listener) => {
         if (listener?.name === name) {
-          listener?.onChange && listener?.onChange()
+          listener?.onChange && listener?.onChange(listener?.name)
         }
       })
     } else {
-      this.valueListeners.forEach((listener) => listener.onChange())
+      this.valueListeners.forEach((listener) => listener.onChange(listener?.name))
     }
   }
 
@@ -78,24 +78,24 @@ export class FormStore<T extends Object = any> {
     if (name) {
       this.errorListeners.forEach((listener) => {
         if (listener?.name === name) {
-          listener?.onChange && listener?.onChange()
+          listener?.onChange && listener?.onChange(listener?.name)
         }
       })
     } else {
-      this.errorListeners.forEach((listener) => listener.onChange())
+      this.errorListeners.forEach((listener) => listener.onChange(listener?.name))
     }
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
   public getFieldValue(name?: string | string[]) {
-    return name === undefined ? { ...this.values } : deepGetForm(this.values, name)
+    return name === undefined ? { ...this.values } : deepGet(this.values, name)
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(name: any, value?: any) {
+  public async setFieldValue(name: string | object, value?: any) {
     if (typeof name === 'string') {
       // 设置值
-      this.deepCopyValues(deepSetForm(this.values, name, value));
+      this.values = deepSet(this.values, name, value);
       // 同步ui
       this.notifyValue(name)
 
@@ -110,23 +110,14 @@ export class FormStore<T extends Object = any> {
 
   // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
-    Object.entries(values)?.map(
-      ([name, value]) => {
-          this.setFieldValue(name, value);
-      });
-  }
-
-  // 设置表单值
-  private async deepCopyValues(values: Partial<T>) {
     this.values = deepCopy(values);
+    this.notifyValue();
   }
 
   // 重置表单
   public reset() {
     this.setFieldsError({});
-    this.deepCopyValues(this.initialValues)
-    this.notifyValue()
-    this.notifyError()
+    this.setFieldsValue(this.initialValues);
   }
 
   // 获取error信息
@@ -139,18 +130,20 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新error信息
-  public setFieldError(name: string, value: any) {
+  private setFieldError(name: string, value: any) {
     if (!name) return;
     if (value === undefined) {
       delete this.formErrors[name]
     } else {
       this.formErrors[name] = value
     }
+    this.notifyError(name)
   }
 
-  // 设置error信息
-  public async setFieldsError(erros: FormErrors<T>) {
+  // 设置error信息(覆盖更新)
+  private async setFieldsError(erros: FormErrors<T>) {
     this.formErrors = deepCopy(erros);
+    this.notifyError();
   }
 
   // 校验整个表单或校验表单中的某个控件
@@ -167,8 +160,7 @@ export class FormStore<T extends Object = any> {
     } else {
       // 清空错误信息
       this.setFieldError(name, undefined);
-      this.notifyError(name)
-      
+
       const value = this.getFieldValue(name);
       const rules = this.formRules[name];
 
@@ -203,7 +195,6 @@ export class FormStore<T extends Object = any> {
       const currentError = messageList?.[0];
       if (currentError) {
         this.setFieldError(name, currentError);
-        this.notifyError(name);
       }
       return currentError;
     }

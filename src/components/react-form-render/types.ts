@@ -1,15 +1,25 @@
-import { FormProps } from "../react-easy-formcore";
+import { FormFieldProps, FormProps } from "../react-easy-formcore";
 
 // 传入表单的类型
 export enum SchemaType {
-    FORM = 'form', // 表单类型
-    TEXT = 'text' // 文本类型，只展示
+    Object = 'object', // 对象类型
+    Array = 'array'
 }
 
-export interface SchemaData {
-    type: SchemaType
+export interface FieldProps extends FormFieldProps {
+    children?: { [key: string]: FieldProps | FieldProps[] }
+}
+
+export type Properties = { [key: string]: FieldProps | FieldProps[] }
+
+export interface SchemaData extends FormProps {
+    properties: Properties[] | Properties[]
 }
 
 export interface RenderFromProps extends FormProps {
     schema: SchemaData
 };
+
+export interface RenderFromState {
+
+}
