@@ -3,7 +3,7 @@ import React, { cloneElement, isValidElement, useCallback, useContext, useState,
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
 import { FormOptions, FormOptionsContext } from './form-options-context'
-import { getPropValueName, getValueFromEvent } from './utils'
+import { getValuePropName, getValueFromEvent } from './utils'
 import { FormRule } from './form-store'
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop'
@@ -48,22 +48,25 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
   const onChange = useCallback(
     (...args: any[]) => {
       const value = valueGetter(...args);
-      // 设置值
-      currentPath && store && store.setFieldValue(currentPath, value)
-      // onFormChange事件
-      currentPath && options?.onFormChange && options?.onFormChange({ name: currentPath, value: value })
+      if (currentPath && store) {
+        // 设置值
+        store.setFieldValue(currentPath, value);
+        // onFormChange事件
+        options?.onFormChange && options?.onFormChange({ name: currentPath, value: value });
+      }
     },
     [currentPath, store, valueGetter]
   )
 
   const aopOnchange = new AopFactory(onChange);
 
+  // 监听数据变化的回调函数
   useFieldChange({
     store,
     name: currentPath,
     rules,
     // 监听FormStore中的value变化
-    onChange: (name) => {
+    onChange: () => {
       const value = store!.getFieldValue(currentPath!);
       setValue(value);
     },
@@ -79,11 +82,11 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
     ...restProps
   }
 
-  // 渲染控件
-  const formChild = (child: any) => {
+  // 绑定value和onChange
+  const bindChild = (child: any) => {
     if (!isValidElement(child) || !store) return;
     if (currentPath) {
-      const valueKey = getPropValueName(valueProp, child && child.type);
+      const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const childOnChange = childProps?.onChange;
@@ -92,20 +95,15 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
       let childClassName = childProps.className || '';
       if (error) childClassName += ' ' + errorClassName
 
-      const newChildProps = { className: childClassName, [valueKey]: value, onChange: aopAfterFn }
+      const newChildProps = { className: childClassName, [valuePropName]: value, onChange: aopAfterFn, path: currentPath }
       return cloneElement(child, newChildProps)
+    } else {
+      return child;
     }
   }
 
-  const FormItems = React.Children.map(children, (child: any, index) => {
-    const childDisplayName = child?.type?.displayName;
-    if ((childDisplayName === 'FormItem' || childDisplayName === 'FormList') && name) {
-      return cloneElement(child, {
-        path: currentPath
-      });
-    } else {
-      return formChild(child);
-    }
+  const childs = React.Children.map(children, (child: any) => {
+    return bindChild(child);
   });
 
   const cls = classnames(
@@ -131,7 +129,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
         </div>
       )}
       <div className={classes.container}>
-        <div className={classes.control}>{FormItems}</div>
+        <div className={classes.control}>{childs}</div>
         <div className={classes.message}>{error}</div>
       </div>
       {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}

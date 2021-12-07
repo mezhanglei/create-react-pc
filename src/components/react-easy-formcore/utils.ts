@@ -26,10 +26,8 @@ export function deepCopy<T>(target: T): T {
   return undefined as any
 }
 
-// export function
-
 // 表单值的键名
-export function getPropValueName(valueProp: string | ((type: any) => string), type: any) {
+export function getValuePropName(valueProp: string | ((type: any) => string), type: any) {
   return typeof valueProp === 'function' ? valueProp(type) : valueProp
 }
 

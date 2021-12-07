@@ -3,6 +3,7 @@ import { asyncSequentialExe } from '@/utils/common';
 import { isEmpty } from '@/utils/type';
 import { deepCopy } from './utils';
 import { deepGet, deepSet } from '@/utils/object';
+import { formListPath } from './form';
 
 export type FormListener = { name: string, onChange: (name: string) => void }
 
@@ -95,7 +96,7 @@ export class FormStore<T extends Object = any> {
   public async setFieldValue(name: string | object, value?: any) {
     if (typeof name === 'string') {
       // 设置值
-      this.values = deepSet(this.values, name, value);
+      this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
       this.notifyValue(name)
 

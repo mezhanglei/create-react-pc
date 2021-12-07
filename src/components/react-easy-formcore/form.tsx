@@ -8,8 +8,8 @@ import { FormStoreContext } from './form-store-context'
 import { FormOptions, FormOptionsContext } from './form-options-context'
 import { FormList } from './form-list'
 
-// 缓存数组对象字段所在的路径
-export const ArrayPath: string[] = []
+// 缓存数组类型的组件的路径
+export const formListPath: string[] = [];
 export interface FormProps extends FormOptions {
   className?: string
   store: FormStore

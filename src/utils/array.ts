@@ -327,10 +327,9 @@ export function breadthFirstSearch(node: any): any[] {
 /**
  * 返回目标节点的叶子节点(广度优先)
  * @param {*} node 根节点
- * @param {*} key 返回的节点字段属性
  * @param {*} childrenName 标识孩子的字段名
  */
-export function findLeaves(node: any, key = 'id', childrenName = 'children'): any[] {
+export function findLeaves(node: any, childrenName = 'children'): any[] {
     // 存储节点
     let cache: any[] = [];
     if (node != null) {
@@ -338,13 +337,12 @@ export function findLeaves(node: any, key = 'id', childrenName = 'children'): an
         queue.unshift(node);
         while (queue.length != 0) {
             let item = queue.shift();
-            if (item && !(item[childrenName]?.length > 0)) {
-                if (item[key]) {
-                    cache = cache.concat([item[key]]);
-                }
+            const children: any[] = item[childrenName];
+            if (item && children?.length > 0) {
+                cache = cache.concat([item]);
             }
-            for (var i = 0; i < item[childrenName]?.length; i++)
-                queue.push(item[childrenName][i]);
+            for (let i = 0; i < children?.length; i++)
+                queue.push(children?.[i]);
         }
     }
     return cache;

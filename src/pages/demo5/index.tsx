@@ -37,7 +37,7 @@ class demo5 extends React.Component {
     }
 
     onFormChange = ({ value }) => {
-        this.store.setFieldValue('a.b', []);
+
     }
 
     render() {
@@ -45,8 +45,25 @@ class demo5 extends React.Component {
             <div>
                 <Form store={this.store} onFormChange={this.onFormChange} onSubmit={this.onSubmit}>
                     <Form.Item label="表单容器" name="a">
+                        <Form.List name="list">
+                            <Form.Item
+                                label="list's one"
+                                rules={[
+                                    { required: true, message: "Name1不能为空" },
+                                    { validator: this.validator, message: "自定义校验固定提示" },
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                label="list's two"
+                                rules={[{ required: true, message: "Name2不能为空" }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Form.List>
                         <Form.List name="b">
-                            <Form.Item label="Name1" key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
+                            <Form.Item key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
                                 <Select
                                     mode="multiple"
                                     allowClear
@@ -66,7 +83,7 @@ class demo5 extends React.Component {
                                     }
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="" key="name2" rules={[{ required: true, message: '不能为空2' }]}>
+                            <Form.Item key="name2" rules={[{ required: true, message: '不能为空2' }]}>
                                 <Select
                                     mode="multiple"
                                     allowClear
@@ -85,7 +102,7 @@ class demo5 extends React.Component {
                                     }
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="">
+                            <Form.Item>
                                 <button onClick={this.onClick}>Submit</button>
                             </Form.Item>
                         </Form.List>

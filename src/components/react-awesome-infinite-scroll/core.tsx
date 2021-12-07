@@ -102,19 +102,19 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
     }
 
     public setScroll = (x: number, y: number) => {
-        if(!this.scrollRoot) return;
+        if (!this.scrollRoot) return;
         setScroll(this.scrollRoot, x, y);
     }
 
     addEvents = () => {
-        this.scrollRoot = this.getScrollableTarget();
+        const target = this.getScrollableTarget();
         // 绑定事件
         const {
             scrollableParent,
             height,
             inverse
         } = this.props;
-        const target = this.scrollRoot;
+        this.scrollRoot = target;
         const scrollHeight = target?.scrollHeight;
         if (target) {
             this.initDom(target);
@@ -124,7 +124,7 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
             }
         }
         // 如果设置反向加载则初始化时滚到底部
-        if(inverse && scrollHeight) {
+        if (inverse && scrollHeight) {
             this.setScroll(0, scrollHeight);
         }
     }
