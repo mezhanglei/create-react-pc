@@ -18,7 +18,8 @@ class demo5 extends React.Component {
                         label: 'name1',
                         component: 'input',
                         required: true,
-                        rules: [{ required: true, message: '1111' }]
+                        rules: [{ required: true, message: '1111' }],
+                        props: { defaultValue: '1111' }
                     },
                     button: {
                         component: 'button',
