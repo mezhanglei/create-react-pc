@@ -21,6 +21,13 @@ class demo5 extends React.Component {
                         rules: [{ required: true, message: '1111' }],
                         props: { value: '1111' }
                     },
+                    name2: {
+                        label: 'name2',
+                        component: 'select',
+                        required: true,
+                        rules: [{ required: true, message: '1111' }],
+                        props: { style: {width: '100%'}, children: [<Select.Option value='1'>111</Select.Option>] }
+                    },
                     button: {
                         component: 'button',
                         label: '',
