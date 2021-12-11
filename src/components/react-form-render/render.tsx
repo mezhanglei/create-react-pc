@@ -126,7 +126,9 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         const currentPath = path ? `${path}.${name}` : name;
         const { hiddenMap } = this.state;
 
-        if (typeof properties === 'object' && !hiddenMap[currentPath]) {
+        if (hiddenMap[currentPath]) return;
+
+        if (typeof properties === 'object') {
             return (
                 <FormField {...rest} key={name} name={name}>
                     {
@@ -143,7 +145,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
                     }
                 </FormField>
             );
-        } else if (!hiddenMap[currentPath]) {
+        } else {
             return this.renderFormItem(params)
         }
     };
