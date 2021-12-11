@@ -1,6 +1,6 @@
 import './style.less'
 
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useEffect } from 'react'
 
 import { FormItem } from './form-item'
 import { FormStore } from './form-store'
@@ -12,17 +12,22 @@ import { FormList } from './form-list'
 export const formListPath: string[] = [];
 export interface FormProps extends FormOptions {
   className?: string
-  store: FormStore
+  store?: FormStore
   style?: CSSProperties
   children?: React.ReactNode
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
   onReset?: (e: React.FormEvent<HTMLFormElement>) => void
+  onMount?: () => void
 }
 
 export function Form(props: FormProps) {
-  const { className = '', style, children, store, onSubmit, onReset, ...options } = props
+  const { className = '', style, children, store, onSubmit, onReset, onMount, ...options } = props
 
   const classNames = 'rh-form ' + className
+
+  useEffect(() => {
+    onMount && onMount();
+  }, [])
 
   return (
     <FormStoreContext.Provider value={store}>

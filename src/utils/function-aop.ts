@@ -7,7 +7,7 @@
  * 使用aopBeforeFn或aopAfterFn替代原函数fn
  */
 export class AopFactory {
-    private originFun: Function | null;
+    private originFun: any;
     private beforeFun?: Function;
     private afterFun?: Function;
     constructor(originFun: Function) {
@@ -26,14 +26,18 @@ export class AopFactory {
     }
 
     // 增加在前面执行的方法
-    addBefore(fn: (...args: any[]) => boolean | undefined) {
-        this.beforeFun = fn;
+    addBefore(fn?: (...args: any[]) => boolean | undefined) {
+        if (typeof fn === 'function') {
+            this.beforeFun = fn;
+        }
         return this.originFun;
     }
 
     // 增加在后面执行的方法
-    addAfter(fn: (...args: any[]) => void) {
-        this.afterFun = fn;
+    addAfter(fn?: (...args: any[]) => void) {
+        if (typeof fn === 'function') {
+            this.afterFun = fn;
+        }
         return this.originFun;
     };
 };

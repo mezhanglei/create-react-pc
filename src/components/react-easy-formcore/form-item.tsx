@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties } from 'react'
+import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
 
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
@@ -18,10 +18,24 @@ export interface FormItemProps extends FormOptions {
   children?: React.ReactNode
   rules?: FormRule[]
   style?: CSSProperties
-  path?: string;
+  path?: string
+  initialValue?: any
 }
 
 const prefixCls = 'rh-form-field';
+export const classes = {
+  field: prefixCls,
+  inline: `${prefixCls}--inline`,
+  compact: `${prefixCls}--compact`,
+  required: `${prefixCls}--required`,
+  error: `${prefixCls}--error`,
+
+  header: `${prefixCls}__header`,
+  container: `${prefixCls}__container`,
+  control: `${prefixCls}__control`,
+  message: `${prefixCls}__message`,
+  footer: `${prefixCls}__footer`
+}
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
   const {
@@ -35,6 +49,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
     rules,
     style,
     path,
+    initialValue,
     ...restProps
   } = props
 
@@ -77,12 +92,20 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
     }
   })
 
+  useEffect(() => {
+    if (!currentPath || !store) return;
+    if (initialValue !== undefined) {
+      store.setFieldValue(currentPath, initialValue, true);
+      setValue(initialValue);
+    }
+  }, [currentPath, store, initialValue]);
+
   const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = {
     ...options,
     ...restProps
   }
 
-  // 绑定value和onChange
+  // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
     if (!isValidElement(child) || !store) return;
     if (currentPath) {
@@ -92,10 +115,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const aopAfterFn = aopOnchange.addAfter(onChange);
 
-      let childClassName = className || '';
-      if (error) childClassName += ' ' + errorClassName
-
-      const newChildProps = { className: childClassName, [valuePropName]: value, onChange: aopAfterFn, path: currentPath }
+      const newChildProps = { className: classnames(className, error && errorClassName), [valuePropName]: value, onChange: aopAfterFn }
       return cloneElement(child, newChildProps)
     } else {
       return child;
@@ -103,7 +123,14 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
   }
 
   const childs = React.Children.map(children, (child: any) => {
-    return bindChild(child);
+    const displayName = child?.type?.displayName;
+    if (['FormItem', 'FormList']?.includes(displayName)) {
+      return child && cloneElement(child, {
+        path: currentPath
+      })
+    } else {
+      return bindChild(child);
+    }
   });
 
   const cls = classnames(
@@ -138,17 +165,3 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
 })
 
 FormItem.displayName = 'FormItem';
-
-const classes = {
-  field: prefixCls,
-  inline: `${prefixCls}--inline`,
-  compact: `${prefixCls}--compact`,
-  required: `${prefixCls}--required`,
-  error: `${prefixCls}--error`,
-
-  header: `${prefixCls}__header`,
-  container: `${prefixCls}__container`,
-  control: `${prefixCls}__control`,
-  message: `${prefixCls}__message`,
-  footer: `${prefixCls}__footer`
-}

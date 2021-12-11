@@ -93,16 +93,16 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(name: string | object, value?: any) {
+  public async setFieldValue(name: string | object, value?: any, forbidError?: boolean) {
     if (typeof name === 'string') {
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
-      this.notifyValue(name)
+      this.notifyValue(name);
 
       if (this.formRules?.[name]?.length) {
         // 校验规则
-        await this.validate(name);
+        await this.validate(name, forbidError);
       }
     } else if (name) {
       await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name[n])))
@@ -149,8 +149,8 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(name: string): Promise<string>
-  public async validate(name?: string) {
+  public async validate(name: string, forbidError?: boolean): Promise<string>
+  public async validate(name?: string, forbidError?: boolean) {
     if (name === undefined) {
       const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.validate(n)))
       const currentError = result?.filter((message) => message !== undefined)?.[0]
@@ -159,6 +159,8 @@ export class FormStore<T extends Object = any> {
         values: this.getFieldValue()
       }
     } else {
+
+      if (forbidError === true) return;
       // 清空错误信息
       this.setFieldError(name, undefined);
 
