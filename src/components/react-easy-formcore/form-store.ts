@@ -1,7 +1,7 @@
 
 import { asyncSequentialExe } from '@/utils/common';
 import { isEmpty } from '@/utils/type';
-import { deepCopy } from './utils';
+import { deepCopy } from './utils/utils';
 import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 
@@ -13,9 +13,9 @@ export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => bo
 
 export type FormRule = { required?: boolean, message?: string; validator?: FormValidator }
 
-export type FormRules<T> = { [key in keyof T]?: FormRule[] };
+export type FormRules<T = any> = { [key in keyof T]?: FormRule[] };
 
-export type FormErrors<T> = { [key in keyof T]?: T[key] }
+export type FormErrors<T = any> = { [key in keyof T]?: T[key] }
 
 export type ValidateResult<T> = { error?: string, values: T }
 
@@ -27,9 +27,9 @@ export class FormStore<T extends Object = any> {
 
   private values: Partial<T>
 
-  private formRules: FormRules<T>
+  private formRules: FormRules
 
-  private formErrors: FormErrors<T> = {}
+  private formErrors: FormErrors = {}
 
   public constructor(values: Partial<T> = {}, formRules?: FormRules<T>) {
     this.initialValues = values
@@ -53,7 +53,11 @@ export class FormStore<T extends Object = any> {
   // 更新表单中的校验规则
   public setFieldRules(name: string, rules?: FormRule[]) {
     if (!name) return;
-    this.formRules[name] = rules;
+    if (rules === undefined) {
+      delete this.formRules[name]
+    } else {
+      this.formRules[name] = rules;
+    }
   }
 
   // 设置表单中的校验规则
@@ -93,7 +97,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(name: string | object, value?: any, forbidError?: boolean) {
+  public async setFieldValue(name: string | { [key: string]: any }, value?: any, forbidError?: boolean) {
     if (typeof name === 'string') {
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
@@ -104,8 +108,8 @@ export class FormStore<T extends Object = any> {
         // 校验规则
         await this.validate(name, forbidError);
       }
-    } else if (name) {
-      await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name[n])))
+    } else if (typeof name === 'object') {
+      await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name?.[n])))
     }
   }
 
@@ -152,14 +156,13 @@ export class FormStore<T extends Object = any> {
   public async validate(name: string, forbidError?: boolean): Promise<string>
   public async validate(name?: string, forbidError?: boolean) {
     if (name === undefined) {
-      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.validate(n)))
+      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.formRules?.[n] && this.validate(n)))
       const currentError = result?.filter((message) => message !== undefined)?.[0]
       return {
         error: currentError,
         values: this.getFieldValue()
       }
     } else {
-
       if (forbidError === true) return;
       // 清空错误信息
       this.setFieldError(name, undefined);

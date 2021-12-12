@@ -16,7 +16,7 @@ export interface FormListProps {
   style?: CSSProperties
 }
 
-export const FormList = React.forwardRef((props: FormListProps, ref) => {
+export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const {
     name,
     children,

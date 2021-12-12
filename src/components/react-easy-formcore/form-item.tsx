@@ -3,7 +3,7 @@ import React, { cloneElement, isValidElement, useCallback, useContext, useState,
 import { FormStoreContext } from './form-store-context'
 import { useFieldChange } from './use-field-change'
 import { FormOptions, FormOptionsContext } from './form-options-context'
-import { getValuePropName, getValueFromEvent } from './utils'
+import { getValuePropName, getValueFromEvent } from './utils/utils'
 import { FormRule } from './form-store'
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop'
@@ -37,7 +37,7 @@ export const classes = {
   footer: `${prefixCls}__footer`
 }
 
-export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
+export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const {
     className,
     label,
@@ -97,6 +97,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref) => {
     if (initialValue !== undefined) {
       store.setFieldValue(currentPath, initialValue, true);
       setValue(initialValue);
+    }
+    return () => {
+      store.setFieldValue(currentPath, undefined, true);
+      setValue(undefined);
     }
   }, [currentPath, store, initialValue]);
 

@@ -1,9 +1,22 @@
 import React, { Component, useState, useEffect, useRef, useCallback } from 'react';
 import "./index.less";
 import { Form, FormStore } from "@/components/react-easy-formcore";
-import { Input, Select } from 'antd';
+import { Checkbox, Input, Radio, Select } from 'antd';
 import RenderFrom from '@/components/react-form-render';
 import Button from '@/components/button';
+
+// 原子组件
+export const defaultWidgets: { [key: string]: any } = {
+    input: Input,
+    select: Select,
+    radioGroup: Radio.Group,
+    radio: Radio,
+    option: Select.Option,
+    button: Button,
+    Checkbox: Checkbox
+};
+
+
 
 class demo5 extends React.Component {
     store: FormStore<any>;
@@ -25,7 +38,7 @@ class demo5 extends React.Component {
                         props: {}
                     },
                     name2: {
-                        label: '数组组件',
+                        label: 'list',
                         required: true,
                         rules: [{ required: true, message: 'name2空了' }],
                         decorator: 'Form.List',
@@ -165,7 +178,7 @@ class demo5 extends React.Component {
                         <button onClick={this.onClick}>Submit</button>
                     </Form.Item>
                 </Form> */}
-                <RenderFrom store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} />
+                <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} />
             </div>
         );
     }

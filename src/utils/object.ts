@@ -82,7 +82,11 @@ export function deepSet(obj: any, path: string | string[], value: any, arraySetP
             });
 
             if (i === length - 1) {
-                draft[p] = value;
+                if(value === undefined) {
+                    delete draft[p];
+                } else {
+                    draft[p] = value;
+                }
             } else if (typeof draft[p] !== 'object' && isSetArray) {
                 draft[p] = [];
             } else if (typeof draft[p] !== 'object') {

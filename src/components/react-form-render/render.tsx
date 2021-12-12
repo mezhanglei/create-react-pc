@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form } from "@/components/react-easy-formcore";
 import { ChildrenComponent, FormFieldProps, RenderFormProps, RenderFormState, SchemaData } from './types';
-import { defaultWidgets, defaultFields } from './register';
+import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
 import { deepGetKeys } from './utils';
 import { AopFactory } from '@/utils/function-aop';
@@ -27,7 +27,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     static defaultProps = {
-        widgets: defaultWidgets,
+        widgets: {},
         Fields: defaultFields
     }
 
@@ -57,7 +57,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 处理hidden数据
     handleHidden() {
         const list = deepGetKeys(this.props?.schema?.properties, 'hidden')
-        let hiddenMap = {};
+        let hiddenMap: RenderFormState['hiddenMap'] = {};
         for (let i = 0; i < list?.length; i++) {
             const item = list[i];
             if (item) {

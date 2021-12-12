@@ -44,6 +44,9 @@ export function useFieldChange<T>(props: FieldChangeProps<T>) {
   useEffect(() => {
     if (!name || !store) return
     store?.setFieldRules(name, rules)
+    return () => {
+      store?.setFieldRules(name, undefined)
+    }
   }, [name, store, rules])
 
 }

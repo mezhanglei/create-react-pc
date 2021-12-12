@@ -1,5 +1,5 @@
 import { FormItemProps, FormProps } from "../react-easy-formcore";
-import { defaultWidgets, defaultFields } from './register';
+import { defaultFields } from './register';
 
 // 组件的children(不绑定表单字段)
 export interface ChildrenComponent {
@@ -14,7 +14,7 @@ export interface FormFieldProps extends FormItemProps {
     props?: ChildrenComponent['props'] // 表单控件的属性
     hidden?: string | boolean // 隐藏表单域
     path?: string // 当前节点所在的路径
-    properties?: SchemaData['properties'] | FormFieldProps[] // 嵌套组件
+    properties?: { [key: string]: FormFieldProps } | FormFieldProps[] // 嵌套组件
 }
 
 export interface RenderFormState {
@@ -29,7 +29,7 @@ export interface SchemaData extends FormProps {
 
 export interface RenderFormProps extends FormProps {
     schema: SchemaData
-    widgets: typeof defaultWidgets
+    widgets: { [key: string]: any }
     Fields: typeof defaultFields
 };
 
