@@ -82,7 +82,9 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         if (typeof hidden === 'boolean') {
             return true;
         } else if (typeof hidden === 'string') {
-            const actionStr = "return this?.props?.store?.getFieldValue()?." + hidden?.replace(/\{\{|\}\}|\s*/g, '');
+            let target = hidden?.replace(/\{\{|\}\}|\s*/g, '');
+            target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()')
+            const actionStr = "return " + target;
             const action = new Function(actionStr);
             const isHidden = action.apply(this);
             return isHidden;

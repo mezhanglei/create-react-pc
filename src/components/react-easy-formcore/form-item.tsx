@@ -118,7 +118,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       const { onChange, className } = childProps || {};
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const aopAfterFn = aopOnchange.addAfter(onChange);
-      
+
       const newChildProps = { className: classnames(className, error && errorClassName), [valuePropName]: value, onChange: aopAfterFn }
       return cloneElement(child, newChildProps)
     } else {
