@@ -5,6 +5,7 @@ import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
 import { deepGetKeys } from './utils';
 import { AopFactory } from '@/utils/function-aop';
+import { isEmpty } from '@/utils/type';
 
 class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     aopFormOnChange: AopFactory;
@@ -105,16 +106,57 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     // 生成最小单元
-    renderFormItem(params: { name: string, field: FormFieldProps, path?: string }) {
-        const { name, field } = params || {};
+    renderFormItem(name: string, field: FormFieldProps) {
         const { widgets, Fields } = this.props;
-        const { decorator = 'Form.Item', properties, component, props, ...rest } = field;
+        const { properties, component, props, ...rest } = field;
         const { children, ...componentProps } = props || {};
-        const FormField = Fields?.[decorator];
-        const FormComponent = widgets?.[component];
+        const FormField = Fields?.['Form.Item'];
+        const FormComponent = component && widgets?.[component];
+
         return (
-            <FormField {...rest} key={name} name={name} >
+            <FormField {...rest} key={name} name={name}>
                 <FormComponent {...componentProps}>{this.generateChildren(children)}</FormComponent>
+            </FormField>
+        );
+    }
+
+    renderListItem(name: string, field: FormFieldProps) {
+        const { Fields } = this.props;
+        const { render, ...rest } = field;
+        const FormField = Fields?.['List.Item'];
+        return (
+            <FormField {...rest} key={name}>
+                {render}
+            </FormField>
+        )
+    }
+
+    // 生成properties
+    renderProperties(params: { name: string, field: FormFieldProps, path?: string }) {
+        const { name, field, path } = params || {};
+        const { Fields } = this.props;
+        const { properties, component, props, hidden, ...rest } = field;
+        let FormField;
+        if (properties instanceof Array) {
+            FormField = Fields['Form.List']
+        } else {
+            FormField = Fields['Form.Item']
+        }
+
+        return (
+            <FormField {...rest} key={name} name={name}>
+                {
+                    properties instanceof Array ?
+                        properties?.map((formField, index) => {
+                            return this.generateTree({ name: `${index}`, field: formField, path: path });
+                        })
+                        :
+                        Object.entries(properties || {})?.map(
+                            ([name, formField]) => {
+                                return this.generateTree({ name: name, field: formField, path: path });
+                            }
+                        )
+                }
             </FormField>
         );
     }
@@ -122,33 +164,20 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 生成组件树
     generateTree(params: { name: string, field: FormFieldProps, path?: string }) {
         const { name, field, path } = params || {};
-        const { Fields } = this.props;
-        const { decorator = 'Form.Item', properties, component, props, hidden, ...rest } = field;
-        const FormField = Fields?.[decorator];
+        const { properties, render } = field;
         const currentPath = path ? `${path}.${name}` : name;
         const { hiddenMap } = this.state;
 
         if (hiddenMap[currentPath]) return;
 
+        if (render) {
+            return this.renderListItem(name, field);
+        }
+
         if (typeof properties === 'object') {
-            return (
-                <FormField {...rest} key={name} name={name}>
-                    {
-                        properties instanceof Array ?
-                            properties?.map((formField, index) => {
-                                return this.generateTree({ name: `${index}`, field: formField, path: currentPath });
-                            })
-                            :
-                            Object.entries(properties || {})?.map(
-                                ([name, formField]) => {
-                                    return this.generateTree({ name: name, field: formField, path: currentPath });
-                                }
-                            )
-                    }
-                </FormField>
-            );
+            return !isEmpty(properties) && this.renderProperties({ name: name, field: field, path: currentPath })
         } else {
-            return this.renderFormItem(params)
+            return this.renderFormItem(name, field);
         }
     };
 

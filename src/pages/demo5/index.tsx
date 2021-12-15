@@ -41,7 +41,6 @@ class demo5 extends React.Component {
                         label: 'list',
                         required: true,
                         rules: [{ required: true, message: 'name2空了' }],
-                        decorator: 'Form.List',
                         properties: [{
                             component: 'select',
                             required: true,

@@ -7,13 +7,14 @@ import { FormOptionsContext } from './form-options-context';
 
 export interface FormListProps {
   label?: string
+  suffix?: React.ReactNode
   name?: string
-  children?: React.ReactNode
   rules?: FormRule[]
   path?: string;
   initialValue?: any[]
   className?: string
   style?: CSSProperties
+  children?: React.ReactNode
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
@@ -24,6 +25,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     path,
     initialValue,
     label,
+    suffix,
     className,
     style,
     ...restProps
@@ -74,6 +76,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
       <div className={classes.container}>
         {childs}
       </div>
+      {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
     </div>
   )
 })

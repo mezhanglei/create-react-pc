@@ -9,17 +9,17 @@ import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop'
 
 export interface FormItemProps extends FormOptions {
-  className?: string
   label?: string
   name?: string
   valueProp?: string | ((type: any) => string)
   valueGetter?: (...args: any[]) => any
   suffix?: React.ReactNode
-  children?: React.ReactNode
   rules?: FormRule[]
-  style?: CSSProperties
   path?: string
   initialValue?: any
+  className?: string
+  children?: React.ReactNode
+  style?: CSSProperties
 }
 
 const prefixCls = 'rh-form-field';
@@ -34,22 +34,22 @@ export const classes = {
   container: `${prefixCls}__container`,
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
-  footer: `${prefixCls}__footer`
+  footer: `${prefixCls}__footer`,
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const {
-    className,
     label,
     name,
     valueProp = 'value',
     valueGetter = getValueFromEvent,
     suffix,
-    children,
     rules,
-    style,
     path,
     initialValue,
+    className,
+    children,
+    style,
     ...restProps
   } = props
 
