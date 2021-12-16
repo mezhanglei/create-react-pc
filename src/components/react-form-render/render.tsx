@@ -19,10 +19,12 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.generateTree = this.generateTree.bind(this);
         this.generateChildren = this.generateChildren.bind(this);
         this.renderFormItem = this.renderFormItem.bind(this);
+        this.renderListItem = this.renderListItem.bind(this);
+        this.renderProperties = this.renderProperties.bind(this);
         this.onFormChange = this.onFormChange.bind(this);
         this.onFormMount = this.onFormMount.bind(this);
         this.handleHidden = this.handleHidden.bind(this);
-        this.isHidden = this.isHidden.bind(this);
+        this.getValueByForm = this.getValueByForm.bind(this);
         this.aopFormOnChange = new AopFactory(this.onFormChange);
         this.aopFormMount = new AopFactory(this.onFormMount);
     }
@@ -65,7 +67,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
                 const schemaPath = item?.path;
                 const path = schemaPath?.split('.properties.')?.join('.');
                 const hidden = item?.value;
-                hiddenMap[path] = this.isHidden(hidden);
+                hiddenMap[path] = this.getValueByForm(hidden);
             }
         }
         this.setState({
@@ -78,17 +80,23 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.handleHidden();
     }
 
-    // 根据字段返回是否隐藏
-    isHidden(hidden?: string | boolean) {
-        if (typeof hidden === 'boolean') {
-            return true;
-        } else if (typeof hidden === 'string') {
-            let target = hidden?.replace(/\{\{|\}\}|\s*/g, '');
-            target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()')
-            const actionStr = "return " + target;
-            const action = new Function(actionStr);
-            const isHidden = action.apply(this);
-            return isHidden;
+    // 传值兼容字符串表达式
+    getValueByForm(target?: string | boolean) {
+        if (typeof target === 'string') {
+            const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
+            const hiddenStr = target?.match(reg)?.[0];
+            if (hiddenStr) {
+                let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
+                target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()')
+                const actionStr = "return " + target;
+                const action = new Function(actionStr);
+                const value = action.apply(this);
+                return value;
+            } else {
+                return target;
+            }
+        } else {
+            return target;
         }
     }
 
@@ -120,6 +128,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         );
     }
 
+    // 自定义render
     renderListItem(name: string, field: FormFieldProps) {
         const { Fields } = this.props;
         const { render, ...rest } = field;
