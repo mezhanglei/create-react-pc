@@ -179,7 +179,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
 
         if (hiddenMap[currentPath]) return;
 
-        if (render) {
+        if (render !== undefined) {
             return this.renderListItem(name, field);
         }
 

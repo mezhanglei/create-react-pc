@@ -16,7 +16,7 @@ export const defaultWidgets: { [key: string]: any } = {
     Checkbox: Checkbox
 };
 
-
+    
 
 class demo5 extends React.Component {
     store: FormStore<any>;
