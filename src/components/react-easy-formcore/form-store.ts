@@ -1,9 +1,9 @@
 
 import { asyncSequentialExe } from '@/utils/common';
-import { isEmpty } from '@/utils/type';
 import { deepCopy } from './utils/utils';
 import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
+import { validatorsMap } from './rules-validator';
 
 export type FormListener = { name: string, onChange: (name: string) => void }
 
@@ -156,7 +156,7 @@ export class FormStore<T extends Object = any> {
   public async validate(name: string, forbidError?: boolean): Promise<string>
   public async validate(name?: string, forbidError?: boolean) {
     if (name === undefined) {
-      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.formRules?.[n] && this.validate(n)))
+      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.validate(n)))
       const currentError = result?.filter((message) => message !== undefined)?.[0]
       return {
         error: currentError,
@@ -172,26 +172,31 @@ export class FormStore<T extends Object = any> {
 
       // 表单校验处理规则
       const handleRule = async (rule: FormRule) => {
-        // 固定方式校验
-        if (rule.required === true && isEmpty(value)) {
-          return rule.message || true;
-          // 自定义校验函数
-        } else if (rule.validator) {
-          let callbackExe;
-          let message;
-          const flag = await rule.validator(value, (msg?: string) => {
-            // callback方式校验
-            callbackExe = true;
-            if (msg) {
-              message = msg;
-            }
-          });
+        // 默认消息
+        const defaultMessage = rule?.message || true;
+        // 参与校验的字段
+        const entries = Object.entries(rule)?.filter(([key]) => key !== 'message');
 
-          // 校验结果
-          if (callbackExe && message) {
-            return message;
-          } else if (flag) {
-            return rule.message || true;
+        for (let [ruleKey, ruleValue] of entries) {
+          // 自定义校验
+          if (ruleKey === 'validator') {
+            let message;
+            const flag = await (ruleValue as FormValidator)?.(value, (msg?: string) => {
+              // callback方式校验
+              if (msg) {
+                message = msg;
+              }
+            });
+
+            // 校验结果
+            if (message) {
+              return message;
+            } else if (flag) {
+              return defaultMessage;
+            }
+            // 其他字段的校验，返回true表示报错
+          } else if (validatorsMap[ruleKey]?.(ruleValue, value)) {
+            return defaultMessage;
           }
         }
       }

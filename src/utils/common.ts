@@ -51,7 +51,7 @@ export function createPromise(x: Promise<any> | ((...rest: any[]) => any)) {
 /**
  * 顺序执行数组中的函数或promise，返回对应的结果数组
  */
-export const asyncSequentialExe = (queues: any[], forbidFn?: Function) => {
+export const asyncSequentialExe = (queues?: Array<() => Promise<any>>, forbidFn?: Function) => {
 
     // 异步队列顺序执行，可以根据条件是否终止执行
     const results: any[] = [];

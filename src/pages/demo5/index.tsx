@@ -109,7 +109,7 @@ class demo5 extends React.Component {
     };
 
     validator = (value, callError) => {
-        if (value?.length < 2) {
+        if (!value?.length || value?.length < 2) {
             callError('主动报错');
         }
         callError();
@@ -129,7 +129,7 @@ class demo5 extends React.Component {
     render() {
         return (
             <div>
-                {/* <Form store={this.store} onFormChange={this.onFormChange} onSubmit={this.onSubmit}>
+                <Form store={this.store} onFormChange={this.onFormChange} onSubmit={this.onSubmit}>
                     <Form.Item label="表单容器" name="a">
                         <Form.List name="b">
                             <Form.Item key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
@@ -176,8 +176,8 @@ class demo5 extends React.Component {
                     <Form.Item label="">
                         <button onClick={this.onClick}>Submit</button>
                     </Form.Item>
-                </Form> */}
-                <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} />
+                </Form>
+                {/* <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} /> */}
             </div>
         );
     }

@@ -205,6 +205,16 @@ class demo extends React.Component {
 - `labelAlign` 所有 Form.Item 组件 `label`的排列，`可选`。
 - `gutter` 所有 Form.Item 组件自定义标签和表单组件间的距离，`可选`。
 
+### 表单的rules中的校验字段
+`rules`中的值的字段中的规则会按照顺序执行校验，`rules`中每一项只能设置一种规则。
+- `message` 校验规则报错时，默认的报错信息 `可选`。
+- `required` 表示控件值为必填 `可选`。
+- `validator` 类型：`(value, callback: (err: string) => void) => void | boolean` 自定义校验函数, `value`为当前控件值, `callback`可以主动调用报错方法 `可选`。
+- `pattern` 类型：`RegExp | string` 表达式校验，不符合则报错 `可选`。
+- `whitespace` 类型：`boolean` 针对`string`类型, 设置true校验空格 `可选`。
+- `max` 类型：`number` 表单值为string类型时字符串最大长度；number 类型时为最大值；array 类型时为数组最大长度 `可选`。
+- `min` 类型：`number` 表单值为string类型时字符串最小长度；number 类型时为最小值；array 类型时为数组最小长度 `可选`。
+
 ### FormStore Methods
 
 - `new FormStore(defaultValues?, rules?: FormRule[])` 创建表单存储。
