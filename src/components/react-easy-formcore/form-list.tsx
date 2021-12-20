@@ -2,10 +2,9 @@ import React, { cloneElement, CSSProperties, useContext } from 'react'
 import { FormRule } from './form-store';
 import { formListPath } from './form';
 import classnames from 'classnames';
-import { classes } from './form-item';
-import { FormOptionsContext } from './form-options-context';
+import { FormOptions, FormOptionsContext } from './form-options-context';
 
-export interface FormListProps {
+export interface FormListProps extends FormOptions {
   label?: string
   suffix?: React.ReactNode
   name?: string
@@ -15,6 +14,21 @@ export interface FormListProps {
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
+}
+
+const prefixCls = 'rh-form-list';
+export const classes_list = {
+  list: prefixCls,
+  inline: `${prefixCls}--inline`,
+  compact: `${prefixCls}--compact`,
+  required: `${prefixCls}--required`,
+  error: `${prefixCls}--error`,
+
+  header: `${prefixCls}__header`,
+  container: `${prefixCls}__container`,
+  control: `${prefixCls}__control`,
+  message: `${prefixCls}__message`,
+  footer: `${prefixCls}__footer`,
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
@@ -53,10 +67,10 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   });
 
   const cls = classnames(
-    classes.field,
-    inline ? classes.inline : '',
-    compact ? classes.compact : '',
-    required ? classes.required : '',
+    classes_list.list,
+    inline ? classes_list.inline : '',
+    compact ? classes_list.compact : '',
+    required ? classes_list.required : '',
     className ? className : ''
   )
 
@@ -69,14 +83,14 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   return (
     <div ref={ref} className={cls} style={style}>
       {label !== undefined && (
-        <div className={classes.header} style={headerStyle}>
+        <div className={classes_list.header} style={headerStyle}>
           {label}
         </div>
       )}
-      <div className={classes.container}>
+      <div className={classes_list.container}>
         {childs}
       </div>
-      {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
+      {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
     </div>
   )
 })
