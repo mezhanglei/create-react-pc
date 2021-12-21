@@ -23,7 +23,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.renderProperties = this.renderProperties.bind(this);
         this.onFormChange = this.onFormChange.bind(this);
         this.onFormMount = this.onFormMount.bind(this);
-        this.handleHidden = this.handleHidden.bind(this);
+        this.handleFieldProps = this.handleFieldProps.bind(this);
         this.getValueByForm = this.getValueByForm.bind(this);
         this.aopFormOnChange = new AopFactory(this.onFormChange);
         this.aopFormMount = new AopFactory(this.onFormMount);
@@ -36,13 +36,13 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
 
     // 表单渲染完成
     onFormMount() {
-        this.handleHidden();
+        this.handleFieldProps();
     }
 
     componentDidUpdate(prevProps: RenderFormProps, prevState: RenderFormState) {
         const schemaChanged = !isObjectEqual(this.props.schema, prevProps.schema);
         if (schemaChanged) {
-            this.handleHidden();
+            this.handleFieldProps();
         }
     }
 
@@ -57,8 +57,8 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         return null;
     }
 
-    // 处理hidden数据
-    handleHidden() {
+    // 处理表单中的数据
+    handleFieldProps() {
         const list = deepGetKeys(this.props?.schema?.properties, 'hidden')
         let hiddenMap: RenderFormState['hiddenMap'] = {};
         for (let i = 0; i < list?.length; i++) {
@@ -77,7 +77,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
 
     // onChange时触发的事件
     onFormChange(params: { name: string, value: any }) {
-        this.handleHidden();
+        this.handleFieldProps();
     }
 
     // 传值兼容字符串表达式
@@ -133,6 +133,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         const { Fields } = this.props;
         const { render, ...rest } = field;
         const FormField = Fields?.['List.Item'];
+
         return (
             <FormField {...rest} key={name}>
                 {render}
@@ -173,13 +174,15 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 生成组件树
     generateTree(params: { name: string, field: FormFieldProps, path?: string }) {
         const { name, field, path } = params || {};
-        const { properties, render } = field;
+        const { properties } = field;
         const currentPath = path ? `${path}.${name}` : name;
         const { hiddenMap } = this.state;
+        // 是否为只读
+        const readOnly = field?.readOnly === true;
 
         if (hiddenMap[currentPath]) return;
 
-        if (render !== undefined) {
+        if (readOnly) {
             return this.renderListItem(name, field);
         }
 

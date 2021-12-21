@@ -6,7 +6,6 @@ export interface ListItemProps {
   label?: any
   suffix?: React.ReactNode
   inline?: boolean
-  compact?: boolean
   required?: boolean
   labelWidth?: number
   labelAlign?: 'left' | 'right'
@@ -20,7 +19,6 @@ const prefixCls = 'custom-list-item';
 export const classes = {
   field: prefixCls,
   inline: `${prefixCls}--inline`,
-  compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
 
   header: `${prefixCls}__header`,
@@ -33,7 +31,6 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     label,
     suffix,
     inline,
-    compact,
     required,
     labelWidth,
     labelAlign,
@@ -46,7 +43,6 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const cls = classnames(
     classes.field,
     inline ? classes.inline : '',
-    compact ? classes.compact : '',
     required ? classes.required : '',
     className ? className : ''
   )

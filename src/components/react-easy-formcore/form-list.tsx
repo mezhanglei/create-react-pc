@@ -41,16 +41,13 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     label,
     suffix,
     className,
-    style,
-    ...restProps
+    style
   } = props
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
   const options = useContext(FormOptionsContext)
-  const { inline, compact, required, labelWidth, labelAlign, gutter } = {
-    ...options,
-    ...restProps
-  }
+  const finalProps = { ...options, ...props };
+  const { inline, compact, required, labelWidth, labelAlign, gutter } = finalProps;
 
   if (currentPath && !formListPath?.includes(currentPath)) {
     formListPath.push(currentPath)
@@ -58,11 +55,12 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   const childs = React.Children.map(children, (child: any, index) => {
     const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
+    const childValue = child?.props?.initialValue ?? initialValue?.[index];
     return child && cloneElement(child, {
       path: currentPath,
       name: `${index}`,
       rules: childRules,
-      initialValue: initialValue?.[index],
+      initialValue: childValue
     });
   });
 

@@ -13,56 +13,77 @@ export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => bo
 
 export type FormRule = { required?: boolean, message?: string; validator?: FormValidator }
 
-export type FormRules<T = any> = { [key in keyof T]?: FormRule[] };
-
 export type FormErrors<T = any> = { [key in keyof T]?: T[key] }
 
 export type ValidateResult<T> = { error?: string, values: T }
+
+export type FieldProps = { rules?: FormRule[], [other: string]: any };
+
+export type FormFieldsProps<T = any> = { [key in keyof T]: FieldProps }
 
 export class FormStore<T extends Object = any> {
   private initialValues: Partial<T>
 
   private valueListeners: FormListener[] = []
+
   private errorListeners: FormListener[] = []
 
   private values: Partial<T>
 
-  private formRules: FormRules
-
   private formErrors: FormErrors = {}
 
-  public constructor(values: Partial<T> = {}, formRules?: FormRules<T>) {
+  private fieldsProps: FormFieldsProps = {};
+
+  public constructor(values: Partial<T> = {}, fieldsProps?: FormFieldsProps<T>) {
     this.initialValues = values
     this.values = deepCopy(values)
-    this.formRules = formRules || {}
+    this.fieldsProps = fieldsProps || {};
 
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)
-    this.setFieldRules = this.setFieldRules.bind(this)
-    this.setFieldsRules = this.setFieldsRules.bind(this)
-    this.reset = this.reset.bind(this)
     this.getFieldError = this.getFieldError.bind(this)
     this.setFieldError = this.setFieldError.bind(this)
     this.setFieldsError = this.setFieldsError.bind(this)
+
+    this.getFieldProps = this.getFieldProps.bind(this)
+    this.setFieldProps = this.setFieldProps.bind(this)
+    this.setFieldsProps = this.setFieldsProps.bind(this)
+
+    this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribeValue = this.subscribeValue.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
   }
 
-  // 更新表单中的校验规则
-  public setFieldRules(name: string, rules?: FormRule[]) {
-    if (!name) return;
-    if (rules === undefined) {
-      delete this.formRules[name]
+  // 获取
+  public getFieldProps(name?: string) {
+    if (name) {
+      return deepCopy(this.fieldsProps?.[name])
     } else {
-      this.formRules[name] = rules;
+      return deepCopy(this.fieldsProps);
     }
   }
 
-  // 设置表单中的校验规则
-  public setFieldsRules(values: FormRules<T>) {
-    this.formRules = deepCopy(values)
+  // 更新或覆盖单个表单域的props
+  public setFieldProps(name: string, field?: FieldProps, cover?: boolean) {
+    if (!name) return;
+    if (field === undefined) {
+      delete this.fieldsProps[name]
+    } else {
+      if (cover) {
+        this.fieldsProps[name] = field;
+      } else {
+        const lastField = this.fieldsProps[name];
+        const newField = { ...lastField, ...field };
+        this.fieldsProps[name] = newField;
+      }
+    }
+  }
+
+  // 覆盖更新所有表单域的props(暂时无用)
+  public setFieldsProps(values: FormFieldsProps<T>) {
+    this.fieldsProps = deepCopy(values);
   }
 
   // 同步值的变化
@@ -103,8 +124,10 @@ export class FormStore<T extends Object = any> {
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
       this.notifyValue(name);
+      // 规则
+      const rules = this.fieldsProps?.[name]?.['rules'];
 
-      if (this.formRules?.[name]?.length) {
+      if (rules?.length) {
         // 校验规则
         await this.validate(name, forbidError);
       }
@@ -156,7 +179,12 @@ export class FormStore<T extends Object = any> {
   public async validate(name: string, forbidError?: boolean): Promise<string>
   public async validate(name?: string, forbidError?: boolean) {
     if (name === undefined) {
-      const result = await Promise.all(Object.keys(this.formRules)?.map((n) => this.validate(n)))
+      const result = await Promise.all(Object.keys(this.fieldsProps)?.map((n) => {
+        const rules = this.fieldsProps?.[n]?.['rules'];
+        if(rules) {
+          return this.validate(n)
+        }
+      }))
       const currentError = result?.filter((message) => message !== undefined)?.[0]
       return {
         error: currentError,
@@ -166,9 +194,8 @@ export class FormStore<T extends Object = any> {
       if (forbidError === true) return;
       // 清空错误信息
       this.setFieldError(name, undefined);
-
       const value = this.getFieldValue(name);
-      const rules = this.formRules[name];
+      const rules = this.fieldsProps?.[name]?.['rules'];
 
       // 表单校验处理规则
       const handleRule = async (rule: FormRule) => {

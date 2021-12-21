@@ -44,13 +44,11 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     valueProp = 'value',
     valueGetter = getValueFromEvent,
     suffix,
-    rules,
     path,
     initialValue,
     className,
     children,
-    style,
-    ...restProps
+    style
   } = props
 
   const currentPath = path && name ? `${path}.${name}` : name;
@@ -58,6 +56,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const options = useContext(FormOptionsContext)
   const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined)
   const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined)
+  const finalProps = { ...options, ...props };
+  const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = finalProps;
 
   // onChange监听
   const onChange = useCallback(
@@ -79,7 +79,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useFieldChange({
     store,
     name: currentPath,
-    rules,
+    field: finalProps,
     // 监听FormStore中的value变化
     onChange: () => {
       const value = store!.getFieldValue(currentPath!);
@@ -103,11 +103,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       setValue(undefined);
     }
   }, [currentPath, store, initialValue]);
-
-  const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = {
-    ...options,
-    ...restProps
-  }
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {

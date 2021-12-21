@@ -2,11 +2,14 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.1.1-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.1.5-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
 轻量级表单表单容器组件，目标控件只需要提供`value`(或通过`valueProp`设置)和`onChange`方法，其余的交给组件中的`FormStore`来管理数据的更新与绑定。使用非常简单
+
+# Matters
+注意：在使用之前需要先引入css样式文件，例：`import 'react-easy-formcore/css/main.css'`;
 
 # Form.Item
 
@@ -36,6 +39,7 @@ yarn add react-easy-formcore
 ```javascript
 import React from "react";
 import { Form, FormStore } from "react-easy-formcore";
+import 'react-easy-formcore/css/main.css';
 import { Input, Select } from "antd";
 
 class demo extends React.Component {
@@ -97,6 +101,7 @@ class demo extends React.Component {
 ```javascript
 import React from "react";
 import { Form, FormStore } from "react-easy-formcore";
+import 'react-easy-formcore/css/main.css';
 import { Input, Select } from "antd";
 
 class demo extends React.Component {
@@ -217,7 +222,7 @@ class demo extends React.Component {
 
 ### FormStore Methods
 
-- `new FormStore(defaultValues?, rules?: FormRule[])` 创建表单存储。
+- `new FormStore(defaultValues)` 创建表单存储。
 - `store.getFieldValue()` 返回整个表单的值。
 - `store.getFieldValue(name: string | string[])` 根据字段名返回表单域的值。当 `name` 为数组时，返回多个表单域的值
 - `store.setFieldValue(name, value)` 更新表单域的值
@@ -226,9 +231,11 @@ class demo extends React.Component {
 - `store.validate()` 校验整个表单，并返回错误信息和表单值。
 - `store.validate(name)` 根据字段名校验表单域的值，并返回错误信息和表单值。
 - `store.getFieldError(name?: string)` 返回单个表单域的错误信息或表单所有的错误信息。
-- `store.setFieldRules(name: string, rules?: FormRule[])` 更新表单域的校验规则。
-- `store.setFieldsRules(values: FormRules<T>)` 设置表单域的校验规则(覆盖)。
+- `store.getFieldProps(name?: string)` 根据字段名返回表单域的`props`
 
 ### Hooks
 
 - `useFormStore(defaultValues?, rules?: FormRule[])` 使用 hooks 创建 FormStore。
+
+# Contribute
+感谢来自react-hero-form提供的灵感支持。

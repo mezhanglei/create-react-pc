@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { FormRule, FormStore } from './form-store'
+import { FieldProps, FormStore } from './form-store'
 
 // 监听表单域
 export interface FieldChangeProps<T> {
@@ -8,13 +8,13 @@ export interface FieldChangeProps<T> {
   name: string | undefined
   onChange: (name: string) => void
   onError: (name: string) => void
-  rules?: FormRule[]
+  field?: FieldProps
 }
 export function useFieldChange<T>(props: FieldChangeProps<T>) {
   const {
     name,
     store,
-    rules,
+    field,
     onChange,
     onError
   } = props;
@@ -40,13 +40,13 @@ export function useFieldChange<T>(props: FieldChangeProps<T>) {
     }
   }, [name, store])
 
-  // 初始化校验规则
+  // 初始化更新表单的props
   useEffect(() => {
     if (!name || !store) return
-    store?.setFieldRules(name, rules)
+    store?.setFieldProps(name, field)
     return () => {
-      store?.setFieldRules(name, undefined)
+      store?.setFieldProps(name, undefined)
     }
-  }, [name, store, rules])
+  }, [name, store, field])
 
 }

@@ -10,7 +10,8 @@ export interface ChildrenComponent {
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
     component?: string // 表单控件代表的字符串
-    render?: any // 非表单控件，会覆盖表单控件(component等属性)
+    readOnly?: boolean // 是否为只读模式
+    render?: any // 非表单控件, 在readOnly只读模式下才会覆盖表单控件
     hidden?: string | boolean // 隐藏表单域
     path?: string // 当前节点所在的路径
     props?: ChildrenComponent['props'] // 表单控件的属性

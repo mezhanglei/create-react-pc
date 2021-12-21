@@ -1,9 +1,5 @@
 "use strict";
 
-// 根据目标字符串自动匹配来动态扫描目标文件返回符合要求的文件路径数组,glob只能扫描一个,如果要同时扫描多个路径请使用glob-all
-// 匹配规则: 1. * 在单个路径中间匹配一个目录/文件(不会匹配路径分隔符/), /* 则表示一个或多个子目录/文件 2. ** 在单个路径中间匹配部分0个或多个目录/文件
-const glob = require("glob");
-const globAll = require("glob-all");
 // 引入webpack
 const webpack = require("webpack");
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算

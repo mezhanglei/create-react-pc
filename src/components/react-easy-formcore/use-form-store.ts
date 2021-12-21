@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
 
-import { FormRules, FormStore } from './form-store'
+import { FormStore } from './form-store'
 
 export function useFormStore<T extends Object = any> (
-  values: Partial<T> = {},
-  formRules?: FormRules<T>
+  values: Partial<T> = {}
 ) {
-  return useMemo(() => new FormStore(values, formRules), [])
+  return useMemo(() => new FormStore(values), [])
 }
