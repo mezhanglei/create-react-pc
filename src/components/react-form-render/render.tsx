@@ -59,6 +59,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
 
     // 处理表单中的数据
     handleFieldProps() {
+        // hidden字段执行表达式
         const list = deepGetKeys(this.props?.schema?.properties, 'hidden')
         let hiddenMap: RenderFormState['hiddenMap'] = {};
         for (let i = 0; i < list?.length; i++) {

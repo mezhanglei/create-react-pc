@@ -1,20 +1,18 @@
 import { useEffect } from 'react'
 
-import { FieldProps, FormStore } from './form-store'
+import { FormStore } from './form-store'
 
-// 监听表单域
+// 监听表单域值的变化
 export interface FieldChangeProps<T> {
   store: FormStore<T> | undefined
   name: string | undefined
   onChange: (name: string) => void
   onError: (name: string) => void
-  field?: FieldProps
 }
 export function useFieldChange<T>(props: FieldChangeProps<T>) {
   const {
     name,
     store,
-    field,
     onChange,
     onError
   } = props;
@@ -39,14 +37,4 @@ export function useFieldChange<T>(props: FieldChangeProps<T>) {
       uninstall()
     }
   }, [name, store])
-
-  // 初始化更新表单的props
-  useEffect(() => {
-    if (!name || !store) return
-    store?.setFieldProps(name, field)
-    return () => {
-      store?.setFieldProps(name, undefined)
-    }
-  }, [name, store, field])
-
 }

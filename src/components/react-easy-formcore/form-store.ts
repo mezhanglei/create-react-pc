@@ -28,6 +28,8 @@ export class FormStore<T extends Object = any> {
 
   private errorListeners: FormListener[] = []
 
+  private propsListeners: FormListener[] = []
+
   private values: Partial<T>
 
   private formErrors: FormErrors = {}
@@ -48,20 +50,20 @@ export class FormStore<T extends Object = any> {
 
     this.getFieldProps = this.getFieldProps.bind(this)
     this.setFieldProps = this.setFieldProps.bind(this)
-    this.setFieldsProps = this.setFieldsProps.bind(this)
 
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribeValue = this.subscribeValue.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
+    this.subscribeProps = this.subscribeProps.bind(this)
   }
 
   // 获取
   public getFieldProps(name?: string) {
     if (name) {
-      return deepCopy(this.fieldsProps?.[name])
+      return this.fieldsProps?.[name]
     } else {
-      return deepCopy(this.fieldsProps);
+      return this.fieldsProps
     }
   }
 
@@ -79,37 +81,7 @@ export class FormStore<T extends Object = any> {
         this.fieldsProps[name] = newField;
       }
     }
-  }
-
-  // 覆盖更新所有表单域的props(暂时无用)
-  public setFieldsProps(values: FormFieldsProps<T>) {
-    this.fieldsProps = deepCopy(values);
-  }
-
-  // 同步值的变化
-  private notifyValue(name?: string) {
-    if (name) {
-      this.valueListeners.forEach((listener) => {
-        if (listener?.name === name) {
-          listener?.onChange && listener?.onChange(listener?.name)
-        }
-      })
-    } else {
-      this.valueListeners.forEach((listener) => listener.onChange(listener?.name))
-    }
-  }
-
-  // 同步错误的变化
-  private notifyError(name?: string) {
-    if (name) {
-      this.errorListeners.forEach((listener) => {
-        if (listener?.name === name) {
-          listener?.onChange && listener?.onChange(listener?.name)
-        }
-      })
-    } else {
-      this.errorListeners.forEach((listener) => listener.onChange(listener?.name))
-    }
+    this.notifyProps(name);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
@@ -181,7 +153,7 @@ export class FormStore<T extends Object = any> {
     if (name === undefined) {
       const result = await Promise.all(Object.keys(this.fieldsProps)?.map((n) => {
         const rules = this.fieldsProps?.[n]?.['rules'];
-        if(rules) {
+        if (rules) {
           return this.validate(n)
         }
       }))
@@ -238,6 +210,45 @@ export class FormStore<T extends Object = any> {
     }
   }
 
+  // 同步值的变化
+  private notifyValue(name?: string) {
+    if (name) {
+      this.valueListeners.forEach((listener) => {
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange(listener?.name)
+        }
+      })
+    } else {
+      this.valueListeners.forEach((listener) => listener.onChange(listener?.name))
+    }
+  }
+
+  // 同步错误的变化
+  private notifyError(name?: string) {
+    if (name) {
+      this.errorListeners.forEach((listener) => {
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange(listener?.name)
+        }
+      })
+    } else {
+      this.errorListeners.forEach((listener) => listener.onChange(listener?.name))
+    }
+  }
+
+  // 同步props的变化
+  private notifyProps(name?: string) {
+    if (name) {
+      this.propsListeners.forEach((listener) => {
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange(listener?.name)
+        }
+      })
+    } else {
+      this.propsListeners.forEach((listener) => listener.onChange(listener?.name))
+    }
+  }
+
   // 订阅表单值的变动
   public subscribeValue(name: string, listener: FormListener['onChange']) {
     this.valueListeners.push({
@@ -257,6 +268,17 @@ export class FormStore<T extends Object = any> {
     });
     return () => {
       this.errorListeners = this.errorListeners.filter((sub) => sub.name !== name)
+    }
+  }
+
+  // 订阅表单的props的变动
+  public subscribeProps(name: string, listener: FormListener['onChange']) {
+    this.propsListeners.push({
+      onChange: listener,
+      name: name
+    });
+    return () => {
+      this.propsListeners = this.propsListeners.filter((sub) => sub.name !== name)
     }
   }
 }

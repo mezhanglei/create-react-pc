@@ -59,7 +59,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const finalProps = { ...options, ...props };
   const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = finalProps;
 
-  // onChange监听
+  // 给子元素绑定的onChange
   const onChange = useCallback(
     (...args: any[]) => {
       const value = valueGetter(...args);
@@ -79,7 +79,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useFieldChange({
     store,
     name: currentPath,
-    field: finalProps,
     // 监听FormStore中的value变化
     onChange: () => {
       const value = store!.getFieldValue(currentPath!);
@@ -92,17 +91,26 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     }
   })
 
+  // store初始化值
   useEffect(() => {
     if (!currentPath || !store) return;
     if (initialValue !== undefined) {
       store.setFieldValue(currentPath, initialValue, true);
-      setValue(initialValue);
     }
     return () => {
       store.setFieldValue(currentPath, undefined, true);
-      setValue(undefined);
     }
-  }, [currentPath, store, initialValue]);
+  }, [currentPath, store]);
+
+  // store初始化props
+  useEffect(() => {
+    if (!currentPath || !store) return
+    store?.setFieldProps(currentPath, finalProps);
+    return () => {
+      // 清除该表单域的props
+      store?.setFieldProps(currentPath, undefined, true);
+    }
+  }, [currentPath, store]);
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {

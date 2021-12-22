@@ -235,7 +235,7 @@ class demo extends React.Component {
 
 ### Hooks
 
-- `useFormStore(defaultValues?, rules?: FormRule[])` 使用 hooks 创建 FormStore。
+- `useFormStore(defaultValues)` 使用 hooks 创建 FormStore。
 
 # Contribute
 感谢来自react-hero-form提供的灵感支持。
