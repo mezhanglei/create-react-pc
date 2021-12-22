@@ -2,21 +2,21 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.1.5-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.2.3-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
-轻量级表单表单容器组件，目标控件只需要提供`value`(或通过`valueProp`设置)和`onChange`方法，其余的交给组件中的`FormStore`来管理数据的更新与绑定。使用非常简单
+轻量级表单容器双向绑定组件，目标控件只需要提供`props`方法：`value`(或通过`valueProp`设置)和`onChange`，其余的交给组件中的`FormStore`来管理数据的更新与绑定。使用非常简单
 
 # Matters
-注意：在使用之前需要先引入css样式文件，例：`import 'react-easy-formcore/css/main.css'`;
+注意：在使用之前需要先引入css样式文件，例：`import 'react-easy-formcore/lib/css/main.css'`;
 
 # Form.Item
 
 表单中的组件最小单元，作为一个对象的节点可以相互嵌套。
 
 - [x] 提供样式，以及`value`(或通过`valueProp`设置)和`onChange`双向绑定。
-- [x] 可以自定义`onChange`，但只能通过`store.setFieldValue`等实例方法设置表单值
+- [x] 可以控件外部自定义`onChange`，但只能通过`store.setFieldValue`等实例方法设置表单值
 - [x] 可以提供表单校验规则属性`rules`，进行自定义表单校验规则。
 
 # Form.List
@@ -39,7 +39,7 @@ yarn add react-easy-formcore
 ```javascript
 import React from "react";
 import { Form, FormStore } from "react-easy-formcore";
-import 'react-easy-formcore/css/main.css';
+import 'react-easy-formcore/lib/css/main.css';
 import { Input, Select } from "antd";
 
 class demo extends React.Component {
@@ -101,7 +101,7 @@ class demo extends React.Component {
 ```javascript
 import React from "react";
 import { Form, FormStore } from "react-easy-formcore";
-import 'react-easy-formcore/css/main.css';
+import 'react-easy-formcore/lib/css/main.css';
 import { Input, Select } from "antd";
 
 class demo extends React.Component {
