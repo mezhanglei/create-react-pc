@@ -3,9 +3,8 @@ import { Form } from "@/components/react-easy-formcore";
 import { ChildrenComponent, FormFieldProps, RenderFormProps, RenderFormState, SchemaData } from './types';
 import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
-import { deepGetKeys } from './utils';
 import { AopFactory } from '@/utils/function-aop';
-import { isEmpty } from '@/utils/type';
+import { isEmpty, isObject } from '@/utils/type';
 
 class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     aopFormOnChange: AopFactory;
@@ -13,7 +12,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     constructor(props: RenderFormProps) {
         super(props);
         this.state = {
-            hiddenMap: {}
+            fieldPropsMap: new Map()
         };
         this.getFormList = this.getFormList.bind(this);
         this.generateTree = this.generateTree.bind(this);
@@ -25,6 +24,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.onFormMount = this.onFormMount.bind(this);
         this.handleFieldProps = this.handleFieldProps.bind(this);
         this.getValueByForm = this.getValueByForm.bind(this);
+        this.calcFieldProps = this.calcFieldProps.bind(this);
         this.aopFormOnChange = new AopFactory(this.onFormChange);
         this.aopFormMount = new AopFactory(this.onFormMount);
     }
@@ -57,23 +57,57 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         return null;
     }
 
-    // 处理表单中的数据
+    // 初始化所有的控件的属性
     handleFieldProps() {
-        // hidden字段执行表达式
-        const list = deepGetKeys(this.props?.schema?.properties, 'hidden')
-        let hiddenMap: RenderFormState['hiddenMap'] = {};
-        for (let i = 0; i < list?.length; i++) {
-            const item = list[i];
-            if (item) {
-                const schemaPath = item?.path;
-                const path = schemaPath?.split('.properties.')?.join('.');
-                const hidden = item?.value;
-                hiddenMap[path] = this.getValueByForm(hidden);
+        const fieldPropsMap = new Map();
+        // 遍历对象树中的叶子节点(控件的属性节点)
+        const deepFindProps = (data: object, parentPath?: string) => {
+            for (const key in data) {
+                const target = data[key];
+                if (isObject(target)) {
+                    const keys = Object.keys(target);
+                    for (let i = 0; i < keys?.length; i++) {
+                        const childKey = keys[i];
+                        const value = target[childKey];
+                        // 目标为叶子节点时(控件的属性节点), 兼容字符串表达式
+                        if (childKey !== 'properties') {
+                            const currentKey = `${key}.${childKey}`;
+                            const path = parentPath ? `${parentPath}.${currentKey}` : currentKey;
+                            const result = this.getValueByForm(value);
+                            fieldPropsMap.set(path, result)
+                        }
+                    }
+                } else if (!isEmpty(target)) {
+                    const path = parentPath ? `${parentPath}.${key}` : key;
+                    const result = this.getValueByForm(target);
+                    fieldPropsMap.set(path, result)
+                }
+                // 具有properties则深入遍历properties
+                const properties = target?.properties;
+                if (typeof properties === 'object') {
+                    const path = parentPath ? `${parentPath}.${key}` : key;
+                    deepFindProps(properties, path)
+                }
             }
+        };
+        deepFindProps(this.props.schema?.properties);
+        this.setState({ fieldPropsMap: fieldPropsMap });
+    }
+
+    // 字符串表达式后的值
+    calcFieldProps(field?: object, path?: string) {
+        const { fieldPropsMap } = this.state;
+        let newField;
+        if (fieldPropsMap?.size && field) {
+            newField = Object.fromEntries(
+                Object.entries(field)?.map(
+                    ([name]) => {
+                        return [name, fieldPropsMap.get(`${path}.${name}`)];
+                    }
+                )
+            );
         }
-        this.setState({
-            hiddenMap: hiddenMap
-        });
+        return newField;
     }
 
     // onChange时触发的事件
@@ -81,14 +115,15 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.handleFieldProps();
     }
 
-    // 传值兼容字符串表达式
+    // 值兼容字符串表达式
     getValueByForm(target?: string | boolean) {
         if (typeof target === 'string') {
             const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
             const hiddenStr = target?.match(reg)?.[0];
             if (hiddenStr) {
                 let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
-                target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()')
+                target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()');
+                target = target?.replace(/\$schema/g, 'this?.props?.schema');
                 const actionStr = "return " + target;
                 const action = new Function(actionStr);
                 const value = action.apply(this);
@@ -115,47 +150,51 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     // 生成最小单元
-    renderFormItem(name: string, field: FormFieldProps) {
+    renderFormItem(params: { name: string, itemField: FormFieldProps, path?: string }) {
+        const { name, itemField, path } = params || {};
         const { widgets, Fields } = this.props;
-        const { properties, component, props, ...rest } = field;
+        const { component, props, ...fieldProps } = itemField;
         const { children, ...componentProps } = props || {};
         const FormField = Fields?.['Form.Item'];
         const FormComponent = component && widgets?.[component];
-
+        const newField = this.calcFieldProps(fieldProps, path);
         return (
-            <FormField {...rest} key={name} name={name}>
+            <FormField {...fieldProps} {...newField} key={name} name={name}>
                 <FormComponent {...componentProps}>{this.generateChildren(children)}</FormComponent>
             </FormField>
         );
     }
 
     // 自定义render
-    renderListItem(name: string, field: FormFieldProps) {
+    renderListItem(params: { name: string, itemField: FormFieldProps, path?: string }) {
+        const { name, itemField, path } = params || {};
         const { Fields } = this.props;
-        const { render, ...rest } = field;
         const FormField = Fields?.['List.Item'];
+        const { render, ...fieldProps } = itemField;
+        const newField = this.calcFieldProps(itemField, path);
 
         return (
-            <FormField {...rest} key={name}>
+            <FormField {...fieldProps} {...newField} key={name}>
                 {render}
             </FormField>
         )
     }
 
     // 生成properties
-    renderProperties(params: { name: string, field: FormFieldProps, path?: string }) {
-        const { name, field, path } = params || {};
+    renderProperties(params: { name: string, propertiesField: FormFieldProps, path?: string }) {
+        const { name, propertiesField, path } = params || {};
         const { Fields } = this.props;
-        const { properties, component, props, hidden, ...rest } = field;
+        const { properties, component, props, render, ...fieldProps } = propertiesField;
         let FormField;
         if (properties instanceof Array) {
             FormField = Fields['Form.List']
         } else {
             FormField = Fields['Form.Item']
         }
+        const newField = this.calcFieldProps(fieldProps, path);
 
         return (
-            <FormField {...rest} key={name} name={name}>
+            <FormField {...fieldProps} {...newField} key={name} name={name}>
                 {
                     properties instanceof Array ?
                         properties?.map((formField, index) => {
@@ -175,22 +214,23 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 生成组件树
     generateTree(params: { name: string, field: FormFieldProps, path?: string }) {
         const { name, field, path } = params || {};
-        const { properties } = field;
+        const { hidden, readOnly, ...propertiesField } = field;
+        const { properties, ...itemField } = propertiesField || {};
         const currentPath = path ? `${path}.${name}` : name;
-        const { hiddenMap } = this.state;
-        // 是否为只读
-        const readOnly = field?.readOnly === true;
 
-        if (hiddenMap[currentPath]) return;
-
-        if (readOnly) {
-            return this.renderListItem(name, field);
+        // 是否隐藏
+        const { fieldPropsMap } = this.state;
+        const hiddenResult = fieldPropsMap.get(`${currentPath}.hidden`);
+        if (hiddenResult) return;
+        // 是否只读
+        if (readOnly === true) {
+            return this.renderListItem({ name: name, itemField: itemField, path: currentPath });
         }
 
         if (typeof properties === 'object') {
-            return !isEmpty(properties) && this.renderProperties({ name: name, field: field, path: currentPath })
+            return !isEmpty(properties) && this.renderProperties({ name: name, propertiesField: propertiesField, path: currentPath })
         } else {
-            return this.renderFormItem(name, field);
+            return this.renderFormItem({ name: name, itemField: itemField, path: currentPath });
         }
     };
 

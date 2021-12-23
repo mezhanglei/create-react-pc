@@ -82,6 +82,8 @@ export class FormStore<T extends Object = any> {
       }
     }
     this.notifyProps(name);
+    // 清空错误信息
+    // this.setFieldError(name, undefined);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值

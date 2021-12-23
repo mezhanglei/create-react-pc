@@ -29,16 +29,18 @@ class demo5 extends React.Component {
         className: 'form-wrapper',
         properties: {
           name1: {
-            label: 'name1',
+            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
             component: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
+            readOnly: true,
+            render: 1111,
             hidden: '{{$form.name4 == true}}',
             props: {}
           },
           name2: {
-            label: 'list',
+            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
             required: true,
             rules: [{ required: true, message: 'name2空了' }],
             properties: [{

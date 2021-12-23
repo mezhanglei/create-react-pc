@@ -9,18 +9,18 @@ export interface ChildrenComponent {
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
-    component?: string // 表单控件代表的字符串
-    readOnly?: boolean // 是否为只读模式
-    render?: any // 非表单控件, 在readOnly只读模式下才会覆盖表单控件
-    hidden?: string | boolean // 隐藏表单域
-    path?: string // 当前节点所在的路径
-    props?: ChildrenComponent['props'] // 表单控件的属性
-    properties?: { [key: string]: FormFieldProps } | FormFieldProps[] // 嵌套组件
+    component: string // 表单控件代表的字符串，和properties属性不能同时存在，不支持字符串表达式
+    readOnly?: boolean | string // 是否为只读模式, 不支持字符串表达式
+    render?: any // 非表单控件, 在readOnly只读模式下才会覆盖表单控件，支持字符串表达式
+    props?: { children?: JSX.Element | ChildrenComponent[], [key: string]: any } // 表单控件自有的props属性
+    hidden?: string | boolean // 显示隐藏的逻辑，支持字符串表达式
+    properties?: { [name: string]: FormFieldProps } | FormFieldProps[] // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
 export interface RenderFormState {
-    hiddenMap: { [key: string]: boolean }
+    fieldPropsMap: Map<string, any> // 表单控件中props字段与值的键值对
     prevSchema?: SchemaData
+    schema?: SchemaData
 }
 
 // schema
@@ -33,4 +33,3 @@ export interface RenderFormProps extends FormProps {
     widgets: { [key: string]: any }
     Fields: typeof defaultFields
 };
-
