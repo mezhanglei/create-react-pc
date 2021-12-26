@@ -23,8 +23,8 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.onFormChange = this.onFormChange.bind(this);
         this.onFormMount = this.onFormMount.bind(this);
         this.handleFieldProps = this.handleFieldProps.bind(this);
-        this.getValueByForm = this.getValueByForm.bind(this);
-        this.calcFieldProps = this.calcFieldProps.bind(this);
+        this.calcExpression = this.calcExpression.bind(this);
+        this.showCalcFieldProps = this.showCalcFieldProps.bind(this);
         this.aopFormOnChange = new AopFactory(this.onFormChange);
         this.aopFormMount = new AopFactory(this.onFormMount);
     }
@@ -73,13 +73,13 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
                         if (childKey !== 'properties') {
                             const currentKey = `${key}.${childKey}`;
                             const path = parentPath ? `${parentPath}.${currentKey}` : currentKey;
-                            const result = this.getValueByForm(value);
+                            const result = this.calcExpression(value);
                             fieldPropsMap.set(path, result)
                         }
                     }
                 } else if (!isEmpty(target)) {
                     const path = parentPath ? `${parentPath}.${key}` : key;
-                    const result = this.getValueByForm(target);
+                    const result = this.calcExpression(target);
                     fieldPropsMap.set(path, result)
                 }
                 // 具有properties则深入遍历properties
@@ -94,8 +94,8 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.setState({ fieldPropsMap: fieldPropsMap });
     }
 
-    // 字符串表达式后的值
-    calcFieldProps(field?: object, path?: string) {
+    // 展示计算完表达式之后的结果
+    showCalcFieldProps(field?: object, path?: string) {
         const { fieldPropsMap } = this.state;
         let newField;
         if (fieldPropsMap?.size && field) {
@@ -116,7 +116,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     // 值兼容字符串表达式
-    getValueByForm(target?: string | boolean) {
+    calcExpression(target?: string | boolean) {
         if (typeof target === 'string') {
             const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
             const hiddenStr = target?.match(reg)?.[0];
@@ -157,7 +157,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         const { children, ...componentProps } = props || {};
         const FormField = Fields?.['Form.Item'];
         const FormComponent = component && widgets?.[component];
-        const newField = this.calcFieldProps(fieldProps, path);
+        const newField = this.showCalcFieldProps(fieldProps, path);
         return (
             <FormField {...fieldProps} {...newField} key={name} name={name}>
                 <FormComponent {...componentProps}>{this.generateChildren(children)}</FormComponent>
@@ -171,7 +171,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         const { Fields } = this.props;
         const FormField = Fields?.['List.Item'];
         const { render, ...fieldProps } = itemField;
-        const newField = this.calcFieldProps(itemField, path);
+        const newField = this.showCalcFieldProps(itemField, path);
 
         return (
             <FormField {...fieldProps} {...newField} key={name}>
@@ -191,7 +191,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         } else {
             FormField = Fields['Form.Item']
         }
-        const newField = this.calcFieldProps(fieldProps, path);
+        const newField = this.showCalcFieldProps(fieldProps, path);
 
         return (
             <FormField {...fieldProps} {...newField} key={name} name={name}>

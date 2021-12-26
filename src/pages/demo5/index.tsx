@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef, useCallback } from 'reac
 import "./index.less";
 import { Form, FormStore } from "@/components/react-easy-formcore";
 import { Checkbox, Input, Radio, Select } from 'antd';
-import RenderFrom from '@/components/react-form-render';
+import RenderFrom from '@/components/react-easy-formrender';
 import Button from '@/components/button';
 
 // 原子组件
@@ -34,8 +34,6 @@ class demo5 extends React.Component {
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
-            readOnly: true,
-            render: 1111,
             hidden: '{{$form.name4 == true}}',
             props: {}
           },

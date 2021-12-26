@@ -11,17 +11,17 @@ export class WatchableStore {
     _watchers: { type: string; handle: Function }[] = [];
 
     // 触发事件池里的所有事件(所以监听多个事件，那么触发时会全部触发)
-    triggerAll(data: unknown) {
+    triggerAll(...args: unknown[]) {
         this._watchers.forEach(watcher => {
-            watcher.handle(data);
+            watcher.handle(args);
         });
     }
 
     // 触发事件池里对应type的事件
-    trigger(type: string, data: unknown) {
+    trigger(type: string, ...args: unknown[]) {
         this._watchers.forEach(watcher => {
             if (watcher.type == type) {
-                watcher.handle(data);
+                watcher.handle(...args);
             }
         });
     }

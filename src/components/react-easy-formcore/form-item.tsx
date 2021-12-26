@@ -114,7 +114,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (!isValidElement(child) || !store) return;
+    if (!isValidElement(child)) return;
     if (currentPath) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
