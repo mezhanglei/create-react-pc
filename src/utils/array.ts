@@ -223,43 +223,21 @@ export function createArrayByLen(len: number): number[] {
 }
 
 // 获取js数组中字符串的最长公共前缀
-export function longCommonPrefix(strs: any[]): string {
-    if (strs.length == 0) {
-        return "";
-    }
-    if (strs.length == 1) {
-        return strs[0];
-    }
-
-    // 获取最短长度
-    let minLen = -1, prefix = '', char = '';
-    strs.forEach(ele => {
-        if (minLen == -1) {
-            minLen = ele.length;
-        } else {
-            minLen = ele.length < minLen ? ele.length : minLen;
+export function longestCommonPrefix(arr: string[]) {
+    if (arr.length) {//判断数组是否为空
+        let res = ""; //记录公共前缀
+        for (let i = 0; i < arr[0].length; i++) {
+            let temp = arr[0][i];
+            // 每个字符串是否都有相同的字符
+            if (arr.every(el => {
+                return el.charAt(i) == temp;
+            })) {
+                res += temp; // 记录公共前缀
+            } else break; //如果返回false，就停止判断，说明不是前缀了
         }
-    });
-    if (minLen == 0) {
-        return "";
+        return res;
     }
-    // 判断是否为前缀
-    for (let i = 0; i < minLen; i++) {
-        char = strs[0][i];
-        // 用于标记该字符是否为前缀
-        let flag = true;
-        for (let j = 1; j < strs.length; j++) {
-            if (strs[j][i] != char) {
-                flag = false;
-            }
-        }
-        if (flag) {
-            prefix += char;
-        } else {
-            return prefix;
-        }
-    }
-    return prefix;
+    return ""; //说明是空数组
 };
 
 /**

@@ -16,7 +16,14 @@ export const defaultWidgets: { [key: string]: any } = {
   Checkbox: Checkbox
 };
 
-
+const watch = {
+  'name1': (key) => {
+    console.log(key)
+  },
+  'name2': (key) => {
+    console.log(key)
+  }
+}
 
 class demo5 extends React.Component {
   store: FormStore<any>;
@@ -179,7 +186,7 @@ class demo5 extends React.Component {
             <button onClick={this.onClick}>Submit</button>
           </Form.Item>
         </Form> */}
-        <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} />
+        <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} watch={watch} />
       </div>
     );
   }

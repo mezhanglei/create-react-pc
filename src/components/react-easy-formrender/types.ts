@@ -30,6 +30,7 @@ export interface SchemaData extends FormProps {
 
 export interface RenderFormProps extends FormProps {
     schema: SchemaData
+    watch: {[key: string]: {}}
     widgets: { [key: string]: any }
     Fields: typeof defaultFields
 };

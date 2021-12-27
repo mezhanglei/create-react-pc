@@ -25,6 +25,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.handleFieldProps = this.handleFieldProps.bind(this);
         this.calcExpression = this.calcExpression.bind(this);
         this.showCalcFieldProps = this.showCalcFieldProps.bind(this);
+        this.handleWatch = this.handleWatch.bind(this);
         this.aopFormOnChange = new AopFactory(this.onFormChange);
         this.aopFormMount = new AopFactory(this.onFormMount);
     }
@@ -37,6 +38,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 表单渲染完成
     onFormMount() {
         this.handleFieldProps();
+        this.handleWatch();
     }
 
     componentDidUpdate(prevProps: RenderFormProps, prevState: RenderFormState) {
@@ -55,6 +57,18 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
             };
         }
         return null;
+    }
+
+    // 初始化监听方法
+    handleWatch(isMounted?: boolean) {
+        const { store, watch } = this.props;
+        Object.entries(watch)?.map(([key, callback]) => {
+            if (typeof callback === 'function') {
+                store?.subscribeValue(key, (key) => callback(key))
+            } else {
+
+            }
+        });
     }
 
     // 初始化所有的控件的属性
@@ -244,7 +258,7 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     render() {
-        const { schema, ...rest } = this.props;
+        const { schema, watch, ...rest } = this.props;
         const { properties, ...restForm } = schema || {};
         const formChangeProps = rest?.onFormChange || restForm?.onFormChange;
         const formMountProps = rest?.onMount || restForm?.onMount;

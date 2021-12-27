@@ -1,6 +1,6 @@
 
 import { asyncSequentialExe } from '@/utils/common';
-import { deepCopy } from './utils/utils';
+import { deepCopy, isExitPrefix } from './utils/utils';
 import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';
@@ -216,7 +216,8 @@ export class FormStore<T extends Object = any> {
   private notifyValue(name?: string) {
     if (name) {
       this.valueListeners.forEach((listener) => {
-        if (listener?.name === name) {
+        // 判断是否为目标name的路径前缀
+        if (isExitPrefix(listener.name, name)) {
           listener?.onChange && listener?.onChange(listener?.name)
         }
       })
@@ -229,7 +230,8 @@ export class FormStore<T extends Object = any> {
   private notifyError(name?: string) {
     if (name) {
       this.errorListeners.forEach((listener) => {
-        if (listener?.name === name) {
+        // 判断是否为目标name的路径前缀
+        if (isExitPrefix(listener.name, name)) {
           listener?.onChange && listener?.onChange(listener?.name)
         }
       })
@@ -242,7 +244,8 @@ export class FormStore<T extends Object = any> {
   private notifyProps(name?: string) {
     if (name) {
       this.propsListeners.forEach((listener) => {
-        if (listener?.name === name) {
+        // 判断是否为目标name的路径前缀
+        if (isExitPrefix(listener.name, name)) {
           listener?.onChange && listener?.onChange(listener?.name)
         }
       })
