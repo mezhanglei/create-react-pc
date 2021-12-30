@@ -5,6 +5,7 @@ import { getValuePropName, getValueFromEvent } from './utils/utils'
 import { FormRule } from './form-store'
 import classnames from 'classnames'
 import { AopFactory } from '@/utils/function-aop'
+import { isObjectEqual } from '@/utils/object'
 
 export interface FormItemProps extends FormOptions {
   label?: string
@@ -107,7 +108,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   // 监听表单值的变化
   useEffect(() => {
-    if (value !== undefined) {
+    if (!isObjectEqual(value, store?.getLastValue(currentPath))) {
       options.onValuesChange && options.onValuesChange({ name: currentPath, value: value })
     }
   }, [JSON.stringify(value)]);

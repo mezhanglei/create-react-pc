@@ -89,12 +89,12 @@ export class FormStore<T extends Object = any> {
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
   public getFieldValue(name?: string | string[]) {
-    return name === undefined ? { ...this.values } : deepGet(this.values, name)
+    return name === undefined ? (this.values && { ...this.values }) : deepGet(this.values, name)
   }
 
   // 获取旧表单值
   public getLastValue(name?: string | string[]) {
-    return name === undefined ? { ...this.lastValues } : deepGet(this.lastValues, name)
+    return name === undefined ? (this.lastValues && { ...this.lastValues }) : deepGet(this.lastValues, name)
   }
 
   // 更新表单值，单个表单值或多个表单值
