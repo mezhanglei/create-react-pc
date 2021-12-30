@@ -1,5 +1,4 @@
 import React, { ReactNode, CSSProperties } from 'react';
-import { throttle } from './utils/common';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "./utils/requestAnimationFrame";
 import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "./utils/dom";

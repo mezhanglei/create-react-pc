@@ -32,22 +32,27 @@ export const classes_list = {
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
+  const options = useContext(FormOptionsContext)
+  const finalProps = { ...options, ...props };
+  const { children, ...fieldProps } = finalProps;
   const {
     name,
-    children,
     rules,
     path,
     initialValue,
     label,
     suffix,
     className,
-    style
-  } = props
+    style,
+    inline,
+    compact,
+    required,
+    labelWidth,
+    labelAlign,
+    gutter
+  } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-  const options = useContext(FormOptionsContext)
-  const finalProps = { ...options, ...props };
-  const { inline, compact, required, labelWidth, labelAlign, gutter } = finalProps;
 
   if (currentPath && !formListPath?.includes(currentPath)) {
     formListPath.push(currentPath)
@@ -91,6 +96,6 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
       {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
     </div>
   )
-})
+});
 
 FormList.displayName = 'FormList';

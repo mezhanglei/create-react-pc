@@ -1,11 +1,9 @@
 import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
-
 import { FormStoreContext } from './form-store-context'
-import { useFieldChange } from './use-field-change'
 import { FormOptions, FormOptionsContext } from './form-options-context'
 import { getValuePropName, getValueFromEvent } from './utils/utils'
 import { FormRule } from './form-store'
-import classnames from 'classnames';
+import classnames from 'classnames'
 import { AopFactory } from '@/utils/function-aop'
 
 export interface FormItemProps extends FormOptions {
@@ -38,6 +36,10 @@ export const classes = {
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
+  const store = useContext(FormStoreContext)
+  const options = useContext(FormOptionsContext)
+  const finalProps = { ...options, ...props };
+  const { children, ...fieldProps } = finalProps;
   const {
     label,
     name,
@@ -47,17 +49,19 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     initialValue,
     className,
-    children,
-    style
-  } = props
+    style,
+    inline,
+    compact,
+    required,
+    labelWidth,
+    labelAlign,
+    gutter,
+    errorClassName = 'error'
+  } = fieldProps;
 
   const currentPath = path && name ? `${path}.${name}` : name;
-  const store = useContext(FormStoreContext)
-  const options = useContext(FormOptionsContext)
-  const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined)
-  const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined)
-  const finalProps = { ...options, ...props };
-  const { inline, compact, required, labelWidth, labelAlign, gutter, errorClassName = 'error' } = finalProps;
+  const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
+  const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
 
   // 给子元素绑定的onChange
   const onChange = useCallback(
@@ -66,8 +70,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       if (currentPath && store) {
         // 设置值
         store.setFieldValue(currentPath, value);
-        // onFormChange事件
-        options?.onFormChange && options?.onFormChange({ name: currentPath, value: value });
+        // 主动onchange事件
+        options?.onFieldsChange && options?.onFieldsChange({ name: currentPath, value: value });
       }
     },
     [currentPath, store, valueGetter]
@@ -75,40 +79,54 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const aopOnchange = new AopFactory(onChange);
 
-  // 监听数据变化的回调函数
-  useFieldChange({
-    store,
-    name: currentPath,
-    // 监听FormStore中的value变化
-    onChange: () => {
-      const value = store!.getFieldValue(currentPath!);
-      setValue(value);
-    },
-    // 监听错误变化
-    onError: () => {
-      const error = store!.getFieldError(currentPath!);
-      setError(error);
+  // 订阅更新值的函数
+  useEffect(() => {
+    if (!currentPath || !store) return
+    // 订阅目标控件
+    const uninstall = store.subscribeValue(currentPath, () => {
+      const newValue = store?.getFieldValue(currentPath);
+      setValue(newValue);
+    })
+    return () => {
+      uninstall()
     }
-  })
+  }, [currentPath, store]);
 
-  // store初始化值
+  // 订阅组件更新错误的函数
+  useEffect(() => {
+    if (!currentPath || !store) return
+    // 订阅目标控件
+    const uninstall = store.subscribeError(currentPath, () => {
+      const error = store?.getFieldError(currentPath);
+      setError(error);
+    })
+    return () => {
+      uninstall()
+    }
+  }, [currentPath, store]);
+
+  // 监听表单值的变化
+  useEffect(() => {
+    if (value !== undefined) {
+      options.onValuesChange && options.onValuesChange({ name: currentPath, value: value })
+    }
+  }, [JSON.stringify(value)]);
+
+  // 表单域初始化值
   useEffect(() => {
     if (!currentPath || !store) return;
     if (initialValue !== undefined) {
       store.setFieldValue(currentPath, initialValue, true);
     }
+    store?.setFieldProps(currentPath, fieldProps);
+    // 显示或隐藏事件(最后执行)
+    options?.onVisible && options?.onVisible({ name: currentPath, hidden: false });
     return () => {
-      store.setFieldValue(currentPath, undefined, true);
-    }
-  }, [currentPath, store]);
-
-  // store初始化props
-  useEffect(() => {
-    if (!currentPath || !store) return
-    store?.setFieldProps(currentPath, finalProps);
-    return () => {
+      options?.onVisible && options?.onVisible({ name: currentPath, hidden: true });
       // 清除该表单域的props
       store?.setFieldProps(currentPath, undefined, true);
+      // 清除初始值
+      store.setFieldValue(currentPath, undefined, true);
     }
   }, [currentPath, store]);
 
@@ -121,7 +139,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       const { onChange, className } = childProps || {};
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const aopAfterFn = aopOnchange.addAfter(onChange);
-
       const newChildProps = { className: classnames(className, error && errorClassName), [valuePropName]: value, onChange: aopAfterFn }
       return cloneElement(child, newChildProps)
     } else {

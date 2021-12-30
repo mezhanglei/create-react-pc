@@ -17,11 +17,14 @@ export const defaultWidgets: { [key: string]: any } = {
 };
 
 const watch = {
-  'name1': (key) => {
-    console.log(key)
+  'name1': (newValue, oldValue) => {
+    // console.log(newValue, oldValue)
   },
-  'name2': (key) => {
-    console.log(key)
+  'name2.0': (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+  },
+  'name3': (newValue, oldValue) => {
+    // console.log(newValue, oldValue)
   }
 }
 
@@ -44,6 +47,33 @@ class demo5 extends React.Component {
             hidden: '{{$form.name4 == true}}',
             props: {}
           },
+          name9: {
+            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
+          name10: {
+            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
+          name11: {
+            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
           name2: {
             label: "{{$form.name4 == true ? '开启' : '关闭'}}",
             required: true,
@@ -56,7 +86,7 @@ class demo5 extends React.Component {
               props: {
                 labelInValue: true,
                 style: { width: '100%' },
-                children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
+                children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }, { component: 'option', props: { key: 2, value: '2', children: '选项2' } }]
               }
             }, {
               component: 'select',
@@ -131,14 +161,14 @@ class demo5 extends React.Component {
   onClick = () => {
   }
 
-  onFormChange = ({ name, value }) => {
-    // this.store.setFieldValue('name1', []);
+  onFieldsChange = ({ name, value }) => {
+    // this.store.setFieldValue('', []);
   }
 
   render() {
     return (
       <div>
-        {/* <Form store={this.store} onFormChange={this.onFormChange} onSubmit={this.onSubmit}>
+        {/* <Form store={this.store} onFieldsChange={this.onFieldsChange} onSubmit={this.onSubmit}>
           <Form.Item label="表单容器" name="a">
             <Form.List name="b">
               <Form.Item key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
@@ -186,7 +216,7 @@ class demo5 extends React.Component {
             <button onClick={this.onClick}>Submit</button>
           </Form.Item>
         </Form> */}
-        <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFormChange={this.onFormChange} schema={this.state.schema} watch={watch} />
+        <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFieldsChange={this.onFieldsChange} schema={this.state.schema} watch={watch} />
       </div>
     );
   }

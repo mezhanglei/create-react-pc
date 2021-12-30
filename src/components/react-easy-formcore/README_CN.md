@@ -170,7 +170,9 @@ class demo extends React.Component {
 - `onSubmit` 表单提交回调，`可选`。
 - `onMount` 表单渲染完毕的回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
-- `onFormChange` 表单 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
+- `onFieldsChange` 表单域 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
+- `onValuesChange` 监听表单值的变化。`可选`。
+- `onVisible` 监听表单域组件(`Form.Item`)显示或者隐藏的回调函数 `可选`。
 - `inline` 所有 Form.Item 组件设置行内布局，默认值为`false`。
 - `compact` 所有 Form.Item 组件是否隐藏错误信息，默认值为`false`。
 - `required` 所有 Form.Item 组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。

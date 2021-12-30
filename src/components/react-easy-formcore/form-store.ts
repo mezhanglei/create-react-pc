@@ -5,7 +5,7 @@ import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';
 
-export type FormListener = { name: string, onChange: (name: string) => void }
+export type FormListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
 
 export type FormValidatorCallBack = (message?: string) => void;
 
@@ -31,6 +31,7 @@ export class FormStore<T extends Object = any> {
   private propsListeners: FormListener[] = []
 
   private values: Partial<T>
+  private lastValues?: Partial<T>
 
   private formErrors: FormErrors = {}
 
@@ -91,9 +92,16 @@ export class FormStore<T extends Object = any> {
     return name === undefined ? { ...this.values } : deepGet(this.values, name)
   }
 
+  // 获取旧表单值
+  public getLastValue(name?: string | string[]) {
+    return name === undefined ? { ...this.lastValues } : deepGet(this.lastValues, name)
+  }
+
   // 更新表单值，单个表单值或多个表单值
   public async setFieldValue(name: string | { [key: string]: any }, value?: any, forbidError?: boolean) {
     if (typeof name === 'string') {
+      // 旧表单值存储
+      this.lastValues = deepCopy(this.values);
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
@@ -112,6 +120,7 @@ export class FormStore<T extends Object = any> {
 
   // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
+    this.lastValues = deepCopy(this.values);
     this.values = deepCopy(values);
     this.notifyValue();
   }
@@ -216,13 +225,12 @@ export class FormStore<T extends Object = any> {
   private notifyValue(name?: string) {
     if (name) {
       this.valueListeners.forEach((listener) => {
-        // 判断是否为目标name的路径前缀
-        if (isExitPrefix(listener.name, name)) {
-          listener?.onChange && listener?.onChange(listener?.name)
+        if (isExitPrefix(listener?.name, name)) {
+          listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
         }
       })
     } else {
-      this.valueListeners.forEach((listener) => listener.onChange(listener?.name))
+      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
     }
   }
 
@@ -230,13 +238,12 @@ export class FormStore<T extends Object = any> {
   private notifyError(name?: string) {
     if (name) {
       this.errorListeners.forEach((listener) => {
-        // 判断是否为目标name的路径前缀
-        if (isExitPrefix(listener.name, name)) {
-          listener?.onChange && listener?.onChange(listener?.name)
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange()
         }
       })
     } else {
-      this.errorListeners.forEach((listener) => listener.onChange(listener?.name))
+      this.errorListeners.forEach((listener) => listener.onChange())
     }
   }
 
@@ -244,13 +251,12 @@ export class FormStore<T extends Object = any> {
   private notifyProps(name?: string) {
     if (name) {
       this.propsListeners.forEach((listener) => {
-        // 判断是否为目标name的路径前缀
-        if (isExitPrefix(listener.name, name)) {
-          listener?.onChange && listener?.onChange(listener?.name)
+        if (listener?.name === name) {
+          listener?.onChange && listener?.onChange()
         }
       })
     } else {
-      this.propsListeners.forEach((listener) => listener.onChange(listener?.name))
+      this.propsListeners.forEach((listener) => listener.onChange())
     }
   }
 

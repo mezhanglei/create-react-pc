@@ -1,7 +1,7 @@
 import { isObject } from "./type";
 import { produce } from 'immer';
 
-// 判断两个对象(包括数组)是否相等
+// 判断两个值是否相等
 export function isObjectEqual(a: any, b: any) {
     if (!(typeof a == 'object' && typeof b === 'object')) {
         return a === b;
@@ -56,12 +56,12 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 }
 
 // 根据路径获取目标对象中的值
-export function deepGet(obj: object, keys: string | string[], defaultVal?: any): any {
+export function deepGet(obj: object, keys: string | string[]): any {
     return (
         (!Array.isArray(keys)
             ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
             : keys
-        ).reduce((o, k) => (o || {})[k], obj) || defaultVal
+        ).reduce((o, k) => (o || {})[k], obj)
     );
 }
 

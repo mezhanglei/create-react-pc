@@ -28,9 +28,10 @@ export interface SchemaData extends FormProps {
     properties: { [key: string]: FormFieldProps }
 }
 
+export type WatchHandler = (newValue: any, oldValue: string) => void
 export interface RenderFormProps extends FormProps {
     schema: SchemaData
-    watch: {[key: string]: {}}
+    watch: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler }
     widgets: { [key: string]: any }
     Fields: typeof defaultFields
 };

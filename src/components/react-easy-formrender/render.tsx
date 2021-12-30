@@ -5,10 +5,12 @@ import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
 import { AopFactory } from '@/utils/function-aop';
 import { isEmpty, isObject } from '@/utils/type';
+import { debounce } from '@/utils/common';
 
 class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
-    aopFormOnChange: AopFactory;
-    aopFormMount: AopFactory;
+    aopOnValuesChange: AopFactory;
+    aopOnMount: AopFactory;
+    aopOnVisible: AopFactory;
     constructor(props: RenderFormProps) {
         super(props);
         this.state = {
@@ -20,14 +22,16 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         this.renderFormItem = this.renderFormItem.bind(this);
         this.renderListItem = this.renderListItem.bind(this);
         this.renderProperties = this.renderProperties.bind(this);
-        this.onFormChange = this.onFormChange.bind(this);
-        this.onFormMount = this.onFormMount.bind(this);
+        this.onValuesChange = debounce(this.onValuesChange.bind(this), 16.7);
+        this.onVisible = debounce(this.onVisible.bind(this), 16.7);
+        this.onMount = this.onMount.bind(this);
         this.handleFieldProps = this.handleFieldProps.bind(this);
         this.calcExpression = this.calcExpression.bind(this);
         this.showCalcFieldProps = this.showCalcFieldProps.bind(this);
         this.handleWatch = this.handleWatch.bind(this);
-        this.aopFormOnChange = new AopFactory(this.onFormChange);
-        this.aopFormMount = new AopFactory(this.onFormMount);
+        this.aopOnValuesChange = new AopFactory(this.onValuesChange);
+        this.aopOnMount = new AopFactory(this.onMount);
+        this.aopOnVisible = new AopFactory(this.onVisible);
     }
 
     static defaultProps = {
@@ -36,9 +40,20 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     }
 
     // 表单渲染完成
-    onFormMount() {
+    onMount() {
         this.handleFieldProps();
-        this.handleWatch();
+    }
+
+    // 监听表单值变化的事件
+    onValuesChange() {
+        this.handleFieldProps();
+    }
+
+    // 监听表单域的显示或隐藏
+    onVisible(params: { name: string, hidden: boolean }) {
+        if (params?.hidden) {
+            this.handleWatch();
+        }
     }
 
     componentDidUpdate(prevProps: RenderFormProps, prevState: RenderFormState) {
@@ -59,19 +74,26 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
         return null;
     }
 
-    // 初始化监听方法
-    handleWatch(isMounted?: boolean) {
+    // 遍历监听指定对象
+    handleWatch() {
         const { store, watch } = this.props;
-        Object.entries(watch)?.map(([key, callback]) => {
-            if (typeof callback === 'function') {
-                store?.subscribeValue(key, (key) => callback(key))
-            } else {
-
+        Object.entries(watch || {})?.map(([key, watcher]) => {
+            // 函数形式
+            if (typeof watcher === 'function') {
+                store?.subscribeValue(key, watcher)
+                // 对象形式
+            } else if (typeof watcher === 'object') {
+                if (typeof watcher.handler === 'function') {
+                    store?.subscribeValue(key, watcher.handler);
+                }
+                if (watcher.immediate) {
+                    watcher.handler(store?.getFieldValue(key), store?.getLastValue(key));
+                }
             }
         });
     }
 
-    // 初始化所有的控件的属性
+    // 遍历表单域的属性
     handleFieldProps() {
         const fieldPropsMap = new Map();
         // 遍历对象树中的叶子节点(控件的属性节点)
@@ -122,11 +144,6 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
             );
         }
         return newField;
-    }
-
-    // onChange时触发的事件
-    onFormChange(params: { name: string, value: any }) {
-        this.handleFieldProps();
     }
 
     // 值兼容字符串表达式
@@ -260,13 +277,15 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     render() {
         const { schema, watch, ...rest } = this.props;
         const { properties, ...restForm } = schema || {};
-        const formChangeProps = rest?.onFormChange || restForm?.onFormChange;
-        const formMountProps = rest?.onMount || restForm?.onMount;
-        const formChange = this.aopFormOnChange.addAfter(formChangeProps);
-        const formOnMount = this.aopFormMount.addAfter(formMountProps);
+        const valuesChangeProps = rest?.onValuesChange || restForm?.onValuesChange;
+        const onMountProps = rest?.onMount || restForm?.onMount;
+        const onVisibleProps = rest?.onVisible || restForm?.onVisible;
+        const valuesChange = this.aopOnValuesChange.addAfter(valuesChangeProps);
+        const formOnMount = this.aopOnMount.addAfter(onMountProps);
+        const onVisible = this.aopOnVisible.addAfter(onVisibleProps);
 
         return (
-            <Form  {...restForm} {...rest} onFormChange={formChange} onMount={formOnMount}>
+            <Form  {...restForm} {...rest} onValuesChange={valuesChange} onMount={formOnMount} onVisible={onVisible}>
                 {this.getFormList(properties)}
             </Form>
         );
