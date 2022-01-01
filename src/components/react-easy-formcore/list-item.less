@@ -1,6 +1,4 @@
-.rh-form-field,
-.rh-form-list {
-  margin-bottom: 20px;
+.custom-list-item {
   display: flex;
   align-items: flex-start;
   min-height: 32px;
@@ -25,17 +23,10 @@
 
   &__container {
     position: relative;
-    flex: 1;
     margin-top: auto;
     margin-bottom: auto;
-  }
-
-  &__message {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    font-size: 12px;
-    color: red;
+    word-break: break-all;
+    word-wrap: break-word;
   }
 
   &__footer {
@@ -51,25 +42,8 @@
     display: inline-flex;
   }
 
-  &--error &__container &__control {
-    .ant-input,
-    .ant-select-selector {
-      border-color: #ff4d4f;
-      &:hover {
-        border-color: #ff7875;
-        box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
-        border-right-width: 1px !important;
-        outline: 0;
-      }
-    }
-  }
-
   &--compact {
     margin-bottom: 0;
-  }
-
-  &--compact &__message {
-    display: none;
   }
 
   &--required &__header::before {

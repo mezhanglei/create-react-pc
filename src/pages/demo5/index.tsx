@@ -17,15 +17,15 @@ export const defaultWidgets: { [key: string]: any } = {
 };
 
 const watch = {
-  'name1': (newValue, oldValue) => {
-    // console.log(newValue, oldValue)
-  },
-  'name2.0': (newValue, oldValue) => {
-    console.log(newValue, oldValue)
-  },
-  'name3': (newValue, oldValue) => {
-    // console.log(newValue, oldValue)
-  }
+  // 'name1': (newValue, oldValue) => {
+  //   console.log(newValue, oldValue)
+  // },
+  // 'name2.0': (newValue, oldValue) => {
+  //   console.log(newValue, oldValue)
+  // },
+  // 'name3': (newValue, oldValue) => {
+  //   console.log(newValue, oldValue)
+  // }
 }
 
 class demo5 extends React.Component {
@@ -44,6 +44,8 @@ class demo5 extends React.Component {
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
+            readOnly: true,
+            render: '只读模式内容',
             hidden: '{{$form.name4 == true}}',
             props: {}
           },

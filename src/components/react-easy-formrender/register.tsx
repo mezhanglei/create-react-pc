@@ -1,5 +1,4 @@
-import { Form } from '../react-easy-formcore';
-import { ListItem } from '@/components/list-item/base';
+import { Form, ListItem } from '../react-easy-formcore';
 
 // 表单域组件
 export const defaultFields: { [key: string]: any } = {

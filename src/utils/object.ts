@@ -56,7 +56,7 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 }
 
 // 根据路径获取目标对象中的值
-export function deepGet(obj: object, keys: string | string[]): any {
+export function deepGet(obj: object | undefined, keys: string | string[]): any {
     return (
         (!Array.isArray(keys)
             ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
