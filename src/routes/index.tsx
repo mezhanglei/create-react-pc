@@ -4,7 +4,6 @@ import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } fro
 import { DemoRoute } from "./demo";
 import { DefaultRoutes } from "./default";
 import NotFound from "@/components/default/not-found";
-import { initWX } from "@/core/wx";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
 import TransitionRoute from "./transitionRoute";
@@ -19,19 +18,8 @@ export interface MyRouteProps extends RouteProps {
 // 路由配置
 const routes = [
     ...DemoRoute,
-    ...DefaultRoutes,
-    // {
-    //     path: '*',
-    //     component: NotFound,
-    //     auth: true
-    // }
+    ...DefaultRoutes
 ];
-
-// 进入路由页面之前触发的方法
-function beforeRouter(props, item: MyRouteProps) {
-    // 微信授权
-    // initWX();
-}
 
 // 路由组件
 export default function RouteComponent() {
@@ -47,7 +35,6 @@ export default function RouteComponent() {
                         exact={item.exact}
                         path={item.path}
                         render={(props) => {
-                            beforeRouter(props, item);
                             if (!isLogin() && item.auth) {
                                 return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: props.location } }} />;
                             } else {

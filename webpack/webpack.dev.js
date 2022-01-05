@@ -368,9 +368,6 @@ module.exports = {
     devtool: "source-map",
 };
 
-// 接口前缀, 会拦截以此为开头的请求
-const API_PREFIX = '/mock/*';
-
 // 拦截请求
 function handleRequest(req, res) {
     let data = "";

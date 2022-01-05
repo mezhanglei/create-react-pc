@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import GridItem from './grid-item';
 import { GridItemEventHandle, DragTypes, GridItemEvent } from "./grid-item-types";
-import { compactLayout, getMaxContainerHeight, layoutCheck, correctLayout, syncLayout } from './utils/dom';
-import { DragGridProps, MapLayout } from './drag-grid-types';
+import { compactLayout, layoutCheck, correctLayout, bottom, getLayoutItem } from './utils/dom';
+import { DragGridProps } from './drag-grid-types';
 import classNames from "classnames";
 import { throttle } from '@/utils/common';
 
 const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
 
-    const [parentDragType, setParentDragType] = useState<`${DragTypes}`>();
     const [layout, setLayout] = useState<GridItemEvent[]>([]);
-    const [mapLayout, setMapLayout] = useState<MapLayout>();
-    const [containerHeight, setContainerHeight] = useState<number>();
+    const [parentDragType, setParentDragType] = useState<DragTypes>();
+    const [placeholder, setPlaceholder] = useState<{ GridX: number, GridY: number, w: number, h: number }>({ GridX: 0, GridY: 0, w: 0, h: 0 });
 
     const parentRef = useRef<any>();
     // 节流函数
@@ -28,30 +27,26 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
 
     useEffect(() => {
         recalculateLayout(props.layout, props?.cols);
-    }, [props.layout, props?.cols, props?.rowHeight, props?.margin]);
+    }, [props.layout, props?.cols]);
 
     const recalculateLayout = (layout: GridItemEvent[], cols: number) => {
         const corrected = correctLayout(layout, cols);
-        const { compacted, mapLayout } = compactLayout(
+        const compacted = compactLayout(
             corrected,
-            undefined,
             undefined
         );
 
         setLayout(compacted);
-        setMapLayout(mapLayout);
-        setContainerHeight(getMaxContainerHeight(
-            compacted,
-            props?.rowHeight,
-            props?.margin?.[1],
-            containerHeight,
-            false
-        ));
     }
 
     const onDragStart: GridItemEventHandle = (layoutItem, e) => {
         setParentDragType(DragTypes.dragStart);
-        setMapLayout(mapLayout && syncLayout(mapLayout, layoutItem))
+        setPlaceholder({
+            GridX: layoutItem?.GridX,
+            GridY: layoutItem?.GridY,
+            w: layoutItem?.w,
+            h: layoutItem?.h
+        });
         props.onDragStart && props.onDragStart(layoutItem, layout, undefined, e);
     }
 
@@ -60,50 +55,41 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
             setParentDragType(DragTypes.draging);
             const newLayout = layoutCheck(
                 layout,
-                layoutItem,
-                layoutItem?.uniqueKey + '',
-                layoutItem?.uniqueKey + '' /*用户移动方块的key */
+                layoutItem
             )
-            const ret = compactLayout(
+            const compacted = compactLayout(
                 newLayout,
-                layoutItem,
-                mapLayout
+                layoutItem
             );
-            setLayout(ret?.compacted);
-            setMapLayout(ret?.mapLayout);
-            setContainerHeight(getMaxContainerHeight(
-                ret?.compacted,
-                props?.rowHeight,
-                props?.margin?.[1],
-                containerHeight
-            ))
-            props.onDrag && props.onDrag(layoutItem, layout, ret?.compacted, e)
+            setLayout(compacted);
+            setPlaceholder((data) => ({
+                ...data,
+                GridX: layoutItem?.GridX,
+                GridY: layoutItem?.GridY
+            }));
+            props.onDrag && props.onDrag(layoutItem, layout, compacted, e)
         });
     }
 
     const onDragEnd: GridItemEventHandle = (layoutItem, e) => {
         setParentDragType(DragTypes.dragEnd);
 
-        const ret = compactLayout(
+        const compacted = compactLayout(
             layout,
-            undefined,
-            mapLayout
+            undefined
         );
-        setLayout(ret?.compacted);
-        setMapLayout(ret?.mapLayout);
-        setContainerHeight(getMaxContainerHeight(
-            ret?.compacted,
-            props?.rowHeight,
-            props?.margin?.[1],
-            containerHeight
-        ))
-        props.onDragEnd && props.onDragEnd(layoutItem, layout, ret?.compacted, e);
+        setLayout(compacted);
+        props.onDragEnd && props.onDragEnd(layoutItem, layout, compacted, e);
     }
 
     const onResizeStart: GridItemEventHandle = (layoutItem, e) => {
         setParentDragType(DragTypes.resizeStart);
-        const newlayout = mapLayout && syncLayout(mapLayout, layoutItem);
-        setMapLayout(newlayout);
+        setPlaceholder({
+            GridX: layoutItem?.GridX,
+            GridY: layoutItem?.GridY,
+            w: layoutItem?.w,
+            h: layoutItem?.h
+        });
         props.onResizeStart && props.onResizeStart(layoutItem, layout, undefined, e);
     }
 
@@ -112,50 +98,33 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
             setParentDragType(DragTypes.resizing);
             const newLayout = layoutCheck(
                 layout,
-                layoutItem,
-                layoutItem.uniqueKey + '',
-                layoutItem.uniqueKey + ''
+                layoutItem
             );
-            const ret = compactLayout(
+            const compacted = compactLayout(
                 newLayout,
-                layoutItem,
-                mapLayout
+                layoutItem
             );
-            setLayout(ret?.compacted);
-            setMapLayout(ret?.mapLayout);
-            setContainerHeight(getMaxContainerHeight(
-                ret?.compacted,
-                props?.rowHeight,
-                props?.margin?.[1],
-                containerHeight,
-                false
-            ));
-            props.onResizing && props.onResizing(layoutItem, layout, ret?.compacted, e);
+            setLayout(compacted);
+            setPlaceholder((data) => ({ ...data, w: layoutItem?.w, h: layoutItem?.h }));
+            props.onResizing && props.onResizing(layoutItem, layout, compacted, e);
         })
     }
 
     const onResizeEnd: GridItemEventHandle = (layoutItem, e) => {
         setParentDragType(DragTypes.resizeEnd);
-        const ret = compactLayout(
+        const compacted = compactLayout(
             layout,
-            undefined,
-            mapLayout
+            undefined
         );
-        setLayout(ret?.compacted);
-        setMapLayout(ret?.mapLayout);
-        setContainerHeight(getMaxContainerHeight(
-            ret?.compacted,
-            props?.rowHeight,
-            props?.margin?.[1],
-            containerHeight
-        ));
-        props.onResizeEnd && props.onResizeEnd(layoutItem, layout, ret?.compacted, e);
+        setLayout(compacted);
+        props.onResizeEnd && props.onResizeEnd(layoutItem, layout, compacted, e);
     }
 
     const getGridItem = (child: any) => {
-        if (mapLayout) {
+        if (layout?.length) {
             const uniqueKey = child?.key;
-            const renderItem = mapLayout?.[uniqueKey + ''];
+            const renderItem = getLayoutItem(layout, uniqueKey);
+            if (!renderItem) return;
             return (
                 <GridItem
                     {...renderItem}
@@ -173,14 +142,51 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
                     onResizing={onResizing}
                     onResizeEnd={onResizeEnd}
                     zIndexRange={[2, 10]}
-                    isMove={renderItem?.isMove ?? false}
-                    parentDragType={parentDragType}
-                    key={uniqueKey}
                 >
                     {child}
                 </GridItem>
             )
         }
+    }
+
+    const renderPlaceholder = () => {
+        if (parentDragType && [DragTypes.dragEnd, DragTypes.resizeEnd].includes(parentDragType)) return;
+        return (
+            <GridItem
+                margin={props?.margin}
+                cols={props?.cols}
+                bounds={parentRef.current}
+                containerWidth={props?.width}
+                containerPadding={props?.padding ?? [0, 0]}
+                rowHeight={props?.rowHeight}
+                zIndexRange={[1, 9]}
+                style={{
+                    background: 'rgba(15,15,15,0.3)',
+                    transition: ' all .15s ease-out'
+                }}
+                GridX={placeholder.GridX}
+                GridY={placeholder.GridY}
+                w={placeholder.w}
+                h={placeholder.h}
+                dragAxis={[]}
+                resizeAxis={[]}
+            >
+                <div />
+            </GridItem>
+        );
+    }
+
+    const containerHeight = () => {
+        const nbRow = bottom(layout);
+        const containerPaddingY = props.padding
+            ? props.padding[1]
+            : props.margin[1];
+        return (
+            nbRow * props.rowHeight +
+            (nbRow - 1) * props.margin[1] +
+            containerPaddingY * 2 +
+            "px"
+        );
     }
 
     const cls = classNames('DraggerLayout', props?.className);
@@ -191,10 +197,8 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
             className={cls}
             style={{
                 ...props?.style,
-                left: 100,
                 width: props?.width || parentRef.current?.style?.width,
-                height: containerHeight,
-                zIndex: 1
+                height: containerHeight()
             }}
         >
             {
@@ -204,6 +208,7 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
                     }
                 })
             }
+            {renderPlaceholder()}
         </div>
     );
 });

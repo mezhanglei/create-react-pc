@@ -1,7 +1,6 @@
 import axios, { Method } from "axios";
 import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
 import { message } from "antd";
-import { myStorage } from "@/utils/cache";
 import { loginOut, getToken } from "@/core/common";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";

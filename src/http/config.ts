@@ -59,4 +59,4 @@ export interface CustomConfig extends AxiosRequestConfig {
     unique?: boolean // 去除重复请求
 }
 
-export type ReuestInstance = { [key: string]: AxiosInstance }
+export type ReuestInstance = { [key: string]: AxiosInstance['request'] }

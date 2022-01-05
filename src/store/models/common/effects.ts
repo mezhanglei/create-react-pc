@@ -1,14 +1,12 @@
 import { getUserInfo } from '@/services/account';
-import type { EffectPayload, ActionPayload } from './interface';
 import { setUserInfo } from './actions';
 import type { EffectsCommandMap } from 'dva';
 import { AnyAction } from 'redux';
-
-// 弹窗变量
-let modal;
+import { GetPromiseReturnType } from '../interface';
 
 // 获取用户信息
-export function* fetchUserInfo(_: AnyAction, effects: EffectsCommandMap): any {
-    const res = yield effects.call(getUserInfo);
-    return yield effects.put(setUserInfo(res?.data));
+export function* fetchUserInfo(_: AnyAction, effects: EffectsCommandMap)  {
+    const res: GetPromiseReturnType<typeof getUserInfo> = yield effects.call(getUserInfo);
+    yield effects.put(setUserInfo(res.data));
+    return res;
 }

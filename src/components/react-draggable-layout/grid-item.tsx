@@ -25,18 +25,6 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         resizeAxis: DirectionCode
     }
 
-    // shouldComponentUpdate(props: GridItemProps, state: any) {
-
-    //     let isUpdate = false
-    //     Object.keys(props).forEach((key) => {
-    //         if ((props as any)[key] !== (this.props as any)[key]) {
-    //             isUpdate = true
-    //         }
-    //     })
-
-    //     return isUpdate
-    // }
-
     // 计算每列的宽度
     calcolsWidth = () => {
         const { containerWidth, cols, containerPadding, margin } = this.props;
@@ -85,8 +73,8 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     }
 
     addEventParams = (data: object) => {
-        const { GridX, GridY, w, h, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
-        return { GridX, GridY, w, h, uniqueKey, margin, isMove, forbid, handle, dragAxis, resizeAxis, zIndexRange, ...data };
+        const { GridX, GridY, w, h, uniqueKey, margin, forbid, handle, dragAxis, resizeAxis, zIndexRange } = this.props;
+        return { GridX, GridY, w, h, uniqueKey, margin, forbid, handle, dragAxis, resizeAxis, zIndexRange, ...data };
     }
 
     onDragStart: DragEventHandler = (e, data) => {
@@ -98,6 +86,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         const { GridX, GridY } = this.calPxToGridXY(x, y)
         this.props.onDragStart && this.props.onDragStart(this.addEventParams({ GridX, GridY }), e)
     }
+
     onDrag: DragEventHandler = (e, data) => {
         this.setState({
             dragType: DragTypes.draging
@@ -160,7 +149,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     }
 
     render() {
-        const { w, h, style, bounds, GridX, GridY, handle, dragAxis, resizeAxis, isMove, parentDragType, zIndexRange, children, className } = this.props;
+        const { w, h, style, bounds, GridX, GridY, handle, dragAxis, resizeAxis, zIndexRange, children, className } = this.props;
         const dragType = this.state.dragType;
         const { x, y } = this.calGridXYToPx(GridX, GridY);
         const { wPx, hPx } = this.calWHtoPx(w, h);
@@ -192,7 +181,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
                                 ...children.props.style,
                                 ...style,
                                 position: 'absolute',
-                                transition: isMove || !parentDragType || !this.canDrag() ? '' : 'all .2s ease-out',
+                                transition: (dragType && [DragTypes.draging, DragTypes.resizing] as string[])?.includes(dragType) || !this.canDrag() ? '' : 'all .2s ease-out',
                                 zIndex: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
                             }
                         })

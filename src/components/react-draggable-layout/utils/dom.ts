@@ -1,20 +1,13 @@
-
-import { MapLayout } from "../drag-grid-types";
 import { GridItemEvent } from "../grid-item-types";
-import { isNumber } from '@/utils/type';
 
-/**
- * 把用户移动的块，标记为true
- */
- export const syncLayout = (mapLayout: MapLayout, movingItem: GridItemEvent) => {
-    if (!mapLayout) return;
-    const key = movingItem.uniqueKey;
-    mapLayout[key].GridX = movingItem.GridX;
-    mapLayout[key].GridY = movingItem.GridY
-    mapLayout[key].isMove = true;
-    return mapLayout;
+// 根据key获取目标
+export function getLayoutItem(layout: GridItemEvent[], id: string) {
+    for (let i = 0, len = layout?.length; i < len; i++) {
+        if (layout[i].uniqueKey === id) return layout[i];
+    }
 }
 
+// 检测是否碰撞
 export const colslision = (a: GridItemEvent, b: GridItemEvent) => {
     if (a.GridX === b.GridX && a.GridY === b.GridY &&
         a.w === b.w && a.h === b.h) {
@@ -39,14 +32,12 @@ export const getFirstcolslison = (layout: GridItemEvent[], item: GridItemEvent) 
     return null
 }
 
-/**
- * 这个函数带有记忆功能
- */
+// 检测碰撞进行重排
 export const layoutCheck = function () {
 
     let caches: any = {};
 
-    const _layoutCheck = function (layout: GridItemEvent[], layoutItem: GridItemEvent, uniqueKey: string, fristItemkey: string) {
+    const _layoutCheck = function (layout: GridItemEvent[], layoutItem: GridItemEvent) {
 
 
         if (layoutItem.GridX === caches.GridX
@@ -56,60 +47,39 @@ export const layoutCheck = function () {
             return layout;
         }
         caches = { ...layoutItem };
+        const uniqueKey = layoutItem?.uniqueKey;
 
-        let i: any = [], movedItem: any = []/**收集所有移动过的物体 */
-        let newlayout = layout.map((item, idx) => {
-            if (item.uniqueKey !== uniqueKey) {
-                if (item.forbid) {
-                    return item
-                }
-                if (colslision(item, layoutItem)) {
-                    i.push(item.uniqueKey)
-                    /**
-                     * 这里就是奇迹发生的地方，如果向上移动，那么必须注意的是
-                     * 一格一格的移动，而不是一次性移动
-                     */
-                    let offsetY = item.GridY + 1
-
+        const newLayout = [];
+        for (let i = 0; i < layout?.length; i++) {
+            const item = layout?.[i];
+            // 非拖拽元素
+            if (item?.uniqueKey !== uniqueKey) {
+                // 当元素和移动元素碰撞时
+                if (colslision(item, layoutItem) && !item?.forbid) {
+                    let offsetY;
                     if (layoutItem.GridY > item.GridY && layoutItem.GridY < item.GridY + item.h) {
-                        /**
-                         * 元素向上移动时，元素的上面空间不足,则不移动这个元素
-                         * 当元素移动到GridY>所要向上交换的元素时，就不会进入这里，直接交换元素
-                         */
-                        offsetY = item.GridY
+                        offsetY = item.GridY;
+                    } else {
+                        offsetY = item.GridY + 1;
                     }
-                    const newItem = { ...item, GridY: offsetY, isMove: false }
-                    movedItem.push(newItem)
-                    return newItem
+                    const newItem = { ...item, GridY: offsetY }
+                    newLayout?.push(newItem);
+                } else {
+                    newLayout?.push(item);
                 }
-            } else if (fristItemkey === uniqueKey) {
-
-                /**永远保持用户移动的块是 isMove === true */
-                return { ...item, ...layoutItem }
+            } else {
+                const newItem = { ...item, ...layoutItem };
+                newLayout?.push(newItem);
             }
-
-            return item
-        })
-        /** 递归调用,将layout中的所有重叠元素全部移动 */
-        for (let c = 0; c < movedItem?.length; c++) {
-            newlayout = _layoutCheck(newlayout, movedItem[c], i[c], fristItemkey)
         }
-        return newlayout
+        return newLayout;
     }
     return _layoutCheck;
 }();
 
-export function quickSort(a: number[]): any {
-    return a.length <= 1
-        ? a
-        : quickSort(a.slice(1).filter(item => item <= a[0])).concat(
-            a[0],
-            quickSort(a.slice(1).filter(item => item > a[0]))
-        )
-}
-
 export const sortLayout = (layout: GridItemEvent[]) => {
-    return [].concat(layout).sort((a: GridItemEvent, b: GridItemEvent) => {
+    const newLayout = JSON.parse(JSON.stringify(layout || []));
+    return newLayout?.sort((a: GridItemEvent, b: GridItemEvent) => {
         if (a.GridY > b.GridY || (a.GridY === b.GridY && a.GridX > b.GridX)) {
             if (a.forbid) return 0 // 为了静态，排序的时候尽量把静态的放在前面
             return 1
@@ -117,45 +87,25 @@ export const sortLayout = (layout: GridItemEvent[]) => {
             return 0
         }
         return -1
-    })
+    });
 }
 
-/**
- * 这个函数带有记忆功能
- */
-export const getMaxContainerHeight = (function () {
-    let lastOneYNH = 0;
-    return function (
-        layout: GridItemEvent[],
-        elementHeight = 30,
-        elementMarginBottom = 10,
-        currentHeight?: number,
-        useCache?: Boolean
-    ) {
-        if (useCache !== false) {
-            const length = layout.length
-            const currentLastOne = layout[length - 1]
-            if (currentLastOne.GridY + currentLastOne.h === lastOneYNH) {
-                return currentHeight
-            }
-            lastOneYNH = currentLastOne.GridY + currentLastOne.h
-        }
-
-        const ar = layout?.map(item => {
-            return item.GridY + item.h
-        })
-        const h = quickSort(ar)[ar?.length - 1];
-        const height = isNumber(h) ? (h * (elementHeight + elementMarginBottom) + elementMarginBottom) : 0;
-        return height;
+export function bottom(layout: GridItemEvent[]): number {
+    let max = 0,
+        bottomY;
+    for (let i = 0, len = layout.length; i < len; i++) {
+        bottomY = layout[i].GridY + layout[i].h;
+        if (bottomY > max) max = bottomY;
     }
-})()
+    return max;
+}
 
 /**
  * 压缩单个元素，使得每一个元素都会紧挨着边界或者相邻的元素
  * @param {*} finishedLayout 压缩完的元素会放进这里来，用来对比之后的每一个元素是否需要压缩
  * @param {*} item 
  */
- export const compactItem = (finishedLayout: GridItemEvent[], item: GridItemEvent) => {
+export const compactItem = (finishedLayout: GridItemEvent[], item: GridItemEvent) => {
     if (item.forbid) return item;
     const newItem = { ...item, uniqueKey: item.uniqueKey + '' }
     if (finishedLayout.length === 0) {
@@ -186,7 +136,7 @@ export const compactLayout = function () {
     let _cache: any = {
     };
 
-    return function (layout: GridItemEvent[], movingItem?: GridItemEvent, mapedLayout?: MapLayout) {
+    return function (layout: GridItemEvent[], movingItem?: GridItemEvent) {
         if (movingItem) {
             if (_cache.GridX === movingItem.GridX
                 && _cache.GridY === movingItem.GridY &&
@@ -194,40 +144,28 @@ export const compactLayout = function () {
                 _cache.h === movingItem.h &&
                 _cache.uniqueKey === movingItem.uniqueKey
             ) {
-                return {
-                    compacted: layout,
-                    mapLayout: mapedLayout
-                };
+                return layout;
             }
             _cache = movingItem;
         }
         let sorted = sortLayout(layout) //把静态的放在前面
         const needCompact = Array(layout.length)
         const compareList = []
-        const mapLayout: MapLayout = {};
-        
-        
+
+
         for (let i = 0, length = sorted.length; i < length; i++) {
             let finished = compactItem(compareList, sorted[i])
             if (movingItem) {
                 if (movingItem.uniqueKey === finished.uniqueKey) {
                     movingItem.GridX = finished.GridX;
                     movingItem.GridY = finished.GridY;
-                    finished.isMove = true
-                } else
-                    finished.isMove = false
+                }
             }
-            else
-                finished.isMove = false
             compareList.push(finished)
             needCompact[i] = finished
-            mapLayout[finished.uniqueKey + ''] = finished;
         }
-        
-        return {
-            compacted: needCompact,
-            mapLayout
-        }
+
+        return needCompact;
     }
 
 }()
@@ -255,21 +193,14 @@ export const checkWidthHeight = (GridX: number, w: number, h: number, cols: numb
 }
 
 // 边界纠正
-export const correctItem = (item: GridItemEvent, cols: number) => {
-    const { GridX, GridY } = checkInContainer(item.GridX, item.GridY, cols, item.w)
-    return {
-        GridX,
-        GridY
-    }
-}
 export const correctLayout = (layout: GridItemEvent[], cols: number) => {
     let copy = [...layout];
     for (let i = 0; i < layout?.length - 1; i++) {
-        copy[i].GridX = correctItem(copy[i], cols)?.GridX;
-        copy[i].GridY = correctItem(copy[i + 1], cols)?.GridY;
+        copy[i].GridX = checkInContainer(copy[i].GridX, copy[i].GridY, cols, copy[i].w)?.GridX;
+        copy[i].GridY = checkInContainer(copy[i + 1].GridX, copy[i + 1].GridY, cols, copy[i + 1].w)?.GridY;
 
         if (colslision(copy[i], copy[i + 1])) {
-            copy = layoutCheck(copy, <GridItemEvent>copy[i], (<GridItemEvent>copy[i]).uniqueKey + '', (<GridItemEvent>copy[i]).uniqueKey + '')
+            copy = layoutCheck(copy, <GridItemEvent>copy[i])
         }
     }
 

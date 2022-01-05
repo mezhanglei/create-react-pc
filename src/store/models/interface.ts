@@ -1,6 +1,7 @@
 
 import type { Reducer } from 'redux';
 import type { Effect, EffectType, Model as DvaModel, EffectsCommandMap } from 'dva';
+import { CommonState } from './common/interface';
 
 interface Action {
     type: string;
@@ -24,11 +25,7 @@ export interface Model<ModelNameSpace, S> {
 
 /** 规定 reducer中的处理函数 接收state 和 payload 返回计算处理过后的state */
 export type ReducerStateHandler<State, Payload> = (state: State, payload: { type: string; payload: Payload }) => State;
-
-/** 用来从 actionCreator 中推断出 payload 的类型 */
-export type ActionPayload<T extends (...args: any) => { payload: unknown }> = ReturnType<T>['payload'];
-
-/** 如果你的 action creator 全部放在一个 record 中的话 你可以使用该类型推断生成 Payload record */
-export type ActionPayloadRecord<T extends { [key: string]: (...args: any) => { payload: unknown } }> = {
-    [K in keyof T]: ActionPayload<T[K]>;
-};
+// reducer函数类型
+export type ReducerHandler<P> = ReducerStateHandler<CommonState, P>;
+// promise函数执行后的返回值
+export type GetPromiseReturnType<P extends (...args: any[]) => any> = ReturnType<P> extends Promise<infer X> ? X : never;

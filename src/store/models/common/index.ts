@@ -29,8 +29,8 @@ export default {
     reducers: reducers,
     effects: effects,
     subscriptions: {
-        setup({ dispatch }) {
-            dispatch(fetchUserInfo())
+        async setup({ dispatch }) {
+            await dispatch(fetchUserInfo())
         }
     }
 } as CommonModel;

@@ -17,8 +17,7 @@ export interface GridItemEvent {
     w: number;
     h: number;
     margin?: [number, number];
-    uniqueKey: string | number;
-    isMove?: boolean; // 是否移动
+    uniqueKey?: string | number;
     forbid?: boolean; // 禁止拖拽和移动
     bounds?: string | HTMLElement | BoundsInterface; // 定位父元素
     handle?: string | HTMLElement; // 拖拽句柄
@@ -40,7 +39,6 @@ export interface GridItemProps extends GridItemEvent {
     onResizeStart?: GridItemEventHandle;
     onResizing?: GridItemEventHandle;
     onResizeEnd?: GridItemEventHandle;
-    parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
     children: any;
     className?: string;
     style?: React.CSSProperties;

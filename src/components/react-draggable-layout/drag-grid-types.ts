@@ -21,15 +21,9 @@ export interface DragGridProps {
     style?: React.CSSProperties;
 }
 
-export interface MapLayout {
-    [key: string]: GridItemEvent
-}
-
 export interface DragGridState {
     layout: GridItemEvent[];
-    containerHeight?: number;
     parentDragType?: `${DragTypes}`;
-    mapLayout?: MapLayout;
 }
 
 export interface GridItemProvided {

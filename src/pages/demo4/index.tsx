@@ -98,7 +98,6 @@ const demo4: React.FC<any> = (props) => {
 
     const handleContinue = () => {
         const str = renderToStaticMarkup(React.createElement(demo2));
-        console.log(str, 2222)
     }
 
     return (
