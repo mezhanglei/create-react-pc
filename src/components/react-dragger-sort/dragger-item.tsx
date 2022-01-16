@@ -17,7 +17,7 @@ export interface DraggerItemEvent {
     translateX?: number;
     translateY?: number;
     node: HTMLElement;
-    dragType?: `${DragTypes}`;
+    dragType?: DragTypes;
     id: string | number;
 }
 export interface DraggerProps extends DraggerContextInterface {
@@ -49,7 +49,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         id
     } = props;
 
-    const [dragType, setDragType] = useState<`${DragTypes}`>();
+    const [dragType, setDragType] = useState<DragTypes>();
     const context = useContext(DraggerContext)
 
     const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
@@ -195,6 +195,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
     const cls = classNames((children?.props?.className || ''), className);
 
+    const isDrag = dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType);
+
     // 可拖拽子元素
     const NormalItem = (
         <Draggable
@@ -208,6 +210,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
             x={0}
             y={0}
+            zIndexRange={zIndexRange}
         >
             <ResizeZoom
                 onResizeStart={onResizeStart}
@@ -221,8 +224,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
                             ...children.props.style,
                             ...style,
                             opacity: isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) || parentDragType === DragTypes.dragEnd ? '' : 'all .2s ease-out',
-                            zIndex: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
+                            transition: isDrag || parentDragType === DragTypes.dragEnd ? '' : 'all .2s ease-out'
                         }
                     })
                 }

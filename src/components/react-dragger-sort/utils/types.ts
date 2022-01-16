@@ -33,7 +33,7 @@ export type TriggerFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) 
 // 容器监听事件的类型
 export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEvent['callback'], noAddEvent: listenEvent['callback']) => void;
 // 拖拽类
-export type DraggableAreaBuilder = (props: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void }) => any;
+export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void }) => any;
 
 // context
 export interface DraggerContextInterface {
@@ -46,7 +46,7 @@ export interface DraggerContextInterface {
     listenChild?: (value: ChildTypes) => void;
     coverChild?: ChildTypes; // 当前被覆盖的元素
     zIndexRange?: [number, number];
-    parentDragType?: `${DragTypes}`; // 父元素内发生的拖拽类型
+    parentDragType?: DragTypes; // 父元素内发生的拖拽类型
 }
 
 // 拖拽容器props
@@ -67,6 +67,6 @@ export interface DraggableAreaProps {
 }
 
 export interface DraggableAreaState {
-    dragType?: `${DragTypes}`,
+    dragType?: DragTypes,
     coverChild?: ChildTypes
 }

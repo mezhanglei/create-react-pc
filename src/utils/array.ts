@@ -2,7 +2,6 @@
 // 数组的一些方法
 import { isObject, isArray, isEmpty } from "./type";
 import produce from "immer";
-import { isObjectEqual } from "./object";
 
 /**
  * 数组排序(数据量在万以内采取这种) 数组元素支持Object和简单类型

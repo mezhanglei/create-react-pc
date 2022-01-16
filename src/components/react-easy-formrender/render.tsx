@@ -4,7 +4,7 @@ import { ChildrenComponent, FormFieldProps, RenderFormProps, RenderFormState, Sc
 import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
 import { AopFactory } from '@/utils/function-aop';
-import { isEmpty, isObject } from '@/utils/type';
+import { isEmpty } from '@/utils/type';
 import { debounce } from '@/utils/common';
 
 class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
@@ -96,37 +96,36 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
     // 遍历表单域的属性
     handleFieldProps() {
         const fieldPropsMap = new Map();
-        // 遍历对象树中的叶子节点(控件的属性节点)
-        const deepFindProps = (data: object, parentPath?: string) => {
-            for (const key in data) {
-                const target = data[key];
-                if (isObject(target)) {
-                    const keys = Object.keys(target);
-                    for (let i = 0; i < keys?.length; i++) {
-                        const childKey = keys[i];
-                        const value = target[childKey];
-                        // 目标为叶子节点时(控件的属性节点), 兼容字符串表达式
-                        if (childKey !== 'properties') {
-                            const currentKey = `${key}.${childKey}`;
-                            const path = parentPath ? `${parentPath}.${currentKey}` : currentKey;
-                            const result = this.calcExpression(value);
-                            fieldPropsMap.set(path, result)
+        // 遍历处理对象树中的非properties字段
+        const deepHandle = (formField: FormFieldProps, parent: string) => {
+            for (const key in formField) {
+                const value = formField[key];
+                if (key !== 'properties') {
+                    const path = parent ? `${parent}.${key}` : key;
+                    const result = this.calcExpression(value);
+                    fieldPropsMap.set(path, result);
+                } else {
+                    if (value instanceof Array) {
+                        for (let i = 0; i < value?.length; i++) {
+                            const formField = value[i];
+                            const path = `${parent}.${i}`;
+                            deepHandle(formField, path);
+                        }
+                    } else {
+                        for (const key in value) {
+                            const formField = value[key];
+                            const path = `${parent}.${key}`;
+                            deepHandle(formField, path);
                         }
                     }
-                } else if (!isEmpty(target)) {
-                    const path = parentPath ? `${parentPath}.${key}` : key;
-                    const result = this.calcExpression(target);
-                    fieldPropsMap.set(path, result)
-                }
-                // 具有properties则深入遍历properties
-                const properties = target?.properties;
-                if (typeof properties === 'object') {
-                    const path = parentPath ? `${parentPath}.${key}` : key;
-                    deepFindProps(properties, path)
                 }
             }
-        };
-        deepFindProps(this.props.schema?.properties);
+        }
+        const properties = this.props.schema?.properties;
+        for (const key in properties) {
+            const formField = properties[key];
+            deepHandle(formField, key);
+        }
         this.setState({ fieldPropsMap: fieldPropsMap });
     }
 
