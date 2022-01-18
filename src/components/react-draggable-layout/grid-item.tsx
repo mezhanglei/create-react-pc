@@ -154,6 +154,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         const { x, y } = this.calGridXYToPx(GridX, GridY);
         const { wPx, hPx } = this.calWHtoPx(w, h);
         const cls = classNames((children?.props?.className || ''), className);
+        const isDrag = (dragType && [DragTypes.draging, DragTypes.resizing] as string[])?.includes(dragType);
 
         return (
             <Draggable
@@ -164,6 +165,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
                 onDragStart={this.onDragStart}
                 onDrag={this.onDrag}
                 onDragStop={this.onDragEnd}
+                zIndexRange={zIndexRange}
                 x={x}
                 y={y}
             >
@@ -181,8 +183,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
                                 ...children.props.style,
                                 ...style,
                                 position: 'absolute',
-                                transition: (dragType && [DragTypes.draging, DragTypes.resizing] as string[])?.includes(dragType) || !this.canDrag() ? '' : 'all .2s ease-out',
-                                zIndex: dragType && ([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(dragType) ? zIndexRange?.[1] : zIndexRange?.[0]
+                                transition: isDrag || !this.canDrag() ? '' : 'all .2s ease-out',
                             }
                         })
                     }

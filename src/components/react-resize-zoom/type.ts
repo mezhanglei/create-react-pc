@@ -12,16 +12,15 @@ export enum ResizeDragTypes {
 }
 
 export interface LastStyle {
-    width?: number
-    height?: number
+    width: number
+    height: number
     eventX: number
     eventY: number
 }
 
 export interface NowStyle {
-    width?: number
-    height?: number
-    zIndex?: number
+    width: number
+    height: number
 }
 export enum Direction {
     N = "n", // 上边
@@ -42,7 +41,6 @@ export interface DragResizeProps {
     forbid?: boolean;
     children: any;
     offset: number; // 鼠标距离边的可以拖拽的偏差
-    zIndexRange?: [number, number]; // zIndex变化的范围
     width?: number; // 受控尺寸
     height?: number; // 受控尺寸
     onResizeStart?: EventHandler; // 拖拽开始事件
@@ -62,7 +60,6 @@ export interface EventData {
     dir: string
     width: number
     height: number
-    zIndex?: number
 }
 
 // 事件处理函数的type
