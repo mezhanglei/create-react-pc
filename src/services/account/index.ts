@@ -4,7 +4,7 @@ import { UserInfo } from './interface';
 
 // 获取用户信息
 export const getUserInfo: RequestHanler<undefined, UserInfo> = () => {
-    return request.post({
-        url: 'user/info'
-    });
-}
+  return request.post({
+    url: 'user/info'
+  });
+};
