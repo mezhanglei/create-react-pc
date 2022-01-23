@@ -7,30 +7,30 @@ import { fetchUserInfo } from './actions';
 
 // 将module类转换成对象
 const reducers = Object.fromEntries(
-    Object.entries(handleReducers).map(
-        ([fnName, fn]) => {
-            return [fnName, fn];
-        }
-    )
+  Object.entries(handleReducers).map(
+    ([fnName, fn]) => {
+      return [fnName, fn];
+    }
+  )
 );
 
 // 将module类转换成对象
 const effects = Object.fromEntries(
-    Object.entries(handleEffects).map(
-        ([fnName, fn]) => {
-            return [fnName, fn];
-        }
-    )
+  Object.entries(handleEffects).map(
+    ([fnName, fn]) => {
+      return [fnName, fn];
+    }
+  )
 );
 
 export default {
-    namespace: namespace,
-    state: initState,
-    reducers: reducers,
-    effects: effects,
-    subscriptions: {
-        async setup({ dispatch }) {
-            await dispatch(fetchUserInfo())
-        }
+  namespace: namespace,
+  state: initState,
+  reducers: reducers,
+  effects: effects,
+  subscriptions: {
+    async setup({ dispatch }) {
+      await dispatch(fetchUserInfo())
     }
+  }
 } as CommonModel;
