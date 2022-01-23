@@ -95,7 +95,6 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
 
   const onResizing: GridItemEventHandle = (layoutItem, e) => {
     throttleFn(() => {
-      setParentDragType(DragTypes.resizing);
       const newLayout = layoutCheck(
         layout,
         layoutItem

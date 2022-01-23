@@ -73,7 +73,7 @@ export class LayoutDemo extends React.Component<{}, {}> {
                         }}
                     >
                         {
-                            fakeData()?.map((item, index) => {
+                            fakeData()?.slice(0,1).map((item, index) => {
                                 return <Card item={item} key={item.uniqueKey} />
                             })
                         }
