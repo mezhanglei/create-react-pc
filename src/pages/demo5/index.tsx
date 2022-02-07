@@ -112,6 +112,16 @@ class demo5 extends React.Component {
                   style: { width: '100%' },
                   children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
                 }
+              },
+              second: {
+                label: '',
+                // required: true,
+                rules: [{ required: true, message: 'name2空了' }],
+                component: 'select',
+                props: {
+                  style: { width: '100%' },
+                  children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
+                }
               }
             }
           },
