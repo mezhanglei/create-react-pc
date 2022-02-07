@@ -32,6 +32,7 @@ export type WatchHandler = (newValue: any, oldValue: string) => void
 export interface RenderFormProps extends FormProps {
     schema: SchemaData
     watch: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler }
+    customRender?: (properties: SchemaData['properties'], renderItem: (params: { name: string, field: FormFieldProps, path?: string }) => any) => any
     widgets: { [key: string]: any }
     Fields: typeof defaultFields
 };
