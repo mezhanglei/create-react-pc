@@ -1,4 +1,5 @@
 import { GridItemEvent } from "../grid-item-types";
+import deepCopy from 'fast-copy';
 
 // 根据key获取目标
 export function getLayoutItem(layout: GridItemEvent[], id: string) {
@@ -78,7 +79,7 @@ export const layoutCheck = function () {
 }();
 
 export const sortLayout = (layout: GridItemEvent[]) => {
-    const newLayout = JSON.parse(JSON.stringify(layout || []));
+    const newLayout = deepCopy(layout);
     return newLayout?.sort((a: GridItemEvent, b: GridItemEvent) => {
         if (a.GridY > b.GridY || (a.GridY === b.GridY && a.GridX > b.GridX)) {
             if (a.forbid) return 0 // 为了静态，排序的时候尽量把静态的放在前面

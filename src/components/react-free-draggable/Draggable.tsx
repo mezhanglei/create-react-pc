@@ -5,7 +5,6 @@ import { DraggableProps, DragData, EventHandler, PositionType, DragAxisCode, Dra
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
-import ReactDOM from 'react-dom';
 
 /**
  * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)

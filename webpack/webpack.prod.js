@@ -42,6 +42,7 @@ const dllList = configs.manifestPathArr.map((path) => {
 // 体积分析插件
 const bundleAnalyze = configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [];
 
+const isDev = process.env.NODE_ENV === 'development';
 
 //  === webpack配置内容 === //
 const webpackConfig = {

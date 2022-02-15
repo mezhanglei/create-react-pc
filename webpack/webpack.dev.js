@@ -76,6 +76,8 @@ function getNetworkIp() {
     return needHost;
 }
 
+const isDev = process.env.NODE_ENV === 'development';
+
 //  === webpack配置内容 === //
 module.exports = {
     // 对象语法： 1. 当有多条数据，则会打包生成多个依赖分离的入口js文件, 对象中的值为路径字符串数组或路径字符串，会被打包到该条数据对应生成的入口js文件
@@ -119,9 +121,14 @@ module.exports = {
                     // eslint
                     ...(configs.useEslint ? [useEslintLoader] : [])
                 ],
-                // include: path.resolve("src"),
                 // 忽略第三方(看第三方包是否需要转译,不需要的话去掉)
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
+                include: [
+                    configs.srcPath,
+                    configs.staticPath,
+                    path.join(configs.nodemodules, 'jian-pinyin'),
+                    path.join(configs.nodemodules, 'crypto-js')
+                ],
             },
             {
                 test: /\.css$/,
@@ -279,6 +286,7 @@ module.exports = {
             // script引入的公共js文件
             commonJs: [
                 // 'static/dll/base_dll.js'
+                '//fintechcdn.cmbyc.com/react/es6-shim.min.js'
             ],
             // link引入的公共css文件
             commonCSS: [
@@ -346,7 +354,7 @@ module.exports = {
                 changeOrigin: true,
                 // 实际请求中不存在代理字段则重写接口路径把api字符串去掉
                 pathRewrite: {
-                	"^/api": "",
+                    "^/api": "",
                 }
             },
         ],

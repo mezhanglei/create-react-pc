@@ -152,8 +152,8 @@ class RenderFrom extends React.Component<RenderFormProps, RenderFormState> {
       const hiddenStr = target?.match(reg)?.[0];
       if (hiddenStr) {
         let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
-        target = target?.replace(/\$form/g, 'this?.props?.store?.getFieldValue()');
-        target = target?.replace(/\$schema/g, 'this?.props?.schema');
+        target = target?.replace(/\$form/g, 'this.props.store && this.props.store.getFieldValue()');
+        target = target?.replace(/\$schema/g, 'this.props && this.props.schema');
         const actionStr = "return " + target;
         const action = new Function(actionStr);
         const value = action.apply(this);

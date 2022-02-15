@@ -11,7 +11,7 @@ export interface DesignFormProps {
 const prefixCls = 'easy-form-design';
 const classes_design = {
   design: prefixCls,
-  base: `${prefixCls}__base`,
+  component: `${prefixCls}__component`,
   viewer: `${prefixCls}__viewer`,
   properties: `${prefixCls}__properties`
 }
@@ -23,14 +23,14 @@ export default function DesignForm(props: DesignFormProps) {
   return (
     <DesignStoreContext.Provider value={store}>
       <div className={classnames(classes_design.design, className)} style={style}>
-        <div className={classes_design.base}>
-1111
+        <div className={classes_design.component}>
+          1111
         </div>
         <div className={classes_design.viewer}>
-222
+          222
         </div>
         <div className={classes_design.properties}>
-333
+          333
         </div>
       </div>
     </DesignStoreContext.Provider>

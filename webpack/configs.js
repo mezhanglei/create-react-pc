@@ -20,6 +20,8 @@ const staticPath = path.join(root, 'static');
 const lessPath = path.join(root, 'less');
 // 项目输出dist目录
 const outputPath = path.join(root, "dist");
+// node_modules的目录
+const nodemodules = path.join(root, 'node_modules');
 // 预编译文件输出目录
 const dllOutputPath = path.join(staticPath, 'dll');
 // 页面模板所在的根目录
@@ -110,6 +112,7 @@ module.exports = {
     outputPath,
     dllOutputPath,
     publicPath,
+    nodemodules,
     ...baseConfig,
     ...devConfig,
     ...prodConfig,
