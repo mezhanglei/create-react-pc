@@ -1,7 +1,6 @@
 
 import { asyncSequentialExe } from '@/utils/common';
-import { isExitPrefix } from './utils/utils';
-import deepCopy from 'fast-copy';
+import { deepCopy, isExitPrefix } from './utils/utils';
 import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';

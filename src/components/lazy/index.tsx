@@ -17,7 +17,7 @@ export default function loadable(configs: LoadableProps) {
     loading({ isLoading, error }: { isLoading: boolean; error: boolean }): ComponentType {
       // 加载过程中
       if (isLoading) {
-        return <div>页面已更新，请刷新重试</div>;
+        return <div>loading...</div>;
         // 加载错误
       } else if (error) {
         console.log(error);

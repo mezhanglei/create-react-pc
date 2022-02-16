@@ -116,6 +116,7 @@
     "react-slick": "^0.27.13",
     "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
+    "reflect-metadata": "^0.1.13",
     "slick-carousel": "^1.8.1",
     "spark-md5": "^3.0.2"
   },
