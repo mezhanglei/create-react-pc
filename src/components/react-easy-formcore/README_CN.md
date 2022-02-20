@@ -2,7 +2,7 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.2.3-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.3.2-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
@@ -163,7 +163,18 @@ class demo extends React.Component {
 
 ## APIs
 
+### 表单基础属性-base options
+
+- `inline` 所有 Form.Item 组件设置行内布局，默认值为`false`。
+- `compact` 所有 Form.Item 组件是否隐藏错误信息，默认值为`false`。
+- `required` 所有 Form.Item 组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
+- `labelWidth` 所有 Form.Item 组件自定义标签宽度，`可选`。
+- `labelAlign` 所有 Form.Item 组件 `label`的排列，`可选`。
+- `gutter` 所有 Form.Item 组件自定义标签和表单组件间的距离，`可选`。
+   
+
 ### Form Props
+继承表单基础属性（base options）
 
 - `className` 表单元素类名，`可选`。
 - `store` 表单数据存储，`必须`。
@@ -173,44 +184,33 @@ class demo extends React.Component {
 - `onFieldsChange` 表单域 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
 - `onValuesChange` 监听表单值的变化。`可选`。
 - `onVisible` 监听表单域组件(`Form.Item`)显示或者隐藏的回调函数 `可选`。
-- `inline` 所有 Form.Item 组件设置行内布局，默认值为`false`。
-- `compact` 所有 Form.Item 组件是否隐藏错误信息，默认值为`false`。
-- `required` 所有 Form.Item 组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
-- `labelWidth` 所有 Form.Item 组件自定义标签宽度，`可选`。
-- `labelAlign` 所有 Form.Item 组件 `label`的排列，`可选`。
-- `gutter` 所有 Form.Item 组件自定义标签和表单组件间的距离，`可选`。
-- `errorClassName` 控件当有错误信息时，添加一个自定义类名，`可选`。
+
 
 ### Form.Item Props
+继承表单基础属性（base options）
 
 - `className` 表单域类名，`可选`。
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
+- `suffix` 后缀节点，`可选`。
 - `initialValue` 表单域的初始值 `可选`。
 - `rules` 表单域的校验规则 `可选`。
 - `valueProp` 填写到子组件的值属性名，默认值为`'value'`。
 - `valueGetter` 从表单事件中获取表单值的方式，`可选`。
-- `suffix` 后缀节点，`可选`。
-- `inline` 是否行内布局，默认值为`false`。
-- `compact` 是否隐藏错误信息，默认值为`false`。
-- `required` 是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
-- `labelWidth` 组件自定义`label`宽度，`可选`。
-- `labelAlign` `label`的排列，`可选`。
-- `gutter` 自定义标签和表单组件间的距离，`可选`。
+- `onFieldsChange` 表单域 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
+- `onValuesChange` 监听表单值的变化。`可选`。
+- `onVisible` 监听表单域组件(`Form.Item`)显示或者隐藏的回调函数 `可选`。
 - `errorClassName` 控件当有错误信息时，添加一个自定义类名，`可选`。
 
 ### Form.List Props
+继承表单基础属性（base options）
+
 - `className` 表单域类名，`可选`。
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
+- `suffix` 后缀节点，`可选`。
 - `initialValue` 表单域设置初始值 `可选`。
 - `rules` 表单域的校验规则 `可选`。
-- `inline` 所有 Form.Item 组件设置行内布局，默认值为`false`。
-- `compact` 所有 Form.Item 组件是否隐藏错误信息，默认值为`false`。
-- `required` 所有 Form.Item 组件是否显示星号，不包含表单校验，仅用于显示，默认值为`false`。
-- `labelWidth` 所有 Form.Item 组件自定义标签宽度，`可选`。
-- `labelAlign` 所有 Form.Item 组件 `label`的排列，`可选`。
-- `gutter` 所有 Form.Item 组件自定义标签和表单组件间的距离，`可选`。
 
 ### 表单的rules中的校验字段
 `rules`中的值的字段中的规则会按照顺序执行校验，`rules`中每一项只能设置一种规则。

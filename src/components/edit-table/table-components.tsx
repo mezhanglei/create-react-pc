@@ -1,8 +1,9 @@
 import { Form } from 'antd';
-import React, { useEffect, useState, useRef, useContext, ReactNode } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import styles from './table-components.module.less';
 import classnames from 'classnames';
-import { isBoolean, isFunction, isObject } from '@/utils/type';
+import { isBoolean, isFunction } from '@/utils/type';
+import { deepGet } from '@/utils/object';
 import { EditableContext } from './edit-table';
 import { ColumnProps, EditableRowProps, SaveCellFn } from './types';
 
@@ -24,9 +25,9 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
   const {
     title,
     children,
-    editable,
     dataIndex,
-    record,
+    rowData,
+    editLabelPath,
     handleSave,
     renderEditCell,
     extra,
@@ -47,10 +48,6 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
     }
   }, [editing]);
 
-  useEffect(() => {
-    setEditing(editable);
-  }, [editable]);
-
   // 切换到编辑状态
   const switchEdit = () => {
     if (isDisabled) {
@@ -58,18 +55,14 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
     }
     setEditing(!editing);
     // 切换到输入框将值设到表单里
-    form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+    form.setFieldsValue({ [dataIndex]: rowData[dataIndex] });
   };
 
   // 保存当前cell结果(select控件需要处理数据)
   const save: SaveCellFn = async (value) => {
     try {
-      // 将完整数据存储起来
-      const { fullData = {} } = record;
-      (fullData as any)[dataIndex] = value;
-      // 仅仅用来表格显示的数据(传给handleSave修改dataSource)
-      record[dataIndex] = isObject(value) ? (value as { label: string })?.label : value;
-      handleSave({ ...record, fullData });
+      rowData[dataIndex] = value;
+      handleSave({ ...rowData }, props);
       switchEdit();
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
@@ -96,11 +89,10 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
       [styles[`${prefix}-disabled`]]: isDisabled
     });
 
-    // 默认的render选项
-    const childrenList = children?.filter((child: ReactNode) => !!child);
+    const label = editLabelPath && deepGet(props, `rowData.${editLabelPath}`);
     return (
-      <div className={cls} style={{ ...editStyle }} onClick={switchEdit} title={childrenList}>
-        {childrenList?.length ? childrenList : <span className={styles['placeholder-txt']}>请选择</span>}
+      <div className={cls} style={{ ...editStyle }} onClick={switchEdit} title={label}>
+        {label ?? <span className={styles['placeholder-txt']}>请选择</span>}
       </div>
     );
   };
