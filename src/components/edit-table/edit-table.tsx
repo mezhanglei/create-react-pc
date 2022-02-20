@@ -8,7 +8,10 @@ import deepCopy from 'fast-copy';
 
 /**
  * 可编辑表格组件
- * 使用：继承antd的table组件props
+ * 使用：
+ * 1. 继承antd的table组件props
+ * 2. 提供onSave，onDelete回调函数
+ * 3. clumns中的renderEditCell方法提供三个参数对接表单控件：({save, toggleEdit, form, ...restProps}, inputRef) => void
  */
 const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) => {
   const { onSave, onDelete, columns, className, ...restProps } = props;

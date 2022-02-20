@@ -19,6 +19,7 @@ export interface FormItemProps extends FormOptions {
   className?: string
   children?: React.ReactNode
   style?: CSSProperties
+  errorClassName?: string
 }
 
 const prefixCls = 'rh-form-field';

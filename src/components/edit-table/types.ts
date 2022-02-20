@@ -52,11 +52,9 @@ export interface EditableRowProps {
 
 // table组件的props
 export interface EditTableProps extends TableProps<any> {
-  form?: any; // 外部表单容器，如果需要则传（目前不需要）
   onSave?: CallBackFn; // 表格的保存事件
   onDelete?: CallBackFn; // 表格的删除事件
   columns: ColumnProps[] & ColumnTypes; // columns渲染列
-  className?: string; // 类名
 }
 
 // table实例方法
