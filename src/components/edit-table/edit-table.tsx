@@ -3,15 +3,15 @@ import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { getGUID } from '@/utils/character';
 import { EditTableRow, EditTableCol } from './table-components';
-import { EditTableRef, EditTableProps, RowData, ColumnProps } from './types';
+import { EditTableRef, EditTableProps, RowData, ColumnProps, ColumnTypes } from './types';
+import deepCopy from 'fast-copy';
 
 /**
- * 可编辑表格组件：支持表格嵌入外来输入控件，只需要将props.save方法暴露给输入控件使用.输入控件需要遵循antd的form控件标准（onChange输出，value引入）
- * 使用方式：继承antd的table的一切方法，同时支持了拓展参数和方法
+ * 可编辑表格组件
+ * 使用：继承antd的table组件props
  */
-
 const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) => {
-  const { onChange, onSave, onDelete, value, columns, className, ...restProps } = props;
+  const { onSave, onDelete, columns, className, ...restProps } = props;
 
   const [dataSource, setDataSource] = useState<RowData[]>([]);
 
@@ -23,8 +23,8 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
   }));
 
   useEffect(() => {
-    setDataSource(value || [{}]);
-  }, [value]);
+    setDataSource(deepCopy(props?.dataSource as any[]) || []);
+  }, [JSON.stringify(props?.dataSource)]);
 
   // 触发保存事件
   const handleSave = (rowData: RowData, col: ColumnProps) => {
@@ -46,7 +46,6 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
     // 本地删除
     const newDataSource = [...dataSource]?.filter((item) => item.key !== rowData.key);
     setDataSource(newDataSource);
-    onChange && onChange(newDataSource, rowData);
     onDelete && onDelete(newDataSource, rowData);
   };
 
@@ -60,7 +59,6 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
       ...rowData
     });
     setDataSource(newDataSource);
-    onChange && onChange(newDataSource, rowData, col);
     return newDataSource;
   };
 
@@ -83,8 +81,8 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
       // 传递给cell组件的参数
       onCell: (rowData: RowData) => ({
         rowData,
-        handleSave: (row: RowData) => handleSave(row, col),
-        ...col
+        col,
+        handleSave: (row: RowData) => handleSave(row, col)
       })
     };
   });
@@ -95,7 +93,7 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
       className={classnames('small-cell fixed-table', className)}
       rowKey="key"
       components={components}
-      columns={editColumns}
+      columns={editColumns as ColumnTypes}
       dataSource={dataSource || []}
       {...restProps}
     />

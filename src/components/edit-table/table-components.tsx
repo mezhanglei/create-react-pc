@@ -2,8 +2,7 @@ import { Form } from 'antd';
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import styles from './table-components.module.less';
 import classnames from 'classnames';
-import { isBoolean, isFunction } from '@/utils/type';
-import { deepGet } from '@/utils/object';
+import { isBoolean, isEmpty, isFunction } from '@/utils/type';
 import { EditableContext } from './edit-table';
 import { ColumnProps, EditableRowProps, SaveCellFn } from './types';
 
@@ -27,10 +26,9 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
     children,
     dataIndex,
     rowData,
-    editLabelPath,
     handleSave,
     renderEditCell,
-    extra,
+    suffix,
     rules,
     editStyle,
     disabled,
@@ -49,7 +47,7 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
   }, [editing]);
 
   // 切换到编辑状态
-  const switchEdit = () => {
+  const toggleEdit = () => {
     if (isDisabled) {
       return;
     }
@@ -63,7 +61,7 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
     try {
       rowData[dataIndex] = value;
       handleSave({ ...rowData }, props);
-      switchEdit();
+      toggleEdit();
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -77,7 +75,7 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
         name={dataIndex}
         rules={rules}
       >
-        {renderEditCell && renderEditCell({ ...props, save, switchEdit, form }, inputRef)}
+        {renderEditCell && renderEditCell({ ...props, save, toggleEdit, form }, inputRef)}
       </Form.Item>
     );
   };
@@ -89,22 +87,23 @@ export const EditTableCol: React.FC<ColumnProps> = (props) => {
       [styles[`${prefix}-disabled`]]: isDisabled
     });
 
-    const label = editLabelPath && deepGet(props, `rowData.${editLabelPath}`);
+    const childs = children?.filter((child: unknown) => !isEmpty(child));
+    
     return (
-      <div className={cls} style={{ ...editStyle }} onClick={switchEdit} title={label}>
-        {label ?? <span className={styles['placeholder-txt']}>请选择</span>}
+      <div className={cls} style={{ ...editStyle }} onClick={toggleEdit}>
+        {childs?.length ? childs : <span className={styles['placeholder-txt']}>请选择</span>}
       </div>
     );
   };
 
-  // 额外的组件
-  const extraNode = extra && extra({ ...props, save, switchEdit, form }, inputRef);
+  // 后缀组件
+  const suffixNode = typeof suffix === 'function' ? suffix({ ...props, save, toggleEdit, form }, inputRef) : suffix;
   return (
     <td {...restProps}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {renderEditCell ? (editing ? editNode() : switchNode()) : children}
-        {extraNode}
+        {suffixNode}
       </div>
-    </td >
+    </td>
   );
 };
