@@ -21,19 +21,22 @@ export type SaveCellFn = (value: { label: string, [key: string]: any } | string)
 export type CallBackFn = (dataSource: any[], rowData: RowData, col?: any) => any;
 
 // 渲染可编辑控件传递的props
-export interface ColumnEditProps extends ColumnProps {
+export interface ColumnEditProps extends EditTableColProps {
   save: SaveCellFn,
   toggleEdit: () => void,
   form: FormInstance;
+}
+
+export interface EditTableColProps extends ColumnProps {
+  children: any;
+  rowData: RowData; // 行的数据
+  handleSave: (rowData: RowData, props?: EditTableColProps) => void; // 更新保存
 }
 
 // column渲染可传的参数
 export interface ColumnProps {
   title: React.ReactNode; // 列的名
   dataIndex: string; // 列的渲染字段
-  rowData: RowData; // 行的数据
-  children: any;
-  handleSave: (rowData: RowData, props?: ColumnProps & ColumnItemType) => void; // 更新保存
   renderEditCell?: (props: ColumnEditProps, inputRef: any) => any; // 渲染编辑框组件
   suffix: (props: ColumnEditProps, inputRef: any) => any; // 单元格内额外的组件
   rules: any[]; // 校验规则, 格式为antd的form的rules校验格式

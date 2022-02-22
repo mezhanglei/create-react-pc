@@ -1,15 +1,16 @@
 import React from 'react';
-import { ChildrenComponent, FormFieldProps, RenderFormProps, RenderFormState, SchemaData } from './types';
+import { ChildrenComponent, FormFieldProps, RenderFormProviderProps, RenderFormProviderState, SchemaData } from './types';
 import { defaultFields } from './register';
 import { isObjectEqual } from '@/utils/object';
 import { AopFactory } from '@/utils/function-aop';
 import { isEmpty } from '@/utils/type';
 import { debounce } from '@/utils/common';
-import { Form } from '../react-easy-formcore';
+import { FormStoreContext } from '../react-easy-formcore/form-store-context';
+import { FormOptionsContext } from '../react-easy-formcore/form-options-context';
 
-export default class RenderForm extends React.Component<RenderFormProps, RenderFormState> {
+export default class RenderFormProvider extends React.Component<RenderFormProviderProps, RenderFormProviderState> {
   aopOnValuesChange: AopFactory;
-  constructor(props: RenderFormProps) {
+  constructor(props: RenderFormProviderProps) {
     super(props);
     this.state = {
       fieldPropsMap: new Map()
@@ -49,19 +50,19 @@ export default class RenderForm extends React.Component<RenderFormProps, RenderF
     this.handleFieldProps();
   }
 
-  componentDidUpdate(prevProps: RenderFormProps, prevState: RenderFormState) {
-    const schemaChanged = !isObjectEqual(this.props.schema, prevProps.schema);
-    if (schemaChanged) {
+  componentDidUpdate(prevProps: RenderFormProviderProps, prevState: RenderFormProviderState) {
+    const propertiesChanged = !isObjectEqual(this.props.properties, prevProps.properties);
+    if (propertiesChanged) {
       this.handleFieldProps();
     }
   }
 
-  static getDerivedStateFromProps(nextProps: RenderFormProps, prevState: RenderFormState) {
-    const schemaChanged = !isObjectEqual(nextProps.schema, prevState.prevSchema);
-    if (schemaChanged) {
+  static getDerivedStateFromProps(nextProps: RenderFormProviderProps, prevState: RenderFormProviderState) {
+    const propertiesChanged = !isObjectEqual(nextProps.properties, prevState.prevProperties);
+    if (propertiesChanged) {
       return {
         ...prevState,
-        prevSchema: nextProps.schema
+        prevProperties: nextProps.properties
       };
     }
     return null;
@@ -114,7 +115,7 @@ export default class RenderForm extends React.Component<RenderFormProps, RenderF
         }
       }
     }
-    const properties = this.props?.schema?.properties;
+    const properties = this.props?.properties;
     for (const key in properties) {
       const formField = properties[key];
       deepHandle(formField, key);
@@ -209,9 +210,9 @@ export default class RenderForm extends React.Component<RenderFormProps, RenderF
     const { properties, component, props, render, ...fieldProps } = propertiesField;
     let FormField;
     if (properties instanceof Array) {
-      FormField = Fields?.['Form.List']
+      FormField = Fields['Form.List']
     } else {
-      FormField = Fields?.['Form.Item']
+      FormField = Fields['Form.Item']
     }
     const newField = this.showCalcFieldProps(fieldProps, path);
 
@@ -266,18 +267,17 @@ export default class RenderForm extends React.Component<RenderFormProps, RenderF
   }
 
   render() {
-    const { schema, watch, onValuesChange, children, ...rest } = this.props;
-    const { properties, ...restSchema } = schema || {};
+    const { properties, children, store, onValuesChange, ...rest } = this.props;
     const valuesCallback = this.aopOnValuesChange.addAfter(onValuesChange);
 
     const options = {
-      ...restSchema,
       ...rest,
       onValuesChange: valuesCallback
     }
 
     return (
-      <Form {...options}>
+      <FormStoreContext.Provider value={store}>
+        <FormOptionsContext.Provider value={options}>
           {
             typeof children === 'function'
               ?
@@ -285,7 +285,8 @@ export default class RenderForm extends React.Component<RenderFormProps, RenderF
               :
               this.getFormList(properties, this.generateTree)
           }
-      </Form>
+        </FormOptionsContext.Provider>
+      </FormStoreContext.Provider>
     );
   }
 }

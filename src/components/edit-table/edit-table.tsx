@@ -84,21 +84,21 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
       // 传递给cell组件的参数
       onCell: (rowData: RowData) => ({
         rowData,
-        col,
-        handleSave: (row: RowData) => handleSave(row, col)
+        handleSave: (row: RowData) => handleSave(row, col),
+        ...col
       })
     };
   });
 
   return (
     <Table
+      {...restProps}
       tableLayout="fixed"
       className={classnames('small-cell fixed-table', className)}
       rowKey="key"
       components={components}
       columns={editColumns as ColumnTypes}
       dataSource={dataSource || []}
-      {...restProps}
     />
   );
 });

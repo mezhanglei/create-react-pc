@@ -4,7 +4,7 @@ import styles from './table-components.module.less';
 import classnames from 'classnames';
 import { isBoolean, isEmpty, isFunction } from '@/utils/type';
 import { EditableContext } from './edit-table';
-import { ColumnProps, EditableRowProps, SaveCellFn } from './types';
+import { EditTableColProps, EditableRowProps, SaveCellFn } from './types';
 
 // 表格单元行
 export const EditTableRow: React.FC<EditableRowProps> = ({ ...props }) => {
@@ -20,18 +20,18 @@ export const EditTableRow: React.FC<EditableRowProps> = ({ ...props }) => {
 
 
 // 可编辑单元格
-export const EditTableCol: React.FC<ColumnProps> = (props) => {
+export const EditTableCol: React.FC<EditTableColProps> = (props) => {
   const {
-    title,
     children,
+    title,
     dataIndex,
-    rowData,
-    handleSave,
     renderEditCell,
     suffix,
     rules,
     editStyle,
     disabled,
+    rowData,
+    handleSave,
     ...restProps
   } = props;
   const [editing, setEditing] = useState<boolean>(false);

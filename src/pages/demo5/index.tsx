@@ -17,15 +17,15 @@ export const defaultWidgets: { [key: string]: any } = {
 };
 
 const watch = {
-  // 'name1': (newValue, oldValue) => {
-  //   console.log(newValue, oldValue)
-  // },
-  // 'name2.0': (newValue, oldValue) => {
-  //   console.log(newValue, oldValue)
-  // },
-  // 'name3': (newValue, oldValue) => {
-  //   console.log(newValue, oldValue)
-  // }
+  'name1': (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+  },
+  'name2.0': (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+  },
+  'name3': (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+  }
 }
 
 class demo5 extends React.Component {
@@ -39,36 +39,7 @@ class demo5 extends React.Component {
         className: 'form-wrapper',
         properties: {
           name1: {
-            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
-            component: 'input',
-            required: true,
-            rules: [{ required: true, message: 'name1空了' }],
-            initialValue: 1111,
-            readOnly: true,
-            render: '只读模式内容',
-            hidden: '{{$form.name4 == true}}',
-            props: {}
-          },
-          name9: {
-            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
-            component: 'input',
-            required: true,
-            rules: [{ required: true, message: 'name1空了' }],
-            initialValue: 1111,
-            hidden: '{{$form.name4 == true}}',
-            props: {}
-          },
-          name10: {
-            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
-            component: 'input',
-            required: true,
-            rules: [{ required: true, message: 'name1空了' }],
-            initialValue: 1111,
-            hidden: '{{$form.name4 == true}}',
-            props: {}
-          },
-          name11: {
-            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
+            label: "name1",
             component: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
@@ -77,7 +48,7 @@ class demo5 extends React.Component {
             props: {}
           },
           name2: {
-            label: "{{$form.name4 == true ? '开启' : '关闭'}}",
+            label: "name2",
             required: true,
             rules: [{ required: true, message: 'name2空了' }],
             properties: [{

@@ -27,16 +27,16 @@ export function Form(props: FormProps) {
 
   useEffect(() => {
     onMount && onMount();
-  }, [])
+  }, []);
 
   return (
-    <FormStoreContext.Provider value={store}>
-      <FormOptionsContext.Provider value={options}>
-        <form className={classNames} style={style} onSubmit={onSubmit} onReset={onReset}>
+    <form className={classNames} style={style} onSubmit={onSubmit} onReset={onReset}>
+      <FormStoreContext.Provider value={store}>
+        <FormOptionsContext.Provider value={options}>
           {children}
-        </form>
-      </FormOptionsContext.Provider>
-    </FormStoreContext.Provider>
+        </FormOptionsContext.Provider>
+      </FormStoreContext.Provider>
+    </form>
   )
 }
 

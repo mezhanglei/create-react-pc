@@ -27,6 +27,8 @@ export class FormStore<T extends Object = any> {
 
   private valueListeners: FormListener[] = []
 
+  private storeValueListeners: FormListener[] = []
+
   private errorListeners: FormListener[] = []
 
   private propsListeners: FormListener[] = []
@@ -56,6 +58,8 @@ export class FormStore<T extends Object = any> {
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribeValue = this.subscribeValue.bind(this)
+    this.listenStoreValue = this.listenStoreValue.bind(this)
+    this.removeListenStoreValue = this.removeListenStoreValue.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
     this.subscribeProps = this.subscribeProps.bind(this)
   }
@@ -99,20 +103,20 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(name: string | { [key: string]: any }, value?: any, forbidError?: boolean) {
+  public async setFieldValue(name: string | { [key: string]: any }, value?: any, isMount?: boolean) {
     if (typeof name === 'string') {
       // 旧表单值存储
       this.lastValues = deepCopy(this.values);
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
-      this.notifyValue(name);
+      this.notifyValue(name, isMount);
       // 规则
       const rules = this.fieldsProps?.[name]?.['rules'];
 
       if (rules?.length) {
         // 校验规则
-        await this.validate(name, forbidError);
+        await this.validate(name, isMount);
       }
     } else if (typeof name === 'object') {
       await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name?.[n])))
@@ -223,15 +227,23 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步值的变化
-  private notifyValue(name?: string) {
+  private notifyValue(name?: string, isMount?: boolean) {
     if (name) {
       this.valueListeners.forEach((listener) => {
         if (isExitPrefix(listener?.name, name)) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
         }
       })
+      if(!isMount) {
+        this.storeValueListeners.forEach((listener) => {
+          if (isExitPrefix(listener?.name, name)) {
+            listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
+          }
+        })
+      }
     } else {
       this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
+      this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
     }
   }
 
@@ -261,7 +273,7 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 订阅表单值的变动
+  // 订阅表单值的变动（）
   public subscribeValue(name: string, listener: FormListener['onChange']) {
     this.valueListeners.push({
       onChange: listener,
@@ -269,6 +281,26 @@ export class FormStore<T extends Object = any> {
     });
     return () => {
       this.valueListeners = this.valueListeners.filter((sub) => sub.name !== name)
+    }
+  }
+  
+  // 主动订阅表单值的变动(表单控件消失不会卸载)
+  public listenStoreValue(name: string, listener: FormListener['onChange']) {
+    this.storeValueListeners.push({
+      onChange: listener,
+      name: name
+    });
+    return () => {
+      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.name !== name)
+    }
+  }
+
+  // 卸载
+  public removeListenStoreValue(name?: string) {
+    if(typeof name === 'string') {
+      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.name !== name)
+    } else {
+      this.storeValueListeners = []
     }
   }
 
