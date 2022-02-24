@@ -15,95 +15,109 @@ const DraggableArea1 = DraggableAreaGroups.create()
 const DraggableArea2 = DraggableAreaGroups.create()
 
 const Demo1: React.FC<any> = (props) => {
-    const [x, setX] = useState<any>(10);
-    const [y, setY] = useState<any>(10);
-    const [arr1, setArr1] = useState([1, 2, 3, 4, 5, 6, 7]);
-    const [arr2, setArr2] = useState([8, 9, 10, 11, 12, 13, 14]);
+  const [x, setX] = useState<any>(10);
+  const [y, setY] = useState<any>(10);
+  const [arr1, setArr1] = useState([1, 2, 3, 4, 5, 6, 7]);
+  const [arr2, setArr2] = useState([8, 9, 10, 11, 12, 13, 14]);
 
-    const onDrag = (e, data) => {
-        // setX(data?.x)
-        // setY(data?.y)
-    };
+  const onDrag = (e, data) => {
+    // setX(data?.x)
+    // setY(data?.y)
+  };
 
-    const onDragMoveEnd1: DragMoveHandle = (tag, coverChild) => {
-        if (tag && coverChild) {
-            const preIndex = arr1?.findIndex((item) => item === tag?.id);
-            const nextIndex = arr1?.findIndex((item) => item === coverChild?.id)
-            const newArr = arrayMove(arr1, preIndex, nextIndex);
-            setArr1(newArr);
+  const onDragMoveEnd1: DragMoveHandle = (tag, coverChild) => {
+    if (tag && coverChild) {
+      const preIndex = arr1?.findIndex((item) => item === tag?.id);
+      const nextIndex = arr1?.findIndex((item) => item === coverChild?.id)
+      const newArr = arrayMove(arr1, preIndex, nextIndex);
+      setArr1(newArr);
+    }
+  };
+
+  const onDragMoveEnd2: DragMoveHandle = (tag, coverChild, e) => {
+    if (tag && coverChild) {
+      const preIndex = arr2?.findIndex((item) => item === tag?.id);
+      const nextIndex = arr2?.findIndex((item) => item === coverChild?.id)
+      const newArr = arrayMove(arr2, preIndex, nextIndex);
+      setArr2(newArr);
+    }
+  };
+
+  const onMoveOutChange = (data) => {
+    if (data) {
+      const newArr1 = [...arr1];
+      const index = arr1?.findIndex((item) => item === data?.moveTag?.id)
+      newArr1?.splice(index, 1)
+      setArr1(newArr1);
+    }
+  };
+
+  const onMoveInChange = (data) => {
+    if (data) {
+      const newArr2 = [...arr2];
+      const index = arr1?.findIndex((item) => item === data?.moveTag?.id);
+      const nextIndex = newArr2?.findIndex((item) => item === data?.coverChild?.id);
+      newArr2?.splice(nextIndex, 0, arr1?.[index]);
+      setArr2(newArr2);
+    }
+  };
+
+  const onClick = () => {
+    exportWord({
+      imgList: [
+        'http://bhyf-file.oss-cn-hangzhou.aliyuncs.com/4578/1636526930976_4fb0c795.jpeg',
+        'https://img-cloud.youjiaoyun.net/mp/0a802a40-4a4b-4121-aa88-1fc6367a7410.jpg'
+      ]
+    });
+  };
+
+  return (
+    <div className="boxx" style={{ marginTop: '0px' }}>
+      <div className="boxs" style={{ display: 'inline-block', marginLeft: '10px', marginTop: '10px', width: '500px', background: "red" }}>
+        <Draggable
+          bounds=".boxs"
+          handle=".handle"
+          x={x}
+          y={y}
+          onDrag={onDrag}
+          scale={1}
+        >
+          <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
+            <Button className="handle" type="default">
+              拖拽元素v1
+            </Button>
+          </div>
+        </Draggable>
+      </div>
+      <DraggableArea1 onMoveOutChange={onMoveOutChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd1}>
+        {
+          arr1?.map((item, index) => {
+            return (
+              <DraggerItem style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} id={item}>
+                <div>
+                  大小拖放{item}
+                </div>
+              </DraggerItem>
+            )
+          })
         }
-    };
-
-    const onDragMoveEnd2: DragMoveHandle = (tag, coverChild, e) => {
-        if (tag && coverChild) {
-            const preIndex = arr2?.findIndex((item) => item === tag?.id);
-            const nextIndex = arr2?.findIndex((item) => item === coverChild?.id)
-            const newArr = arrayMove(arr2, preIndex, nextIndex);
-            setArr2(newArr);
-        }
-    };
-
-    const onMoveOutChange = (data) => {
-        if (data) {
-            const newArr1 = [...arr1];
-            const index = arr1?.findIndex((item) => item === data?.moveTag?.id)
-            newArr1?.splice(index, 1)
-            setArr1(newArr1);
-        }
-    };
-
-    const onMoveInChange = (data) => {
-        if (data) {
-            const newArr2 = [...arr2];
-            const index = arr1?.findIndex((item) => item === data?.moveTag?.id);
-            const nextIndex = newArr2?.findIndex((item) => item === data?.coverChild?.id);
-            newArr2?.splice(nextIndex, 0, arr1?.[index]);
-            setArr2(newArr2);
-        }
-    };
-
-    const onClick = () => {
-        exportWord({
-            imgList: [
-                'http://bhyf-file.oss-cn-hangzhou.aliyuncs.com/4578/1636526930976_4fb0c795.jpeg',
-                'https://img-cloud.youjiaoyun.net/mp/0a802a40-4a4b-4121-aa88-1fc6367a7410.jpg'
-            ]
-        });
-    };
-
-    return (
-        <div className="boxx" style={{ marginTop: '0px' }}>
-            <div className="boxs" style={{ display: 'inline-block', marginLeft: '10px', marginTop: '10px', width: '500px', background: "red" }}>
-                <Draggable
-                    bounds=".boxs"
-                    handle=".handle"
-                    x={x}
-                    y={y}
-                    onDrag={onDrag}
-                    grid={[100, 25]}
-                    scale={1}
-                >
-                    <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
-                        <Button className="handle" type="default">
-                            拖拽元素v1
-                        </Button>
+        <div style={{ marginTop: '10px' }}>
+          <DraggableArea2 onMoveInChange={onMoveInChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'green', width: '200px' }} onDragMoveEnd={onDragMoveEnd2}>
+            {
+              arr2?.map((item, index) => {
+                return (
+                  <DraggerItem style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} id={item}>
+                    <div>
+                      大小拖放{item}
                     </div>
-                </Draggable>
-            </div>
-            <DraggableArea1 onMoveOutChange={onMoveOutChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd1}>
-                {
-                    arr1?.map((item, index) => {
-                        return (
-                            <DraggerItem style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} id={item}>
-                                <div>
-                                    大小拖放{item}
-                                </div>
-                            </DraggerItem>
-                        )
-                    })
-                }
-            </DraggableArea1>
-            <div style={{ marginTop: '10px' }}>
+                  </DraggerItem>
+                )
+              })
+            }
+          </DraggableArea2>
+        </div>
+      </DraggableArea1>
+      {/* <div style={{ marginTop: '10px' }}>
                 <DraggableArea2 onMoveInChange={onMoveInChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd2}>
                     {
                         arr2?.map((item, index) => {
@@ -117,12 +131,12 @@ const Demo1: React.FC<any> = (props) => {
                         })
                     }
                 </DraggableArea2>
-            </div>
-            <Button onClick={onClick}>
-                导出
-            </Button>
-        </div>
-    );
+            </div> */}
+      <Button onClick={onClick}>
+        导出
+      </Button>
+    </div>
+  );
 };
 
 export default Demo1;

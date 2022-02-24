@@ -7,10 +7,7 @@ export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>
 export enum DragTypes {
     dragStart = 'dragStart',
     draging = 'draging',
-    dragEnd = 'dragEnd',
-    resizeStart = 'resizeStart',
-    resizing = 'resizing',
-    resizeEnd = 'resizeEnd'
+    dragEnd = 'dragEnd'
 }
 
 // 可拖拽子元素的类型
@@ -27,26 +24,22 @@ export interface TagInterface extends DraggerItemEvent {
 // 拖拽回调函数
 export type DragMoveHandle = (tag: TagInterface, coverChild?: ChildTypes, e?: EventType) => void | boolean;
 // 被监听的事件类型
-export type listenEvent = { callback: (tag: TagInterface, e: EventType) => void | boolean, area: HTMLElement | null };
+export type listenEvent = { listener: (tag: TagInterface, e: EventType) => void | boolean, area: HTMLElement | null };
 // 容器触发事件的类型
 export type TriggerFuncHandle<T = TagInterface, E = EventType> = (tag: T, e: E) => boolean;
 // 容器监听事件的类型
-export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEvent['callback'], noAddEvent: listenEvent['callback']) => void;
+export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEvent['listener']) => void;
 // 拖拽类
-export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void }) => any;
+export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void, draggerItems: ChildTypes[] }) => any;
 
 // context
 export interface DraggerContextInterface {
     onDragStart?: DraggerItemHandler;
     onDrag?: DraggerItemHandler;
     onDragEnd?: DraggerItemHandler;
-    onResizeStart?: DraggerItemHandler;
-    onResizing?: DraggerItemHandler;
-    onResizeEnd?: DraggerItemHandler;
-    listenChild?: (value: ChildTypes) => void;
     coverChild?: ChildTypes; // 当前被覆盖的元素
+    draggerItems?: ChildTypes[]
     zIndexRange?: [number, number];
-    parentDragType?: DragTypes; // 父元素内发生的拖拽类型
 }
 
 // 拖拽容器props
@@ -67,6 +60,5 @@ export interface DraggableAreaProps {
 }
 
 export interface DraggableAreaState {
-    dragType?: DragTypes,
     coverChild?: ChildTypes
 }

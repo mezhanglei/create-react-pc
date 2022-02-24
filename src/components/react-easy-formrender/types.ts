@@ -1,4 +1,4 @@
-import { FormItemProps, FormProps } from "../react-easy-formcore";
+import { FormItemProps, FormOptions, FormProps } from "../react-easy-formcore";
 import { defaultFields } from './register';
 
 // 组件的children(不绑定表单字段)
@@ -17,18 +17,6 @@ export interface FormFieldProps extends FormItemProps {
   properties?: { [name: string]: FormFieldProps } | FormFieldProps[] // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
-export interface RenderFormState {
-  fieldPropsMap: Map<string, any> // 表单控件中props字段与值的键值对
-  prevSchema?: SchemaData
-  schema?: SchemaData
-}
-
-export interface RenderFormProviderState {
-  fieldPropsMap: Map<string, any> // 表单控件中props字段与值的键值对
-  prevProperties?: SchemaData
-  properties?: SchemaData
-}
-
 // schema
 export interface SchemaData extends FormProps {
   properties: { [key: string]: FormFieldProps }
@@ -41,7 +29,7 @@ export interface RenderFormProps extends FormProps {
   schema: SchemaData
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler }
   widgets: { [key: string]: any }
-  Fields: typeof defaultFields
+  Fields?: typeof defaultFields
   // 自定义children，并注入渲染表单控件的方法
   children?: (
     properties: SchemaData['properties'],
@@ -50,11 +38,11 @@ export interface RenderFormProps extends FormProps {
 };
 
 // 不带form容器的渲染组件props
-export interface RenderFormProviderProps extends FormProps {
+export interface RenderFormChildrenProps extends FormOptions {
   properties: SchemaData['properties']
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler }
   widgets: { [key: string]: any }
-  Fields: typeof defaultFields
+  Fields?: typeof defaultFields
   // 自定义children，并注入渲染表单控件的方法
   children?: (
     properties: SchemaData['properties'],

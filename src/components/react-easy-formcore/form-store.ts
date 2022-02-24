@@ -73,23 +73,17 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 更新或覆盖单个表单域的props
-  public setFieldProps(name: string, field?: FieldProps, cover?: boolean) {
+  // 设置表单域
+  public setFieldProps(name: string, field?: FieldProps) {
     if (!name) return;
     if (field === undefined) {
       delete this.fieldsProps[name]
     } else {
-      if (cover) {
-        this.fieldsProps[name] = field;
-      } else {
-        const lastField = this.fieldsProps[name];
-        const newField = { ...lastField, ...field };
-        this.fieldsProps[name] = newField;
-      }
+      const lastField = this.fieldsProps[name];
+      const newField = { ...lastField, ...field };
+      this.fieldsProps[name] = newField;
     }
     this.notifyProps(name);
-    // 清空错误信息
-    // this.setFieldError(name, undefined);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
@@ -110,10 +104,11 @@ export class FormStore<T extends Object = any> {
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
-      this.notifyValue(name, isMount);
+      this.notifyValue(name);
+      // 同时触发另一个值的监听
+      this.notifyStoreValue(name, isMount);
       // 规则
       const rules = this.fieldsProps?.[name]?.['rules'];
-
       if (rules?.length) {
         // 校验规则
         await this.validate(name, isMount);
@@ -128,6 +123,7 @@ export class FormStore<T extends Object = any> {
     this.lastValues = deepCopy(this.values);
     this.values = deepCopy(values);
     this.notifyValue();
+    this.notifyStoreValue();
   }
 
   // 重置表单
@@ -164,8 +160,8 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(name: string, forbidError?: boolean): Promise<string>
-  public async validate(name?: string, forbidError?: boolean) {
+  public async validate(name: string, isMount?: boolean): Promise<string>
+  public async validate(name?: string, isMount?: boolean) {
     if (name === undefined) {
       const result = await Promise.all(Object.keys(this.fieldsProps)?.map((n) => {
         const rules = this.fieldsProps?.[n]?.['rules'];
@@ -179,7 +175,7 @@ export class FormStore<T extends Object = any> {
         values: this.getFieldValue()
       }
     } else {
-      if (forbidError === true) return;
+      if (isMount === true) return;
       // 清空错误信息
       this.setFieldError(name, undefined);
       const value = this.getFieldValue(name);
@@ -227,14 +223,22 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步值的变化
-  private notifyValue(name?: string, isMount?: boolean) {
+  private notifyValue(name?: string) {
     if (name) {
       this.valueListeners.forEach((listener) => {
         if (isExitPrefix(listener?.name, name)) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
         }
       })
-      if(!isMount) {
+    } else {
+      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
+    }
+  }
+
+  // 同步值的变化
+  private notifyStoreValue(name?: string, isMount?: boolean) {
+    if (name) {
+      if (!isMount) {
         this.storeValueListeners.forEach((listener) => {
           if (isExitPrefix(listener?.name, name)) {
             listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
@@ -242,7 +246,6 @@ export class FormStore<T extends Object = any> {
         })
       }
     } else {
-      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
       this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
     }
   }
@@ -283,7 +286,7 @@ export class FormStore<T extends Object = any> {
       this.valueListeners = this.valueListeners.filter((sub) => sub.name !== name)
     }
   }
-  
+
   // 主动订阅表单值的变动(表单控件消失不会卸载)
   public listenStoreValue(name: string, listener: FormListener['onChange']) {
     this.storeValueListeners.push({
@@ -297,7 +300,7 @@ export class FormStore<T extends Object = any> {
 
   // 卸载
   public removeListenStoreValue(name?: string) {
-    if(typeof name === 'string') {
+    if (typeof name === 'string') {
       this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.name !== name)
     } else {
       this.storeValueListeners = []

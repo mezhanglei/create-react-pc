@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
-import ResizeZoom from "@/components/react-resize-zoom";
-import { EventHandler as ResizeEventHandler, DirectionCode } from "@/components/react-resize-zoom/type";
 import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
 import { ChildrenType, ChildTypes, DraggerContextInterface, DragTypes } from "./utils/types";
 import classNames from "classnames";
-import { getInsidePosition, getOffsetWH } from "@/utils/dom";
+import { getOffsetWH } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
 
 export type EventType = MouseEvent | TouchEvent;
@@ -20,18 +18,14 @@ export interface DraggerItemEvent {
     dragType?: DragTypes;
     id: string | number;
 }
-export interface DraggerProps extends DraggerContextInterface {
+export interface DraggerProps {
     children: ChildrenType;
     className?: string;
     style?: CSSProperties;
     onDragStart?: DraggerItemHandler;
     onDrag?: DraggerItemHandler;
     onDragEnd?: DraggerItemHandler;
-    onResizeStart?: DraggerItemHandler;
-    onResizing?: DraggerItemHandler;
-    onResizeEnd?: DraggerItemHandler;
-    dragAxis?: string[]; // 拖拽位置
-    resizeAxis?: string[]; // 拖拽大小
+    dragAxis?: string[];
     handle?: string | HTMLElement;
     id: string | number;
 }
@@ -44,7 +38,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         className,
         style,
         dragAxis = DragAxisCode,
-        resizeAxis = [],
         handle,
         id
     } = props;
@@ -52,10 +45,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const [dragType, setDragType] = useState<DragTypes>();
     const context = useContext(DraggerContext)
 
-    const zIndexRange = context?.zIndexRange ?? props?.zIndexRange;
-    const parentDragType = context?.parentDragType ?? props?.parentDragType;
-    const coverChild = context?.coverChild ?? props?.coverChild;
-    const listenChild = context?.listenChild ?? props?.listenChild;
+    const { zIndexRange, coverChild, draggerItems } = context;
+
     const nodeRef = useRef<any>();
     const [node, setNode] = useState<any>();
 
@@ -66,7 +57,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     useEffect(() => {
         const node = nodeRef.current;
         setNode(node);
-        listenChild && listenChild({ node, id });
+        draggerItems?.push({ node, id });
     }, []);
 
     const isOver = (coverChild?: ChildTypes) => {
@@ -80,12 +71,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     // 可以拖拽
     const canDrag = () => {
         return DragAxisCode?.some((axis) => dragAxis?.includes(axis))
-    }
-
-    // 可以调整尺寸
-    const canResize = () => {
-        const canUse = DirectionCode?.some((dir) => resizeAxis?.includes(dir));
-        return canUse;
     }
 
     const onDragStart: DragEventHandler = (e, data) => {
@@ -145,54 +130,6 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
         });
     }
 
-    const onResizeStart: ResizeEventHandler = (e, data) => {
-        if (!data || !canResize()) return false;
-        setDragType(DragTypes.resizeStart);
-        const node = data?.node;
-        const position = getInsidePosition(node);
-        return context?.onResizeStart && context?.onResizeStart(e, {
-            width: data?.width,
-            height: data?.height,
-            x: position?.left || 0,
-            y: position?.top || 0,
-            node: node,
-            dragType: DragTypes.resizeStart,
-            id
-        })
-    }
-
-    const onResizing: ResizeEventHandler = (e, data) => {
-        if (!data || !canResize()) return false;
-        const node = data?.node;
-        setDragType(DragTypes.resizing);
-        const position = getInsidePosition(node);
-        return context?.onResizing && context?.onResizing(e, {
-            width: data?.width,
-            height: data?.height,
-            x: position?.left || 0,
-            y: position?.top || 0,
-            node: node,
-            dragType: DragTypes.resizing,
-            id
-        })
-    }
-
-    const onResizeEnd: ResizeEventHandler = (e, data) => {
-        if (!data || !canResize()) return false;
-        setDragType(DragTypes.resizeEnd);
-        const node = data?.node;
-        const position = getInsidePosition(node);
-        return context?.onResizeEnd && context?.onResizeEnd(e, {
-            width: data?.width,
-            height: data?.height,
-            x: position?.left || 0,
-            y: position?.top || 0,
-            node: node,
-            dragType: DragTypes.resizeEnd,
-            id
-        });
-    }
-
     const cls = classNames((children?.props?.className || ''), className);
 
     const isDrag = dragType && ([DragTypes.dragStart, DragTypes.draging] as string[]).includes(dragType);
@@ -207,28 +144,20 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
             onDrag={onDrag}
             onDragStop={onDragStop}
             handle={handle}
-            reset={!parentDragType || !([DragTypes.dragStart, DragTypes.draging] as string[])?.includes(parentDragType)}
             x={0}
             y={0}
             zIndexRange={zIndexRange}
         >
-            <ResizeZoom
-                onResizeStart={onResizeStart}
-                onResizeMoving={onResizing}
-                onResizeEnd={onResizeEnd}
-                axis={resizeAxis}
-            >
-                {
-                    React.cloneElement(React.Children.only(children), {
-                        style: {
-                            ...children.props.style,
-                            ...style,
-                            opacity: isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
-                            transition: isDrag || parentDragType === DragTypes.dragEnd ? '' : 'all .2s ease-out'
-                        }
-                    })
-                }
-            </ResizeZoom>
+            {
+                React.cloneElement(React.Children.only(children), {
+                    style: {
+                        ...children.props.style,
+                        ...style,
+                        opacity: isOver(coverChild) ? '0.8' : (style?.opacity || children?.props?.style?.opacity),
+                        transition: isDrag ? '' : 'all .2s ease-out'
+                    }
+                })
+            }
         </Draggable>
     );
 

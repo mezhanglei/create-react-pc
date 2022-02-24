@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef, useCallback } from 'reac
 import "./index.less";
 import { Form, FormStore } from "@/components/react-easy-formcore";
 import { Checkbox, Input, Radio, Select } from 'antd';
-import RenderFrom from '@/components/react-easy-formrender';
+import RenderForm, { RenderFormChildren } from '@/components/react-easy-formrender';
 import Button from '@/components/button';
 
 // 原子组件
@@ -39,6 +39,33 @@ class demo5 extends React.Component {
         className: 'form-wrapper',
         properties: {
           name1: {
+            label: "name1",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
+          name8: {
+            label: "name1",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
+          name9: {
+            label: "name1",
+            component: 'input',
+            required: true,
+            rules: [{ required: true, message: 'name1空了' }],
+            initialValue: 1111,
+            hidden: '{{$form.name4 == true}}',
+            props: {}
+          },
+          name10: {
             label: "name1",
             component: 'input',
             required: true,
@@ -199,7 +226,10 @@ class demo5 extends React.Component {
             <button onClick={this.onClick}>Submit</button>
           </Form.Item>
         </Form> */}
-        <RenderFrom widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFieldsChange={this.onFieldsChange} schema={this.state.schema} watch={watch} />
+        <RenderForm widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFieldsChange={this.onFieldsChange} schema={this.state.schema} watch={watch} />
+        {/* <Form store={this.store} onFieldsChange={this.onFieldsChange} onSubmit={this.onSubmit}>
+          <RenderFormChildren widgets={defaultWidgets} onFieldsChange={this.onFieldsChange} properties={this.state.schema?.properties} watch={watch} />
+        </Form> */}
       </div>
     );
   }

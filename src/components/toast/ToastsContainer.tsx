@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
-import { DarkColors, LightColors } from "./DefaultColors";
-import { getGUID } from "@/utils/character";
+import { DarkColors, LightColors } from "./defaultColors";
 import "./ToastsContainer.less";
 import classNames from 'classnames';
 import { ToastsPosition, ToastProps } from "./type";
+import nanoid from "nanoid";
 
 // toast容器
 const ToastsContainer = React.forwardRef<{}, ToastProps>((props, ref) => {
@@ -85,7 +85,7 @@ const ToastsContainer = React.forwardRef<{}, ToastProps>((props, ref) => {
   const AddToast = async () => {
     await clear();
     // 添加一个toast
-    const toast: ToastProps = { prefixCls, position, timer, lightBackground, className, ...restProps, id: getGUID() };
+    const toast: ToastProps = { prefixCls, position, timer, lightBackground, className, ...restProps, id: nanoid(6) };
     const newToasts = [toast].concat(toasts);
     toastChange(newToasts);
     // 隔一段时间删掉

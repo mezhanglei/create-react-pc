@@ -1,38 +1,38 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, forwardRef } from 'react';
+import Provider from './provider';
+import Sidebar from './sidebar';
+import Viewer from './viewer';
+import Properties from './properties';
 import classnames from 'classnames';
-import { DesignStore } from './design-store';
-import { DesignStoreContext } from './design-store-context';
 
 export interface DesignFormProps {
   className?: string
   style?: CSSProperties
 }
 
-const prefixCls = 'easy-form-design';
+const prefixCls = 'fr-generator-container';
 const classes_design = {
   design: prefixCls,
   component: `${prefixCls}__component`,
   viewer: `${prefixCls}__viewer`,
   properties: `${prefixCls}__properties`
 }
-export default function DesignForm(props: DesignFormProps) {
-  const { className, style, ...options } = props;
 
-  const store = new DesignStore();
-
+const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
   return (
-    <DesignStoreContext.Provider value={store}>
-      <div className={classnames(classes_design.design, className)} style={style}>
-        <div className={classes_design.component}>
-          1111
-        </div>
-        <div className={classes_design.viewer}>
-          222
-        </div>
-        <div className={classes_design.properties}>
-          333
-        </div>
+    <Provider ref={ref} {...props}>
+      <div className={classnames(classes_design.design, className)}>
+        <Sidebar />
+        <Viewer />
+        <Properties />
       </div>
-    </DesignStoreContext.Provider>
+    </Provider>
   );
 }
+
+Generator.Provider = Provider;
+Generator.Sidebar = Sidebar;
+Generator.Viewer = Viewer;
+Generator.Properties = Properties;
+
+export default forwardRef(Generator);

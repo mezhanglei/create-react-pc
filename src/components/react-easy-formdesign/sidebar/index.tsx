@@ -1,5 +1,5 @@
 import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
-import { DesignStoreContext } from '../design-store-context';
+import { StoreContext } from '../design-context';
 import classnames from 'classnames';
 
 export interface DesignComponentsProps {
@@ -7,8 +7,8 @@ export interface DesignComponentsProps {
   style?: CSSProperties
 }
 const prefixCls = 'easy-form-design-components';
-export const DesignComponents = React.forwardRef((props: DesignComponentsProps, ref: any) => {
-  const store = useContext(DesignStoreContext)
+function DesignComponents(props: DesignComponentsProps, ref: any) {
+  const store = useContext(StoreContext)
   const {
     style,
     className
@@ -18,9 +18,10 @@ export const DesignComponents = React.forwardRef((props: DesignComponentsProps, 
 
   return (
     <div ref={ref} className={cls} style={style}>
-
+11111
     </div>
   );
-});
+};
 
 DesignComponents.displayName = 'design-components';
+export default React.forwardRef(DesignComponents);

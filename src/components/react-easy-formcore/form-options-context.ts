@@ -3,7 +3,6 @@ import React from 'react'
 export interface FormFunc {
   onFieldsChange?: (obj: { name: string, value: any }) => void
   onValuesChange?: (obj: { name?: string, value: any }) => void
-  onVisible?: (obj: { name?: string, hidden: boolean }) => void
 }
 
 export interface FormOptions extends FormFunc {

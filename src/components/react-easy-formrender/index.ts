@@ -1,6 +1,6 @@
-import RenderForm from './render';
-import RenderFormProvider from './render-provider';
+import RenderForm from './render-form';
+import RenderFormChildren from './render-children';
 export default RenderForm;
-export { RenderFormProvider };
+export { RenderFormChildren };
 export * from './types';
 export * from './register';

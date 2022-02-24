@@ -76,20 +76,28 @@ export interface DraggableProps {
     disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
     enableUserSelectHack?: boolean; // 允许添加选中样式
     grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-    scale?: number; // 拖拽灵敏度
+    scale: number; // 拖拽灵敏度
     x?: number; // 在页面中的位置
     y?: number; // 在页面中的位置
     axis?: string[]; // 限制拖拽的方向
     positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
     bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
-    zIndexRange?: [number, number]; // zIndex的变化范围
-    reset?: boolean; // 重置transform
+    zIndexRange: [number, number]; // zIndex的变化范围
     className?: string;
     style?: CSSProperties;
     transform?: string;
     onDragStart?: DragHandler; // 拖拽开始事件
     onDrag?: DragHandler; // 拖拽进行事件
     onDragStop?: DragHandler; // 拖拽结束事件
+    forwardedRef?: any
+}
+
+export interface DraggableState {
+  dragData: DragData
+  dragged: boolean
+  isSVG: boolean
+  prevX?: number
+  prevY?: number
 }
 
 // 事件处理函数的type

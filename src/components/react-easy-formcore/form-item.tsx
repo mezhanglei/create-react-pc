@@ -58,7 +58,9 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     labelWidth,
     labelAlign,
     gutter,
-    errorClassName = 'error'
+    errorClassName = 'error',
+    onFieldsChange,
+    onValuesChange
   } = fieldProps;
 
   const currentPath = path && name ? `${path}.${name}` : name;
@@ -73,7 +75,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         // 设置值
         store.setFieldValue(currentPath, value);
         // 主动onchange事件
-        options?.onFieldsChange && options?.onFieldsChange({ name: currentPath, value: value });
+        onFieldsChange && onFieldsChange({ name: currentPath, value: value });
       }
     },
     [currentPath, store, valueGetter]
@@ -85,9 +87,12 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useEffect(() => {
     if (!currentPath || !store) return
     // 订阅目标控件
-    const uninstall = store.subscribeValue(currentPath, () => {
-      const newValue = store?.getFieldValue(currentPath);
+    const uninstall = store.subscribeValue(currentPath, (newValue, oldValue) => {
       setValue(newValue);
+      // 不监听`initialValue`赋值
+      if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
+        onValuesChange && onValuesChange({ name: currentPath, value: newValue })
+      }
     })
     return () => {
       uninstall()
@@ -107,13 +112,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     }
   }, [currentPath, store]);
 
-  // 监听表单值的变化
-  useEffect(() => {
-    if (!isObjectEqual(value, store?.getLastValue(currentPath))) {
-      options.onValuesChange && options.onValuesChange({ name: currentPath, value: value })
-    }
-  }, [JSON.stringify(value)]);
-
   // 表单域初始化值
   useEffect(() => {
     if (!currentPath || !store) return;
@@ -121,12 +119,9 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       store.setFieldValue(currentPath, initialValue, true);
     }
     store?.setFieldProps(currentPath, fieldProps);
-    // 显示或隐藏事件(最后执行)
-    options?.onVisible && options?.onVisible({ name: currentPath, hidden: false });
     return () => {
-      options?.onVisible && options?.onVisible({ name: currentPath, hidden: true });
-      // 清除该表单域的props
-      store?.setFieldProps(currentPath, undefined, true);
+      // 清除该表单域的props(在设置值的前面)
+      store?.setFieldProps(currentPath, undefined);
       // 清除初始值
       store.setFieldValue(currentPath, undefined, true);
     }

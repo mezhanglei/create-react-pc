@@ -182,8 +182,7 @@ class demo extends React.Component {
 - `onMount` 表单渲染完毕的回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
 - `onFieldsChange` 表单域 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
-- `onValuesChange` 监听表单值的变化。`可选`。
-- `onVisible` 监听表单域组件(`Form.Item`)显示或者隐藏的回调函数 `可选`。
+- `onValuesChange` 监听表单值的变化。(不监听`initialValue`赋值)`可选`。
 
 
 ### Form.Item Props
@@ -193,13 +192,12 @@ class demo extends React.Component {
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
 - `suffix` 后缀节点，`可选`。
-- `initialValue` 表单域的初始值 `可选`。
+- `initialValue` 表单域的初始值，注意此值和`value`不同，不能监听值的变化 `可选`。
 - `rules` 表单域的校验规则 `可选`。
 - `valueProp` 填写到子组件的值属性名，默认值为`'value'`。
 - `valueGetter` 从表单事件中获取表单值的方式，`可选`。
 - `onFieldsChange` 表单域 onChange 变化时的事件函数，只会被控件主动`onChange`触发，不会被`store.setFieldValue`和`store.setFieldsValue`触发, 避免循环调用。`可选`。
 - `onValuesChange` 监听表单值的变化。`可选`。
-- `onVisible` 监听表单域组件(`Form.Item`)显示或者隐藏的回调函数 `可选`。
 - `errorClassName` 控件当有错误信息时，添加一个自定义类名，`可选`。
 
 ### Form.List Props
@@ -209,7 +207,7 @@ class demo extends React.Component {
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
 - `suffix` 后缀节点，`可选`。
-- `initialValue` 表单域设置初始值 `可选`。
+- `initialValue` 表单域的初始值，注意此值和`value`不同，不能监听值的变化 `可选`。
 - `rules` 表单域的校验规则 `可选`。
 
 ### 表单的rules中的校验字段

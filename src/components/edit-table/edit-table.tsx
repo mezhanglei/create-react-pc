@@ -1,10 +1,10 @@
 import { Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
-import { getGUID } from '@/utils/character';
 import { EditTableRow, EditTableCol } from './table-components';
 import { EditTableRef, EditTableProps, RowData, ColumnProps, ColumnTypes } from './types';
 import deepCopy from 'fast-copy';
+import nanoid from 'nanoid';
 
 /**
  * 可编辑表格组件
@@ -38,7 +38,7 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
   // 点击添加
   const addTableRow = () => {
     const newData = {
-      key: getGUID()
+      key: nanoid(6)
     };
     const newDataSource = [...dataSource, newData];
     setDataSource(newDataSource);
