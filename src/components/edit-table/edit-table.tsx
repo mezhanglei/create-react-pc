@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { EditTableRow, EditTableCol } from './table-components';
 import { EditTableRef, EditTableProps, RowData, ColumnProps, ColumnTypes } from './types';
-import deepCopy from 'fast-copy';
+import { klona } from 'klona';
 import nanoid from 'nanoid';
 
 /**
@@ -26,7 +26,7 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
   }));
 
   useEffect(() => {
-    setDataSource(deepCopy(props?.dataSource as any[]) || []);
+    setDataSource(klona(props?.dataSource as any[]) || []);
   }, [JSON.stringify(props?.dataSource)]);
 
   // 触发保存事件

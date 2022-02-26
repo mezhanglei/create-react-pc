@@ -40,6 +40,7 @@ export interface RenderFormProps extends FormProps {
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends FormOptions {
   properties: SchemaData['properties']
+  initialValues?: Partial<unknown>,
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler }
   widgets: { [key: string]: any }
   Fields?: typeof defaultFields

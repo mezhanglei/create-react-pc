@@ -1,7 +1,7 @@
 
 import { asyncSequentialExe } from '@/utils/common';
 import { isExitPrefix } from './utils/utils';
-import deepCopy from 'fast-copy';
+import { klona } from 'klona';
 import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';
@@ -42,7 +42,7 @@ export class FormStore<T extends Object = any> {
 
   public constructor(values: Partial<T> = {}, fieldsProps?: FormFieldsProps<T>) {
     this.initialValues = values
-    this.values = deepCopy(values)
+    this.values = klona(values)
     this.fieldsProps = fieldsProps || {};
 
     this.getFieldValue = this.getFieldValue.bind(this)
@@ -100,7 +100,7 @@ export class FormStore<T extends Object = any> {
   public async setFieldValue(name: string | { [key: string]: any }, value?: any, isMount?: boolean) {
     if (typeof name === 'string') {
       // 旧表单值存储
-      this.lastValues = deepCopy(this.values);
+      this.lastValues = klona(this.values);
       // 设置值
       this.values = deepSet(this.values, name, value, formListPath);
       // 同步ui
@@ -120,8 +120,8 @@ export class FormStore<T extends Object = any> {
 
   // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
-    this.lastValues = deepCopy(this.values);
-    this.values = deepCopy(values);
+    this.lastValues = klona(this.values);
+    this.values = klona(values);
     this.notifyValue();
     this.notifyStoreValue();
   }
@@ -154,7 +154,7 @@ export class FormStore<T extends Object = any> {
 
   // 设置error信息(覆盖更新)
   private async setFieldsError(erros: FormErrors<T>) {
-    this.formErrors = deepCopy(erros);
+    this.formErrors = klona(erros);
     this.notifyError();
   }
 

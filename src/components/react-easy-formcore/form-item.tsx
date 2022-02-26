@@ -1,5 +1,5 @@
 import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
-import { FormStoreContext } from './form-store-context'
+import { FormStoreContext, FormValuesContext } from './form-store-context'
 import { FormOptions, FormOptionsContext } from './form-options-context'
 import { getValuePropName, getValueFromEvent } from './utils/utils'
 import { FormRule } from './form-store'
@@ -39,10 +39,11 @@ export const classes = {
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const store = useContext(FormStoreContext)
+  const initialValues = useContext(FormValuesContext)
   const options = useContext(FormOptionsContext)
   const finalProps = { ...options, ...props };
   const { children, ...fieldProps } = finalProps;
-  const {
+  let {
     label,
     name,
     valueProp = 'value',
@@ -64,6 +65,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   } = fieldProps;
 
   const currentPath = path && name ? `${path}.${name}` : name;
+  initialValue = initialValues?.[currentPath as string] ?? initialValue;
   const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
   const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
 

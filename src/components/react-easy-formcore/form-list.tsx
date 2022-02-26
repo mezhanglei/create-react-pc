@@ -3,6 +3,7 @@ import { FormRule } from './form-store';
 import { formListPath } from './form';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
+import { FormValuesContext } from './form-store-context';
 
 export interface FormListProps extends FormOptions {
   label?: string
@@ -33,9 +34,10 @@ export const classes_list = {
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const options = useContext(FormOptionsContext)
+  const initialValues = useContext(FormValuesContext)
   const finalProps = { ...options, ...props };
   const { children, ...fieldProps } = finalProps;
-  const {
+  let {
     name,
     rules,
     path,
@@ -53,7 +55,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-
+  initialValue = initialValues?.[currentPath as string] ?? initialValue;
   if (currentPath && !formListPath?.includes(currentPath)) {
     formListPath.push(currentPath)
   }

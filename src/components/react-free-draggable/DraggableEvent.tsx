@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useRef } from 'react';
+import React from 'react';
 import { matchParent, addEvent, removeEvent, getEventPosition, findElement } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";

@@ -12,10 +12,10 @@ export enum DragTypes {
     resizeEnd = 'resizeEnd'
 }
 export interface GridItemEvent {
-    GridX: number;
-    GridY: number;
-    w: number;
-    h: number;
+    GridX?: number;
+    GridY?: number;
+    w?: number;
+    h?: number;
     margin?: [number, number];
     uniqueKey?: string | number;
     forbid?: boolean; // 禁止拖拽和移动

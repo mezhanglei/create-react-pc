@@ -1,7 +1,7 @@
 import React from 'react';
 import { isMobile } from "./utils/verify";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "./utils/dom";
-import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode, LastStyle } from "./type";
+import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode, LastStyle, ResizeDragTypes, NowStyle } from "./type";
 import ReactDOM from 'react-dom';
 import { mergeObject } from '@/utils/object';
 
@@ -25,12 +25,11 @@ const eventsFor = {
 let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 class DragResize extends React.Component<DragResizeProps, DragResizeState> {
-  dragging: boolean;
   lastStyle?: LastStyle;
   direction?: string;
+  dragType?: ResizeDragTypes;
   constructor(props: DragResizeProps) {
     super(props);
-    this.dragging = false;
     this.state = {
     };
   }
@@ -39,24 +38,45 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     axis: DirectionCode
   }
 
+  componentDidMount() {
+    const node = this.findDOMNode();
+    const computedWH = this.getStyleWH();
+    if (computedWH) {
+      this.setStyle({ width: computedWH?.width, height: computedWH?.height }, this.props.width, this.props?.height)
+    }
+
+    addEvent(node, dragEventFor.start, this.onResizeStart);
+    addEvent(node, dragEventFor.move, this.mouseOver);
+  }
+
+  // 非拖拽元素设置宽高
+  setStyle = (oldStyle: NowStyle, newWidth?: number, newHeight?: number) => {
+    const newStyle = mergeObject(oldStyle, {
+      width: newWidth,
+      height: newHeight
+    })
+    this.setState({
+      nowStyle: newStyle
+    });
+    // 设置完translate初始化dragType
+    this.dragType = undefined;
+    return newStyle;
+  }
+
+  // 仅仅当为受控组件，且非拖拽的组件，设置值
   componentDidUpdate(prevProps: DragResizeProps, prevState: DragResizeState) {
-    const widthChanged = this.props.width !== undefined && (this.props.width !== prevProps.width || this.props.width !== prevState.nowStyle?.width);
-    const heightChanged = this.props.height !== undefined && (this.props.height !== prevProps.height || this.props.height !== prevState.nowStyle?.height);
+    const widthChanged = this.props.width !== undefined && this.props.width !== prevProps.width;
+    const heightChanged = this.props.height !== undefined && this.props.height !== prevProps.height;
     if (widthChanged || heightChanged) {
-      if (!this.dragging) {
-        this.setState({
-          nowStyle: mergeObject(this.state.nowStyle, {
-            width: this.props?.width,
-            height: this.props?.height
-          })
-        })
+      if (!this.dragType && prevState?.nowStyle) {
+        this.setStyle(prevState?.nowStyle, this.props?.width, this.props?.height)
       }
     }
   }
 
   static getDerivedStateFromProps(nextProps: DragResizeProps, prevState: DragResizeState) {
-    const widthChanged = nextProps.width !== prevState.prevWidth || nextProps.width !== prevState.nowStyle?.width;
-    const heightChanged = nextProps.height !== prevState.prevHeight || nextProps.height !== prevState.nowStyle?.height;
+    const widthChanged = nextProps.width !== prevState.prevWidth;
+    const heightChanged = nextProps.height !== prevState.prevHeight;
     if (widthChanged) {
       return {
         ...prevState,
@@ -71,22 +91,6 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
       };
     }
     return null;
-  }
-
-  componentDidMount() {
-    const node = this.findDOMNode();
-    const computedWH = this.getStyleWH();
-    if (computedWH) {
-      this.setState({
-        nowStyle: {
-          width: this.props?.width ?? computedWH.width,
-          height: this.props?.height ?? computedWH.height
-        }
-      });
-    }
-
-    addEvent(node, dragEventFor.start, this.onResizeStart);
-    addEvent(node, dragEventFor.move, this.mouseOver);
   }
 
   componentWillUnmount() {
@@ -204,9 +208,9 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
       forbid
     } = this.props;
     if (forbid) return;
+    this.dragType = ResizeDragTypes.resizeStart;
     const direction = this.getDirection(e);
     this.direction = direction;
-    this.dragging = true;
     const mouseCursor = this.getMouseCursor(direction);
     if (mouseCursor === 'default') {
       return;
@@ -249,7 +253,9 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     if (forbid) return;
     e.preventDefault();
     const element = this.findDOMNode();
-    if (!this.dragging) return;
+    const dragType = this.dragType;
+    if (!dragType) return;
+    this.dragType = ResizeDragTypes.resizing;
     const position = getEventPosition(e, element);
     const dir = this.direction;
     const lastEventX = this.lastStyle?.eventX;
@@ -286,22 +292,26 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     } = this.props;
     if (forbid) return;
     e.preventDefault();
-    if (!this.dragging || !this.state.nowStyle) return;
-
-    const nowStyle = {
-      ...this.state.nowStyle
-    }
-
+    const dragType = this.dragType;
+    const { nowStyle } = this.state;
+    if (!dragType || !nowStyle || !this.lastStyle) return;
+    this.dragType = ResizeDragTypes.resizeEnd;
     const element = this.findDOMNode();
-    this.props.onResizeEnd && this.props.onResizeEnd(e, {
+
+    const beforeEndStyle = {
       ...nowStyle,
       node: element,
       dir: this.direction as string
-    });
-    this.dragging = false;
-    this.setState({
-      nowStyle: nowStyle
-    });
+    }
+    // 如果props值改变，则设置props值
+    const widthChanged = this.props.width !== undefined && this.props.width !== beforeEndStyle?.width;
+    const heightChanged = this.props.height !== undefined && this.props?.height !== beforeEndStyle?.height;
+    if (widthChanged || heightChanged) {
+      this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, this.props?.width, this.props?.height);
+    } else if (this.props.fixed) {
+      this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, undefined, undefined)
+    }
+    this.props.onResizeEnd && this.props.onResizeEnd(e, beforeEndStyle);
     this.removeEvents();
   }
 
@@ -320,7 +330,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     return React.cloneElement(React.Children.only(children), {
       className: className ?? children.props?.className,
       ref: forwardedRef,
-      style: mergeObject({...children.props.style, ...style}, nowStyle)
+      style: mergeObject({ ...children.props.style, ...style }, nowStyle)
     });
   }
 }

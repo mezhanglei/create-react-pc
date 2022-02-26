@@ -6,6 +6,7 @@ export interface FormFunc {
 }
 
 export interface FormOptions extends FormFunc {
+  initialValues?: Partial<unknown>,
   inline?: boolean
   compact?: boolean
   required?: boolean

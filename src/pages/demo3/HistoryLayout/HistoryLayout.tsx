@@ -100,5 +100,5 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
         props.onDragEnd && props.onDragEnd(layoutItem, oldLayout, newLayout);
     }
 
-    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onResizeEnd={onDragEnd} onDragEnd={onDragEnd} onResizeEnd={onDragEnd} />
+    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onResizeEnd={onDragEnd} onDragEnd={onDragEnd} />
 })

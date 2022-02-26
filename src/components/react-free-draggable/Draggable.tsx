@@ -1,7 +1,7 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { createCSSTransform, createSVGTransform, getPositionByBounds } from './utils/dom';
-import { DraggableProps, DragData, EventHandler, PositionType, DragAxisCode, DragAxis, BoundsInterface, EventData, DraggableState } from "./utils/types";
+import { DraggableProps, EventHandler, DragAxisCode, DragAxis, DragTypes, DragData, BoundsInterface, DraggableState } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
@@ -15,22 +15,28 @@ const wrapClassName = "react-draggable";
 const wrapClassNameDragging = "react-draggable-dragging";
 const wrapClassNameDragged = "react-draggable-dragged";
 class Draggable extends React.Component<DraggableProps, DraggableState> {
-  dragging?: boolean;
-  initXY?: PositionType;
+  // 初始位置
+  initX?: number;
+  initY?: number;
+  // 拖拽补偿
   slackX: number;
   slackY: number;
+  dragType?: DragTypes;
+  lastDragData: DragData;
   constructor(props: DraggableProps) {
     super(props);
     this.slackX = 0;
     this.slackY = 0;
+    // dragStart时的数据
+    this.lastDragData = {
+      translateX: 0,
+      translateY: 0
+    }
     this.state = {
       dragData: {
         translateX: 0,
-        translateY: 0,
-        deltaX: 0,
-        deltaY: 0
+        translateY: 0
       },
-      dragged: false,
       isSVG: false
     };
   }
@@ -40,37 +46,56 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     zIndexRange: [],
   }
 
+  componentDidMount() {
+    const child = this.findDOMNode();
+    const parent = this.getLocationParent();
+    const pos = getInsidePosition(child, parent);
+    const initXY = pos && {
+      x: pos?.left,
+      y: pos?.top
+    };
+    this.initX = initXY?.x;
+    this.initY = initXY?.y;
+    this.setDragdata(this.state.dragData, this.props?.x, this.props?.y);
+  }
+
+  // 非拖拽元素设置translate，根据输入的x，y位置转换为translate距离
+  setDragdata = (oldDragData: DragData, newX?: number, newY?: number) => {
+    const child = this.findDOMNode();
+    const initX = this.initX as number;
+    const initY = this.initY as number;
+    const translateX = typeof newX === 'number' ? (newX - initX) : undefined;
+    const translateY = typeof newY === 'number' ? (newY - initY) : undefined;
+    const newDragData = mergeObject(oldDragData, {
+      x: newX,
+      y: newY,
+      translateX,
+      translateY
+    })
+    this.setState({
+      dragData: newDragData,
+      isSVG: isElementSVG(child),
+      zIndex: this.props?.zIndexRange?.[0]
+    });
+    // 设置完translate初始化dragType
+    this.dragType = undefined;
+    return newDragData;
+  }
+
+  // 仅仅当为受控组件，且非拖拽的组件，设置值
   componentDidUpdate(prevProps: DraggableProps, prevState: DraggableState) {
-    const xChanged = this.props.x !== undefined && (this.props.x !== prevProps.x || this.props.x !== prevState.dragData?.x);
-    const yChanged = this.props.y !== undefined && (this.props.y !== prevProps.y || this.props.y !== prevState.dragData?.y);
+    const xChanged = this.props.x !== undefined && this.props.x !== prevProps.x;
+    const yChanged = this.props.y !== undefined && this.props.y !== prevProps.y;
     if (xChanged || yChanged) {
-      if (this.dragging === false) {
-        const initX = this.initXY?.x as number;
-        const initY = this.initXY?.y as number;
-        // 初始化传值时根据限制重新计算该值
-        const newX = this.props?.x as number;
-        const newY = this.props?.y as number;
-        const translateX = newX - initX;
-        const translateY = newY - initY;
-        this.setState({
-          dragData: mergeObject(this.state.dragData, {
-            x: newX,
-            y: newY,
-            lastX: newX,
-            lastY: newY,
-            translateX,
-            translateY
-          })
-        });
-        this.initXY = { x: newX, y: newY };
-        console.log(2222, new Date().getTime())
+      if (!this.dragType) {
+        this.setDragdata(prevState?.dragData, this.props.x, this.props.y);
       }
     }
   }
 
   static getDerivedStateFromProps(nextProps: DraggableProps, prevState: DraggableState) {
-    const xChanged = nextProps.x !== prevState.prevX || nextProps.x !== prevState.dragData?.x;
-    const yChanged = nextProps.y !== prevState.prevY || nextProps.y !== prevState.dragData?.y;
+    const xChanged = nextProps.x !== prevState.prevX;
+    const yChanged = nextProps.y !== prevState.prevY;
     if (xChanged) {
       return {
         ...prevState,
@@ -87,29 +112,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     return null;
   }
 
-  componentDidMount() {
-    const child = this.findDOMNode();
-    const parent = this.getLocationParent();
-    const pos = getInsidePosition(child, parent);
-    const initXY = pos && {
-      x: pos?.left,
-      y: pos?.top
-    };
-    if (initXY) {
-      this.setState({
-        dragData: {
-          ...this.state.dragData,
-          x: initXY?.x,
-          y: initXY?.y
-        }
-      });
-      this.initXY = initXY;
-    }
-  }
-
-  componentWillUnmount() {
-  }
-
   findDOMNode() {
     return this.props?.forwardedRef?.current || ReactDOM.findDOMNode(this);
   }
@@ -124,6 +126,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   onDragStart: EventHandler = (e, data) => {
     e.stopImmediatePropagation();
     if (!data) return;
+    this.dragType = DragTypes.dragStart;
     const node = data?.node;
     const parent = this.getLocationParent();
     const pos = getInsidePosition(node, parent);
@@ -139,28 +142,24 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       ...dragData,
       translateX,
       translateY,
-      deltaX: 0,
-      deltaY: 0,
       x: positionX, y: positionY,
-      lastX: positionX,
-      lastY: positionY,
-      zIndex: zIndexRange[1],
       node
     }
 
-    this.dragging = true;
     this.setState({
-      dragged: true,
-      isSVG: isElementSVG(data?.node),
-      dragData: newDragData
+      dragData: newDragData,
+      zIndex: zIndexRange[1]
     });
+    this.lastDragData = newDragData
     onDragStart && onDragStart(e, newDragData);
   };
 
   onDrag: EventHandler = (e, data) => {
-    if (!this.dragging || !data) return;
+    const dragType = this.dragType;
+    if (!dragType || !data) return;
+    this.dragType = DragTypes.draging;
     const { dragData } = this.state;
-    const { zIndexRange, scale, bounds, onDrag } = this.props;
+    const { scale, bounds, onDrag } = this.props;
     let x = dragData?.x ?? 0;
     const y = dragData?.y ?? 0;
     let translateX = dragData?.translateX ?? 0;
@@ -169,15 +168,10 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     // 拖拽生成的位置信息
     const newDragData = {
       node: data.node,
-      zIndex: zIndexRange[1],
       translateX: this.canDragX() ? (translateX + (data?.deltaX / scale)) : translateX,
       translateY: this.canDragY() ? (translateY + (data.deltaY / scale)) : translateY,
       x: this.canDragX() ? (x + (data?.deltaX / scale)) : x,
-      y: this.canDragY() ? (y + (data.deltaY / scale)) : y,
-      deltaX: (data.deltaX / scale),
-      deltaY: (data.deltaY / scale),
-      lastX: x,
-      lastY: y
+      y: this.canDragY() ? (y + (data.deltaY / scale)) : y
     };
 
     if (!newDragData) return;
@@ -210,8 +204,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       newDragData.y = nowY;
       newDragData.translateX = nowTranslateX;
       newDragData.translateY = nowTranslateY;
-      newDragData.deltaX = nowX - (dragData?.x || 0);
-      newDragData.deltaY = nowY - (dragData?.y || 0);
     }
 
     this.setState({
@@ -222,23 +214,26 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
   onDragStop: EventHandler = (e, data) => {
     const { dragData } = this.state;
+    const dragType = this.dragType;
     const { zIndexRange, onDragStop } = this.props;
-    if (!this.dragging || !dragData) return;
+    if (!dragType || !dragData) return;
+    this.dragType = DragTypes.dragEnd;
 
-    const newDragData = {
+    const beforeEndDragData = {
       ...dragData,
-      deltaX: 0,
-      deltaY: 0,
       zIndex: zIndexRange[0]
     }
-    onDragStop && onDragStop(e, newDragData);
-    this.dragging = false;
+    // 根据props值设置translate
+    const xChanged = this.props.x !== undefined && this.props.x !== beforeEndDragData?.x;
+    const yChanged = this.props.y !== undefined && this.props?.y !== beforeEndDragData?.y;
+    if (xChanged || yChanged) {
+      this.setDragdata(this.lastDragData, this.props?.x, this.props?.y);
+    } else if (this.props.fixed) {
+      this.setDragdata(this.lastDragData, undefined, undefined)
+    }
+    onDragStop && onDragStop(e, beforeEndDragData);
     this.slackX = 0;
     this.slackY = 0;
-    this.setState({
-      // dragData: newDragData
-    });
-    console.log(11111, new Date().getTime())
   };
 
   canDragX = () => {
@@ -253,11 +248,11 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
   render() {
     const { children, className, style, positionOffset, transform, forwardedRef, ...DraggableEventProps } = this.props;
-    const { isSVG, dragged, dragData } = this.state;
+    const { isSVG, dragData, zIndex } = this.state;
     // 包裹元素的className
     const cls = classNames((children.props?.className || ''), wrapClassName, className, {
-      [wrapClassNameDragging]: this.dragging,
-      [wrapClassNameDragged]: dragged
+      [wrapClassNameDragging]: this.dragType === DragTypes.draging,
+      [wrapClassNameDragged]: this.dragType
     });
 
     // 当前位置
@@ -273,7 +268,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
           className: cls,
           style: mergeObject({ ...children.props.style, ...style }, {
             transform: !isSVG ? createCSSTransform(currentPosition, positionOffset) : style?.transform ?? (children.props.style?.transform || ""),
-            zIndex: dragData?.zIndex ?? style?.zIndex ?? children?.props?.style?.zIndex
+            zIndex: zIndex ?? style?.zIndex ?? children?.props?.style?.zIndex
           }),
           transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (transform ?? (children.props?.transform || "")),
         })}

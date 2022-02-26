@@ -1,4 +1,4 @@
-import React, { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
+import { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
 import { DraggerItemEvent, DraggerItemHandler } from "../dragger-item";
 
 export type EventType = MouseEvent | TouchEvent;

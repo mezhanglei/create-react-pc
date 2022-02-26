@@ -4,7 +4,7 @@ import React, { CSSProperties, useEffect } from 'react'
 
 import { FormItem } from './form-item'
 import { FormStore } from './form-store'
-import { FormStoreContext } from './form-store-context'
+import { FormStoreContext, FormValuesContext } from './form-store-context'
 import { FormOptions, FormOptionsContext } from './form-options-context'
 import { FormList } from './form-list'
 
@@ -15,13 +15,14 @@ export interface FormProps extends FormOptions {
   store?: FormStore
   style?: CSSProperties
   children?: React.ReactNode
+  initialValues?: Partial<unknown>,
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
   onReset?: (e: React.FormEvent<HTMLFormElement>) => void
   onMount?: () => void
 }
 
 export function Form(props: FormProps) {
-  const { className = '', style, children, store, onSubmit, onReset, onMount, ...options } = props
+  const { className = '', style, children, store, initialValues, onSubmit, onReset, onMount, ...options } = props
 
   const classNames = 'rh-form ' + className
 
@@ -32,9 +33,11 @@ export function Form(props: FormProps) {
   return (
     <form className={classNames} style={style} onSubmit={onSubmit} onReset={onReset}>
       <FormStoreContext.Provider value={store}>
-        <FormOptionsContext.Provider value={options}>
-          {children}
-        </FormOptionsContext.Provider>
+        <FormValuesContext.Provider value={initialValues}>
+          <FormOptionsContext.Provider value={options}>
+            {children}
+          </FormOptionsContext.Provider>
+        </FormValuesContext.Provider>
       </FormStoreContext.Provider>
     </form>
   )
