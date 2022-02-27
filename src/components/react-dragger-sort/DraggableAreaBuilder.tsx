@@ -50,9 +50,48 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       unsubscribe && unsubscribe(this.parent);
     }
 
+    //求两点之间的距离
+    getDistance(obj1, obj2) {
+      let a = (obj1.offsetLeft + obj1.offsetWidth / 2) - (obj2.offsetLeft + obj2.offsetWidth / 2)
+      let b = (obj1.offsetTop + obj1.offsetHeight / 2) - (obj2.offsetTop + obj2.offsetHeight / 2)
+      return Math.sqrt(a * a + b * b)
+    }
+
+    //碰撞检测
+    isButt(obj1, obj2) {
+      let l1 = obj1.offsetLeft
+      let t1 = obj1.offsetTop
+      let r1 = obj1.offsetLeft + obj1.offsetWidth
+      let b1 = obj1.offsetTop + obj1.offsetHeight
+
+      let l2 = obj2.offsetLeft
+      let t2 = obj2.offsetTop
+      let r2 = obj2.offsetLeft + obj2.offsetWidth
+      let b2 = obj2.offsetTop + obj2.offsetHeight
+
+      return !(r1 < l2 || b1 < t2 || r2 < l1 || b2 < t1)
+    }
+
+    //找出相遇点中最近的元素
+    findNearest = (tag: TagInterface) => {
+      let filterLi = []
+      let aDistance = []
+      const tagNode = tag?.node;
+      const childs = draggerItems?.map((item) => item?.node);
+      for (let i = 0; i < draggerItems.length; i++) {
+        childs[i] != tagNode && (this.isButt(tagNode, draggerItems[i]) && (aDistance.push(this.getDistance(tagNode, draggerItems[i])), filterLi.push(childs[i])))
+      }
+      let minNum = Number.MAX_VALUE
+      let minLi = null
+      for (let i = 0; i < aDistance.length; i++) aDistance[i] < minNum && (minNum = aDistance[i], minLi = filterLi[i])
+      return minLi
+    }
+
     // 同区域内拖拽返回覆盖目标
     moveTrigger = (tag: TagInterface): ChildTypes | undefined => {
       if (!this.parent) return;
+      const target = this.findNearest(tag);
+      console.log(target, 2222)
       this.throttleFn(() => {
         // 判断是不是区域内 
         const parent = document?.body;
