@@ -12,7 +12,7 @@ import {
 import classNames from "classnames";
 import { DraggerItemHandler } from "./dragger-item";
 import { getInsidePosition } from "@/utils/dom";
-import { getDistance, isOverLay } from "./utils/dom";
+import { getDirection, getDistance, isOverLay } from "./utils/dom";
 
 export const DraggerContext = React.createContext<DraggerContextInterface>({});
 
@@ -74,6 +74,17 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       return minChild;
     }
 
+    getDirection = (moveChild: MoveChild, collision: DraggerItem) => {
+      const move = {
+        left: moveChild?.x,
+        top: moveChild?.y,
+        right: moveChild?.x + moveChild?.width,
+        bottom: moveChild?.y + moveChild?.height
+      };
+      const other = getInsidePosition(collision?.node);
+      return other && getDirection(move, other);
+    }
+
     // 同区域内拖拽返回覆盖目标
     moveTrigger = (moveChild: MoveChild): DraggerItem | undefined => {
       if (!this.parent) return;
@@ -101,11 +112,13 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       if (!data || !this.parent) return false;
       const moveChild = { ...data, area: this.parent };
       const collision = this.moveTrigger(moveChild);
+      const direction = collision && this.getDirection(moveChild, collision);
       const params = {
         e,
         area: this.parent,
         target: moveChild,
-        collision: collision
+        collision: collision,
+        direction: direction
       };
       collision && this.props?.onDragMove && this.props?.onDragMove(params);
       // 是否拖到区域外部
@@ -118,18 +131,25 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       if (!data || !this.parent) return false;
       const moveChild = { ...data, area: this.parent };
       const collision = this.moveTrigger(moveChild);
+      const direction = collision && this.getDirection(moveChild, collision);
       const params = {
         e,
         area: this.parent,
         target: moveChild,
-        collision: collision
+        collision: collision,
+        direction: direction
       };
       this.props?.onDragMoveEnd && this.props?.onDragMoveEnd(params);
       // 是否拖到区域外部
       if (triggerFunc) {
         const isTrigger = triggerFunc(moveChild, e);
         if (isTrigger) {
-          this.props?.onMoveOutChange && this.props?.onMoveOutChange(params);
+          const result = {
+            e,
+            area: this.parent,
+            target: moveChild
+          };
+          this.props?.onMoveOutChange && this.props?.onMoveOutChange(result);
         }
       }
     }
@@ -139,11 +159,13 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       if (!this.parent) return;
       const collision = this.findNearest(moveChild);
       if (moveChild?.dragType === DragTypes.dragEnd) {
+        const direction = collision && this.getDirection(moveChild, collision);
         const params = {
           e,
           area: this.parent,
           target: moveChild,
-          collision: collision
+          collision: collision,
+          direction: direction
         };
         this.props.onMoveInChange && this.props.onMoveInChange(params);
       }

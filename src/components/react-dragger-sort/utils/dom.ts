@@ -35,6 +35,21 @@ export function getDistance(move: BoundingRect, other: BoundingRect) {
   return Math.sqrt(x * x + y * y)
 }
 
+// 求一个点在另一个点的方位
+export const getDirection = (move: BoundingRect, other: BoundingRect) => {
+
+  const moveCenter = {
+    x: move?.left + (move.right - move?.left) / 2,
+    y: move?.top + (move.bottom - move?.top) / 2
+  }
+  const otherCenter = {
+    x: other?.left + (other.right - other?.left) / 2,
+    y: other?.top + (other.bottom - other?.top) / 2
+  }
+  const xDiff = moveCenter.x - otherCenter.x;
+  const yDiff = moveCenter.y - otherCenter.y;
+}
+
 export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement) => {
   const parentElement = targetElement.parentNode;
   if (!parentElement) return;

@@ -22,10 +22,10 @@ export interface MoveChild extends DraggerItemEvent {
 }
 
 export enum CollisionDirection {
-  N = "n", // 上边
-  S = "s", // 下边
-  W = "w", // 左边
-  E = "e", // 右边
+  Top = "top", // 上边
+  Bottom = "bottom", // 下边
+  Left = "left", // 左边
+  Right = "right" // 右边
 }
 
 // 拖拽触发的参数
