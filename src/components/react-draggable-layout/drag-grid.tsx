@@ -140,7 +140,6 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
           onResizeStart={onResizeStart}
           onResizing={onResizing}
           onResizeEnd={onResizeEnd}
-          zIndexRange={[2, 10]}
         >
           {child}
         </GridItem>
@@ -158,10 +157,10 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
         containerWidth={props?.width}
         containerPadding={props?.padding ?? [0, 0]}
         rowHeight={props?.rowHeight}
-        zIndexRange={[1, 9]}
         style={{
           background: 'rgba(15,15,15,0.3)',
-          transition: ' all .15s ease-out'
+          transition: ' all .15s ease-out',
+          zIndex: 1
         }}
         GridX={placeholder.GridX}
         GridY={placeholder.GridY}

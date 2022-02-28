@@ -77,7 +77,6 @@ export interface DraggableProps {
   axis?: string[]; // 限制拖拽的方向
   positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
   bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
-  zIndexRange: [number, number]; // zIndex的变化范围
   className?: string;
   style?: CSSProperties;
   transform?: string;
@@ -99,7 +98,6 @@ export interface DraggableState {
   dragData: DragData
   dragType?: DragTypes
   isSVG: boolean
-  zIndex?: number
   prevX?: number
   prevY?: number
 }

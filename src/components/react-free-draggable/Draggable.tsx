@@ -42,8 +42,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   }
   static defaultProps = {
     axis: DragAxisCode,
-    scale: 1,
-    zIndexRange: [],
+    scale: 1
   }
 
   componentDidMount() {
@@ -74,8 +73,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     })
     this.setState({
       dragData: newDragData,
-      isSVG: isElementSVG(child),
-      zIndex: this.props?.zIndexRange?.[0]
+      isSVG: isElementSVG(child)
     });
     // 设置完translate初始化dragType
     this.dragType = undefined;
@@ -133,7 +131,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     let positionX = pos?.left;
     let positionY = pos?.top;
     const { dragData } = this.state;
-    const { zIndexRange, onDragStart } = this.props;
+    const { onDragStart } = this.props;
 
     const translateX = dragData?.translateX || 0;
     const translateY = dragData?.translateY || 0;
@@ -147,8 +145,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     }
 
     this.setState({
-      dragData: newDragData,
-      zIndex: zIndexRange[1]
+      dragData: newDragData
     });
     this.lastDragData = newDragData
     onDragStart && onDragStart(e, newDragData);
@@ -215,13 +212,12 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   onDragStop: EventHandler = (e, data) => {
     const { dragData } = this.state;
     const dragType = this.dragType;
-    const { zIndexRange, onDragStop } = this.props;
+    const { onDragStop } = this.props;
     if (!dragType || !dragData) return;
     this.dragType = DragTypes.dragEnd;
 
     const beforeEndDragData = {
-      ...dragData,
-      zIndex: zIndexRange[0]
+      ...dragData
     }
     // 根据props值设置translate
     const xChanged = this.props.x !== undefined && this.props.x !== beforeEndDragData?.x;
@@ -248,7 +244,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
   render() {
     const { children, className, style, positionOffset, transform, forwardedRef, ...DraggableEventProps } = this.props;
-    const { isSVG, dragData, zIndex } = this.state;
+    const { isSVG, dragData } = this.state;
     // 包裹元素的className
     const cls = classNames((children.props?.className || ''), wrapClassName, className, {
       [wrapClassNameDragging]: this.dragType === DragTypes.draging,
@@ -267,8 +263,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
         {React.cloneElement(React.Children.only(children), {
           className: cls,
           style: mergeObject({ ...children.props.style, ...style }, {
-            transform: !isSVG ? createCSSTransform(currentPosition, positionOffset) : style?.transform ?? (children.props.style?.transform || ""),
-            zIndex: zIndex ?? style?.zIndex ?? children?.props?.style?.zIndex
+            transform: !isSVG ? createCSSTransform(currentPosition, positionOffset) : style?.transform ?? (children.props.style?.transform || "")
           }),
           transform: isSVG ? createSVGTransform(currentPosition, positionOffset) : (transform ?? (children.props?.transform || "")),
         })}

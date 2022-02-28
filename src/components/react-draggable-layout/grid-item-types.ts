@@ -23,7 +23,6 @@ export interface GridItemEvent {
     handle?: string | HTMLElement; // 拖拽句柄
     dragAxis?: string[]; // 允许的拖拽类型
     resizeAxis?: Direction[]; // 允许缩放类型
-    zIndexRange?: [number, number];
 }
 export type GridItemEventHandle = (data: GridItemEvent, e: EventType) => void;
 export interface GridItemProps extends GridItemEvent {

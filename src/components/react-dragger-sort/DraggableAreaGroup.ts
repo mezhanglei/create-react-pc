@@ -14,11 +14,11 @@ export default class DraggableAreaGroup {
   create() {
     return buildDraggableArea({
       // 触发所有的监听事件
-      triggerFunc: (tag, e) => {
+      triggerFunc: (moveChild, e) => {
         let result = false;
         this.subscriptions.forEach(option => {
           const fn = option?.listener;
-          const isTrigger = fn({ ...tag }, e);
+          const isTrigger = fn({ ...moveChild }, e);
           if (isTrigger) {
             result = isTrigger;
           }
@@ -29,14 +29,14 @@ export default class DraggableAreaGroup {
       subscribe: (area, addEvent) => {
         this.area = area;
         this.subscriptions.push({
-          listener: function (tag, e) {
-            if (tag?.area !== area) {
+          listener: function (moveChild, e) {
+            if (moveChild?.area !== area) {
               const parent = document?.documentElement;
               const areaRect = getInsidePosition(area, parent);
-              const x = tag?.x || 0;
-              const y = tag?.y || 0;
+              const x = moveChild?.x || 0;
+              const y = moveChild?.y || 0;
               if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
-                addEvent(tag, e);
+                addEvent(moveChild, e);
                 return true;
               }
             }
