@@ -96,11 +96,12 @@ export const sortLayout = (layout: GridItemEvent[]) => {
   const newLayout = klona(layout);
   return newLayout?.sort((a: GridItemEvent, b: GridItemEvent) => {
     if (typeof a.GridY === 'number' && typeof a.GridX === 'number' && typeof b.GridY === 'number' && typeof b.GridX === 'number') {
-      if (a.GridY > b.GridY || (a.GridY === b.GridY && a.GridX > b.GridX)) {
-        if (a.forbid) return 0 // 为了静态，排序的时候尽量把静态的放在前面
-        return 1
-      } else if (a.GridY === b.GridY && a.GridX === b.GridX) {
-        return 0
+      if (a.forbid || b.forbid) {
+        return 0;
+      } else if (a.GridY === b.GridY) {
+        return a.GridX - b.GridX;
+      } else {
+        return a.GridY - b.GridY;
       }
     }
     return -1

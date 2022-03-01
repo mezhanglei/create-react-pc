@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
-import { ChildrenType, DragTypes } from "./utils/types";
+import { ChildrenType, DragTypes, DraggerItemType } from "./utils/types";
 import classNames from "classnames";
 import { getOffsetWH } from "@/utils/dom";
 import { DraggerContext } from './DraggableAreaBuilder';
@@ -45,7 +45,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
   const [dragType, setDragType] = useState<DragTypes>();
   const context = useContext(DraggerContext);
-  const { draggerItems } = context;
+  const { draggerItems, collision } = context;
   const nodeRef = useRef<any>();
   const lastZIndexRef = useRef<string>('');
 
@@ -57,6 +57,12 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
     const node = nodeRef.current;
     draggerItems?.push({ node, id });
   }, []);
+
+  const isOver = (collision?: DraggerItemType, child?: HTMLElement) => {
+    if (collision && collision?.node === child) {
+     return true
+    };
+  }
 
   // 可以拖拽
   const canDrag = () => {
@@ -144,6 +150,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
           style: {
             ...children.props.style,
             ...style,
+            opacity: isOver(collision, nodeRef.current) ? '0.8' : children?.props?.style?.opacity,
             transition: dragType ? '' : 'all .2s ease-out'
           }
         })

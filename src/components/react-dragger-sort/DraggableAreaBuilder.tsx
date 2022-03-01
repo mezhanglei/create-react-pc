@@ -6,13 +6,12 @@ import {
   MoveChild,
   listenEvent,
   DragTypes,
-  DraggerItem,
   DraggableAreaState,
 } from "./utils/types";
 import classNames from "classnames";
 import { DraggerItemHandler } from "./dragger-item";
 import { getInsidePosition } from "@/utils/dom";
-import { getDirection, getDistance, isOverLay } from "./utils/dom";
+import { getDistance, isOverLay } from "./utils/dom";
 
 export const DraggerContext = React.createContext<DraggerContextInterface>({});
 
@@ -74,29 +73,6 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
       return minChild;
     }
 
-    getDirection = (moveChild: MoveChild, collision: DraggerItem) => {
-      const move = {
-        left: moveChild?.x,
-        top: moveChild?.y,
-        right: moveChild?.x + moveChild?.width,
-        bottom: moveChild?.y + moveChild?.height
-      };
-      const other = getInsidePosition(collision?.node);
-      return other && getDirection(move, other);
-    }
-
-    // 同区域内拖拽返回覆盖目标
-    moveTrigger = (moveChild: MoveChild): DraggerItem | undefined => {
-      if (!this.parent) return;
-      const areaRect = this.parent && getInsidePosition(this.parent);
-      const x = moveChild?.x || 0;
-      const y = moveChild?.y || 0;
-      if (areaRect && x > areaRect?.left && x < areaRect?.right && y > areaRect?.top && y < areaRect?.bottom) {
-        const target = this.findNearest(moveChild);
-        return target;
-      }
-    }
-
     onDragStart: DraggerItemHandler = (e, data) => {
       if (!data || !this.parent) return false;
       const moveChild = { ...data, area: this.parent };
@@ -105,21 +81,22 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         target: moveChild,
         area: this.parent,
       };
-      this.props?.onDragStart && this.props?.onDragStart(params);
+      this.props?.onDragMoveStart && this.props?.onDragMoveStart(params);
     }
 
     onDrag: DraggerItemHandler = (e, data) => {
       if (!data || !this.parent) return false;
       const moveChild = { ...data, area: this.parent };
-      const collision = this.moveTrigger(moveChild);
-      const direction = collision && this.getDirection(moveChild, collision);
+      const collision = this.findNearest(moveChild);
       const params = {
         e,
         area: this.parent,
         target: moveChild,
-        collision: collision,
-        direction: direction
+        collision: collision
       };
+      this.setState({
+        collision
+      });
       collision && this.props?.onDragMove && this.props?.onDragMove(params);
       // 是否拖到区域外部
       if (triggerFunc) {
@@ -130,15 +107,16 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
     onDragEnd: DraggerItemHandler = (e, data) => {
       if (!data || !this.parent) return false;
       const moveChild = { ...data, area: this.parent };
-      const collision = this.moveTrigger(moveChild);
-      const direction = collision && this.getDirection(moveChild, collision);
+      const collision = this.findNearest(moveChild);
       const params = {
         e,
         area: this.parent,
         target: moveChild,
-        collision: collision,
-        direction: direction
+        collision: collision
       };
+      this.setState({
+        collision: undefined
+      });
       this.props?.onDragMoveEnd && this.props?.onDragMoveEnd(params);
       // 是否拖到区域外部
       if (triggerFunc) {
@@ -158,15 +136,20 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
     AddEvent: listenEvent['listener'] = (moveChild, e) => {
       if (!this.parent) return;
       const collision = this.findNearest(moveChild);
-      if (moveChild?.dragType === DragTypes.dragEnd) {
-        const direction = collision && this.getDirection(moveChild, collision);
+      if (moveChild?.dragType === DragTypes.draging) {
+        this.setState({
+          collision
+        });
+      } else if (moveChild?.dragType === DragTypes.dragEnd) {
         const params = {
           e,
           area: this.parent,
           target: moveChild,
-          collision: collision,
-          direction: direction
+          collision: collision
         };
+        this.setState({
+          collision: undefined
+        });
         this.props.onMoveInChange && this.props.onMoveInChange(params);
       }
     }
@@ -177,6 +160,7 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
         style,
         children
       } = this.props;
+      const { collision } = this.state;
       const cls = classNames('DraggerLayout', className);
 
       return (
@@ -192,7 +176,8 @@ const buildDraggableArea: DraggableAreaBuilder = (areaProps) => {
             onDragStart: this.onDragStart,
             onDrag: this.onDrag,
             onDragEnd: this.onDragEnd,
-            draggerItems: draggerItems
+            draggerItems: draggerItems,
+            collision: collision
           }}>
             {children}
           </DraggerContext.Provider>

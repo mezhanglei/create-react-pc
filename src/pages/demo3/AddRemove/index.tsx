@@ -55,7 +55,7 @@ const fakeData = () => {
 }
 
 const makeOne = () => {
-    return { content: 'added', GridX: 0, GridY: 0, w: 4, h: 3, uniqueKey: Date.now() }
+    return { content: 'added', GridX: 0, GridY: 5, w: 4, h: 3, uniqueKey: Date.now() }
 }
 
 export class AddRemove extends React.Component<{}, {}> {

@@ -11,7 +11,7 @@ export enum DragTypes {
 };
 
 // 元素类型
-export interface DraggerItem {
+export interface DraggerItemType {
   node: HTMLElement;
   id: string | number; // 唯一id
 }
@@ -33,7 +33,7 @@ export interface DragParams {
   e: EventType,
   target: MoveChild; // 当前移动的元素
   area?: HTMLElement; // 容器dom
-  collision?: DraggerItem; // 当前碰撞的元素
+  collision?: DraggerItemType; // 当前碰撞的元素
 }
 
 // 拖拽回调函数
@@ -45,15 +45,15 @@ export type TriggerFuncHandle<T = MoveChild, E = EventType> = (moveChild: T, e: 
 // 容器监听事件的类型
 export type ListenFuncHandle = (area: HTMLElement, addEvent: listenEvent['listener']) => void;
 // 拖拽类
-export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void, draggerItems: DraggerItem[] }) => any;
+export type DraggableAreaBuilder = (props?: { triggerFunc: TriggerFuncHandle; subscribe: ListenFuncHandle, unsubscribe: (area?: HTMLElement | null) => void, draggerItems: DraggerItemType[] }) => any;
 
 // context
 export interface DraggerContextInterface {
   onDragStart?: DraggerItemHandler;
   onDrag?: DraggerItemHandler;
   onDragEnd?: DraggerItemHandler;
-  collision?: DraggerItem; // 当前被覆盖的元素
-  draggerItems?: DraggerItem[]
+  collision?: DraggerItemType; // 当前被覆盖的元素
+  draggerItems?: DraggerItemType[]
 }
 
 export interface DraggableAreaProps {
@@ -61,7 +61,7 @@ export interface DraggableAreaProps {
   style?: CSSProperties;
   children: any;
   dataSource: any; // 列表渲染的数据源
-  onDragStart?: DragMoveHandle; // 拖拽开始
+  onDragMoveStart?: DragMoveHandle; // 拖拽开始
   onDragMove?: DragMoveHandle; // 容器内拖拽时触发的函数
   onDragMoveEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
   onMoveOutChange?: DragMoveHandle; // 跨容器拖出触发的函数
@@ -69,5 +69,5 @@ export interface DraggableAreaProps {
 }
 
 export interface DraggableAreaState {
-  collision?: DraggerItem
+  collision?: DraggerItemType
 }

@@ -23,7 +23,7 @@ export interface DragGridProps {
 
 export interface DragGridState {
     layout: GridItemEvent[];
-    parentDragType?: `${DragTypes}`;
+    parentDragType?: DragTypes;
 }
 
 export interface GridItemProvided {

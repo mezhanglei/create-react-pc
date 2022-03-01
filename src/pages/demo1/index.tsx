@@ -43,7 +43,7 @@ const Demo1: React.FC<any> = (props) => {
     }
   };
 
-  const onMoveOutChange = (data) => {
+  const onMoveOutChange1 = (data) => {
     if (data) {
       const newArr1 = [...arr1];
       const index = arr1?.findIndex((item) => item === data?.target?.id);
@@ -52,12 +52,31 @@ const Demo1: React.FC<any> = (props) => {
     }
   };
 
-  const onMoveInChange = (data) => {
+  const onMoveInChange1 = (data) => {
+    if (data) {
+      const newArr1 = [...arr1];
+      const preIndex = arr2?.findIndex((item) => item === data?.target?.id);
+      const nextIndex = newArr1?.findIndex((item) => item === data?.collision?.id);
+      newArr1?.splice(nextIndex + 1, 0, arr2?.[preIndex]);
+      setArr1(newArr1);
+    }
+  };
+
+  const onMoveInChange2 = (data) => {
     if (data) {
       const newArr2 = [...arr2];
       const index = arr1?.findIndex((item) => item === data?.target?.id);
       const nextIndex = newArr2?.findIndex((item) => item === data?.collision?.id);
-      newArr2?.splice(nextIndex, 0, arr1?.[index]);
+      newArr2?.splice(nextIndex + 1, 0, arr1?.[index]);
+      setArr2(newArr2);
+    }
+  };
+
+  const onMoveOutChange2 = (data) => {
+    if (data) {
+      const newArr2 = [...arr2];
+      const index = arr2?.findIndex((item) => item === data?.target?.id);
+      newArr2?.splice(index, 1)
       setArr2(newArr2);
     }
   };
@@ -89,7 +108,7 @@ const Demo1: React.FC<any> = (props) => {
           </div>
         </Draggable>
       </div>
-      <DraggableArea1 onMoveOutChange={onMoveOutChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd1}>
+      <DraggableArea1 onMoveInChange={onMoveInChange1} onMoveOutChange={onMoveOutChange1} style={{ display: 'flex', flexWrap: 'wrap', background: 'blue', width: '200px' }} onDragMoveEnd={onDragMoveEnd1}>
         {
           arr1?.map((item, index) => {
             return (
@@ -102,7 +121,7 @@ const Demo1: React.FC<any> = (props) => {
           })
         }
         <div style={{ marginTop: '10px' }}>
-          <DraggableArea2 onMoveInChange={onMoveInChange} style={{ display: 'flex', flexWrap: 'wrap', background: 'green', width: '200px' }} onDragMoveEnd={onDragMoveEnd2}>
+          <DraggableArea2 onMoveInChange={onMoveInChange2} onMoveOutChange={onMoveOutChange2} style={{ display: 'flex', flexWrap: 'wrap', background: 'green', width: '200px' }} onDragMoveEnd={onDragMoveEnd2}>
             {
               arr2?.map((item, index) => {
                 return (
