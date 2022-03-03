@@ -1,6 +1,8 @@
-import buildDraggableArea from './DraggableAreaBuilder';
-import DraggableAreaGroup from './DraggableAreaGroup';
-import DraggerItem from './dragger-item';
+import buildDndArea from './dnd-area-builder';
+import DndItem from './dnd-item';
+import DndContextProvider from './dnd-provider';
 
-const DraggableArea = buildDraggableArea();
-export { DraggableArea, DraggableAreaGroup, DraggerItem };
+const DndArea = buildDndArea();
+DndArea.Item = DndItem;
+export default DndArea;
+export { DndContextProvider };

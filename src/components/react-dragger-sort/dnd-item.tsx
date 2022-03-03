@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
-import { ChildrenType, DragTypes, DraggerItemType } from "./utils/types";
+import { ChildrenType, DragTypes, DndTargetItemType } from "./utils/types";
 import classNames from "classnames";
 import { getOffsetWH } from "@/utils/dom";
-import { DraggerContext } from './DraggableAreaBuilder';
+import { DndAreaContext } from './dnd-area-context';
 
 export type EventType = MouseEvent | TouchEvent;
-export type DraggerItemHandler<E = EventType, T = DraggerItemEvent> = (e: E, data: T) => void | boolean;
-export interface DraggerItemEvent {
+export type DndItemHandler<E = EventType, T = DndSourceItem> = (e: E, data: T) => void | boolean;
+export interface DndSourceItem {
   width: number;
   height: number;
   x: number;
@@ -19,20 +19,20 @@ export interface DraggerItemEvent {
   id: string | number;
 }
 
-export interface DraggerProps {
+export interface DndProps {
   children: ChildrenType;
   className?: string;
   style?: CSSProperties;
-  onDragStart?: DraggerItemHandler;
-  onDrag?: DraggerItemHandler;
-  onDragEnd?: DraggerItemHandler;
+  onDragStart?: DndItemHandler;
+  onDrag?: DndItemHandler;
+  onDragEnd?: DndItemHandler;
   dragAxis?: string[];
   handle?: string | HTMLElement;
   id: string | number;
 }
 
 // 拖拽及缩放组件
-const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
+const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
 
   const {
     children,
@@ -44,8 +44,8 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
   } = props;
 
   const [dragType, setDragType] = useState<DragTypes>();
-  const context = useContext(DraggerContext);
-  const { draggerItems, collision } = context;
+  const context = useContext(DndAreaContext);
+  const { dndItems, targetItem } = context;
   const nodeRef = useRef<any>();
   const lastZIndexRef = useRef<string>('');
 
@@ -55,14 +55,14 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
 
   useEffect(() => {
     const node = nodeRef.current;
-    draggerItems?.push({ node, id });
+    dndItems?.push({ node, id });
   }, []);
 
-  const isOver = (collision?: DraggerItemType, child?: HTMLElement) => {
-    if (collision && collision?.node === child) {
-     return true
+  const isOver = (targetItem?: DndTargetItemType, child?: HTMLElement) => {
+    if (targetItem && targetItem?.node === child) {
+      return true;
     };
-  }
+  };
 
   // 可以拖拽
   const canDrag = () => {
@@ -150,7 +150,7 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
           style: {
             ...children.props.style,
             ...style,
-            opacity: isOver(collision, nodeRef.current) ? '0.8' : children?.props?.style?.opacity,
+            opacity: isOver(targetItem, nodeRef.current) ? '0.8' : children?.props?.style?.opacity,
             transition: dragType ? '' : 'all .2s ease-out'
           }
         })
@@ -161,4 +161,4 @@ const DraggerItem = React.forwardRef<any, DraggerProps>((props, ref) => {
   return NormalItem;
 });
 
-export default DraggerItem;
+export default DndItem;
