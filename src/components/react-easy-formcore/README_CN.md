@@ -2,7 +2,7 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.3.2-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.3.7-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
@@ -178,6 +178,7 @@ class demo extends React.Component {
 
 - `className` 表单元素类名，`可选`。
 - `store` 表单数据存储，`必须`。
+- `initialValues` 表单的初始值，会被表单域的`initialValue`覆盖, 注意不能被监听值的变化`可选`。
 - `onSubmit` 表单提交回调，`可选`。
 - `onMount` 表单渲染完毕的回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
