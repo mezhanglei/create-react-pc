@@ -14,13 +14,14 @@ export enum DragTypes {
 // 元素类型
 export interface DndTargetItemType {
   node: HTMLElement;
-  index: number; // 所在序号
+  path: string
 }
 
 // 容器订阅信息
 export interface SubscribeTargetParams {
   area: HTMLElement
   collect: unknown
+  path: string
 }
 
 export interface TargetParams extends SubscribeTargetParams {
@@ -34,6 +35,7 @@ export interface SourceParams {
     area: HTMLElement
     item: DndSourceItem
     collect: unknown
+    path: string
   }
 }
 
@@ -57,6 +59,8 @@ export interface DndAreaProps {
   style?: CSSProperties;
   children: any;
   collect: unknown
+  id: any
+  path?: string
 }
 
 // 拖拽回调参数
@@ -87,4 +91,5 @@ export interface DndAreaContextProps {
   onDrag?: DndItemHandler;
   onDragEnd?: DndItemHandler;
   targetItem?: DndTargetItemType;
+  path: string
 }

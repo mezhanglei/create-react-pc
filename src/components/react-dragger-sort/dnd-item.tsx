@@ -16,7 +16,7 @@ export interface DndSourceItem {
   translateY?: number;
   node: HTMLElement;
   dragType?: DragTypes;
-  index: number;
+  path: string
 }
 
 export interface DndProps {
@@ -27,7 +27,8 @@ export interface DndProps {
   onDrag?: DndItemHandler;
   onDragEnd?: DndItemHandler;
   dragAxis?: string[];
-  index: number;
+  id: any;
+  path?: string
 }
 
 // 拖拽及缩放组件
@@ -37,17 +38,18 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
     children,
     className,
     style,
-    index,
+    id,
     dragAxis = DragAxisCode,
     ...option
   } = props;
 
   const [dragType, setDragType] = useState<DragTypes>();
-  const { onDragStart, onDrag, onDragEnd, targetItem } = useContext(DndAreaContext);
+  const { onDragStart, onDrag, onDragEnd, targetItem, path } = useContext(DndAreaContext);
   const { store } = useContext(DndProviderContext);
   const { setDndItemsMap } = store;
   const nodeRef = useRef<any>();
   const lastZIndexRef = useRef<string>('');
+  const currentPath = path !== undefined && id !== undefined ? `${path}.${id}` : id;
 
   useImperativeHandle(ref, () => ({
     node: nodeRef?.current
@@ -55,10 +57,10 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
 
   useEffect(() => {
     const node = nodeRef.current;
-    if (index !== undefined && node !== null) {
-      setDndItemsMap(node, { node, index });
+    if (currentPath !== undefined && node !== null) {
+      setDndItemsMap(node, { node, path: currentPath });
     }
-  }, [index]);
+  }, [currentPath]);
 
   // 可以拖拽
   const canDrag = () => {
@@ -81,7 +83,7 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.dragStart,
-      index
+      path: currentPath
     });
   };
 
@@ -103,7 +105,7 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.draging,
-      index
+      path: currentPath
     });
   };
 
@@ -123,7 +125,7 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.dragEnd,
-      index
+      path: currentPath
     });
   };
 
@@ -149,8 +151,7 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
             ...style,
             opacity: isHover ? '0.8' : children.props?.style?.opacity,
             transition: dragType ? '' : 'all .2s ease-out'
-          },
-          isHover
+          }
         })
       }
     </Draggable>

@@ -10,9 +10,22 @@ import { DndItemHandler, DndProps } from "./dnd-item";
 import { DndProviderContext, DndAreaContext } from "./dnd-context";
 
 // 拖拽区域组件
-export default class DndArea extends React.Component<DndAreaProps, { targetItem?: DndTargetItemType }> {
-  parent: HTMLElement | null;
+export default class DndArea extends React.Component<DndAreaProps> {
+  constructor(props: DndAreaProps) {
+    super(props);
+  }
   static Item: React.ForwardRefExoticComponent<DndProps & React.RefAttributes<any>>;
+  render() {
+    return (
+      <DndAreaContext.Consumer>
+        {context => <DndAreaChild {...this.props} path={context.path} />}
+      </DndAreaContext.Consumer>
+    );
+  }
+}
+
+class DndAreaChild extends React.Component<DndAreaProps, { targetItem?: DndTargetItemType }> {
+  parent: HTMLElement | null;
   constructor(props: DndAreaProps) {
     super(props);
     this.parent = null;
@@ -29,7 +42,7 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
     if (subscribe && area) {
       subscribe({
         area,
-        collect: this.props.collect
+        ...this.getProps()
       }, this.AddEvent);
     }
   }
@@ -39,6 +52,15 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
     unsubscribe && unsubscribe(this.parent);
   }
 
+  getProps = () => {
+    const { path, id, collect } = this.props;
+    const currentPath = path !== undefined && id !== undefined ? `${path}.${id}` : id;
+    return {
+      path: currentPath,
+      collect
+    };
+  }
+
   onDragStart: DndItemHandler = (e, data) => {
     if (!data || !this.parent) return false;
     const sourceParams = {
@@ -46,7 +68,7 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
       source: {
         area: this.parent,
         item: data,
-        collect: this.props.collect
+        ...this.getProps()
       }
     };
     this.context?.onDragStart && this.context?.onDragStart(sourceParams);
@@ -65,7 +87,7 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
         source: {
           area: this.parent,
           item: data,
-          collect: this.props.collect
+          ...this.getProps()
         }
       };
       const subscribeTarget = notifyEvent(sourceParams);
@@ -98,7 +120,7 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
         source: {
           area: this.parent,
           item: data,
-          collect: this.props.collect
+          ...this.getProps()
         }
       };
 
@@ -132,7 +154,7 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
       target: {
         ...listenParams.target,
         item: targetItem,
-        collect: this.props.collect
+        ...this.getProps()
       }
     };
     if (sourceItem?.dragType === DragTypes.draging) {
@@ -170,7 +192,8 @@ export default class DndArea extends React.Component<DndAreaProps, { targetItem?
           onDragStart: this.onDragStart,
           onDrag: this.onDrag,
           onDragEnd: this.onDragEnd,
-          targetItem: this.state.targetItem
+          targetItem: this.state.targetItem,
+          path: this.getProps().path
         }}>
           {children}
         </DndAreaContext.Provider>
