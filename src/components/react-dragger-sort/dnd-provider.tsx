@@ -1,14 +1,23 @@
 import React from 'react';
-import { DndContext } from './dnd-context';
-import { DndContextProviderProps } from './utils/types';
+import { DndProviderContext } from './dnd-context';
+import { DndProviderProps } from './utils/types';
+import { DndStore } from './dnd-store';
 
-// dnd的provider，提供拖拽相关的api
-export default function DndContextProvider(props: DndContextProviderProps) {
-  const { children, ...options } = props;
+// 创建DndContextProvider实例
+export default function BuildDndProvider(props?: DndStore) {
+  const store = props || new DndStore();
+  function DndContextProvider(props: DndProviderProps) {
+    const {
+      children,
+      ...options
+    } = props;
 
-  return (
-    <DndContext.Provider value={options}>
-      {children}
-    </DndContext.Provider>
-  );
+    return (
+      <DndProviderContext.Provider value={{ ...options, store }}>
+        {children}
+      </DndProviderContext.Provider>
+    );
+  };
+  return DndContextProvider;
 };
+

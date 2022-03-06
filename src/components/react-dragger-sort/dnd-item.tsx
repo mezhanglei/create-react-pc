@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
-import { ChildrenType, DragTypes, DndTargetItemType } from "./utils/types";
+import { ChildrenType, DndTargetItemType, DragTypes } from "./utils/types";
 import classNames from "classnames";
 import { getOffsetWH } from "@/utils/dom";
-import { DndAreaContext } from './dnd-area-context';
+import { DndAreaContext, DndProviderContext } from './dnd-context';
 
 export type EventType = MouseEvent | TouchEvent;
 export type DndItemHandler<E = EventType, T = DndSourceItem> = (e: E, data: T) => void | boolean;
@@ -16,7 +16,7 @@ export interface DndSourceItem {
   translateY?: number;
   node: HTMLElement;
   dragType?: DragTypes;
-  id: string | number;
+  index: number;
 }
 
 export interface DndProps {
@@ -27,8 +27,7 @@ export interface DndProps {
   onDrag?: DndItemHandler;
   onDragEnd?: DndItemHandler;
   dragAxis?: string[];
-  handle?: string | HTMLElement;
-  id: string | number;
+  index: number;
 }
 
 // 拖拽及缩放组件
@@ -38,14 +37,15 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
     children,
     className,
     style,
+    index,
     dragAxis = DragAxisCode,
-    handle,
-    id
+    ...option
   } = props;
 
   const [dragType, setDragType] = useState<DragTypes>();
-  const context = useContext(DndAreaContext);
-  const { dndItems, targetItem } = context;
+  const { onDragStart, onDrag, onDragEnd, targetItem } = useContext(DndAreaContext);
+  const { store } = useContext(DndProviderContext);
+  const { setDndItemsMap } = store;
   const nodeRef = useRef<any>();
   const lastZIndexRef = useRef<string>('');
 
@@ -55,28 +55,24 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
 
   useEffect(() => {
     const node = nodeRef.current;
-    dndItems?.push({ node, id });
-  }, []);
-
-  const isOver = (targetItem?: DndTargetItemType, child?: HTMLElement) => {
-    if (targetItem && targetItem?.node === child) {
-      return true;
-    };
-  };
+    if (index !== undefined && node !== null) {
+      setDndItemsMap(node, { node, index });
+    }
+  }, [index]);
 
   // 可以拖拽
   const canDrag = () => {
     return DragAxisCode?.some((axis) => dragAxis?.includes(axis));
   };
 
-  const onDragStart: DragEventHandler = (e, data) => {
+  const onDragStartHandle: DragEventHandler = (e, data) => {
     if (!data || !canDrag()) return false;
     setDragType(DragTypes.dragStart);
     const node = data?.node;
     const offsetWH = getOffsetWH(node);
     if (!offsetWH) return false;
     lastZIndexRef.current = data?.node?.style?.zIndex;
-    return context?.onDragStart && context?.onDragStart(e, {
+    return onDragStart && onDragStart(e, {
       width: offsetWH?.width,
       height: offsetWH?.height,
       translateX: data?.translateX,
@@ -85,11 +81,11 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.dragStart,
-      id
+      index
     });
   };
 
-  const onDrag: DragEventHandler = (e, data) => {
+  const onDragHandle: DragEventHandler = (e, data) => {
     if (!data || !canDrag()) return false;
     const node = data?.node;
     setDragType(DragTypes.draging);
@@ -98,7 +94,7 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
     if (data.node?.style?.zIndex !== '999') {
       data.node.style.zIndex = '999';
     }
-    return context?.onDrag && context?.onDrag(e, {
+    return onDrag && onDrag(e, {
       width: offsetWH?.width,
       height: offsetWH?.height,
       translateX: data?.translateX,
@@ -107,18 +103,18 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.draging,
-      id
+      index
     });
   };
 
-  const onDragStop: DragEventHandler = (e, data) => {
+  const onDragStopHandle: DragEventHandler = (e, data) => {
     if (!data || !canDrag()) return false;
     setDragType(DragTypes.dragEnd);
     const node = data?.node;
     const offsetWH = getOffsetWH(node);
     if (!offsetWH) return false;
     data.node.style.zIndex = lastZIndexRef.current;
-    return context?.onDragEnd && context?.onDragEnd(e, {
+    return onDragEnd && onDragEnd(e, {
       width: offsetWH?.width,
       height: offsetWH?.height,
       translateX: data?.translateX,
@@ -127,22 +123,23 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
       y: data?.y || 0,
       node: node,
       dragType: DragTypes.dragEnd,
-      id
+      index
     });
   };
 
   const cls = classNames((children?.props?.className || ''), className);
+  const isHover = targetItem && targetItem?.node === nodeRef.current;
 
   // 可拖拽子元素
   const NormalItem = (
     <Draggable
+      {...option}
       ref={nodeRef}
       className={cls}
       axis={dragAxis}
-      onDragStart={onDragStart}
-      onDrag={onDrag}
-      onDragStop={onDragStop}
-      handle={handle}
+      onDragStart={onDragStartHandle}
+      onDrag={onDragHandle}
+      onDragStop={onDragStopHandle}
       fixed
     >
       {
@@ -150,9 +147,10 @@ const DndItem = React.forwardRef<any, DndProps>((props, ref) => {
           style: {
             ...children.props.style,
             ...style,
-            opacity: isOver(targetItem, nodeRef.current) ? '0.8' : children?.props?.style?.opacity,
+            opacity: isHover ? '0.8' : children.props?.style?.opacity,
             transition: dragType ? '' : 'all .2s ease-out'
-          }
+          },
+          isHover
         })
       }
     </Draggable>

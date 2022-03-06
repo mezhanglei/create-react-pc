@@ -1,8 +1,11 @@
-import buildDndArea from './dnd-area-builder';
+import DndArea from './dnd-area';
 import DndItem from './dnd-item';
-import DndContextProvider from './dnd-provider';
+import BuildDndProvider from './dnd-provider';
+import { arrayMove } from '@/utils/array';
+import { deepSet } from '@/utils/object';
 
-const DndArea = buildDndArea();
+const DndContextProvider = BuildDndProvider();
 DndArea.Item = DndItem;
 export default DndArea;
-export { DndContextProvider };
+export { BuildDndProvider, DndContextProvider, arrayMove, deepSet };
+export * from './dnd-store';

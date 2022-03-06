@@ -267,10 +267,11 @@ export function getInsidePosition(el: HTMLElement, parent: HTMLElement = documen
     if (isDom(el)) {
         const nodeOffset = getOffsetWH(el);
         if (!nodeOffset) return null;
-        const parentBorderWidth = parseFloat(getComputedStyle(parent)?.borderLeftWidth);
+        const borderLeftWidth = parseFloat(getComputedStyle(parent)?.borderLeftWidth) || 0;
+        const borderTopWidth = parseFloat(getComputedStyle(parent)?.borderTopWidth) || 0;
 
-        const top = getRect(el).top - getRect(parent).top - parentBorderWidth;
-        const left = getRect(el).left - getRect(parent).left - parentBorderWidth;
+        const top = getRect(el).top - getRect(parent).top - borderTopWidth;
+        const left = getRect(el).left - getRect(parent).left - borderLeftWidth;
 
         return {
             left,
@@ -321,11 +322,13 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
     if (isDom(el)) {
         const parentScrollW = parent?.scrollWidth || 0;
         const parentScrollH = parent?.scrollHeight || 0;
+        const borderLeftWidth = parseFloat(getComputedStyle(parent)?.borderLeftWidth) || 0;
+        const borderTopWidth = parseFloat(getComputedStyle(parent)?.borderTopWidth) || 0;
         const nodeW = getOffsetWH(el)?.width || 0;
         const nodeH = getOffsetWH(el)?.height || 0;
 
-        const top = getRect(el).top - getRect(parent).top;
-        const left = getRect(el).left - getRect(parent).left;
+        const top = getRect(el).top - getRect(parent).top - borderTopWidth;
+        const left = getRect(el).left - getRect(parent).left - borderLeftWidth;
 
         return {
             left,

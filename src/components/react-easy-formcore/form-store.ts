@@ -276,7 +276,7 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 订阅表单值的变动（）
+  // 订阅表单值的变动
   public subscribeValue(name: string, listener: FormListener['onChange']) {
     this.valueListeners.push({
       onChange: listener,

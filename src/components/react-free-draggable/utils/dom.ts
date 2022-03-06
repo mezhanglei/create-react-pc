@@ -105,11 +105,10 @@ export function getBoundsInParent(node: HTMLElement, bounds: any) {
   if (!isContains(boundsParent, node)) {
     throw new Error("`parent` is not parentNode of the child");
   }
-  const nodeStyle: any = node?.ownerDocument?.defaultView?.getComputedStyle(node);
 
   // 元素外部大小
-  const nodeOutWidth = node.clientWidth + parseInt(nodeStyle?.borderLeftWidth) + parseInt(nodeStyle?.borderRightWidth);
-  const nodeOutHeight = node.clientHeight + parseInt(nodeStyle?.borderTopWidth) + parseInt(nodeStyle?.borderBottomWidth);
+  const nodeOutWidth = node.offsetWidth;
+  const nodeOutHeight = node.offsetHeight;
   // 容器大小
   const parentInnerWidth = boundsParent.clientWidth;
   const parentInnerHeight = boundsParent.clientHeight;
@@ -133,7 +132,7 @@ export function getBoundsInParent(node: HTMLElement, bounds: any) {
       right: Math.min(xDiff, bounds?.right || 0),
       top: Math.max(0, bounds?.top || 0),
       bottom: Math.min(yDiff, bounds?.bottom || 0)
-    }
+    };
   }
 }
 
@@ -160,86 +159,7 @@ export function getPositionByBounds(node: HTMLElement, position: PositionInterfa
  * @returns 
  */
 export function getRect(el: HTMLElement) {
-  return el.getBoundingClientRect()
-}
-
-// 获取页面或元素的宽高 = 可视宽高 + 滚动条 + 边框
-export function getOffsetWH(el: HTMLElement): undefined | {
-  width: number;
-  height: number;
-} {
-  if (!isDom(el)) {
-    return;
-  }
-  if ([document.documentElement, document.body].includes(el)) {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    return { width, height };
-  } else {
-    const width = el.offsetWidth;
-    const height = el.offsetHeight;
-    return { width, height };
-  }
-};
-
-// 返回元素或事件对象的视口位置
-export function getClientXY(el: MouseEvent | TouchEvent | HTMLElement): null | {
-  x: number;
-  y: number;
-} {
-  let pos = null;
-  if ("clientX" in el) {
-    pos = {
-      x: el.clientX,
-      y: el.clientY
-    };
-  } else if ("touches" in el) {
-    if (el?.touches[0]) {
-      pos = {
-        x: el.touches[0]?.clientX,
-        y: el.touches[0]?.clientY
-      };
-    }
-  } else if (isDom(el)) {
-    if ([document.documentElement, document.body].includes(el)) {
-      pos = {
-        x: 0,
-        y: 0
-      }
-    } else {
-      pos = {
-        x: getRect(el)?.left,
-        y: getRect(el).top
-      };
-    }
-  }
-  return pos;
-}
-
-// 目标在父元素内的四条边位置信息
-export function getInsidePosition(el: HTMLElement, parent: HTMLElement = document.body || document.documentElement): null | {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-} {
-  let pos = null;
-  if (isDom(el)) {
-    const nodeOffset = getOffsetWH(el);
-    if (!nodeOffset) return null;
-    const parentBorderWidth = parseFloat(getComputedStyle(parent)?.borderLeftWidth);
-
-    const top = getRect(el).top - getRect(parent).top - parentBorderWidth;
-    const left = getRect(el).left - getRect(parent).left - parentBorderWidth;
-
-    return {
-      left,
-      top,
-      right: left + nodeOffset?.width,
-      bottom: top + nodeOffset?.height
-    }
-  }
-  return pos;
+  return el.getBoundingClientRect();
 }
 
 /**

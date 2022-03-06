@@ -1,5 +1,6 @@
 import { CSSProperties, JSXElementConstructor, ReactElement } from 'react';
 import { DndSourceItem, DndItemHandler } from "../dnd-item";
+import { DndStore } from '../dnd-store';
 
 export type EventType = MouseEvent | TouchEvent;
 export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>>
@@ -13,13 +14,17 @@ export enum DragTypes {
 // 元素类型
 export interface DndTargetItemType {
   node: HTMLElement;
-  id: string | number; // 唯一id
+  index: number; // 所在序号
 }
 
 // 容器订阅信息
 export interface SubscribeTargetParams {
   area: HTMLElement
   collect: unknown
+}
+
+export interface TargetParams extends SubscribeTargetParams {
+  item?: DndTargetItemType
 }
 
 // 拖拽源信息
@@ -40,7 +45,7 @@ export interface ListenParams extends SourceParams {
 // 被监听的事件类型
 export type listenEvent = { listener: (params: ListenParams) => SubscribeTargetParams | void, target: SubscribeTargetParams };
 // 容器触发事件的类型
-export type TriggerFuncHandle = (sourceParams: SourceParams) => SubscribeTargetParams | void;
+export type NotifyEventHandle = (sourceParams: SourceParams) => SubscribeTargetParams | void;
 // 容器监听事件的类型
 export type SubscribeHandle = (target: SubscribeTargetParams, addEvent: listenEvent['listener']) => void;
 // 拖拽容器构造函数
@@ -53,37 +58,27 @@ export interface DndAreaProps {
   children: any;
   collect: unknown
 }
-// 拖拽容器state
-export interface DndAreaState {
-  targetItem?: DndTargetItemType
-  prevCollect?: unknown
-}
 
 // 拖拽回调参数
-export interface DndParams {
-  e: EventType
-  target: {
-    area: HTMLElement
-    item?: DndTargetItemType
-    collect: unknown
-  }
-  source: {
-    area: HTMLElement
-    item: DndSourceItem
-    collect: unknown
-  }
+export interface DndParams extends SourceParams {
+  target: TargetParams
 }
 // 拖拽回调函数
 export type DragMoveHandle = (params: DndParams) => void | boolean;
-export interface DndContextProps {
+
+// DndProvider的props
+export interface DndProviderProps {
+  children?: any
   onDragStart?: DragMoveHandle; // 拖拽开始
   onDrag?: DragMoveHandle; // 容器内拖拽时触发的函数
   onDragEnd?: DragMoveHandle; // 容器内拖拽结束时触发的函数
+  onAreaDropping?: DragMoveHandle; // 跨域拖拽时触发的函数
+  onAreaDropEnd?: DragMoveHandle; // 跨域拖拽结束触发的函数
 }
 
-// DndContextProvider的props
-export interface DndContextProviderProps extends DndContextProps {
-  children: any
+// DndProviderContext
+export interface DndProviderContextProps extends DndProviderProps {
+  store: DndStore;
 }
 
 // DndAreaContext的props
@@ -91,6 +86,5 @@ export interface DndAreaContextProps {
   onDragStart?: DndItemHandler;
   onDrag?: DndItemHandler;
   onDragEnd?: DndItemHandler;
-  targetItem?: DndTargetItemType; // 当前被覆盖的元素
-  dndItems?: DndTargetItemType[]
+  targetItem?: DndTargetItemType;
 }
