@@ -2,7 +2,7 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndArea, { DndContextProvider, arrayMove, deepSet } from "@/components/react-dragger-sort";
+import DndArea, { DndContextProvider, arrayMove, deepSet, deepGet } from "@/components/react-dragger-sort";
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
@@ -37,12 +37,12 @@ const Demo1: React.FC<any> = (props) => {
     const sourceItem = source.item;
     const targetItem = target?.item;
     if (!source.area || !target?.area || !targetItem) return;
-    let sourceCollect = source?.collect as any;
+    const sourceDataPath = source.path;
+    const sourceData = deepGet(data, source.path);
     const preIndex = sourceItem.path?.split('.')?.pop();
     const nextIndex = targetItem.path?.split('.')?.pop();
-    const sourceDataPath = source.path;
     if (preIndex !== undefined && nextIndex !== undefined) {
-      const newItem = arrayMove(sourceCollect, Number(preIndex), Number(nextIndex));
+      const newItem = arrayMove(sourceData, Number(preIndex), Number(nextIndex));
       const newData = deepSet(data, sourceDataPath, newItem);
       setData(newData);
     }
@@ -53,19 +53,19 @@ const Demo1: React.FC<any> = (props) => {
     const sourceItem = source.item;
     const targetItem = target?.item;
     if (!source.area || !target?.area) return;
-    let sourceCollect = source?.collect as any;
-    let targetCollect = target?.collect as any;
+    const sourceData = deepGet(data, source.path);
+    const targetData = deepGet(data, target.path);
     const sourceIndex = sourceItem.path && Number(sourceItem.path?.split('.')?.pop());
     const sourceDataPath = source.path;
-    const targetIndex = targetItem ? targetItem.path && Number(targetItem?.path?.split('.')?.pop()) : targetCollect?.length;
+    const targetIndex = targetItem ? targetItem.path && Number(targetItem?.path?.split('.')?.pop()) : targetData?.length;
     const targetDataPath = target.path;
     if (sourceIndex >= 0 && targetIndex >= 0) {
-      targetCollect?.splice(targetIndex + 1, 0, sourceCollect?.[sourceIndex]);
-      sourceCollect?.splice(sourceIndex, 1);
+      targetData?.splice(targetIndex + 1, 0, sourceData?.[sourceIndex]);
+      sourceData?.splice(sourceIndex, 1);
       // remove
-      const tmp = deepSet(data, sourceDataPath, sourceCollect);
+      const tmp = deepSet(data, sourceDataPath, sourceData);
       // add
-      const newData = deepSet(tmp, targetDataPath, targetCollect);
+      const newData = deepSet(tmp, targetDataPath, targetData);
       setData(newData);
     }
   }
@@ -73,7 +73,7 @@ const Demo1: React.FC<any> = (props) => {
   const renderChildren = (list: any[]) => {
     return list?.map((areaItem, areaIndex) => {
       return (
-        <DndArea key={areaIndex} collect={areaItem?.list} id={`${areaIndex}.list`} style={{ display: 'flex', flexWrap: 'wrap', background: areaItem.backgroundColor, width: '200px', marginTop: '10px' }}>
+        <DndArea key={areaIndex} id={`${areaIndex}.list`} style={{ display: 'flex', flexWrap: 'wrap', background: areaItem.backgroundColor, width: '200px', marginTop: '10px' }}>
           {
             areaItem?.list?.map((item, index) => {
               return (

@@ -37,11 +37,10 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const initialValues = useContext(FormValuesContext)
   const finalProps = { ...options, ...props };
   const { children, ...fieldProps } = finalProps;
-  let {
+  const {
     name,
     rules,
     path,
-    initialValue,
     label,
     suffix,
     className,
@@ -55,7 +54,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-  initialValue = initialValues?.[currentPath as string] ?? initialValue;
+  const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
   if (currentPath && !formListPath?.includes(currentPath)) {
     formListPath.push(currentPath)
   }

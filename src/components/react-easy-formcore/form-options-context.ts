@@ -1,8 +1,8 @@
 import React from 'react'
 
 export interface FormFunc {
-  onFieldsChange?: (obj: { name: string, value: any }) => void
-  onValuesChange?: (obj: { name?: string, value: any }) => void
+  onFieldsChange?: (obj: { path: string, value: any }) => void
+  onValuesChange?: (obj: { path?: string, value: any }) => void
 }
 
 export interface FormOptions extends FormFunc {

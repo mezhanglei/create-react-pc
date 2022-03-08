@@ -6,7 +6,7 @@ import { deepGet, deepSet } from '@/utils/object';
 import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';
 
-export type FormListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
+export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
 
 export type FormValidatorCallBack = (message?: string) => void;
 
@@ -65,63 +65,68 @@ export class FormStore<T extends Object = any> {
   }
 
   // 获取
-  public getFieldProps(name?: string) {
-    if (name) {
-      return this.fieldsProps?.[name]
+  public getFieldProps(path?: string) {
+    if (path) {
+      return this.fieldsProps?.[path]
     } else {
       return this.fieldsProps
     }
   }
 
   // 设置表单域
-  public setFieldProps(name: string, field?: FieldProps) {
-    if (!name) return;
+  public setFieldProps(path: string, field?: FieldProps) {
+    if (!path) return;
     if (field === undefined) {
-      delete this.fieldsProps[name]
+      delete this.fieldsProps[path]
     } else {
-      const lastField = this.fieldsProps[name];
+      const lastField = this.fieldsProps[path];
       const newField = { ...lastField, ...field };
-      this.fieldsProps[name] = newField;
+      this.fieldsProps[path] = newField;
     }
-    this.notifyProps(name);
+    this.notifyProps(path);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
-  public getFieldValue(name?: string | string[]) {
-    return name === undefined ? (this.values && { ...this.values }) : deepGet(this.values, name)
+  public getFieldValue(path?: string | string[]) {
+    return path === undefined ? (this.values && { ...this.values }) : deepGet(this.values, path)
   }
 
   // 获取旧表单值
-  public getLastValue(name?: string | string[]) {
-    return name === undefined ? (this.lastValues && { ...this.lastValues }) : deepGet(this.lastValues, name)
+  public getLastValue(path?: string | string[]) {
+    return path === undefined ? (this.lastValues && { ...this.lastValues }) : deepGet(this.lastValues, path)
+  }
+
+  // 设置初始值
+  public setInitialValues(path: string, initialValue: any) {
+    this.initialValues = deepSet(this.initialValues, path, initialValue, formListPath);
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(name: string | { [key: string]: any }, value?: any, isMount?: boolean) {
-    if (typeof name === 'string') {
+  public async setFieldValue(path: string | { [key: string]: any }, value?: any, isMount?: boolean) {
+    if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = klona(this.values);
       // 设置值
-      this.values = deepSet(this.values, name, value, formListPath);
+      this.values = deepSet(this.values, path, value, formListPath);
       // 同步ui
-      this.notifyValue(name);
+      this.notifyValue(path);
       // 同时触发另一个值的监听
-      this.notifyStoreValue(name, isMount);
+      this.notifyStoreValue(path, isMount);
       // 规则
-      const rules = this.fieldsProps?.[name]?.['rules'];
+      const rules = this.fieldsProps?.[path]?.['rules'];
       if (rules?.length) {
         // 校验规则
-        await this.validate(name, isMount);
+        await this.validate(path, isMount);
       }
-    } else if (typeof name === 'object') {
-      await Promise.all(Object.keys(name).map((n) => this.setFieldValue(n, name?.[n])))
+    } else if (typeof path === 'object') {
+      await Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
     }
   }
 
   // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
     this.lastValues = klona(this.values);
-    this.values = klona(values);
+    this.values = values;
     this.notifyValue();
     this.notifyStoreValue();
   }
@@ -133,23 +138,23 @@ export class FormStore<T extends Object = any> {
   }
 
   // 获取error信息
-  public getFieldError(name?: string) {
-    if (name) {
-      return this.formErrors[name]
+  public getFieldError(path?: string) {
+    if (path) {
+      return this.formErrors[path]
     } else {
       return this.formErrors
     }
   }
 
   // 更新error信息
-  private setFieldError(name: string, value: any) {
-    if (!name) return;
+  private setFieldError(path: string, value: any) {
+    if (!path) return;
     if (value === undefined) {
-      delete this.formErrors[name]
+      delete this.formErrors[path]
     } else {
-      this.formErrors[name] = value
+      this.formErrors[path] = value
     }
-    this.notifyError(name)
+    this.notifyError(path)
   }
 
   // 设置error信息(覆盖更新)
@@ -160,9 +165,9 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(name: string, isMount?: boolean): Promise<string>
-  public async validate(name?: string, isMount?: boolean) {
-    if (name === undefined) {
+  public async validate(path: string, isMount?: boolean): Promise<string>
+  public async validate(path?: string, isMount?: boolean) {
+    if (path === undefined) {
       const result = await Promise.all(Object.keys(this.fieldsProps)?.map((n) => {
         const rules = this.fieldsProps?.[n]?.['rules'];
         if (rules) {
@@ -177,9 +182,9 @@ export class FormStore<T extends Object = any> {
     } else {
       if (isMount === true) return;
       // 清空错误信息
-      this.setFieldError(name, undefined);
-      const value = this.getFieldValue(name);
-      const rules = this.fieldsProps?.[name]?.['rules'];
+      this.setFieldError(path, undefined);
+      const value = this.getFieldValue(path);
+      const rules = this.fieldsProps?.[path]?.['rules'];
 
       // 表单校验处理规则
       const handleRule = async (rule: FormRule) => {
@@ -216,45 +221,45 @@ export class FormStore<T extends Object = any> {
       const messageList = await asyncSequentialExe(rules?.map((rule: FormRule) => () => handleRule(rule)), (msg: string) => msg);
       const currentError = messageList?.[0];
       if (currentError) {
-        this.setFieldError(name, currentError);
+        this.setFieldError(path, currentError);
       }
       return currentError;
     }
   }
 
   // 同步值的变化
-  private notifyValue(name?: string) {
-    if (name) {
+  private notifyValue(path?: string) {
+    if (path) {
       this.valueListeners.forEach((listener) => {
-        if (isExitPrefix(listener?.name, name)) {
-          listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
+        if (isExitPrefix(listener?.path, path)) {
+          listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
         }
       })
     } else {
-      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
+      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }
   }
 
   // 同步值的变化
-  private notifyStoreValue(name?: string, isMount?: boolean) {
-    if (name) {
+  private notifyStoreValue(path?: string, isMount?: boolean) {
+    if (path) {
       if (!isMount) {
         this.storeValueListeners.forEach((listener) => {
-          if (isExitPrefix(listener?.name, name)) {
-            listener?.onChange && listener?.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name))
+          if (isExitPrefix(listener?.path, path)) {
+            listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
           }
         })
       }
     } else {
-      this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.name), this.getLastValue(listener.name)))
+      this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }
   }
 
   // 同步错误的变化
-  private notifyError(name?: string) {
-    if (name) {
+  private notifyError(path?: string) {
+    if (path) {
       this.errorListeners.forEach((listener) => {
-        if (listener?.name === name) {
+        if (listener?.path === path) {
           listener?.onChange && listener?.onChange()
         }
       })
@@ -264,10 +269,10 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步props的变化
-  private notifyProps(name?: string) {
-    if (name) {
+  private notifyProps(path?: string) {
+    if (path) {
       this.propsListeners.forEach((listener) => {
-        if (listener?.name === name) {
+        if (listener?.path === path) {
           listener?.onChange && listener?.onChange()
         }
       })
@@ -277,55 +282,55 @@ export class FormStore<T extends Object = any> {
   }
 
   // 订阅表单值的变动
-  public subscribeValue(name: string, listener: FormListener['onChange']) {
+  public subscribeValue(path: string, listener: FormListener['onChange']) {
     this.valueListeners.push({
       onChange: listener,
-      name: name
+      path: path
     });
     return () => {
-      this.valueListeners = this.valueListeners.filter((sub) => sub.name !== name)
+      this.valueListeners = this.valueListeners.filter((sub) => sub.path !== path)
     }
   }
 
   // 主动订阅表单值的变动(表单控件消失不会卸载)
-  public listenStoreValue(name: string, listener: FormListener['onChange']) {
+  public listenStoreValue(path: string, listener: FormListener['onChange']) {
     this.storeValueListeners.push({
       onChange: listener,
-      name: name
+      path: path
     });
     return () => {
-      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.name !== name)
+      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.path !== path)
     }
   }
 
   // 卸载
-  public removeListenStoreValue(name?: string) {
-    if (typeof name === 'string') {
-      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.name !== name)
+  public removeListenStoreValue(path?: string) {
+    if (typeof path === 'string') {
+      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.path !== path)
     } else {
       this.storeValueListeners = []
     }
   }
 
   // 订阅表单错误的变动
-  public subscribeError(name: string, listener: FormListener['onChange']) {
+  public subscribeError(path: string, listener: FormListener['onChange']) {
     this.errorListeners.push({
       onChange: listener,
-      name: name
+      path: path
     });
     return () => {
-      this.errorListeners = this.errorListeners.filter((sub) => sub.name !== name)
+      this.errorListeners = this.errorListeners.filter((sub) => sub.path !== path)
     }
   }
 
   // 订阅表单的props的变动
-  public subscribeProps(name: string, listener: FormListener['onChange']) {
+  public subscribeProps(path: string, listener: FormListener['onChange']) {
     this.propsListeners.push({
       onChange: listener,
-      name: name
+      path: path
     });
     return () => {
-      this.propsListeners = this.propsListeners.filter((sub) => sub.name !== name)
+      this.propsListeners = this.propsListeners.filter((sub) => sub.path !== path)
     }
   }
 }

@@ -53,11 +53,10 @@ class DndAreaChild extends React.Component<DndAreaProps, { targetItem?: DndTarge
   }
 
   getProps = () => {
-    const { path, id, collect } = this.props;
+    const { path, id } = this.props;
     const currentPath = path !== undefined && id !== undefined ? `${path}.${id}` : id;
     return {
-      path: currentPath,
-      collect
+      path: currentPath
     };
   }
 

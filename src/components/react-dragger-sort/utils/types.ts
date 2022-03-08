@@ -20,7 +20,6 @@ export interface DndTargetItemType {
 // 容器订阅信息
 export interface SubscribeTargetParams {
   area: HTMLElement
-  collect: unknown
   path: string
 }
 
@@ -34,7 +33,6 @@ export interface SourceParams {
   source: {
     area: HTMLElement
     item: DndSourceItem
-    collect: unknown
     path: string
   }
 }
@@ -58,7 +56,6 @@ export interface DndAreaProps {
   className?: string;
   style?: CSSProperties;
   children: any;
-  collect: unknown
   id: any
   path?: string
 }

@@ -173,6 +173,7 @@ class demo5 extends React.Component {
 
   onFieldsChange = ({ name, value }) => {
     // this.store.setFieldValue('', []);
+    this.store.setFieldsValue({name2: []})
   }
 
   render() {

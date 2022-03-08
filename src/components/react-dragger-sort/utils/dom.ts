@@ -40,39 +40,3 @@ export function getDistance(move: BoundingRect, other: BoundingRect) {
   const y = moveCenter.y - otherCenter.y;
   return Math.sqrt(x * x + y * y)
 }
-
-// 拖拽元素在另一元素的方位
-export const getDirection = (move: BoundingRect, other: BoundingRect) => {
-  let l1 = move?.left
-  let t1 = move?.top
-  let r1 = move?.right
-  let b1 = move?.bottom
-
-  let l2 = other?.left
-  let t2 = other?.top
-  let otherXcenter = other?.left + (other.right - other?.left) / 2;
-  let otherYcenter = other?.top + (other.bottom - other?.top) / 2;
-
-  const direction = [];
-  if (r1 < otherXcenter || l1 < l2) {
-    direction.push('left');
-  } else {
-    direction.push('right');
-  }
-  if (b1 < otherYcenter || t1 < t2) {
-    direction.push('top');
-  } else {
-    direction.push('bottom');
-  }
-  return direction;
-}
-
-export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement) => {
-  const parentElement = targetElement.parentNode;
-  if (!parentElement) return;
-  if ((parentElement as HTMLElement).lastChild == targetElement) {
-    (parentElement as HTMLElement).appendChild(newElement);
-  } else {
-    (parentElement as HTMLElement).insertBefore(newElement, targetElement.nextSibling);
-  }
-}

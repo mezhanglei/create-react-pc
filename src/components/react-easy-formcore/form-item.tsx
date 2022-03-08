@@ -43,14 +43,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const options = useContext(FormOptionsContext)
   const finalProps = { ...options, ...props };
   const { children, ...fieldProps } = finalProps;
-  let {
+  const {
     label,
     name,
     valueProp = 'value',
     valueGetter = getValueFromEvent,
     suffix,
     path,
-    initialValue,
     className,
     style,
     inline,
@@ -65,7 +64,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   } = fieldProps;
 
   const currentPath = path && name ? `${path}.${name}` : name;
-  initialValue = initialValues?.[currentPath as string] ?? initialValue;
+  const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
   const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
   const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
 
@@ -77,7 +76,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         // 设置值
         store.setFieldValue(currentPath, value);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ name: currentPath, value: value });
+        onFieldsChange && onFieldsChange({ path: currentPath, value: value });
       }
     },
     [currentPath, store, valueGetter]
@@ -93,7 +92,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       setValue(newValue);
       // 不监听`initialValue`赋值
       if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
-        onValuesChange && onValuesChange({ name: currentPath, value: newValue })
+        onValuesChange && onValuesChange({ path: currentPath, value: newValue })
       }
     })
     return () => {
@@ -118,14 +117,19 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useEffect(() => {
     if (!currentPath || !store) return;
     if (initialValue !== undefined) {
+      // 回填store.values
       store.setFieldValue(currentPath, initialValue, true);
+      // 回填store.initialValues
+      store.setInitialValues(currentPath, initialValue);
     }
     store?.setFieldProps(currentPath, fieldProps);
     return () => {
       // 清除该表单域的props(在设置值的前面)
       store?.setFieldProps(currentPath, undefined);
-      // 清除初始值
+      // 清除值
       store.setFieldValue(currentPath, undefined, true);
+      // 清除初始值
+      store.setInitialValues(currentPath, undefined);
     }
   }, [currentPath, store]);
 
