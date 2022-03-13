@@ -429,6 +429,27 @@ export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement)
   }
 }
 
+export interface BoundingRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+// 判断两个元素是否碰撞
+export const isBump = (move: BoundingRect, other: BoundingRect) => {
+  let l1 = move?.left
+  let t1 = move?.top
+  let r1 = move?.right
+  let b1 = move?.bottom
+
+  let l2 = other?.left
+  let t2 = other?.top
+  let r2 = other?.right
+  let b2 = other?.bottom
+
+  return !(r1 - l2 < 0 || b1 - t2 < 0 || r2 - l1 < 0 || b2 - t1 < 0)
+}
+
 /**
  * 添加事件监听
  * @param el 目标元素

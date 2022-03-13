@@ -71,8 +71,12 @@ export interface PositionInterface {
   y: number
 }
 // 接收偏移位置，返回新的transform值
-export function getTranslation(current: PositionInterface, positionOffset: PositionInterface | undefined, unit: string): string {
-  let translation = `translate3d(${current.x}${unit},${current.y}${unit}, 0)`;
+export function getTranslation(current: { x?: number, y?: number }, positionOffset: { x: number, y: number } | undefined, unit: string) {
+  const { x, y } = current;
+  let translation;
+  if (typeof x == 'number' || typeof y == 'number') {
+    translation = `translate3d(${x || 0}${unit},${y || 0}${unit}, 0)`;
+  }
 
   if (positionOffset) {
     const offsetX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unit}`;
@@ -82,22 +86,10 @@ export function getTranslation(current: PositionInterface, positionOffset: Posit
   return translation;
 }
 
-// 设置css的transform
-export function createCSSTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): string {
-  const translation = getTranslation(current, positionOffset, 'px');
-  return translation;
-}
-
-// 设置svg的transform
-export function createSVGTransform(current: PositionInterface, positionOffset?: PositionInterface | undefined): string {
-  const translation = getTranslation(current, positionOffset, '');
-  return translation;
-}
-
 // 返回目标元素被父元素限制的位置范围
 export function getBoundsInParent(node: HTMLElement, bounds: any) {
   // 限制父元素
-  const boundsParent: HTMLElement = findElement(bounds) || findElement(bounds?.boundsParent);
+  const boundsParent = (findElement(bounds) || findElement(bounds?.boundsParent)) as HTMLElement;
 
   if (!isDom(node) || !isDom(boundsParent)) {
     return;

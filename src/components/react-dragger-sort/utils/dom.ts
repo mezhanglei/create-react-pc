@@ -4,39 +4,18 @@ export interface BoundingRect {
   right: number;
   bottom: number;
 }
-// 判断是否碰撞
-export const isOverLay = (move: BoundingRect, other: BoundingRect) => {
-  let l1 = move?.left
-  let t1 = move?.top
-  let r1 = move?.right
-  let b1 = move?.bottom
+// 事件对象是否在目标范围内
+export const isMoveIn = (event: { x: number, y: number }, other: BoundingRect) => {
 
-  let l2 = other?.left
-  let t2 = other?.top
-  let r2 = other?.right
-  let b2 = other?.bottom
+  const eventX = event?.x;
+  const eventY = event?.y;
 
-  const otherW = other.right - other?.left;
-  const otherH = other.bottom - other?.top;
+  return !(eventX - other?.left < 0 || eventY - other?.top < 0 || eventX - other?.right > 0 || eventY - other?.bottom > 0)
+};
 
-  const maxX = Math.min(15, otherW / 4);
-  const maxY = Math.min(15, otherH / 4);
-
-  return !(r1 - l2 < maxX || b1 - t2 < maxY || r2 - l1 < maxX || b2 - t1 < maxY)
-}
-
-// 求两点之间的距离
-export function getDistance(move: BoundingRect, other: BoundingRect) {
-  const moveCenter = {
-    x: move?.left + (move.right - move?.left) / 2,
-    y: move?.top + (move.bottom - move?.top) / 2
-  }
-  const otherCenter = {
-    x: other?.left + (other.right - other?.left) / 2,
-    y: other?.top + (other.bottom - other?.top) / 2
-  }
-
-  const x = moveCenter.x - otherCenter.x;
-  const y = moveCenter.y - otherCenter.y;
-  return Math.sqrt(x * x + y * y)
-}
+// 点距离目标内的四条边的最短距离
+export function getMinDistance(event: { x: number, y: number }, other: BoundingRect) {
+  const distances = [Math.floor(event.x - other.left), Math.floor(event.y - other?.top), Math.floor(other?.bottom - event?.y), Math.floor(other?.right - event.x)];
+  const minDistance = Math.min.apply(Math, distances);
+  return minDistance;
+};

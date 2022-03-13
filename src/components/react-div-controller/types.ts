@@ -6,7 +6,6 @@ export interface DrawItemProps {
     children: any
     className?: string
     style?: CSSProperties
-    forwardedRef?: any
     forbid?: boolean
     offset: number
     axis: Direction[]

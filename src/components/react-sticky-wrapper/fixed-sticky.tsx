@@ -42,7 +42,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
   const getScrollRoot = () => {
     const root = findElement(scrollRoot) || getScrollParent(nodeRef.current);
     return root;
-  }
+  };
 
   // 位置相对比较的父元素
   const findParent = () => {
@@ -63,7 +63,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
     const initData = {
       node,
       root
-    }
+    };
     addEvent(addEventEle, dragEventFor.move, (e) => handleScroll(e, initData));
 
     const ownerDocument = findOwnerDocument();
@@ -79,7 +79,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
     return () => {
       removeEvent(addEventEle, dragEventFor.move, handleScroll);
       parent?.removeChild(stickyRef.current);
-    }
+    };
   }, []);
 
   const handleScroll = (e: MouseEvent | TouchEvent, data: { node: HTMLElement, root: HTMLElement }) => {

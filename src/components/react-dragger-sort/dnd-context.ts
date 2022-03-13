@@ -1,6 +1,4 @@
 import React from 'react';
-import { DndProviderContextProps } from './utils/types';
-import { DndAreaContextProps } from './utils/types';
+import { DndChildrenContextProps } from './utils/types';
 
-export const DndAreaContext = React.createContext<DndAreaContextProps>({});
-export const DndProviderContext = React.createContext<DndProviderContextProps>({})
+export const DndChildrenContext = React.createContext<DndChildrenContextProps>({});

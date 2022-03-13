@@ -19,8 +19,21 @@ export interface DragData {
   node?: any; // 节点
   x?: number; // 元素在页面中的位置x
   y?: number; // 元素在页面中的位置y
-  translateX: number; // 当前x轴的translate
-  translateY: number; // 当前y轴的translate
+  deltaX?: number;
+  deltaY?: number;
+  translateX?: number; // 当前x轴的translate
+  translateY?: number; // 当前y轴的translate
+}
+
+// 拖拽元素的位置接口
+export interface DragEventData {
+  node: any; // 节点
+  x: number; // 元素在页面中的位置x
+  y: number; // 元素在页面中的位置y
+  deltaX: number;
+  deltaY: number;
+  translateX?: number; // 当前x轴的translate
+  translateY?: number; // 当前y轴的translate
 }
 
 // 位置类型
@@ -104,4 +117,4 @@ export interface DraggableState {
 
 // 事件处理函数的type
 export type EventHandler<E = EventType, T = EventData> = (e: E, data?: T) => void | boolean;
-export type DragHandler<E = EventType, T = DragData> = (e: E, data?: T) => void | boolean;
+export type DragHandler<E = EventType, T = DragEventData> = (e: E, data?: T) => void | boolean;

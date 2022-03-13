@@ -26,8 +26,8 @@ let dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
-  eventData?: EventData;
-  child?: any;
+  eventData: EventData | undefined;
+  child: any;
   constructor(props: DraggableEventProps) {
     super(props);
     this.dragging = false;

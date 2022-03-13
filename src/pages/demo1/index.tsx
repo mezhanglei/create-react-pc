@@ -2,19 +2,21 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndArea, { DndContextProvider, arrayMove, deepSet, deepGet } from "@/components/react-dragger-sort";
+import DndSortable, { arrayMove } from "@/components/react-dragger-sort";
 import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
 import { exportWord } from '@/components/export-word';
+import { klona } from 'klona';
 
 const Demo1: React.FC<any> = (props) => {
   const [x, setX] = useState<any>(10);
   const [y, setY] = useState<any>(10);
   const [data, setData] = useState([
-    { list: [1, 2, 3, 4, 5, 6, 7], backgroundColor: 'blue' },
-    { list: [8, 9, 10, 11, 12, 13, 14], backgroundColor: 'green' }
+    { children: [{ children: [{ children: [1, 2, 3, 4, 5], backgroundColor: 'pink' }], backgroundColor: 'yellow' },], backgroundColor: 'blue' },
+    { children: [8, 9, 10, 11, 12, 13, 14], backgroundColor: 'green' },
+    { children: [15, 16, 17, 18, 19, 20, 21], backgroundColor: 'green' },
   ]);
 
   const onDrag = (e, data) => {
@@ -31,64 +33,115 @@ const Demo1: React.FC<any> = (props) => {
     });
   };
 
+  const indexToArray = (pathStr: string) => `${pathStr}`.split('.').map(n => +n);
+
+  const getLastIndex = (pathStr: string) => {
+    const array = indexToArray(pathStr);
+    return (array.pop()) as number;
+  };
+
+  const getItem = (path: string, data: any) => {
+    const arr = indexToArray(path);
+    // 嵌套节点删除
+    let parent: any;
+    if (arr.length === 0) {
+      return data;
+    }
+    arr.forEach((item, index) => {
+      if (index === 0) {
+        parent = data[item];
+      } else {
+        parent = parent?.children?.[item];
+      }
+    });
+    if (parent.children) return parent.children;
+    return parent;
+  };
+
+  const setInfo = (pathStr: string, treeData: any, data: any) => {
+    const arr = indexToArray(pathStr);
+    treeData = klona(treeData);
+    let parent: any;
+    arr.forEach((item, index) => {
+      if (index == 0) {
+        parent = treeData[item];
+      } else {
+        parent = parent.children[item];
+      }
+    });
+    parent.children = data;
+    return treeData;
+  };
 
   const onDragEnd: DragMoveHandle = (params) => {
     const { source, target } = params;
     const sourceItem = source.item;
     const targetItem = target?.item;
-    if (!source.area || !target?.area || !targetItem) return;
-    const sourceDataPath = source.path;
-    const sourceData = deepGet(data, source.path);
-    const preIndex = sourceItem.path?.split('.')?.pop();
-    const nextIndex = targetItem.path?.split('.')?.pop();
+    if (!sourceItem || !targetItem) return;
+    console.log(params, '同区域');
+    const preIndex = getLastIndex(sourceItem.path);
+    const nextIndex = getLastIndex(targetItem.path);
+    const parentPath = source.path;
+    let parent = parentPath ? getItem(parentPath, data) : data;
     if (preIndex !== undefined && nextIndex !== undefined) {
-      const newItem = arrayMove(sourceData, Number(preIndex), Number(nextIndex));
-      const newData = deepSet(data, sourceDataPath, newItem);
+      parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
+      const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
       setData(newData);
     }
   };
 
-  const onAreaDropEnd: DragMoveHandle = (params) => {
+  const onMoveInEnd: DragMoveHandle = (params) => {
     const { source, target } = params;
     const sourceItem = source.item;
     const targetItem = target?.item;
-    if (!source.area || !target?.area) return;
-    const sourceData = deepGet(data, source.path);
-    const targetData = deepGet(data, target.path);
-    const sourceIndex = sourceItem.path && Number(sourceItem.path?.split('.')?.pop());
-    const sourceDataPath = source.path;
-    const targetIndex = targetItem ? targetItem.path && Number(targetItem?.path?.split('.')?.pop()) : targetData?.length;
-    const targetDataPath = target.path;
-    if (sourceIndex >= 0 && targetIndex >= 0) {
+    if (!sourceItem || !targetItem) return;
+    console.log(params, '跨区域');
+    const sourceData = getItem(source.path, data);
+    const targetData = getItem(target.path, data);
+    const sourceIndex = getLastIndex(sourceItem.path);
+    let targetIndex;
+    if(targetItem.path && targetItem.path === target.path) {
+      targetIndex = targetData?.length;
+    } else {
+      targetIndex = getLastIndex(targetItem.path);
+    }
+    if(sourceIndex >= 0 && targetIndex >= 0) {
       targetData?.splice(targetIndex + 1, 0, sourceData?.[sourceIndex]);
       sourceData?.splice(sourceIndex, 1);
-      // remove
-      const tmp = deepSet(data, sourceDataPath, sourceData);
       // add
-      const newData = deepSet(tmp, targetDataPath, targetData);
+      const afterAdd = setInfo(target.path, data, targetData);
+      // remove
+      const newData = setInfo(source.path, afterAdd, sourceData);
       setData(newData);
     }
-  }
+  };
 
-  const renderChildren = (list: any[]) => {
-    return list?.map((areaItem, areaIndex) => {
+  const loopChildren = (arr: any[], parent?: string) => {
+    return arr.map((item, index) => {
+      const path = parent === undefined ? String(index) : `${parent}.${index}`;
+      if (item.children) {
+        return (
+          <div key={index}>
+            <DndSortable
+              style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
+              path={path}
+              onDragEnd={onDragEnd}
+              onMoveInEnd={onMoveInEnd}
+            >
+              {loopChildren(item.children, path)}
+            </DndSortable>
+          </div>
+        );
+      }
       return (
-        <DndArea key={areaIndex} id={`${areaIndex}.list`} style={{ display: 'flex', flexWrap: 'wrap', background: areaItem.backgroundColor, width: '200px', marginTop: '10px' }}>
-          {
-            areaItem?.list?.map((item, index) => {
-              return (
-                <DndArea.Item style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} id={index}>
-                  <div>
-                    {item}
-                  </div>
-                </DndArea.Item>
-              );
-            })
-          }
-        </DndArea>
-      )
-    })
-  }
+        <DndSortable style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} path={path}>
+          <div>
+            {item}
+          </div>
+        </DndSortable>
+      );
+    });
+  };
 
   return (
     <div className="boxx" style={{ marginTop: '0px' }}>
@@ -108,9 +161,9 @@ const Demo1: React.FC<any> = (props) => {
           </div>
         </Draggable>
       </div>
-      <DndContextProvider onDragEnd={onDragEnd} onAreaDropEnd={onAreaDropEnd}>
-        {renderChildren(data)}
-      </DndContextProvider>
+      <DndSortable>
+        {loopChildren(data)}
+      </DndSortable>
       <Button onClick={onClick}>
         导出
       </Button>
