@@ -4,7 +4,7 @@ import { DarkColors, LightColors } from "./defaultColors";
 import "./ToastsContainer.less";
 import classNames from 'classnames';
 import { ToastsPosition, ToastProps } from "./type";
-import nanoid from "nanoid";
+import {nanoid} from "nanoid";
 
 // toast容器
 const ToastsContainer = React.forwardRef<{}, ToastProps>((props, ref) => {

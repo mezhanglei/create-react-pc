@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { EditTableRow, EditTableCol } from './table-components';
 import { EditTableRef, EditTableProps, RowData, ColumnProps, ColumnTypes } from './types';
 import { klona } from 'klona';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 
 /**
  * 可编辑表格组件

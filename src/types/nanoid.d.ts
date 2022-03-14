@@ -1,3 +1,3 @@
 declare module 'nanoid' {
-  export default function nanoid(n: number): string
+  export function nanoid(n: number): string
 }
