@@ -3,7 +3,6 @@ import { asyncSequentialExe } from '@/utils/common';
 import { isExitPrefix } from './utils/utils';
 import { klona } from 'klona';
 import { deepGet, deepSet } from '@/utils/object';
-import { formListPath } from './form';
 import { validatorsMap } from './rules-validator';
 
 export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
@@ -40,11 +39,13 @@ export class FormStore<T extends Object = any> {
 
   private fieldsProps: FormFieldsProps = {};
 
+  public formListPath: string[];
+
   public constructor(values: Partial<T> = {}, fieldsProps?: FormFieldsProps<T>) {
     this.initialValues = values
     this.values = klona(values)
     this.fieldsProps = fieldsProps || {};
-
+    this.formListPath = [];
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)
@@ -98,7 +99,7 @@ export class FormStore<T extends Object = any> {
 
   // 设置初始值
   public setInitialValues(path: string, initialValue: any) {
-    this.initialValues = deepSet(this.initialValues, path, initialValue, formListPath);
+    this.initialValues = deepSet(this.initialValues, path, initialValue, this.formListPath);
   }
 
   // 更新表单值，单个表单值或多个表单值
@@ -107,7 +108,7 @@ export class FormStore<T extends Object = any> {
       // 旧表单值存储
       this.lastValues = klona(this.values);
       // 设置值
-      this.values = deepSet(this.values, path, value, formListPath);
+      this.values = deepSet(this.values, path, value, this.formListPath);
       // 同步ui
       this.notifyValue(path);
       // 同时触发另一个值的监听

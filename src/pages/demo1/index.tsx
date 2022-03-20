@@ -14,9 +14,9 @@ const Demo1: React.FC<any> = (props) => {
   const [x, setX] = useState<any>(10);
   const [y, setY] = useState<any>(10);
   const [data, setData] = useState([
-    { children: [{ children: [{ children: [1, 2, 3, 4, 5], backgroundColor: 'pink' }], backgroundColor: 'yellow' },], backgroundColor: 'blue' },
-    { children: [8, 9, 10, 11, 12, 13, 14], backgroundColor: 'green' },
-    { children: [15, 16, 17, 18, 19, 20, 21], backgroundColor: 'green' },
+    { backgroundColor: 'blue', children: [{ label: 1 }, { label: 2 }, { label: 3 }, { label: 4 }, { label: 5 }] },
+    { backgroundColor: 'green', children: [{ label: 6 }, { label: 7 }, { label: 8 }, { label: 9 }, { label: 10 }] },
+    { backgroundColor: 'green', children: [{ label: 11 }, { label: 12 }, { label: 13 }, { label: 14 }, { label: 15 }] }
   ]);
 
   const onDrag = (e, data) => {
@@ -75,45 +75,41 @@ const Demo1: React.FC<any> = (props) => {
 
   const onDragEnd: DragMoveHandle = (params) => {
     const { source, target } = params;
-    const sourceItem = source.item;
-    const targetItem = target?.item;
-    if (!sourceItem || !targetItem) return;
+    if (!source || !target) return;
     console.log(params, '同区域');
-    const preIndex = getLastIndex(sourceItem.path);
-    const nextIndex = getLastIndex(targetItem.path);
-    const parentPath = source.path;
-    let parent = parentPath ? getItem(parentPath, data) : data;
-    if (preIndex !== undefined && nextIndex !== undefined) {
-      parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
-      const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
-      setData(newData);
-    }
+    // const preIndex = getLastIndex(source.path);
+    // const nextIndex = getLastIndex(target.path);
+    // const parentPath = source.path;
+    // let parent = parentPath ? getItem(parentPath, data) : data;
+    // if (preIndex !== undefined && nextIndex !== undefined) {
+    //   parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
+    //   const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
+    //   setData(newData);
+    // }
   };
 
   const onMoveInEnd: DragMoveHandle = (params) => {
     const { source, target } = params;
-    const sourceItem = source.item;
-    const targetItem = target?.item;
-    if (!sourceItem || !targetItem) return;
+    if (!source || !target) return;
     console.log(params, '跨区域');
-    const sourceData = getItem(source.path, data);
-    const targetData = getItem(target.path, data);
-    const sourceIndex = getLastIndex(sourceItem.path);
-    let targetIndex;
-    if(targetItem.path && targetItem.path === target.path) {
-      targetIndex = targetData?.length;
-    } else {
-      targetIndex = getLastIndex(targetItem.path);
-    }
-    if(sourceIndex >= 0 && targetIndex >= 0) {
-      targetData?.splice(targetIndex + 1, 0, sourceData?.[sourceIndex]);
-      sourceData?.splice(sourceIndex, 1);
-      // add
-      const afterAdd = setInfo(target.path, data, targetData);
-      // remove
-      const newData = setInfo(source.path, afterAdd, sourceData);
-      setData(newData);
-    }
+    // const sourceData = getItem(source.path, data);
+    // const targetData = getItem(target.path, data);
+    // const sourceIndex = getLastIndex(source.path);
+    // let targetIndex;
+    // if (target.path && target.path === target.path) {
+    //   targetIndex = targetData?.length;
+    // } else {
+    //   targetIndex = getLastIndex(target.path);
+    // }
+    // if (sourceIndex >= 0 && targetIndex >= 0) {
+    //   targetData?.splice(targetIndex + 1, 0, sourceData?.[sourceIndex]);
+    //   sourceData?.splice(sourceIndex, 1);
+    //   // add
+    //   const afterAdd = setInfo(target.path, data, targetData);
+    //   // remove
+    //   const newData = setInfo(source.path, afterAdd, sourceData);
+    //   setData(newData);
+    // }
   };
 
   const loopChildren = (arr: any[], parent?: string) => {
@@ -125,7 +121,7 @@ const Demo1: React.FC<any> = (props) => {
             <DndSortable
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               path={path}
-              onDragEnd={onDragEnd}
+              onDrag={onDragEnd}
               onMoveInEnd={onMoveInEnd}
             >
               {loopChildren(item.children, path)}
@@ -134,9 +130,9 @@ const Demo1: React.FC<any> = (props) => {
         );
       }
       return (
-        <DndSortable style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item} path={path}>
+        <DndSortable style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label} path={path}>
           <div>
-            {item}
+            {item.label}
           </div>
         </DndSortable>
       );

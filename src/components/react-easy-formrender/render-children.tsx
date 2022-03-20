@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ChildrenComponent, FormFieldProps, RenderFormChildrenProps, SchemaData } from './types';
+import { FormFieldProps, RenderFormChildrenProps, SchemaData } from './types';
 import { defaultFields } from './register';
 import { AopFactory } from '@/utils/function-aop';
 import { isEmpty } from '@/utils/type';
@@ -128,7 +128,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成组件的children
-  const generateChildren = (children?: ChildrenComponent['props']['children']) => {
+  const generateChildren = (children?: JSX.Element | {component: string, props: FormFieldProps['props']}[]) => {
     if (children instanceof Array) {
       return children?.map(({ component, props }) => {
         const Child = widgets?.[component];

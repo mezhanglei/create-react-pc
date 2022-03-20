@@ -9,50 +9,32 @@ export enum DragTypes {
 };
 
 // 元素类型
-export interface DndTargetItemType {
+export interface TargetParams {
   node: HTMLElement;
   path: string
-}
-
-// 拖拽容器
-export interface MoveInArea {
-  area: HTMLElement
-  path: string
-}
-
-export interface TargetParams extends MoveInArea {
-  item: DndTargetItemType
 }
 
 // 拖拽源信息
 export interface SourceParams {
   e: EventType
-  source: {
-    area: HTMLElement
-    item: DndSourceItem
-    path: string
-  }
+  source: DndSourceItem
 }
 
 // 监听回调的参数
 export interface ListenParams extends SourceParams {
-  target: MoveInArea
+  target: TargetParams
 }
 
 // 被监听的事件类型
-export type listenEvent = { listener: (params: ListenParams) => MoveInArea | void, target: MoveInArea };
+export type listenEvent = { listener: (params: ListenParams) => TargetParams | void, target: TargetParams };
 // 容器触发事件的类型
-export type NotifyEventHandle = (sourceParams: SourceParams) => MoveInArea | void;
+export type NotifyEventHandle = (dndParams: DndParams) => TargetParams | void;
 // 容器监听事件的类型
-export type SubscribeHandle = (target: MoveInArea, addEvent: listenEvent['listener']) => void;
+export type SubscribeHandle = (target: TargetParams, addEvent: (params: ListenParams) => void, removeEvent: (params: ListenParams) => void) => void;
 
 // 拖拽回调参数
 export interface DndParams extends SourceParams {
-  target: {
-    area: HTMLElement
-    item?: DndTargetItemType
-    path: string
-  }
+  target?: TargetParams
 }
 // 拖拽回调函数
 export type DragMoveHandle = (params: DndParams) => void | boolean;
@@ -62,5 +44,5 @@ export interface DndChildrenContextProps {
   contextDragStart?: DndItemHandler;
   contextDrag?: DndItemHandler;
   contextDragEnd?: DndItemHandler;
-  contextHoverItem?: DndTargetItemType;
+  contextHoverItem?: TargetParams;
 }

@@ -82,8 +82,8 @@ export const itemAdd = (path: string, data: any, item: any) => {
   return data;
 };
 
-// 给指定路径设置值并返回结果
-export const setPathData = (pathStr: string, treeData: any, data: any) => {
+// 根据父元素路径设置值并返回结果
+export const setParentPathData = (pathStr: string, treeData: any, data: any) => {
   const arr = indexToArray(pathStr);
   treeData = klona(treeData);
   let parent: any;

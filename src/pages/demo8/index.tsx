@@ -3,7 +3,7 @@ import { Rate, Input, DatePicker, Tag } from 'antd';
 import Sortable from 'react-sortablejs';
 import update from 'immutability-helper';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-import { indexToArray, getItem, setPathData, isPath, getCloneItem, itemRemove, itemAdd, uniqueId } from './utils';
+import { indexToArray, getItem, setParentPathData, isPath, getCloneItem, itemRemove, itemAdd, uniqueId } from './utils';
 import { klona } from 'klona';
 
 const GlobalComponent = {
@@ -129,7 +129,7 @@ class Demo8 extends Component {
     });
 
     // 最新的数据 根节点时直接调用data
-    const Data = parentPath ? setPathData(parentPath, this.state.Data, parent) : parent
+    const Data = parentPath ? setParentPathData(parentPath, this.state.Data, parent) : parent
     // 调用父组件更新方法
     this.setState({ Data });
   }
@@ -161,8 +161,8 @@ class Demo8 extends Component {
             </Sortable>
           </div>);
         }
-        const ComponentInfo = GlobalComponent[item.name]
-        return <div data-id={path}><ComponentInfo {...item.attr} /></div>
+        const ComponentInfo = GlobalComponent[item.name];
+        return <div data-id={path}><ComponentInfo {...item.attr} /></div>;
       })
     );
 

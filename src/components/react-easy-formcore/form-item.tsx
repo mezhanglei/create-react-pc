@@ -8,18 +8,18 @@ import { AopFactory } from '@/utils/function-aop'
 import { isObjectEqual } from '@/utils/object'
 
 export interface FormItemProps extends FormOptions {
-  label?: string
-  name?: string
-  valueProp?: string | ((type: any) => string)
-  valueGetter?: (...args: any[]) => any
-  suffix?: React.ReactNode
-  rules?: FormRule[]
-  path?: string
-  initialValue?: any
-  className?: string
-  children?: React.ReactNode
-  style?: CSSProperties
-  errorClassName?: string
+  label?: string;
+  name?: string;
+  valueProp?: string | ((type: any) => string);
+  valueGetter?: (...args: any[]) => any;
+  suffix?: React.ReactNode;
+  rules?: FormRule[];
+  path?: string;
+  initialValue?: any;
+  className?: string;
+  children?: React.ReactNode;
+  style?: CSSProperties;
+  errorClassName?: string;
 }
 
 const prefixCls = 'rh-form-field';

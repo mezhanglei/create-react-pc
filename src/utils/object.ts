@@ -71,10 +71,10 @@ export function deepSet(obj: any, path: string | string[], value: any, arraySetP
   let temp = klona(obj);
   const root = temp;
   const parts = !Array.isArray(path) ? path.replace(/\[/g, '.').replace(/\]/g, '').split('.') : path;
-  const length = parts.length
+  const length = parts.length;
 
   for (let i = 0; i < length; i++) {
-    const p = parts[i]
+    const p = parts[i];
     // 该字段是否设置为数组
     const isSetArray = arraySetPath?.some((path) => {
       const end = path?.split('.')?.pop();
@@ -91,7 +91,7 @@ export function deepSet(obj: any, path: string | string[], value: any, arraySetP
     } else if (typeof temp[p] !== 'object') {
       temp[p] = {};
     }
-    temp = temp[p]
+    temp = temp[p];
   }
   return root;
 }

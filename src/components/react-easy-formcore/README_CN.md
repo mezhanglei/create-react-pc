@@ -2,7 +2,7 @@
 
 [English](./README.md) | 中文说明
 
-[![Version](https://img.shields.io/badge/version-0.4.0-green)](https://www.npmjs.com/package/react-easy-formcore)
+[![Version](https://img.shields.io/badge/version-0.3.8-green)](https://www.npmjs.com/package/react-easy-formcore)
 
 # 适用场景
 
@@ -178,7 +178,7 @@ class demo extends React.Component {
 
 - `className` 表单元素类名，`可选`。
 - `store` 表单数据存储，`必须`。
-- `initialValues` 表单的初始值，会被表单域的`initialValue`覆盖, 注意不能被监听值的变化`可选`。
+- `initialValues` 表单的初始值，会被表单域的`initialValue`覆盖, 注意此值只能初始化表单赋值`可选`。
 - `onSubmit` 表单提交回调，`可选`。
 - `onMount` 表单渲染完毕的回调，`可选`。
 - `onReset` 表单重置默认值，`可选`。
@@ -193,7 +193,7 @@ class demo extends React.Component {
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
 - `suffix` 后缀节点，`可选`。
-- `initialValue` 表单域的初始值，注意此值和`value`不同，不能监听值的变化 `可选`。
+- `initialValue` 表单域的初始值，注意此值和`value`不同，只能初始化表单赋值`可选`。
 - `rules` 表单域的校验规则 `可选`。
 - `valueProp` 填写到子组件的值属性名，默认值为`'value'`。
 - `valueGetter` 从表单事件中获取表单值的方式，`可选`。
@@ -208,7 +208,7 @@ class demo extends React.Component {
 - `label` 表单域标签，`可选`。
 - `name` 表单域字段名，`可选`。
 - `suffix` 后缀节点，`可选`。
-- `initialValue` 表单域的初始值，注意此值和`value`不同，不能监听值的变化 `可选`。
+- `initialValue` 表单域的初始值，注意此值和`value`不同，只能初始化表单赋值`可选`。
 - `rules` 表单域的校验规则 `可选`。
 
 ### 表单的rules中的校验字段

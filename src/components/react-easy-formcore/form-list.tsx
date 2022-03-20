@@ -1,20 +1,19 @@
-import React, { cloneElement, CSSProperties, useContext } from 'react'
+import React, { cloneElement, CSSProperties, useContext, useEffect } from 'react'
 import { FormRule } from './form-store';
-import { formListPath } from './form';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
-import { FormValuesContext } from './form-store-context';
+import { FormStoreContext, FormValuesContext } from './form-store-context';
 
 export interface FormListProps extends FormOptions {
-  label?: string
-  suffix?: React.ReactNode
-  name?: string
-  rules?: FormRule[]
+  label?: string;
+  suffix?: React.ReactNode;
+  name?: string;
+  rules?: FormRule[];
   path?: string;
-  initialValue?: any[]
-  className?: string
-  style?: CSSProperties
-  children?: React.ReactNode
+  initialValue?: any[];
+  className?: string;
+  style?: CSSProperties;
+  children?: React.ReactNode;
 }
 
 const prefixCls = 'rh-form-list';
@@ -33,6 +32,7 @@ export const classes_list = {
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
+  const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
   const initialValues = useContext(FormValuesContext)
   const finalProps = { ...options, ...props };
@@ -55,8 +55,10 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
   const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
-  if (currentPath && !formListPath?.includes(currentPath)) {
-    formListPath.push(currentPath)
+
+  // 渲染完成之前初始化数组的路径
+  if(currentPath !== undefined && !store?.formListPath?.includes(currentPath)) {
+    store?.formListPath.push(currentPath);
   }
 
   const childs = React.Children.map(children, (child: any, index) => {

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle, useContext } from 'react';
 import Draggable, { DragHandler as DragEventHandler, DragAxisCode } from "@/components/react-free-draggable";
-import { DndTargetItemType, DragMoveHandle, DragTypes, listenEvent, NotifyEventHandle, SourceParams, SubscribeHandle } from "./utils/types";
+import { TargetParams, DragMoveHandle, DragTypes, listenEvent, ListenParams, NotifyEventHandle, SourceParams, SubscribeHandle } from "./utils/types";
 import classNames from "classnames";
 import { getClientXY, getEventPosition, getInsidePosition, getOffsetWH, setStyle } from "@/utils/dom";
 import { DndChildrenContext } from './dnd-context';
 import { getMinDistance, isMoveIn } from './utils/dom';
+import { indexToArray } from '@/pages/demo8/utils';
 
 export type EventType = MouseEvent | TouchEvent;
 export type DndItemHandler<E = EventType, T = DndSourceItem> = (e: E, data: T) => void | boolean;
@@ -31,9 +32,15 @@ export interface DndProps {
   path?: string
 }
 
+// 给指定路径设置值并返回结果
+// export const setPathData = (treeData: any, pathStr: string, data: any) => {
+
+// };
+
 export default function BuildDndSortable() {
   let subscriptions: listenEvent[] = [];
-  const dndItemMap: Map<HTMLElement, DndTargetItemType> = new Map()
+  // 所有可拖拽的节点map
+  const dndItemMap: Map<HTMLElement, TargetParams> = new Map()
 
   // 订阅跨域事件
   const subscribe: SubscribeHandle = (target, addEvent) => {
@@ -47,49 +54,33 @@ export default function BuildDndSortable() {
     });
   }
 
-  const unsubscribe = (area?: HTMLElement | null) => {
-    subscriptions = subscriptions.filter((sub) => sub.target.area !== area);
+  const unsubscribe = (node?: HTMLElement | null) => {
+    subscriptions = subscriptions.filter((sub) => sub.target.node !== node);
   };
 
   // 触发跨域事件
-  const notifyEvent: NotifyEventHandle = ({ source, e }) => {
+  const notifyEvent: NotifyEventHandle = (dndPrams) => {
     let result;
-    let overOptions = [];
-    const sourceItem = source.item;
-    const sourceItemNode = sourceItem?.node;
-    const eventXY = getEventPosition(e);
+    const { target, source, e } = dndPrams;
+    if (!target) return;
+    const targetPathArr = target?.path?.split('.');
+    targetPathArr?.pop();
+    const targetParentPath = targetPathArr.join('.');
     for (let i = 0; i < subscriptions?.length; i++) {
       const option = subscriptions[i];
       const optionTarget = option.target;
-      const optionArea = optionTarget.area;
-      const optionAreaRect = getInsidePosition(optionArea);
-      if (!optionAreaRect || !eventXY) return;
-      // 碰撞目标(排除拖拽源及拖拽源的子元素)
-      if (isMoveIn(eventXY, optionAreaRect) && sourceItemNode !== optionArea && !sourceItemNode?.contains(optionArea)) {
-        overOptions.push(option);
-      }
-    }
-    // 针对嵌套对象取最近的值
-    let nearOption = overOptions[0];
-    for (let i = 0; i < overOptions.length; i++) {
-      const option = overOptions[i];
-      const target = option?.target;
-      const nearTarget = nearOption.target;
-      if (nearTarget?.area?.contains(target.area)) {
-        nearOption = option;
-      }
-    }
-
-    if (nearOption) {
-      const fn = nearOption?.listener;
-      const params = {
-        e,
-        source: { ...source },
-        target: nearOption.target
-      };
-      const targetOption = fn(params);
-      if (targetOption) {
-        result = targetOption;
+      const optionTargetNode = optionTarget.node;
+      if (target?.node === optionTargetNode || targetParentPath === optionTarget.path) {
+        const fn = option?.listener;
+        const params = {
+          e,
+          source: { ...source },
+          target: option.target
+        };
+        const targetOption = fn(params);
+        if (targetOption) {
+          result = targetOption;
+        }
       }
     }
     return result;
@@ -100,14 +91,13 @@ export default function BuildDndSortable() {
     let addChilds = [];
     let addDistance = [];
     const { e, source } = params;
-    const sourceItem = source.item;
-    const sourceItemNode = sourceItem?.node;
+    const sourceNode = source?.node;
     const eventXY = getEventPosition(e);
     for (let child of dndItemMap.values()) {
       const childNode = child?.node;
       const other = getInsidePosition(childNode);
       // 碰撞目标(排除拖拽源及拖拽源的子元素)
-      if (other && eventXY && isMoveIn(eventXY, other) && sourceItemNode !== childNode && !sourceItemNode?.contains(childNode)) {
+      if (other && eventXY && isMoveIn(eventXY, other) && sourceNode !== childNode && !sourceNode?.contains(childNode)) {
         addDistance.push(getMinDistance(eventXY, other));
         addChilds.push(child);
       }
@@ -115,8 +105,10 @@ export default function BuildDndSortable() {
     let minNum = Number.MAX_VALUE;
     let minChild;
     for (let i = 0; i < addDistance.length; i++) {
-      // 最短距离相等时，看内层嵌套
       if (addDistance[i] < minNum) {
+        minNum = addDistance[i];
+        minChild = addChilds[i];
+      } else if (addDistance[i] == minNum && minChild?.node?.contains(addChilds[i]?.node)) {
         minNum = addDistance[i];
         minChild = addChilds[i];
       }
@@ -125,8 +117,8 @@ export default function BuildDndSortable() {
   }
 
   // 添加可拖拽子元素
-  const setDndItemsMap = (node: HTMLElement, item: DndTargetItemType) => {
-    dndItemMap.set(node, item);
+  const setDndItemsMap = (item: TargetParams) => {
+    dndItemMap.set(item.node, item);
   }
 
   // 提供拖拽和放置的组件
@@ -147,7 +139,7 @@ export default function BuildDndSortable() {
     } = props;
 
     const [dragType, setDragType] = useState<DragTypes>();
-    const [hoverItem, setHoverItem] = useState<DndTargetItemType>();
+    const [hoverItem, setHoverItem] = useState<TargetParams>();
     const { contextDragStart, contextDrag, contextDragEnd, contextHoverItem } = useContext(DndChildrenContext);
     const nodeRef = useRef<any>();
     const fixedRoot = useRef<any>();
@@ -165,9 +157,9 @@ export default function BuildDndSortable() {
       const currentNode = nodeRef.current;
       if (currentNode && currentPath && (onMoveIn || onMoveInEnd)) {
         subscribe({
-          area: currentNode,
+          node: currentNode,
           path: currentPath
-        }, AddEvent);
+        }, AddEvent, removeEvent);
       }
       return () => {
         unsubscribe(currentNode)
@@ -178,7 +170,7 @@ export default function BuildDndSortable() {
     useEffect(() => {
       const currentNode = nodeRef.current;
       if (currentPath !== undefined && currentNode !== null) {
-        setDndItemsMap(currentNode, { node: currentNode, path: currentPath });
+        setDndItemsMap({ node: currentNode, path: currentPath });
       }
     }, [currentPath]);
 
@@ -190,28 +182,26 @@ export default function BuildDndSortable() {
 
     // 区域移入触发事件
     const AddEvent: listenEvent['listener'] = (listenParams) => {
-      const { source, target } = listenParams;
-      const currentNode = nodeRef.current;
-      const sourceItem = source.item;
-      const sourceArea = source.area;
-      const targetItem = findNearest(listenParams);
-      const targetArea = target?.area;
-      if (!currentNode || !source || !currentPath || targetArea == sourceArea) return;
-      const result = {
-        ...listenParams,
-        target: {
-          ...listenParams.target,
-          item: targetItem,
-          path: currentPath
-        }
-      };
-      if (sourceItem?.dragType === DragTypes.draging) {
-        setHoverItem(targetItem);
-        onMoveIn && onMoveIn(result);
+      const { target, source } = listenParams;
+      const sourcePathArr = source?.path?.split('.');
+      sourcePathArr.pop()
+      const sourceParentPath = sourcePathArr.join('.');
+      const targetPathArr = target?.path?.split('.');
+      targetPathArr.pop()
+      const targetParentPath = targetPathArr.join('.');
+      // 父级区域不能相同
+      if (sourceParentPath == targetParentPath || sourceParentPath === target.path) return;
+      if (source?.dragType === DragTypes.draging) {
+        setHoverItem(target);
+        onMoveIn && onMoveIn(listenParams);
       } else {
         setHoverItem(undefined);
-        onMoveInEnd && onMoveInEnd(result);
+        onMoveInEnd && onMoveInEnd(listenParams);
       }
+    }
+
+    const removeEvent = (listenParams: ListenParams) => {
+
     }
 
     // 可以拖拽
@@ -319,11 +309,7 @@ export default function BuildDndSortable() {
       if (!data || !currentNode) return false;
       const sourceParams = {
         e: e,
-        source: {
-          area: currentNode,
-          item: data,
-          path: currentPath as string
-        }
+        source: data
       };
       onDragStart && onDragStart(sourceParams);
     }
@@ -334,25 +320,18 @@ export default function BuildDndSortable() {
       if (!data || !currentNode) return false;
       const sourceParams = {
         e,
-        source: {
-          area: currentNode,
-          item: data,
-          path: currentPath as string
-        }
+        source: data
       };
       const targetItem = findNearest(sourceParams);
+      const result = {
+        ...sourceParams,
+        target: targetItem
+      };
       // 触发
-      if (notifyEvent && currentNode !== targetItem?.node) {
-        const moveOtherArea = notifyEvent(sourceParams);
+      if (notifyEvent) {
+        const notifyResult = notifyEvent(result);
         // 同区域内拖拽
-        if (!moveOtherArea || moveOtherArea?.area === currentNode) {
-          const result = {
-            ...sourceParams,
-            target: {
-              ...sourceParams['source'],
-              item: targetItem
-            }
-          };
+        if (!notifyResult || notifyResult.node === currentNode) {
           onDrag && onDrag(result);
         }
       }
@@ -365,26 +344,19 @@ export default function BuildDndSortable() {
       if (!data || !currentNode) return false;
       const sourceParams = {
         e,
-        source: {
-          area: currentNode,
-          item: data,
-          path: currentPath as string
-        }
+        source: data
       };
       const targetItem = findNearest(sourceParams);
+      const result = {
+        ...sourceParams,
+        target: targetItem
+      };
       // 触发
-      if (notifyEvent && currentNode !== targetItem?.node) {
-        const moveOtherArea = notifyEvent(sourceParams);
+      if (notifyEvent) {
+        const notifyResult = notifyEvent(result);
         // 同区域内拖拽
-        if (!moveOtherArea || moveOtherArea?.area === currentNode) {
-          const result = {
-            ...sourceParams,
-            target: {
-              ...sourceParams['source'],
-              item: targetItem
-            }
-          };
-          onDragEnd && onDragEnd(result);
+        if (!notifyResult || notifyResult.node === currentNode) {
+          onDrag && onDrag(result);
         }
       }
       setHoverItem(undefined);
