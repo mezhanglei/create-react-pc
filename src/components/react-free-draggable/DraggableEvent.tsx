@@ -91,7 +91,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const disabledNode = this.findDisabledNode();
     const ownerDocument = this.findOwnerDocument();
     e.preventDefault();
-
+    e.stopImmediatePropagation();
     if (!ownerDocument) {
       throw new Error('<DraggableEvent> not mounted on DragStart!');
     }
@@ -217,8 +217,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
 
   render() {
-    return React.cloneElement(React.Children.only(this.props?.children), {
-      ref: this.props?.forwardedRef
+    const { children, className, style, forwardedRef, transform } = this.props;
+    return React.cloneElement(React.Children.only(children), {
+      className: className,
+      ref: forwardedRef,
+      style: { ...children.props.style, ...style },
+      transform: transform
     });
   }
 }

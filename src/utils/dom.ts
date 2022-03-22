@@ -419,6 +419,12 @@ export function canUseDom(): boolean {
   );
 }
 
+export const insertBefore = (newElement: HTMLElement, targetElement: HTMLElement) => {
+  const parentElement = targetElement.parentNode;
+  if (!parentElement) return;
+  (parentElement as HTMLElement).insertBefore(newElement, targetElement);
+}
+
 export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement) => {
   const parentElement = targetElement.parentNode;
   if (!parentElement) return;

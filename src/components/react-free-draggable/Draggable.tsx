@@ -121,7 +121,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   }
 
   onDragStart: EventHandler = (e, data) => {
-    e.stopImmediatePropagation();
     this.dragType = DragTypes.dragStart;
     const node = data?.node;
     const parent = this.getLocationParent();
@@ -263,16 +262,19 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       y: dragData?.translateY
     };
 
-    // React.Children.only限制只能传递一个child
     return (
-      <DraggableEvent ref={forwardedRef} {...DraggableEventProps} onDragStart={this.onDragStart} onDrag={this.onDrag} onDragStop={this.onDragStop}>
-        {React.cloneElement(React.Children.only(children), {
-          className: cls,
-          style: mergeObject({ ...children.props.style, ...style }, {
-            transform: !isSVG && getTranslation(currentPosition, positionOffset, 'px')
-          }),
-          transform: isSVG ? getTranslation(currentPosition, positionOffset, '') : (transform ?? (children.props?.transform || "")),
+      <DraggableEvent
+        ref={forwardedRef}
+        {...DraggableEventProps}
+        style={mergeObject({ ...children.props.style, ...style }, {
+          transform: !isSVG && getTranslation(currentPosition, positionOffset, 'px')
         })}
+        className={cls}
+        transform={isSVG ? getTranslation(currentPosition, positionOffset, '') : (transform ?? (children.props?.transform || ""))}
+        onDragStart={this.onDragStart}
+        onDrag={this.onDrag}
+        onDragStop={this.onDragStop}>
+        {children}
       </DraggableEvent>
     );
   }

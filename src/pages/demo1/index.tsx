@@ -82,16 +82,16 @@ const Demo1: React.FC<any> = (props) => {
   const onHover: DragMoveHandle = (params) => {
     const { source, target } = params;
     console.log(params, '同区域');
-    // if (!source || !target) return;
-    // const preIndex = getLastIndex(source.path);
-    // const nextIndex = getLastIndex(target.path);
-    // const parentPath = getParentPath(source.path);
-    // let parent = parentPath ? getItem(parentPath, data) : data;
-    // if (preIndex !== undefined && nextIndex !== undefined) {
-    //   parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
-    //   const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
-    //   setData(newData);
-    // }
+    if (!source || !target) return;
+    const preIndex = getLastIndex(source.path);
+    const nextIndex = getLastIndex(target.path);
+    const parentPath = getParentPath(source.path);
+    let parent = parentPath ? getItem(parentPath, data) : data;
+    if (preIndex !== undefined && nextIndex !== undefined) {
+      parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
+      const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
+      setData(newData);
+    }
   };
 
   const onAddEnd: DragMoveHandle = (params) => {

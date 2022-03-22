@@ -62,6 +62,9 @@ export interface BoundsInterface {
 // DraggableEvent的props的类型
 export interface DraggableEventProps {
   children?: any;
+  className?: string;
+  style?: CSSProperties;
+  transform?: string;
   onDragStart?: EventHandler; // 拖拽开始事件
   onDrag?: EventHandler; // 拖拽进行事件
   onDragStop?: EventHandler; // 拖拽结束事件
