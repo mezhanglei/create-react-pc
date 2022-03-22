@@ -11,7 +11,6 @@ import {
   STYLE_ITEM
 } from './constants';
 import { ALIGNMENT, DIRECTION } from "./types";
-import ReactDOM from 'react-dom';
 import { isObjectEqual } from '@/utils/object';
 
 /**
@@ -230,7 +229,7 @@ class VirtualList extends React.Component<VirtualListProps, ListState> {
   };
 
   findDOMNode() {
-    return this.wrap || ReactDOM.findDOMNode(this);
+    return this.wrap;
   }
 
   scrollTo = (value: number) => {

@@ -28,6 +28,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   lastStyle?: LastStyle;
   direction?: string;
   dragType?: ResizeDragTypes;
+  isUninstall?: boolean;
   constructor(props: DragResizeProps) {
     super(props);
     this.state = {
@@ -94,6 +95,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   }
 
   componentWillUnmount() {
+    this.isUninstall = true;
     const node = this.findDOMNode();
     removeEvent(node, dragEventFor.start, this.onResizeStart);
     removeEvent(node, dragEventFor.move, this.mouseOver);
@@ -297,22 +299,25 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     if (!dragType || !nowStyle || !this.lastStyle) return;
     this.dragType = ResizeDragTypes.resizeEnd;
     const element = this.findDOMNode();
-
+    this.removeEvents();
     const beforeEndStyle = {
       ...nowStyle,
       node: element,
       dir: this.direction as string
     }
-    // 如果props值改变，则设置props值
-    const widthChanged = this.props.width !== undefined && this.props.width !== beforeEndStyle?.width;
-    const heightChanged = this.props.height !== undefined && this.props?.height !== beforeEndStyle?.height;
-    if (widthChanged || heightChanged) {
-      this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, this.props?.width, this.props?.height);
-    } else if (this.props.fixed) {
-      this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, undefined, undefined)
-    }
+    // 回调函数之后再设置state
     this.props.onResizeEnd && this.props.onResizeEnd(e, beforeEndStyle);
-    this.removeEvents();
+    // 注意判断卸载状态
+    if (!this.isUninstall) {
+      // 如果props值改变，则设置props值
+      const widthChanged = this.props.width !== undefined && this.props.width !== beforeEndStyle?.width;
+      const heightChanged = this.props.height !== undefined && this.props?.height !== beforeEndStyle?.height;
+      if (widthChanged || heightChanged) {
+        this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, this.props?.width, this.props?.height);
+      } else if (this.props.fixed) {
+        this.setStyle({ width: this.lastStyle?.width, height: this.lastStyle?.height }, undefined, undefined)
+      }
+    }
   }
 
   render() {

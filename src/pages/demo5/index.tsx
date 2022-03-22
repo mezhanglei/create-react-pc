@@ -42,6 +42,8 @@ class demo5 extends React.Component {
             label: "name1",
             component: 'input',
             required: true,
+            readOnly: true,
+            render: '普通显示选项',
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
@@ -50,6 +52,8 @@ class demo5 extends React.Component {
           name8: {
             label: "name1",
             component: 'input',
+            readOnly: true,
+            render: '普通显示选项',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,

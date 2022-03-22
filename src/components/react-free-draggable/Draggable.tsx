@@ -23,6 +23,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   slackY: number;
   dragType?: DragTypes;
   lastDragData: DragData | {};
+  isUninstall?: boolean;
   constructor(props: DraggableProps) {
     super(props);
     this.slackX = 0;
@@ -50,6 +51,10 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     this.initX = initXY?.x;
     this.initY = initXY?.y;
     this.setDragdata(this.state.dragData, this.props?.x, this.props?.y);
+  }
+
+  componentWillUnmount() {
+    this.isUninstall = true;
   }
 
   // 非拖拽元素设置translate，根据输入的x，y位置转换为translate距离
@@ -213,21 +218,24 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     const { onDragStop } = this.props;
     if (!dragType || !dragData) return;
     this.dragType = DragTypes.dragEnd;
-
+    this.slackX = 0;
+    this.slackY = 0;
     const beforeEndDragData = {
       ...dragData
     }
-    // 根据props值设置translate
-    const xChanged = this.props.x !== undefined && this.props.x !== beforeEndDragData?.x;
-    const yChanged = this.props.y !== undefined && this.props?.y !== beforeEndDragData?.y;
-    if (xChanged || yChanged) {
-      this.setDragdata(this.lastDragData, this.props?.x, this.props?.y);
-    } else if (this.props.fixed) {
-      this.setDragdata(this.lastDragData, undefined, undefined)
-    }
+    // 回调函数先执行然后再重置状态
     onDragStop && onDragStop(e, beforeEndDragData as DragEventData);
-    this.slackX = 0;
-    this.slackY = 0;
+    // 注意是否已经组件卸载
+    if (!this.isUninstall) {
+      // 根据props值设置translate
+      const xChanged = this.props.x !== undefined && this.props.x !== beforeEndDragData?.x;
+      const yChanged = this.props.y !== undefined && this.props?.y !== beforeEndDragData?.y;
+      if (xChanged || yChanged) {
+        this.setDragdata(this.lastDragData, this.props?.x, this.props?.y);
+      } else if (this.props.fixed) {
+        this.setDragdata(this.lastDragData, undefined, undefined)
+      }
+    }
   };
 
   canDragX = () => {
