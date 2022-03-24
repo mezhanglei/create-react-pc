@@ -1,8 +1,8 @@
 import React from 'react';
-import { matchParent, addEvent, removeEvent, getEventPosition, findElement } from "@/utils/dom";
+import { matchParent, addEvent, removeEvent, getEventPosition, findElement, setStyle, getClientXY } from "@/utils/dom";
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
-import { DraggableEventProps, EventData, EventType } from "./utils/types";
+import { DragAxis, DragAxisCode, DraggableEventProps, EventData, EventType } from "./utils/types";
 import ReactDOM from 'react-dom';
 
 // Simple abstraction for dragging events names.
@@ -28,12 +28,20 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
   eventData: EventData | undefined;
   child: any;
+  cloneLayer: any;
+  initPos: { left: number, top: number } | undefined
   constructor(props: DraggableEventProps) {
     super(props);
     this.dragging = false;
     this.eventData = undefined;
     this.state = {
     };
+  }
+
+  static defaultProps = {
+    axis: DragAxisCode,
+    scale: 1,
+    showLayer: true
   }
 
   componentDidMount() {
@@ -81,8 +89,72 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
   // 获取定位父元素, 涉及的位置相对于该父元素
   getLocationParent = () => {
-    const parent = findElement(this.props?.locationParent) || document.body || document.documentElement;
+    const ownerDocument = this.findOwnerDocument();
+    const parent = findElement(this.props?.locationParent) || ownerDocument.body || ownerDocument.documentElement;
     return parent;
+  }
+
+  initLayerNode = () => {
+    const { showLayer, layerStyle } = this.props;
+    if (!showLayer) return;
+    const node = this.findDOMNode();
+    const ownerDocument = this.findOwnerDocument();
+    const cloneLayer = node.cloneNode(true);
+    this.cloneLayer = cloneLayer;
+    const clientXY = getClientXY(node);
+    if (cloneLayer && clientXY) {
+      setStyle({
+        left: clientXY?.x + 'px',
+        top: clientXY?.y + 'px',
+        position: 'fixed',
+        zIndex: 999,
+        transition: '',
+        opacity: 0.6,
+        margin: 0,
+        ...layerStyle
+      }, cloneLayer)
+      this.initPos = {
+        left: clientXY?.x,
+        top: clientXY?.y
+      }
+    }
+    ownerDocument.body.appendChild(cloneLayer)
+  }
+
+  setLayerNode = (delta: { deltaX: number, deltaY: number }) => {
+    const { showLayer } = this.props;
+    const { deltaX, deltaY } = delta;
+    if (!showLayer) return;
+    if (this.initPos) {
+      const newLeft = this.initPos?.left + deltaX;
+      const newTop = this.initPos?.top + deltaY;
+      setStyle({
+        left: newLeft + 'px',
+        top: newTop + 'px'
+      }, this.cloneLayer)
+      this.initPos = {
+        left: newLeft,
+        top: newTop
+      }
+    }
+  }
+
+  removeLayerNode = () => {
+    const { showLayer } = this.props;
+    if (!showLayer) return;
+    const node = this.findDOMNode();
+    const ownerDocument = this.findOwnerDocument();
+    const clientXY = getClientXY(node);
+    if (this.cloneLayer && clientXY) {
+      setStyle({
+        left: clientXY.x + 'px',
+        top: clientXY?.y + 'px',
+        transition: 'all 0.1s'
+      }, this.cloneLayer)
+    }
+    setTimeout(() => {
+      ownerDocument.body.removeChild(this.cloneLayer)
+    }, 100);
   }
 
   handleDragStart = (e: EventType) => {
@@ -127,6 +199,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       eventY: positionY
     };
 
+    this.initLayerNode()
     // 如果没有完成渲染或者返回false则禁止拖拽
     const shouldUpdate = this.props?.onDragStart && this.props?.onDragStart(e, this.eventData);
     if (shouldUpdate === false) return;
@@ -146,12 +219,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const parent = this.getLocationParent();
     const child = this.findDOMNode();
     const positionXY = getEventPosition(e, parent);
+    const { scale, grid } = this.props;
     if (!positionXY || !this.eventData) return;
     let positionX = positionXY?.x;
     let positionY = positionXY?.y;
     const { lastEventX, lastEventY } = this.eventData;
     // 拖拽跳跃,可设置多少幅度跳跃一次
-    const grid = this.props?.grid;
     if (Array.isArray(grid)) {
       let deltaX = positionX - lastEventX, deltaY = positionY - lastEventY;
       [deltaX, deltaY] = snapToGrid(grid, deltaX, deltaY);
@@ -162,14 +235,14 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     // 返回事件对象相关的位置信息
     this.eventData = {
       node: child,
-      deltaX: positionX - lastEventX,
-      deltaY: positionY - lastEventY,
+      deltaX: this.canDragX() ? (positionX - lastEventX) / scale : 0,
+      deltaY: this.canDragY() ? (positionY - lastEventY) / scale : 0,
       lastEventX: positionX,
       lastEventY: positionY,
       eventX: positionX,
       eventY: positionY
     }
-
+    this.setLayerNode({ deltaX: this.eventData?.deltaX, deltaY: this.eventData?.deltaY });
     // 返回false则禁止拖拽并初始化鼠标事件
     const shouldUpdate = this.props?.onDrag && this.props?.onDrag(e, this.eventData);
     if (shouldUpdate === false) {
@@ -183,6 +256,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       }
       return;
     }
+
   };
 
   handleDragStop = (e: EventType) => {
@@ -195,7 +269,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       deltaX: 0,
       deltaY: 0
     }
-
+    this.removeLayerNode()
     const shouldContinue = this.props?.onDragStop && this.props?.onDragStop(e, this.eventData);
     if (shouldContinue === false) return;
 
@@ -215,6 +289,15 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     }
   };
 
+  canDragX = () => {
+    const { axis } = this.props;
+    return axis?.includes(DragAxis.x);
+  };
+
+  canDragY = () => {
+    const { axis } = this.props;
+    return axis?.includes(DragAxis.y);
+  };
 
   render() {
     const { children, className, style, forwardedRef, transform } = this.props;

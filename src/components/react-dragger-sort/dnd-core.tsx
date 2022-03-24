@@ -81,10 +81,10 @@ export default function BuildDndSortable() {
           const sourceParentPath = getParentPath(source.path);
           const targetParentPath = getParentPath(target.path);
           const { onHover, onHoverEnd, onAdd, onAddEnd } = target;
-          // 排除拖拽元素的自身的父元素
-          if (target?.path === sourceParentPath) return;
           // 设置选中状态
           setActive(target, dndParams);
+          // 排除拖拽元素的自身的父元素
+          if (target?.path === sourceParentPath) return;
           // 同域碰撞
           if (sourceParentPath == targetParentPath && !isCanDrop(target)) {
             if (source?.dragType === DragTypes.draging) {
@@ -200,10 +200,7 @@ export default function BuildDndSortable() {
 
     const [dragType, setDragType] = useState<DragTypes>();
     const nodeRef = useRef<any>();
-    const fixedRoot = useRef<any>();
     const lastZIndexRef = useRef<string>('');
-    const lastX = useRef<number>(0);
-    const lastY = useRef<number>(0);
     const currentPath = path;
 
     useImperativeHandle(ref, () => ({
@@ -232,12 +229,6 @@ export default function BuildDndSortable() {
       }
     }, [currentPath]);
 
-    const setFixedStyle = (style: CSSProperties) => {
-      setStyle({
-        ...style,
-      }, fixedRoot.current);
-    }
-
     // 可以拖拽
     const canDrag = () => {
       return DragAxisCode?.some((axis) => dragAxis?.includes(axis)) && currentPath !== undefined;
@@ -251,18 +242,6 @@ export default function BuildDndSortable() {
       if (!data || !offsetWH || !clientXY || !currentPath) return false;
       setDragType(DragTypes.dragStart);
       lastZIndexRef.current = data?.node?.style?.zIndex;
-      lastX.current = clientXY?.x;
-      lastY.current = clientXY?.y;
-      setFixedStyle({
-        boxSizing: 'border-box',
-        height: `${offsetWH?.height}px`,
-        width: `${offsetWH?.width}px`,
-        left: `${lastX.current}px`,
-        top: `${lastY.current}px`,
-        pointerEvents: 'none',
-        position: 'fixed',
-        zIndex: 999
-      })
       const params = {
         node: node,
         dragType: DragTypes.dragStart,
@@ -284,20 +263,6 @@ export default function BuildDndSortable() {
       if (node?.style?.zIndex !== '999') {
         node.style.zIndex = '999';
       }
-      const nowX = lastX.current + data?.deltaX;
-      const nowY = lastY.current + data?.deltaY;
-      setFixedStyle({
-        boxSizing: 'border-box',
-        height: `${offsetWH?.height}px`,
-        width: `${offsetWH?.width}px`,
-        left: `${nowX}px`,
-        top: `${nowY}px`,
-        pointerEvents: 'none',
-        position: 'fixed',
-        zIndex: 999
-      })
-      lastX.current = nowX;
-      lastY.current = nowY;
       const sourceParams = {
         e,
         source: {
@@ -354,50 +319,27 @@ export default function BuildDndSortable() {
     const cls = classNames((children?.props?.className || ''), className);
     const isDrag = dragType && [DragTypes.draging, DragTypes.dragStart]?.includes(dragType);
 
-    const FixedDrag = (<Draggable
-      {...option}
-      ref={fixedRoot}
-      style={{ ...style, margin: 0 }}
-      className={cls}
-      axis={dragAxis}
-      disabled={!canDrag()}
-    >
-      <div>
-        {children}
-      </div>
-    </Draggable>
+    return (
+      <DraggableEvent
+        {...option}
+        ref={nodeRef}
+        className={cls}
+        axis={dragAxis}
+        disabled={!canDrag()}
+        onDragStart={onDragStartHandle}
+        onDrag={onDragHandle}
+        onDragStop={onDragStopHandle}
+        style={{
+          ...style,
+          // visibility: isDrag ? 'hidden' : '',
+          // transition: isDrag ? '' : 'all 0.2s'
+        }}
+      >
+        <div>
+          {children}
+        </div>
+      </DraggableEvent>
     );
-
-    const DragHidden = (<DraggableEvent
-      {...option}
-      ref={nodeRef}
-      className={cls}
-      axis={dragAxis}
-      disabled={!canDrag()}
-      onDragStart={onDragStartHandle}
-      onDrag={onDragHandle}
-      onDragStop={onDragStopHandle}
-      style={{
-        ...style,
-        // visibility: isDrag ? 'hidden' : '',
-        transition: isDrag ? '' : 'all 0.2s'
-      }}
-    >
-      <div>
-        {children}
-      </div>
-    </DraggableEvent>
-    );
-
-    // 可拖拽子元素
-    const DragItem = (
-      <>
-        {isDrag && FixedDrag}
-        {DragHidden}
-      </>
-    );
-
-    return DragItem;
   });
 
   return DndCore;

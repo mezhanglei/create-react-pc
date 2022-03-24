@@ -70,5 +70,13 @@ export const DemoRoute = [
     meta: {
       title: "拖拽",
     }
+  },
+  {
+    path: "/demo9",
+    component: loadable({ loader: () => import('@/pages/demo9/index') }),
+    // 自定义字段，额外的组件信息
+    meta: {
+      title: "拖拽",
+    }
   }
 ];

@@ -59,15 +59,14 @@ export interface BoundsInterface {
   boundsParent: string | HTMLElement;
 }
 
-// DraggableEvent的props的类型
-export interface DraggableEventProps {
+// 基础拖拽属性
+export interface BaseDragProps {
   children?: any;
   className?: string;
   style?: CSSProperties;
   transform?: string;
-  onDragStart?: EventHandler; // 拖拽开始事件
-  onDrag?: EventHandler; // 拖拽进行事件
-  onDragStop?: EventHandler; // 拖拽结束事件
+  axis?: string[]; // 限制拖拽的方向
+  scale: number; // 拖拽灵敏度
   allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
   disabled?: boolean; // 禁止拖拽
   handle?: string | HTMLElement; // 拖拽句柄的类选择器
@@ -78,29 +77,26 @@ export interface DraggableEventProps {
   forwardedRef?: any;
 }
 
+// DraggableEvent的props的类型
+export interface DraggableEventProps extends BaseDragProps {
+  onDragStart?: EventHandler; // 拖拽开始事件
+  onDrag?: EventHandler; // 拖拽进行事件
+  onDragStop?: EventHandler; // 拖拽结束事件
+  showLayer?: boolean; // 是否展示拖拽阴影浮层
+  layerStyle?: CSSProperties; // 浮层的样式
+}
+
 // Draggable的props的类型
-export interface DraggableProps {
+export interface DraggableProps extends BaseDragProps {
   children?: any;
-  allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
-  disabled?: boolean; // 禁止拖拽
-  handle?: string | HTMLElement; // 拖拽句柄的类选择器
-  disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
-  enableUserSelectHack?: boolean; // 允许添加选中样式
-  grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-  scale: number; // 拖拽灵敏度
   x?: number; // 在页面中的位置
   y?: number; // 在页面中的位置
-  axis?: string[]; // 限制拖拽的方向
   positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
   bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
-  className?: string;
-  style?: CSSProperties;
-  transform?: string;
+  fixed?: boolean // 当为非受控组件时，是否固定元素
   onDragStart?: DragHandler; // 拖拽开始事件
   onDrag?: DragHandler; // 拖拽进行事件
   onDragStop?: DragHandler; // 拖拽结束事件
-  forwardedRef?: any
-  fixed?: boolean // 当为非受控组件时，是否固定元素
 }
 
 // 拖拽类型

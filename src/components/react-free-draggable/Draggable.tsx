@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { getPositionByBounds, getTranslation } from './utils/dom';
-import { DraggableProps, EventHandler, DragAxisCode, DragAxis, DragTypes, DragData, BoundsInterface, DraggableState, DragEventData } from "./utils/types";
+import { DraggableProps, EventHandler, DragTypes, DragData, BoundsInterface, DraggableState, DragEventData } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
@@ -9,7 +9,7 @@ import { mergeObject } from '@/utils/object';
 import ReactDOM from 'react-dom';
 
 /**
- * 拖拽组件-回调处理(通过transform来控制元素拖拽, 不影响页面布局)
+ * 拖拽组件---transform移动组件
  */
 const wrapClassName = "react-draggable";
 const wrapClassNameDragging = "react-draggable-dragging";
@@ -34,10 +34,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       dragData: {},
       isSVG: false
     };
-  }
-  static defaultProps = {
-    axis: DragAxisCode,
-    scale: 1
   }
 
   componentDidMount() {
@@ -156,7 +152,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     if (!dragType || !data) return;
     this.dragType = DragTypes.draging;
     const { dragData } = this.state;
-    const { scale, bounds, onDrag } = this.props;
+    const { bounds, onDrag } = this.props;
     let x = dragData?.x ?? 0;
     const y = dragData?.y ?? 0;
     let translateX = dragData?.translateX ?? 0;
@@ -165,12 +161,12 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     // 拖拽生成的位置信息
     const newDragData = {
       node: data.node,
-      translateX: this.canDragX() ? (translateX + (data?.deltaX / scale)) : translateX,
-      translateY: this.canDragY() ? (translateY + (data.deltaY / scale)) : translateY,
+      translateX: translateX + data?.deltaX,
+      translateY: translateY + data.deltaY,
       deltaX: data?.deltaX,
       deltaY: data?.deltaY,
-      x: this.canDragX() ? (x + (data?.deltaX / scale)) : x,
-      y: this.canDragY() ? (y + (data.deltaY / scale)) : y
+      x: x + data?.deltaX,
+      y: y + data.deltaY
     };
 
     if (!newDragData) return;
@@ -237,16 +233,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     }
   };
 
-  canDragX = () => {
-    const { axis } = this.props;
-    return axis?.includes(DragAxis.x);
-  };
-
-  canDragY = () => {
-    const { axis } = this.props;
-    return axis?.includes(DragAxis.y);
-  };
-
   render() {
     const { children, className, style, positionOffset, transform, forwardedRef, ...DraggableEventProps } = this.props;
     const { isSVG, dragData } = this.state;
@@ -269,6 +255,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
         style={mergeObject({ ...children.props.style, ...style }, {
           transform: !isSVG && getTranslation(currentPosition, positionOffset, 'px')
         })}
+        showLayer={false}
         className={cls}
         transform={isSVG ? getTranslation(currentPosition, positionOffset, '') : (transform ?? (children.props?.transform || ""))}
         onDragStart={this.onDragStart}
