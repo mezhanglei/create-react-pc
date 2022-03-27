@@ -1,10 +1,12 @@
 import { arrayMove } from '@/utils/array';
+import { insertAfter, insertBefore } from '@/utils/dom';
 import React from 'react';
 import './index.less';
 
 class List extends React.Component {
   dragged: any;
   over: any;
+  cloneDragged: any;
   constructor(props) {
     super(props);
     this.dragged = null;
@@ -13,6 +15,7 @@ class List extends React.Component {
 
   dragStart(e: any) {
     this.dragged = e.currentTarget;
+    this.cloneDragged = this.dragged.cloneNode(true);
   }
 
   // 会触发
@@ -26,6 +29,8 @@ class List extends React.Component {
     over.classList.remove("move-up");
     over.classList.remove("move-down");
 
+    this.cloneDragged.parentNode.removeChild(this.cloneDragged);
+
     let data = this.state.data;
     const from = Number(dragged.dataset.id);
     const to = Number(over.dataset.id);
@@ -38,7 +43,7 @@ class List extends React.Component {
     const dragged = this.dragged;
     const oldOver = this.over;
     const newOver = e.target;
-    // dragged.style.display = "none";
+    dragged.style.display = "none";
     if (newOver.tagName !== "LI") {
       return;
     }
@@ -55,11 +60,17 @@ class List extends React.Component {
     } else if (dgIndex < newOverIndex) {
       animateName = "move-up";
     }
+
     // 如果需要交换则添加交换类名
     if (animateName && !newOver.classList.contains(animateName)) {
+      if (animateName == 'move-down') {
+        insertBefore(this.cloneDragged, newOver);
+      } else {
+        insertAfter(this.cloneDragged, newOver);
+      }
       newOver.classList.add(animateName);
+      this.over = newOver;
     }
-    this.over = newOver;
     // 经过新的项则清除旧的项的类
     if (oldOver && newOverIndex !== oldOverIndex) {
       oldOver.classList.remove("move-up", "move-down");

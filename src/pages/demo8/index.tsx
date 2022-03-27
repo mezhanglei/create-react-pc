@@ -150,7 +150,6 @@ class Demo8 extends Component {
                 minHeight: 100,
                 margin: 10,
               }}
-              // ref={c => c && (this.sortable = c.sortable)}
               options={{
                 ...sortableOption,
                 onUpdate: (evt) => (this.sortableUpdate(evt)),
@@ -198,7 +197,6 @@ class Demo8 extends Component {
         </Sortable>
         <h2>容器</h2>
         <Sortable
-          // ref={c => c && (this.sortable = c.sortable)}
           options={{
             ...sortableOption,
             onUpdate: (evt) => (this.sortableUpdate(evt)),
