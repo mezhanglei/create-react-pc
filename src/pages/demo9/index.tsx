@@ -15,16 +15,16 @@ class List extends React.Component {
     this.dragged = e.currentTarget;
   }
 
+  // 会触发
   dragEnd(e: any) {
+    // 拖拽元素
     const dragged = this.dragged;
-    const layer = e.target;
+    // 目标元素
     const over = this.over;
     // 重置样式
     dragged.style.display = 'block';
-    layer.classList.remove("drag-up");
-    layer.classList.remove("drag-down");
-    over.classList.remove("drag-up");
-    over.classList.remove("drag-down");
+    over.classList.remove("move-up");
+    over.classList.remove("move-down");
 
     let data = this.state.data;
     const from = Number(dragged.dataset.id);
@@ -43,22 +43,26 @@ class List extends React.Component {
       return;
     }
 
-    //判断当前拖拽target 和 经过的target 的 newIndex
-    const dgIndex = JSON.parse(dragged.dataset.item).newIndex;
-    const taIndex = JSON.parse(newOver.dataset.item).newIndex;
+    // 比较当前的项的序号
+    const dgIndex = Number(dragged.dataset.id);
+    const newOverIndex = Number(newOver.dataset.id);
+    const oldOverIndex = oldOver && Number(oldOver.dataset.id);
     let animateName;
-    if (dgIndex > taIndex) {
-      animateName = "drag-up";
-    } else if (dgIndex < taIndex) {
-      animateName = "drag-down";
+    // over目标向下移动
+    if (dgIndex > newOverIndex) {
+      animateName = "move-down";
+      // over目标向上移动
+    } else if (dgIndex < newOverIndex) {
+      animateName = "move-up";
     }
-    console.log(dgIndex,taIndex)
-    if (oldOver && newOver.dataset.item !== oldOver.dataset.item) {
-      oldOver.classList.remove("drag-up", "drag-down");
-    }
-    if (!newOver.classList.contains(animateName)) {
+    // 如果需要交换则添加交换类名
+    if (animateName && !newOver.classList.contains(animateName)) {
       newOver.classList.add(animateName);
-      this.over = newOver;
+    }
+    this.over = newOver;
+    // 经过新的项则清除旧的项的类
+    if (oldOver && newOverIndex !== oldOverIndex) {
+      oldOver.classList.remove("move-up", "move-down");
     }
   }
 
@@ -72,8 +76,7 @@ class List extends React.Component {
           draggable='true'
           onDragEnd={this.dragEnd.bind(this)}
           onDragStart={this.dragStart.bind(this)}
-          data-item={JSON.stringify(item)}
-        >{item.color}</li>
+        >{item.data}</li>
       );
     });
     return (
@@ -90,33 +93,27 @@ export default class App extends React.Component {
     this.state = {
       data: [
         {
-          newIndex: 1,
-          color: "red"
+          data: '1'
         },
 
         {
-          newIndex: 2,
-          color: "green"
+          data: '2'
         },
 
         {
-          newIndex: 3,
-          color: "blue"
+          data: '3'
         },
 
         {
-          newIndex: 4,
-          color: "yellow"
+          data: '4'
         },
 
         {
-          newIndex: 5,
-          color: "orange"
+          data: '5'
         },
 
         {
-          newIndex: 6,
-          color: "black"
+          data: '6'
         }
       ]
     }

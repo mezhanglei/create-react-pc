@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState, CSSProperties, useImperativeHandle } from 'react';
-import Draggable, { DragHandler as DragEventHandler, DragAxisCode, DraggableEvent } from "@/components/react-free-draggable";
+import { DragHandler as DragEventHandler, DragAxisCode, DraggableEvent } from "@/components/react-free-draggable";
 import { TargetParams, DragTypes, listenEvent, NotifyEventHandle, SourceParams, SubscribeHandle, ActiveTypes, DndCallBackProps, DndParams } from "./utils/types";
 import classNames from "classnames";
-import { getClientXY, getEventPosition, getInsidePosition, getOffsetWH, setStyle } from "@/utils/dom";
+import { getClientXY, getEventPosition, getInsidePosition, getOffsetWH } from "@/utils/dom";
 import { getMinDistance, isMoveIn } from './utils/dom';
-import { indexToArray } from '@/pages/demo8/utils';
 
 export type EventType = MouseEvent | TouchEvent;
 export interface DragMoveParams extends SourceParams {
@@ -40,7 +39,7 @@ export default function BuildDndSortable() {
 
   // 判断目标是否可以拖放
   const isCanDrop = (target: TargetParams) => {
-    return (target?.onAdd || target?.onAddEnd)
+    return target?.onAdd
   }
 
   // 获取目标路径的父元素路径
@@ -80,7 +79,6 @@ export default function BuildDndSortable() {
         if (target && sortableItem.node === target?.node) {
           const sourceParentPath = getParentPath(source.path);
           const targetParentPath = getParentPath(target.path);
-          const { onHover, onHoverEnd, onAdd, onAddEnd } = target;
           // 设置选中状态
           setActive(target, dndParams);
           // 排除拖拽元素的自身的父元素
@@ -88,25 +86,18 @@ export default function BuildDndSortable() {
           // 同域碰撞
           if (sourceParentPath == targetParentPath && !isCanDrop(target)) {
             if (source?.dragType === DragTypes.draging) {
-              onHover && onHover(dndParams);
+
             } else {
-              onHoverEnd && onHoverEnd(dndParams);
+              target?.onUpdate && target?.onUpdate(dndParams);
             }
             // 跨域碰撞
           } else {
-            if (isCanDrop(target)) {
-              if (source?.dragType === DragTypes.draging) {
-                onAdd && onAdd(dndParams);
-              } else {
-                onAddEnd && onAddEnd(dndParams);
-              }
+            // 跨域目标确认
+            const closest = isCanDrop(target) ? target : dndItemMap.get(targetParentPath);
+            if (source?.dragType === DragTypes.draging) {
+
             } else {
-              const parent = dndItemMap.get(targetParentPath);
-              if (source?.dragType === DragTypes.draging) {
-                parent?.onAdd && parent?.onAdd(dndParams);
-              } else {
-                parent?.onAddEnd && parent?.onAddEnd(dndParams);
-              }
+              closest?.onAdd && closest?.onAdd(dndParams);
             }
           }
 
@@ -146,14 +137,13 @@ export default function BuildDndSortable() {
   const findNearest = (params: SourceParams) => {
     let addChilds = [];
     let addDistance = [];
-    const { e, source } = params;
-    const sourceNode = source?.node;
+    const { e } = params;
     const eventXY = getEventPosition(e);
     for (let child of dndItemMap.values()) {
       const childNode = child?.node;
       const other = getInsidePosition(childNode);
-      // 碰撞目标(排除拖拽源和拖拽源的后代子元素)
-      if (other && eventXY && isMoveIn(eventXY, other) && sourceNode !== childNode && !sourceNode?.contains(childNode)) {
+      // 碰撞目标(排除拖拽源的后代子元素)
+      if (other && eventXY && isMoveIn(eventXY, other)) {
         addDistance.push(getMinDistance(eventXY, other));
         addChilds.push(child);
       }
@@ -188,10 +178,8 @@ export default function BuildDndSortable() {
       onDragStart,
       onDragMove,
       onDragMoveEnd,
-      onHover,
-      onHoverEnd,
+      onUpdate,
       onAdd,
-      onAddEnd,
       onChoose,
       onUnchoose,
       path,
@@ -214,10 +202,8 @@ export default function BuildDndSortable() {
         const data = {
           node: currentNode,
           path: currentPath,
+          onUpdate,
           onAdd,
-          onAddEnd,
-          onHover,
-          onHoverEnd,
           onChoose,
           onUnchoose
         }

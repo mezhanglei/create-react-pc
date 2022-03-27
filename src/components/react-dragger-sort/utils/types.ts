@@ -9,10 +9,8 @@ export enum DragTypes {
 };
 
 export interface DndCallBackProps {
-  onAdd?: DndHandle; // 跨容器拖拽进行中
-  onAddEnd?: DndHandle; // 跨容器拖拽结束
-  onHover?: DndHandle; // 同容器拖拽进行中
-  onHoverEnd?: DndHandle; // 同容器拖拽结束
+  onAdd?: DndHandle; // 跨容器拖拽后触发的函数
+  onUpdate?: DndHandle; // 同容器拖拽后触发的函数
   onChoose?: DndHandle; // 目标被拖拽触发的函数
   onUnchoose?: DndHandle; // 目标被拖拽目标移出触发的函数
 }

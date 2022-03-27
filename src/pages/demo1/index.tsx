@@ -79,22 +79,22 @@ const Demo1: React.FC<any> = (props) => {
     return pathArr?.join('.');
   }
 
-  const onHover: DragMoveHandle = (params) => {
+  const onUpdate: DragMoveHandle = (params) => {
     const { source, target } = params;
     console.log(params, '同区域');
-    if (!source || !target) return;
-    const preIndex = getLastIndex(source.path);
-    const nextIndex = getLastIndex(target.path);
-    const parentPath = getParentPath(source.path);
-    let parent = parentPath ? getItem(parentPath, data) : data;
-    if (preIndex !== undefined && nextIndex !== undefined) {
-      parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
-      const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
-      setData(newData);
-    }
+    // if (!source || !target) return;
+    // const preIndex = getLastIndex(source.path);
+    // const nextIndex = getLastIndex(target.path);
+    // const parentPath = getParentPath(source.path);
+    // let parent = parentPath ? getItem(parentPath, data) : data;
+    // if (preIndex !== undefined && nextIndex !== undefined) {
+    //   parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
+    //   const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
+    //   setData(newData);
+    // }
   };
 
-  const onAddEnd: DragMoveHandle = (params) => {
+  const onAdd: DragMoveHandle = (params) => {
     const { source, target } = params;
     console.log(params, '跨区域');
     if (!source || !target) return;
@@ -127,8 +127,8 @@ const Demo1: React.FC<any> = (props) => {
             <DndSortable
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               path={path}
-              onHover={onHover}
-              onAddEnd={onAddEnd}
+              onUpdate={onUpdate}
+              onAdd={onAdd}
             >
               {loopChildren(item.children, path)}
             </DndSortable>
@@ -136,7 +136,7 @@ const Demo1: React.FC<any> = (props) => {
         );
       }
       return (
-        <DndSortable onHover={onHover} style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label} path={path}>
+        <DndSortable onUpdate={onUpdate} style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label} path={path}>
           <div>
             {item.label}
           </div>
