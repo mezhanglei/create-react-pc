@@ -89,7 +89,7 @@ export function getTranslation(current: { x?: number, y?: number }, positionOffs
 // 返回目标元素被父元素限制的位置范围
 export function getBoundsInParent(node: HTMLElement, bounds: any) {
   // 限制父元素
-  const boundsParent = (findElement(bounds) || findElement(bounds?.boundsParent)) as HTMLElement;
+  const boundsParent = (findElement(bounds) || findElement(bounds?.element)) as HTMLElement;
 
   if (!isDom(node) || !isDom(boundsParent)) {
     return;
@@ -112,18 +112,18 @@ export function getBoundsInParent(node: HTMLElement, bounds: any) {
   // 当限制为元素选择器或元素时，位置限制该元素内部
   if (findElement(bounds)) {
     return {
-      left: 0,
-      right: xDiff + 0,
-      top: 0,
-      bottom: yDiff + 0
+      minX: 0,
+      maxX: xDiff + 0,
+      minY: 0,
+      maxY: yDiff + 0
     };
     // 当限制为某个元素内的某个范围，则计算该范围内的限制位置
   } else {
     return {
-      left: Math.max(0, bounds?.left || 0),
-      right: Math.min(xDiff, bounds?.right || 0),
-      top: Math.max(0, bounds?.top || 0),
-      bottom: Math.min(yDiff, bounds?.bottom || 0)
+      minX: Math.max(0, bounds?.left || 0),
+      maxX: Math.min(xDiff, xDiff - (bounds?.right || 0)),
+      minY: Math.max(0, bounds?.top || 0),
+      maxY: Math.min(yDiff, yDiff - (bounds?.bottom || 0))
     };
   }
 }
@@ -135,12 +135,12 @@ export function getPositionByBounds(node: HTMLElement, position: PositionInterfa
 
   let resultBounds = getBoundsInParent(node, bounds);
   if (!resultBounds) return position;
-  const { left, top, right, bottom } = resultBounds;
+  const { minX, minY, maxX, maxY } = resultBounds;
   let { x, y } = position;
-  if (isNumber(right)) x = Math.min(x, right);
-  if (isNumber(bottom)) y = Math.min(y, bottom);
-  if (isNumber(left)) x = Math.max(x, left);
-  if (isNumber(top)) y = Math.max(y, top);
+  if (isNumber(maxX)) x = Math.min(x, maxX);
+  if (isNumber(maxY)) y = Math.min(y, maxY);
+  if (isNumber(minX)) x = Math.max(x, minX);
+  if (isNumber(minY)) y = Math.max(y, minY);
 
   return { x, y };
 }

@@ -88,9 +88,9 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   };
 
   // 获取定位父元素, 涉及的位置相对于该父元素
-  getLocationParent = () => {
+  getEventBounds = () => {
     const ownerDocument = this.findOwnerDocument();
-    const parent = findElement(this.props?.locationParent) || ownerDocument.body || ownerDocument.documentElement;
+    const parent = findElement(this.props?.eventBounds) || ownerDocument.body || ownerDocument.documentElement;
     return parent;
   }
 
@@ -181,8 +181,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       return;
     }
 
-    // locationParent内的位置
-    const parent = this.getLocationParent();
+    // eventBounds内的位置
+    const parent = this.getEventBounds();
     const positionXY = getEventPosition(e, parent);
     if (!positionXY) return;
     const positionX = positionXY?.x;
@@ -215,8 +215,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   handleDrag = (e: EventType) => {
     if (!this.dragging) return;
     e.preventDefault();
-    // locationParent内的位置
-    const parent = this.getLocationParent();
+    // eventBounds内的位置
+    const parent = this.getEventBounds();
     const child = this.findDOMNode();
     const positionXY = getEventPosition(e, parent);
     const { scale, grid } = this.props;

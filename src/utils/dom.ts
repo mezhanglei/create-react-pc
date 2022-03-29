@@ -431,7 +431,7 @@ export const insertAfter = (newElement: HTMLElement, targetElement: HTMLElement)
   if ((parentElement as HTMLElement).lastChild == targetElement) {
     (parentElement as HTMLElement).appendChild(newElement);
   } else {
-    (parentElement as HTMLElement).insertBefore(newElement, targetElement.nextSibling);
+    (parentElement as HTMLElement).insertBefore(newElement, targetElement.nextElementSibling);
   }
 }
 
@@ -454,6 +454,29 @@ export const isBump = (move: BoundingRect, other: BoundingRect) => {
   let b2 = other?.bottom
 
   return !(r1 - l2 < 0 || b1 - t2 < 0 || r2 - l1 < 0 || b2 - t1 < 0)
+}
+
+export const getDirection = (e: MouseEvent | TouchEvent, ele: any) => {
+  const eventXY = getEventPosition(e, ele);
+  const offsetWH = getOffsetWH(ele);
+  if (!eventXY || !offsetWH) return '';
+  const { x, y } = eventXY;
+  const { width, height } = offsetWH;
+  const midX = width / 2;
+  const midY = height / 2;
+  let direction = [];
+
+  if (y > 0 && y < midY) {
+    direction.push('top');
+  } else if (y > midY && y < height) {
+    direction.push('bottom')
+  }
+  if (x > 0 && x < midX) {
+    direction.push('left')
+  } else if (x > midX && x < width) {
+    direction.push('right')
+  }
+  return direction;
 }
 
 /**

@@ -56,7 +56,7 @@ export interface BoundsInterface {
   right: number;
   top: number;
   bottom: number;
-  boundsParent: string | HTMLElement;
+  element: string | HTMLElement;
 }
 
 // 基础拖拽属性
@@ -73,7 +73,7 @@ export interface BaseDragProps {
   disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
   enableUserSelectHack?: boolean; // 允许添加选中样式
   grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-  locationParent?: string | HTMLElement; // 定位父元素, 设置之后拖拽过程的位置以父元素作为参考
+  eventBounds?: string | HTMLElement; // 定位父元素, 设置之后拖拽过程的位置以父元素作为参考
   forwardedRef?: any;
 }
 

@@ -83,6 +83,8 @@
     "worker-loader": "^3.0.8"
   },
   "dependencies": {
+    "@types/animejs": "^3.1.4",
+    "animejs": "^3.2.1",
     "antd": "^4.4.2",
     "axios": "^0.21.1",
     "classnames": "^2.2.6",
