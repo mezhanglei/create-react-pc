@@ -1,4 +1,4 @@
-import { css, getRect } from "@/utils/dom";
+import { css, getRect, isContains } from "@/utils/dom";
 
 // 选择器是否匹配
 export function matches(el: any, selector: string) {
@@ -40,4 +40,22 @@ export function getIndex(el: HTMLElement, excluded?: HTMLElement, selector?: str
     }
   }
   return index;
+}
+
+// 获取符合要求的子元素
+export function getChild(el: any, childNum: number) {
+  let currentChild = 0,
+    i = 0,
+    children = el.children;
+
+  while (i < children?.length) {
+    if (children[i].style.display !== 'none') {
+      if (currentChild === childNum) {
+        return children[i];
+      }
+      currentChild++;
+    }
+    i++;
+  }
+  return null;
 }

@@ -99,7 +99,7 @@ class List extends React.Component {
       const dgChangeIndex = this.dgChangeIndex as number;
       const draggedWH = getOffsetWH(cloneDragged)
       if (!draggedWH) return;
-      const draggedWidth = draggedWH?.width;
+      // const draggedWidth = draggedWH?.width;
       const draggedHeight = draggedWH?.height;
       const diffIndex = newOverIndex - dgChangeIndex;
       const diffY = diffIndex * draggedHeight;
