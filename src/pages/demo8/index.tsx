@@ -59,6 +59,10 @@ class Demo8 extends Component {
     };
   }
 
+  componentDidMount() {
+    
+  }
+
   // 拖拽的添加方法
   sortableAdd = (evt) => {
     // 组件名或路径
@@ -202,6 +206,7 @@ class Demo8 extends Component {
             onUpdate: (evt) => (this.sortableUpdate(evt)),
             onAdd: (evt) => (this.sortableAdd(evt)),
           }}
+          style={{display: 'inline-block', width: '500px', height: '500px', background: 'green'}}
           key={uniqueId()}
         >
           {loop(this.state.Data)}

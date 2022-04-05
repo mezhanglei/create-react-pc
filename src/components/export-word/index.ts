@@ -13,7 +13,7 @@ export interface ExportParams {
 }
 
 export async function exportWord(params: ExportParams) {
-  // 转换模板
+  // 转换模板(注意模板的路径需要改为静态路径，目前这个路径只能用来本地测试)
   PizzipUtils.getBinaryContent('/src/components/export-word/word-template.docx', async function (err, res) {
     if (err) {
       throw err;

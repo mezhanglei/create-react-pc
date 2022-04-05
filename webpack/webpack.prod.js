@@ -416,6 +416,12 @@ const webpackConfig = {
                 parallel: true,
                 // 启用文件缓存，缓存目录的默认路径：node_modules/.cache/terser-webpack-plugin。也可以手动设置路径
                 cache: true,
+                // 去掉console.log
+                terserOptions: {
+                    compress: {
+                        pure_funcs: ["console.log"]
+                    }
+                }
             })
         ],
     },

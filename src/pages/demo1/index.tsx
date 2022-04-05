@@ -158,7 +158,7 @@ const Demo1: React.FC<any> = (props) => {
         >
           <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>
             <Button className="handle" type="default">
-              拖拽元素v1
+              拖拽元素
             </Button>
           </div>
         </Draggable>

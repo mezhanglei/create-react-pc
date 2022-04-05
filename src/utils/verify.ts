@@ -139,7 +139,7 @@ export const isMobile = function (): boolean {
   });
 };
 
-// 判断是否为触摸屏设备
+// 判断是否为触摸事件
 export const isEventTouch = function (e: any): boolean {
   if ("touches" in e || "targetTouches" in e || "changedTouches" in e) {
     return true;

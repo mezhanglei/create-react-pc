@@ -1,4 +1,5 @@
-import React from 'react';
+import { setStyle } from '@/utils/dom';
+import React, { CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 
 /**
@@ -6,12 +7,17 @@ import ReactDOM from 'react-dom';
  * @param props 
  * @returns 
  */
-export const BodyPortal: React.FC = (props) => {
+export const BodyPortal: React.FC<{ style?: CSSProperties }> = (props) => {
   const elBox = React.useRef<HTMLDivElement>(document.createElement('div'));
 
   React.useEffect(() => {
     const portal = elBox.current;
-    (portal.style.position as React.CSSProperties['position']) = 'relative';
+    setStyle({
+      position: 'relative'
+    }, portal)
+    if (props?.style) {
+      setStyle(props?.style, portal);
+    }
     document.body.appendChild(portal);
     return () => {
       document.body.removeChild(portal);

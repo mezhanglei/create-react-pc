@@ -58,6 +58,17 @@ export function getAbsolute(ele: HTMLElement, parent: HTMLElement): { x: number,
   return pos;
 }
 
+// 获取当前的window
+export const getWindow = (node: any) => {
+  // if node is not the window object
+  if (node.toString() !== '[object Window]') {
+    // get the top-level document object of the node, or null if node is a document.
+    const { ownerDocument } = node;
+    // get the window object associated with the document, or null if none is available.
+    return ownerDocument ? ownerDocument.defaultView || window : window;
+  }
+};
+
 /**
  * 返回元素的视窗内的位置
  * @param el 
@@ -114,6 +125,7 @@ export function getTouchIdentifier(e: TouchEvent, identifier?: number): number {
  * @param y 纵轴坐标
  */
 export function setScroll(ele: HTMLElement, x: number, y: number): void {
+  const win = getWindow(ele);
   if ([document.documentElement, document.body].includes(ele)) {
     document.documentElement.scrollTop = y || 0;
     document.documentElement.scrollLeft = x || 0;
@@ -121,8 +133,8 @@ export function setScroll(ele: HTMLElement, x: number, y: number): void {
     if (ele) {
       ele.scrollTop = y || 0;
       ele.scrollLeft = x || 0;
-    } else if (window) {
-      window.scrollTo(x || 0, y || 0);
+    } else if (win) {
+      win.scrollTo(x || 0, y || 0);
     }
   }
 };
@@ -140,7 +152,7 @@ export function getScroll(el: HTMLElement): undefined | {
   }
   if ([document.documentElement, document.body].includes(el)) {
     const doc = el.ownerDocument; // 节点所在document对象
-    const win: any = doc.defaultView; // 包含document的window对象
+    const win: any = getWindow(doc); // 包含document的window对象
     const x = doc.documentElement.scrollLeft || win.pageXOffset || doc.body.scrollLeft;
     const y = doc.documentElement.scrollTop || win.pageYOffset || doc.body.scrollTop;
     return { x, y };
@@ -178,9 +190,10 @@ export function getClientWH(el: HTMLElement): undefined | {
   if (!isDom(el)) {
     return;
   }
+  const win = getWindow(el);
   if ([document.documentElement, document.body].includes(el)) {
-    const width = el.clientWidth || window.screen.availWidth;
-    const height = el.clientHeight || window.screen.availHeight;
+    const width = el.clientWidth || win.screen.availWidth;
+    const height = el.clientHeight || win.screen.availHeight;
     return { width, height };
   } else {
     const width = el.clientWidth;
@@ -198,8 +211,9 @@ export function getOffsetWH(el: HTMLElement): undefined | {
     return;
   }
   if ([document.documentElement, document.body].includes(el)) {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const win = getWindow(el);
+    const width = win.innerWidth;
+    const height = win.innerHeight;
     return { width, height };
   } else {
     const width = el.offsetWidth;
@@ -345,17 +359,17 @@ export function getInsideRange(el: HTMLElement, parent: HTMLElement): null | {
  * @param {*} style 样式对象
  * @param {*} node 目标元素
  */
-export function setStyle(style: any, node: HTMLElement = document.body || document.documentElement): CSSProperties {
-  const oldStyle: any = {};
+export function setStyle(style: CSSProperties, node: HTMLElement = document.body || document.documentElement): CSSProperties {
+  const oldStyle: CSSProperties = {};
 
   const styleKeys: string[] = Object.keys(style);
 
   styleKeys.forEach(key => {
-    oldStyle[key] = (node.style as any)[key];
+    oldStyle[key] = (node.style)[key];
   });
 
   styleKeys.forEach(key => {
-    (node.style as any)[key] = (style as any)[key];
+    (node.style)[key] = style[key];
   });
 
   return oldStyle;
@@ -478,6 +492,51 @@ export const getDirection = (e: MouseEvent | TouchEvent, ele: any) => {
   }
   return direction;
 }
+
+// 获取元素指定的属性值
+export function css(el: any, key?: string) {
+  const win = getWindow(el);
+  let elStyle;
+  if (win) {
+    elStyle = win.getComputedStyle(el);
+  } else {
+    elStyle = el.currentStyle;
+  }
+
+  return typeof key === 'string' ? elStyle[key] : elStyle;
+}
+
+// 获取当前元素的前面的兄弟元素
+export const prevAll = function (node: HTMLElement) {
+  const _parent = node.parentNode;
+  const children = _parent?.children || [];
+  const siblings = [];
+  for (let i = 0; i < children?.length; i++) {
+    const _childI = children[i];
+    if (_childI == node) {
+      break;
+    }
+    siblings.push(_childI);
+  }
+  return siblings;
+};
+
+// 获取当前元素之后的兄弟元素
+export const nextAll = function (node: HTMLElement) {
+  const _parent = node.parentNode;
+  const children = _parent?.children || [];
+  const siblings = [];
+  for (let i = children?.length - 1; i >= 0; i--) {
+    const _childI = children[i];
+    if (_childI == node) {
+      break;
+    }
+    siblings.unshift(_childI);
+  }
+  return siblings;
+
+}
+
 
 /**
  * 添加事件监听

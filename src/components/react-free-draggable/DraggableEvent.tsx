@@ -4,6 +4,7 @@ import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils
 import { isMobile, isEventTouch } from "@/utils/verify";
 import { DragAxis, DragAxisCode, DraggableEventProps, EventData, EventType } from "./utils/types";
 import ReactDOM from 'react-dom';
+import { MouseButton } from '@/utils/mouse';
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -168,8 +169,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       throw new Error('<DraggableEvent> not mounted on DragStart!');
     }
 
-    // pc端鼠标操作时允许非左键操作
-    if (!this.props?.allowAnyClick && !isEventTouch(e) && typeof (e as any).button === 'number' && (e as any).button !== 0) return;
+    // allowAnyClick为false禁止非左键
+    if (!this.props?.allowAnyClick && !isEventTouch(e) && typeof (e as any).button === 'number' && (e as any).button !== MouseButton.left) return;
     // 移动设备阻止默认行为
     if (e.type === 'touchstart') e.preventDefault();
 

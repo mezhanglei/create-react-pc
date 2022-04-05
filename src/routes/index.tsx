@@ -1,18 +1,19 @@
 import React, { ReactNode } from "react";
-import { HashRouter as Router, Route, Switch, Prompt, Redirect, RouteProps } from "react-router-dom";
-// import { BrowserRouter as Router, Route, Switch, Prompt, Redirect } from "react-router-dom";
+import { HashRouter as Router, Route, Switch, Redirect, RouteProps } from "react-router-dom";
+// import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { DemoRoute } from "./demo";
 import { DefaultRoutes } from "./default";
-import NotFound from "@/components/default/not-found";
 import { isLogin } from "@/core/common";
 import { LOGIN_ROUTE } from "@/constants/account/index";
-import TransitionRoute from "./transitionRoute";
-import { HashHistory, BrowserHistory } from "./history";
-import CustomPrompt from "@/components/prompt";
+import TransitionSwitch from '@/components/transition-switch';
 
 export interface MyRouteProps extends RouteProps {
     auth?: boolean; // 是否需要权限验证
     component: any; // 组件
+    animationConfig?: { // 组件切换的动画类
+        enter: string;
+        exit: string;
+    };
 }
 
 // 路由配置
@@ -28,7 +29,7 @@ export default function RouteComponent() {
 
     return (
         <Router basename={basename}>
-            <Switch>
+            <TransitionSwitch routes={routes}>
                 {routes.map((item: MyRouteProps, index) => {
                     return <Route
                         key={index}
@@ -38,18 +39,12 @@ export default function RouteComponent() {
                             if (!isLogin() && item.auth) {
                                 return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: props.location } }} />;
                             } else {
-                                return (
-                                    <React.Fragment>
-                                        <CustomPrompt isPrompt={true} />
-                                        <item.component key={item.path} {...props}></item.component>
-                                    </React.Fragment>
-                                );
+                                return <item.component key={item.path} {...props}></item.component>
                             }
                         }}
                     />;
                 })}
-            </Switch>
-            <TransitionRoute />
+            </TransitionSwitch>
         </Router>
     );
 }

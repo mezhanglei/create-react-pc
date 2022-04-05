@@ -18,17 +18,13 @@ export const DemoRoute = [
   {
     path: "/demo2",
     component: loadable({ loader: () => import('@/pages/demo2/index') }),
-    // 自定义字段，额外的组件信息
-    meta: {
-      title: "列表",
-    }
   },
   {
     path: "/demo3",
     component: loadable({ loader: () => import('@/pages/demo3/index') }),
-    // 自定义字段，额外的组件信息
-    meta: {
-      title: "拖拽布局",
+    animationConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
     }
   },
   {

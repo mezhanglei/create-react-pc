@@ -45,7 +45,7 @@ const demo2: React.FC<any> = (props) => {
     }
 
     return (
-        <>
+        <div>
             <div>外部容器滚动</div>
             <div className="cart-index">
                 <InfiniteScroll
@@ -134,7 +134,7 @@ const demo2: React.FC<any> = (props) => {
                     }
                 </InfiniteScroll>
             </div>
-        </>
+        </div>
     );
 
 }

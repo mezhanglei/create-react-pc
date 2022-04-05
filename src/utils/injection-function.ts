@@ -2,7 +2,7 @@
  * 函数的依赖注入
  * 使用方式：
  * 1. 使用injector.register收集或注册需要使用的依赖项
- * 2. const newFunc = injector.resolve方法给目标函数注入依赖项
+ * 2. const newFunc = injector.resolve方法给目标函数注入形参依赖项
  * 3. 执行newFunc函数代替原目标函数
  */
 

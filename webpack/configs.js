@@ -29,11 +29,11 @@ const htmlPages = path.join(srcPath, 'pages');
 // 版本信息
 // const versionInfo = versionShell.getBranchVersionInfo();
 // 资源访问的公共绝对路径, 并且访问路由会加上对应的路径字符串， 默认为/不能为空(格式如: /publicPath/)
-const defaultPath = process.env.NODE_ENV === "development" ? '/' : './v1/';
+const defaultPath = process.env.NODE_ENV === "development" ? '/' : './';
 const publicPath = defaultPath;
 // 公共配置(开发/生产均使用)
 const baseConfig = {
-    // 修改打包后目录中css文件中静态资源的引用的基础路径
+    // 修改打包后目录中css文件中静态资源的引用的相对路径
     assetsPath: '../',
     // 引用入口配置,在项目中可以直接以键开头代替绝对路径引入
     resolve: {
