@@ -6,21 +6,21 @@ export type ChildrenType = ReactElement<any, string | JSXElementConstructor<any>
 
 // 拖拽类型
 export enum ResizeDragTypes {
-  resizeStart = 'resizeStart',
-  resizing = 'resizing',
-  resizeEnd = 'resizeEnd'
+  ResizeStart = 'resizeStart',
+  Resizing = 'resizing',
+  ResizeEnd = 'resizeEnd'
 }
 
 export interface LastStyle {
-  width: number
-  height: number
-  eventX: number
-  eventY: number
+  width: number;
+  height: number;
+  eventX: number;
+  eventY: number;
 }
 
 export interface NowStyle {
-  width: number
-  height: number
+  width: number;
+  height: number;
 }
 export enum Direction {
   N = "n", // 上边
@@ -37,31 +37,32 @@ export const DirectionCode = Object.values(Direction);
 export interface DragResizeProps {
   className?: string;
   style?: CSSProperties;
-  axis: Direction[];
+  direction?: string[];
   forbid?: boolean;
   children: any;
-  offset: number; // 鼠标距离边的可以拖拽的偏差
+  offset?: number; // 鼠标距离边的可以拖拽的偏差
   width?: number; // 受控尺寸
   height?: number; // 受控尺寸
   onResizeStart?: EventHandler; // 拖拽开始事件
   onResizeMoving?: EventHandler; // 拖拽进行中事件
   onResizeEnd?: EventHandler; // 拖拽结束事件
   forwardedRef?: any; // 拖拽目标的ref
-  fixed?: boolean // 当为非受控组件时，是否固定宽高
+  fixed?: boolean; // 当为非受控组件时，是否固定宽高
+  childProps?: any
 }
 
 export interface DragResizeState {
-  dragging?: boolean
-  nowStyle?: NowStyle
+  dragging?: boolean;
+  nowStyle?: NowStyle;
   prevWidth?: number;
   prevHeight?: number;
 }
 
 export interface EventData {
-  node: HTMLElement
-  dir: string
-  width: number
-  height: number
+  node: HTMLElement;
+  dir: string;
+  width: number;
+  height: number;
 }
 
 // 事件处理函数的type

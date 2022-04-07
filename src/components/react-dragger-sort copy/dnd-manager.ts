@@ -8,7 +8,6 @@ export class DndManager<T extends Object = any> {
   subscriptions: listenEvent[]
   // 所有可拖拽的节点map
   dndItemMap: Map<string, TargetParams>
-  // 容器节点
   public constructor() {
     this.subscriptions = [];
     this.dndItemMap = new Map();
@@ -109,6 +108,36 @@ export class DndManager<T extends Object = any> {
       }
     }
     return result;
+  }
+
+  // 距离事件对象最近的目标
+  findNearest = (params: SourceParams) => {
+    let addChilds = [];
+    let addDistance = [];
+    const { e } = params;
+    const eventXY = getEventPosition(e);
+    const dndItemMap = this.dndItemMap;
+    for (let child of dndItemMap.values()) {
+      const childNode = child?.node;
+      const other = getInsidePosition(childNode);
+      // 碰撞目标(排除拖拽源的后代子元素)
+      if (other && eventXY && isMoveIn(eventXY, other)) {
+        addDistance.push(getMinDistance(eventXY, other));
+        addChilds.push(child);
+      }
+    }
+    let minNum = Number.MAX_VALUE;
+    let minChild;
+    for (let i = 0; i < addDistance.length; i++) {
+      if (addDistance[i] < minNum) {
+        minNum = addDistance[i];
+        minChild = addChilds[i];
+      } else if (addDistance[i] == minNum && minChild?.node?.contains(addChilds[i]?.node)) {
+        minNum = addDistance[i];
+        minChild = addChilds[i];
+      }
+    }
+    return minChild;
   }
 
   // 添加可拖拽子元素

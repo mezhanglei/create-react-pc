@@ -76,7 +76,7 @@ export default React.memo(TransitionSwitch);
 /**
  * 
  * 浮层弹窗动画组件
- * 使用方式: 传入路由组件，可以在指定组件上添加一个浮层路由组件
+ * 使用方式: 传入路由，访问该路由时可以通过浮层的方式覆盖在上一个路由组件上
  * 注意: 路由不能懒加载，否则第一次进入页面动画不生效
  */
 export function TransitionLayer(props: { children: any, routes: MyRouteProps[], style?: CSSProperties }) {

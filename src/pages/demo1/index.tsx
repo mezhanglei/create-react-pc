@@ -19,7 +19,7 @@ const Demo1: React.FC<any> = (props) => {
     { backgroundColor: 'green', children: [{ label: 11 }, { label: 12 }, { label: 13 }, { label: 14 }, { label: 15 }] }
   ]);
 
-  const onDrag = (e, data) => {
+  const onMove = (e, data) => {
     // setX(data?.x)
     // setY(data?.y)
   };
@@ -123,7 +123,7 @@ const Demo1: React.FC<any> = (props) => {
       const path = parent === undefined ? String(index) : `${parent}.${index}`;
       if (item.children) {
         return (
-          <div key={index}>
+          <div key={index} style={index === 1 ? {padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block'} : {}}>
             <DndSortable
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               path={path}
@@ -135,13 +135,7 @@ const Demo1: React.FC<any> = (props) => {
           </div>
         );
       }
-      return (
-        <DndSortable onUpdate={onUpdate} style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label} path={path}>
-          <div>
-            {item.label}
-          </div>
-        </DndSortable>
-      );
+      return (<div style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label}>{item.label}</div>);
     });
   };
 
@@ -153,7 +147,7 @@ const Demo1: React.FC<any> = (props) => {
           handle=".handle"
           x={x}
           y={y}
-          onDrag={onDrag}
+          onMove={onMove}
           scale={1}
         >
           <div style={{ display: "inline-block", width: '200px', background: 'blue' }}>

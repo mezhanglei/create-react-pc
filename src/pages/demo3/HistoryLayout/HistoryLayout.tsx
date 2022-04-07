@@ -76,12 +76,12 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
         }
     }
 
-    const onDragStart: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
+    const onStart: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
         lastLayoutItemRef.current = layoutItem;
-        props.onDragStart && props.onDragStart(layoutItem, oldLayout, newLayout)
+        props.onStart && props.onStart(layoutItem, oldLayout, newLayout)
     }
 
-    const onDragEnd: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
+    const onEnd: DragGridHandler = (layoutItem, oldLayout, newLayout) => {
         const { GridY, GridX, h, w } = lastLayoutItemRef.current || {};
         if (GridX === layoutItem.GridX && GridY === layoutItem.GridY && h === layoutItem.h && w === layoutItem.w) {
             return;
@@ -97,8 +97,8 @@ export const HistoryLayout = React.forwardRef<DragGridRef, DragGridProps>((props
             cacheLayoutArrRef.current?.push(cache);
             activeIndexRef.current = cacheLayoutArrRef.current?.length - 1;
         }
-        props.onDragEnd && props.onDragEnd(layoutItem, oldLayout, newLayout);
+        props.onEnd && props.onEnd(layoutItem, oldLayout, newLayout);
     }
 
-    return <DragGrid ref={dragRef} {...props} layout={layout || []} onDragStart={onDragStart} onResizeEnd={onDragEnd} onDragEnd={onDragEnd} />
+    return <DragGrid ref={dragRef} {...props} layout={layout || []} onStart={onStart} onResizeEnd={onEnd} onEnd={onEnd} />
 })

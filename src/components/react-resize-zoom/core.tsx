@@ -4,20 +4,19 @@ import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "./utils/do
 import { EventType, EventHandler, Direction, DragResizeProps, DragResizeState, DirectionCode, LastStyle, ResizeDragTypes, NowStyle } from "./type";
 import ReactDOM from 'react-dom';
 import { mergeObject } from '@/utils/object';
+import { getWindow } from '@/utils/dom';
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
   touch: {
     start: 'touchstart',
     move: 'touchmove',
-    stop: 'touchend',
-    cancel: 'touchcancel'
+    stop: 'touchend'
   },
   mouse: {
     start: 'mousedown',
     move: 'mousemove',
-    stop: 'mouseup',
-    cancel: 'dragover'
+    stop: 'mouseup'
   }
 };
 
@@ -36,7 +35,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   }
   static defaultProps = {
     offset: 10,
-    axis: DirectionCode
+    direction: DirectionCode
   }
 
   componentDidMount() {
@@ -119,7 +118,8 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   // 顶层document对象（有的环境可能删除了document顶层环境）
   findOwnerDocument = (): Document => {
     const node = this.findDOMNode();
-    const nodeStyle = node?.ownerDocument?.defaultView?.getComputedStyle(node);
+    const win = getWindow();
+    const nodeStyle = win?.getComputedStyle(node);
     if (nodeStyle?.display === "inline") {
       throw new Error("the style of `props.children` cannot is `inline`!");
     }
@@ -131,7 +131,6 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     const ownerDocument = this.findOwnerDocument();
     addEvent(ownerDocument, dragEventFor.move, this.onMove);
     addEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
-    addEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
   }
 
   // 移除事件
@@ -139,7 +138,6 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     const ownerDocument = this.findOwnerDocument();
     removeEvent(ownerDocument, dragEventFor.move, this.onMove);
     removeEvent(ownerDocument, dragEventFor.stop, this.onResizeEnd);
-    removeEvent(ownerDocument, dragEventFor.cancel, this.onResizeEnd);
   }
 
   // 返回鼠标所在的边
@@ -151,7 +149,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
       offset
     } = this.props;
     if (!position || !offsetWH) return '';
-    const distance = offset;
+    const distance = offset as number;
     const { x, y } = position;
     let direction = '';
     // 上边
@@ -167,34 +165,34 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   };
 
   // 返回鼠标的样式
-  getMouseCursor = (direction: string): string => {
+  getMouseCursor = (dir: string): string => {
     const {
-      axis
+      direction
     } = this.props;
-    if (([Direction.N, Direction.S] as string[])?.includes(direction) && (axis?.includes(Direction.N) || axis?.includes(Direction.S))) {
+    if (([Direction.N, Direction.S] as string[])?.includes(dir) && (direction?.includes(Direction.N) || direction?.includes(Direction.S))) {
       return 'row-resize';
-    } else if (([Direction.W, Direction.E] as string[])?.includes(direction) && (axis?.includes(Direction.W) || axis?.includes(Direction.E))) {
+    } else if (([Direction.W, Direction.E] as string[])?.includes(dir) && (direction?.includes(Direction.W) || direction?.includes(Direction.E))) {
       return 'col-resize';
-    } else if (direction?.length === 2 && (axis?.includes(Direction.NE) || axis?.includes(Direction.NW) || axis?.includes(Direction.SE) || axis?.includes(Direction.SW))) {
-      return direction + '-resize';
+    } else if (dir?.length === 2 && (direction?.includes(Direction.NE) || direction?.includes(Direction.NW) || direction?.includes(Direction.SE) || direction?.includes(Direction.SW))) {
+      return dir + '-resize';
     } else {
       return 'default';
     }
   }
 
-  canDragX = (dir: string): boolean => {
+  canDragX = (dir: string) => {
     const {
-      axis
+      direction
     } = this.props;
-    const canUse = axis?.includes(Direction.W) || axis?.includes(Direction.E) || axis?.includes(Direction.NW) || axis?.includes(Direction.NE) || axis?.includes(Direction.SW) || axis?.includes(Direction.SE);
+    const canUse = direction?.includes(Direction.W) || direction?.includes(Direction.E) || direction?.includes(Direction.NW) || direction?.includes(Direction.NE) || direction?.includes(Direction.SW) || direction?.includes(Direction.SE);
     return canUse && (dir.indexOf(Direction.W) > -1 || dir.indexOf(Direction.E) > -1);
   };
 
-  canDragY = (dir: string): boolean => {
+  canDragY = (dir: string) => {
     const {
-      axis
+      direction
     } = this.props;
-    const canUse = axis?.includes(Direction.S) || axis?.includes(Direction.N) || axis?.includes(Direction.NW) || axis?.includes(Direction.NE) || axis?.includes(Direction.SW) || axis?.includes(Direction.SE);
+    const canUse = direction?.includes(Direction.S) || direction?.includes(Direction.N) || direction?.includes(Direction.NW) || direction?.includes(Direction.NE) || direction?.includes(Direction.SW) || direction?.includes(Direction.SE);
     return canUse && (dir.indexOf(Direction.S) > -1 || dir.indexOf(Direction.N) > -1);
   };
 
@@ -206,20 +204,20 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
   }
 
   onResizeStart: EventHandler = (e) => {
+    e.preventDefault();
     const {
       forbid
     } = this.props;
     if (forbid) return;
-    this.dragType = ResizeDragTypes.resizeStart;
+    this.dragType = ResizeDragTypes.ResizeStart;
     const direction = this.getDirection(e);
-    this.direction = direction;
     const mouseCursor = this.getMouseCursor(direction);
     if (mouseCursor === 'default') {
       return;
     } else {
       e.stopImmediatePropagation();
     };
-    e.preventDefault();
+    this.direction = direction;
     const element = this.findDOMNode();
     const position = getEventPosition(e, element);
     const styleWH = this.getStyleWH();
@@ -257,7 +255,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     const element = this.findDOMNode();
     const dragType = this.dragType;
     if (!dragType) return;
-    this.dragType = ResizeDragTypes.resizing;
+    this.dragType = ResizeDragTypes.Resizing;
     const position = getEventPosition(e, element);
     const dir = this.direction;
     const lastEventX = this.lastStyle?.eventX;
@@ -293,11 +291,10 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
       forbid
     } = this.props;
     if (forbid) return;
-    e.preventDefault();
     const dragType = this.dragType;
     const { nowStyle } = this.state;
     if (!dragType || !nowStyle || !this.lastStyle) return;
-    this.dragType = ResizeDragTypes.resizeEnd;
+    this.dragType = ResizeDragTypes.ResizeEnd;
     const element = this.findDOMNode();
     this.removeEvents();
     const beforeEndStyle = {
@@ -325,7 +322,8 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
       children,
       forwardedRef,
       className,
-      style
+      style,
+      childProps
     } = this.props;
 
     const {
@@ -335,13 +333,14 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     return React.cloneElement(React.Children.only(children), {
       className: className ?? children.props?.className,
       ref: forwardedRef,
-      style: mergeObject({ ...children.props.style, ...style }, nowStyle)
+      style: mergeObject({ ...children.props.style, ...style }, nowStyle),
+      ...childProps
     });
   }
 }
 
-const wrapper = function (InnerComponent: any): any {
-  return React.forwardRef((props, ref) => {
+const wrapper = function (InnerComponent: typeof DragResize) {
+  return React.forwardRef((props: DragResizeProps, ref) => {
     return (
       <InnerComponent forwardedRef={ref} {...props} />
     )

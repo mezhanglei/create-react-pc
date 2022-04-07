@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
-import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, setStyle, getInsideRange, getRect } from '@/utils/dom';
+import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, css, getInsideRange, getRect } from '@/utils/dom';
 import { isMobile } from '@/utils/verify';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
@@ -69,11 +69,11 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
     const ownerDocument = findOwnerDocument();
     const parent = findParent();
     stickyRef.current = ownerDocument.createElement('div');
-    setStyle({
+    css(stickyRef.current, {
       opacity: 0,
       zIndex: -1,
       position: 'fixed'
-    }, stickyRef.current);
+    });
     parent?.appendChild(stickyRef.current);
     ReactDOM.render(FixedChild, stickyRef.current);
     return () => {

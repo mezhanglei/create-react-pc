@@ -42,13 +42,13 @@ export interface PositionType {
   y: number;
 }
 
-// 轴的类型
-export enum DragAxis {
-  x = 'x',
-  y = 'y'
+// 拖拽方位
+export enum DragDirection {
+  Vertical = 'vertical', // 竖直
+  Horizontal = 'horizontal' // 水平
 }
 
-export const DragAxisCode = Object.values(DragAxis);
+export const DragDirectionCode = Object.values(DragDirection);
 
 // 限制范围的类型
 export interface BoundsInterface {
@@ -65,23 +65,24 @@ export interface BaseDragProps {
   className?: string;
   style?: CSSProperties;
   transform?: string;
-  axis?: string[]; // 限制拖拽的方向
-  scale: number; // 拖拽灵敏度
+  direction?: string[]; // 限制拖拽的方向
+  scale?: number; // 拖拽灵敏度
   allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
   disabled?: boolean; // 禁止拖拽
   handle?: string | HTMLElement; // 拖拽句柄的类选择器
-  disabledNode?: string | HTMLElement; // 不允许拖拽的选择器
-  enableUserSelectHack?: boolean; // 允许添加选中样式
+  filter?: string | HTMLElement; // 不允许拖拽的选择器
+  enableUserSelectHack?: boolean; // 允许添加选中文本样式
   grid?: [number, number]; // 设置x,y方向的拖拽幅度，多少幅度移动一次目标
-  eventBounds?: string | HTMLElement; // 定位父元素, 设置之后拖拽过程的位置以父元素作为参考
+  eventBounds?: string | HTMLElement; // 限制事件对象的触发范围
   forwardedRef?: any;
+  childProps?: any;
 }
 
 // DraggableEvent的props的类型
 export interface DraggableEventProps extends BaseDragProps {
-  onDragStart?: EventHandler; // 拖拽开始事件
-  onDrag?: EventHandler; // 拖拽进行事件
-  onDragStop?: EventHandler; // 拖拽结束事件
+  onStart?: EventHandler; // 拖拽开始事件
+  onMove?: EventHandler; // 拖拽进行事件
+  onEnd?: EventHandler; // 拖拽结束事件
   showLayer?: boolean; // 是否展示拖拽阴影浮层
   layerStyle?: CSSProperties; // 浮层的样式
 }
@@ -93,25 +94,30 @@ export interface DraggableProps extends BaseDragProps {
   y?: number; // 在页面中的位置
   positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
   bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
-  fixed?: boolean // 当为非受控组件时，是否固定元素
-  onDragStart?: DragHandler; // 拖拽开始事件
-  onDrag?: DragHandler; // 拖拽进行事件
-  onDragStop?: DragHandler; // 拖拽结束事件
+  fixed?: boolean; // 当为非受控组件时，是否固定元素
+  onStart?: DragHandler; // 拖拽开始事件
+  onMove?: DragHandler; // 拖拽进行事件
+  onEnd?: DragHandler; // 拖拽结束事件
+  width?: number; // 受控尺寸
+  height?: number; // 受控尺寸
+  onResizeStart?: EventHandler; // 拖拽开始事件
+  onResizeMoving?: EventHandler; // 拖拽进行中事件
+  onResizeEnd?: EventHandler; // 拖拽结束事件
 }
 
 // 拖拽类型
 export enum DragTypes {
-  dragStart = 'dragStart',
-  draging = 'draging',
-  dragEnd = 'dragEnd'
+  Start = 'start',
+  Move = 'move',
+  End = 'end'
 }
 
 export interface DraggableState {
-  dragData: DragData
-  dragType?: DragTypes
-  isSVG: boolean
-  prevX?: number
-  prevY?: number
+  dragData: DragData;
+  dragType?: DragTypes;
+  isSVG: boolean;
+  prevX?: number;
+  prevY?: number;
 }
 
 // 事件处理函数的type
