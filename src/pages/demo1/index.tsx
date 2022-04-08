@@ -118,24 +118,27 @@ const Demo1: React.FC<any> = (props) => {
     // }
   };
 
-  const loopChildren = (arr: any[], parent?: string) => {
+  const loopChildren = (arr: any[]) => {
     return arr.map((item, index) => {
-      const path = parent === undefined ? String(index) : `${parent}.${index}`;
       if (item.children) {
         return (
-          <div key={index} style={index === 1 ? {padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block'} : {}}>
+          <div data-id={index} key={index} style={index === 1 ? { padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block' } : {}}>
             <DndSortable
+              options={{
+                group: 'group1',
+                childDrag: true,
+                allowDrop: true
+              }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
-              path={path}
               onUpdate={onUpdate}
               onAdd={onAdd}
             >
-              {loopChildren(item.children, path)}
+              {loopChildren(item.children)}
             </DndSortable>
           </div>
         );
       }
-      return (<div style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label}>{item.label}</div>);
+      return (<div data-id={index} style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label}>{item.label}</div>);
     });
   };
 
@@ -157,7 +160,13 @@ const Demo1: React.FC<any> = (props) => {
           </div>
         </Draggable>
       </div>
-      <DndSortable>
+      <DndSortable
+        onUpdate={onUpdate}
+        options={{
+          group: 'group1',
+          childDrag: true,
+          allowDrop: true
+        }}>
         {loopChildren(data)}
       </DndSortable>
       <Button onClick={onClick}>

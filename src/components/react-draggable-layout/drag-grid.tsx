@@ -28,12 +28,12 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
 
   const recalculateLayout = (layout: GridItemEvent[], cols: number) => {
     const corrected = correctLayout(layout, cols);
-    const compacted = compactLayout(
+    const newLayout = compactLayout(
       corrected,
       undefined
     );
 
-    setLayout(compacted);
+    setLayout(newLayout);
   };
 
   const onStart: GridItemEventHandle = (layoutItem, e) => {
@@ -49,31 +49,31 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
 
   const onMove: GridItemEventHandle = (layoutItem, e) => {
     setParentDragType(DragTypes.Move);
-    const newLayout = layoutCheck(
+    const reLayout = layoutCheck(
       layout,
       layoutItem
     );
-    const compacted = compactLayout(
-      newLayout,
+    const newLayout = compactLayout(
+      reLayout,
       layoutItem
     );
-    setLayout(compacted);
+    setLayout(newLayout);
     setPlaceholder((data) => ({
       ...data,
       GridX: layoutItem?.GridX,
       GridY: layoutItem?.GridY
     }));
-    props.onMove && props.onMove(layoutItem, layout, compacted, e)
+    props.onMove && props.onMove(layoutItem, layout, newLayout, e)
   };
 
   const onEnd: GridItemEventHandle = (layoutItem, e) => {
     setParentDragType(DragTypes.End);
-    const compacted = compactLayout(
+    const newLayout = compactLayout(
       layout,
       undefined
     );
-    setLayout(compacted);
-    props.onEnd && props.onEnd(layoutItem, layout, compacted, e);
+    setLayout(newLayout);
+    props.onEnd && props.onEnd(layoutItem, layout, newLayout, e);
   };
 
   const onResizeStart: GridItemEventHandle = (layoutItem, e) => {
@@ -88,27 +88,27 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
   };
 
   const onResizing: GridItemEventHandle = (layoutItem, e) => {
-    const newLayout = layoutCheck(
+    const reLayout = layoutCheck(
       layout,
       layoutItem
     );
-    const compacted = compactLayout(
-      newLayout,
+    const newLayout = compactLayout(
+      reLayout,
       layoutItem
     );
-    setLayout(compacted);
+    setLayout(newLayout);
     setPlaceholder((data) => ({ ...data, w: layoutItem?.w, h: layoutItem?.h }));
-    props.onResizing && props.onResizing(layoutItem, layout, compacted, e);
+    props.onResizing && props.onResizing(layoutItem, layout, newLayout, e);
   };
 
   const onResizeEnd: GridItemEventHandle = (layoutItem, e) => {
     setParentDragType(DragTypes.ResizeEnd);
-    const compacted = compactLayout(
+    const newLayout = compactLayout(
       layout,
       undefined
     );
-    setLayout(compacted);
-    props.onResizeEnd && props.onResizeEnd(layoutItem, layout, compacted, e);
+    setLayout(newLayout);
+    props.onResizeEnd && props.onResizeEnd(layoutItem, layout, newLayout, e);
   };
 
   const getGridItem = (child: any) => {
@@ -165,13 +165,13 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
   };
 
   const containerHeight = () => {
-    const nbRow = bottom(layout);
+    const rows = bottom(layout);
     const containerPaddingY = props.padding
-      ? props.padding[1]
-      : props.margin[1];
+      ? props.padding[0]
+      : props.margin[0];
     return (
-      nbRow * props.rowHeight +
-      (nbRow - 1) * props.margin[1] +
+      rows * props.rowHeight +
+      (rows - 1) * props.margin[0] +
       containerPaddingY * 2 +
       "px"
     );
@@ -185,6 +185,7 @@ const DragGrid = React.forwardRef<{}, DragGridProps>((props, ref) => {
       className={cls}
       style={{
         ...props?.style,
+        position: 'relative',
         width: props?.width || parentRef.current?.style?.width,
         height: containerHeight()
       }}

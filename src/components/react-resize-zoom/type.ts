@@ -22,7 +22,7 @@ export interface NowStyle {
   width: number;
   height: number;
 }
-export enum Direction {
+export enum ResizeDirection {
   N = "n", // 上边
   S = "s", // 下边
   W = "w", // 左边
@@ -32,7 +32,7 @@ export enum Direction {
   SE = "se", // 右下
   SW = "sw", // 左下
 }
-export const DirectionCode = Object.values(Direction);
+export const ResizeDirectionCode = Object.values(ResizeDirection);
 
 export interface DragResizeProps {
   className?: string;

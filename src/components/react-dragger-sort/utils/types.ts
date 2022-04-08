@@ -1,73 +1,77 @@
-import { DragDirection } from "@/components/react-free-draggable";
 import { CSSProperties } from "react";
 
 export type EventType = MouseEvent | TouchEvent;
 // 拖拽状态
 export enum DndStatus {
-  start = 'start',
-  move = 'move',
-  end = 'end'
+  Start = 'start',
+  Move = 'move',
+  End = 'end'
 };
 
-export interface DndCallBackProps {
-  onAdd?: DndHandle; // 跨容器拖拽后触发的函数
-  onUpdate?: DndHandle; // 同容器拖拽后触发的函数
-  onChoose?: DndHandle; // 目标被拖拽触发的函数
-  onUnchoose?: DndHandle; // 目标被拖拽目标移出触发的函数
+// 可排序项
+export interface SortableItem {
+  groupName: string; // 所在列表的组名
+  groupNode: HTMLElement; // 所在列表的dom
+  item: HTMLElement; // 拖拽元素
+  index: number; // 位置序号
+  draggableIndex?: number; // 拖拽前在列表中的序号(排除不可拖拽的元素)
+}
+
+// 拖拽项
+export interface DragItem extends SortableItem {
+  clone?: HTMLElement; // 拖拽元素的克隆体
+}
+
+// 可拖放的项
+export interface DropItem extends DndBaseProps {
+  groupName: string; // 所在列表的组名
+  groupNode: HTMLElement; // 所在列表的dom
 }
 
 // 拖拽源信息
-export interface FromParams {
-  e: EventType
-  from: {
-    group: HTMLElement // 所在列表
-    item: HTMLElement // 目标元素
-    clone: HTMLElement // 目标克隆出来的元素
-    index: number // 拖拽前在列表中的序号
-    draggableIndex: number // 拖拽前在列表中的序号(排除不可拖拽的元素)
-    status: DndStatus // 拖拽的过程状态
-  }
-}
-
-// 放置时的信息
-export interface ToParams extends DndCallBackProps {
-  group: HTMLElement // 所在列表
-  index: number // 拖拽后在列表中的序号
-  draggableIndex: number // 拖拽后在列表中的序号(排除不可拖拽的元素)
+export interface DragParams {
+  e: EventType;
+  drag: DragItem;
 }
 
 // 是否激活
 export enum ActiveTypes {
-  active = '0',
-  notActive = '1'
+  Active = '0',
+  NotActive = '1'
 }
+
 // 拖拽触发的函数的参数
-export interface DndParams extends FromParams {
-  to?: ToParams
+export interface DndParams extends DragParams {
+  drop?: SortableItem | DropItem
 }
-export interface DndProps extends DndCallBackProps {
-  children: any;
-  className?: string;
-  style?: CSSProperties;
-  onStart?: DndHandle;
-  onMove?: DndHandle;
-  onEnd?: DndHandle;
-  direction?: DragDirection[];
-  sort?: boolean // 是否允许排序
-  removeCloneOnHide?: boolean // 当元素没有显示时移除
+
+export interface DndBaseProps {
+  onStart?: DndHandle; // 拖拽开始触发的函数
+  onMove?: DndHandle; // 拖拽进行中触发的函数
+  onEnd?: DndHandle; // 拖拽结束函数
+  onAdd?: DndHandle; // 当前容器添加新元素触发的函数
+  onUpdate?: DndHandle; // 当前容器排序触发的函数
+  // 拖拽相关的配置
   options: {
-    group: string | HTMLElement;
-    allowDrag: boolean | (HTMLElement | string)[] // 允许拖拽或允许拖拽的子元素
-    allowDrop: boolean | (HTMLElement | string)[] // 允许拖放或允许拖放的子元素
-    mode?: 'clone'; // 拖拽不影响元素布局显示
+    group: string;
+    allowDrop: boolean; // 是否允许拖放新元素
+    childDrag: boolean | (HTMLElement | string)[]; // 子元素是否允许拖拽
+    sort?: boolean; // 是否允许排序
+    direction?: string[]; // 允许拖拽的轴向
+    sortSmallClass?: string; // 元素往序号小的排序时添加的class
+    sortBigClass?: string; // 元素往序号大的排序时添加的class
+    amimate?: { // 动画相关的配置
+
+    }
   }
 }
 
-// 被监听的事件类型
-export type listenEvent = { listener: (params: DndParams) => ToParams | void, sortableItem: ToParams };
-// 容器触发事件的类型
-export type NotifyEventHandle = (dndParams: DndParams) => ToParams | void;
-// 容器监听事件的类型
-export type SubscribeHandle = (sortableItem: ToParams) => void;
+// 拖拽容器组件的props
+export interface DndProps extends DndBaseProps {
+  children: any;
+  className?: string;
+  style?: CSSProperties;
+}
+
 // 拖拽触发的函数
 export type DndHandle = (params: DndParams) => void;

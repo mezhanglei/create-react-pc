@@ -1,9 +1,9 @@
 import React from "react";
 import { checkInContainer, checkWidthHeight } from './utils/dom';
-import ResizeZoom, { EventHandler as ResizeEventHandler } from "@/components/react-resize-zoom";
-import Draggable, { DragHandler as DragEventHandler } from "@/components/react-free-draggable";
+import ResizeZoom, { EventHandler as ResizeEventHandler, ResizeDirectionCode } from "@/components/react-resize-zoom";
+import Draggable, { DragHandler as DragEventHandler, DragDirectionCode } from "@/components/react-free-draggable";
 import classNames from "classnames";
-import { GridItemProps, DragTypes, DragDirectionCode } from './grid-item-types';
+import { GridItemProps, DragTypes } from './grid-item-types';
 
 export default class GridItem extends React.Component<GridItemProps, { dragType?: DragTypes }> {
   lastZindex: any;
@@ -23,7 +23,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     rowHeight: 30,
     w: 1,
     h: 1,
-    direction: DragDirectionCode
+    direction: [...DragDirectionCode, ...ResizeDirectionCode]
   }
 
   // 计算每列的宽度
@@ -172,7 +172,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
   // 可以调整尺寸
   canResize = () => {
     const { direction, forbid } = this.props;
-    const canUse = DragDirectionCode?.some((dir) => direction?.includes(dir));
+    const canUse = ResizeDirectionCode?.some((dir) => direction?.includes(dir));
     return !forbid && (!direction || canUse)
   }
 
@@ -195,6 +195,11 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
         onEnd={this.onEnd}
         x={x}
         y={y}
+        style={{
+          ...style,
+          position: 'absolute',
+          transition: isDrag || !this.canDrag() ? '' : 'all .2s ease-out'
+        }}
       >
         <ResizeZoom
           onResizeStart={this.onResizeStart}
@@ -204,16 +209,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
           width={wPx}
           height={hPx}
         >
-          {
-            React.cloneElement(React.Children.only(children), {
-              style: {
-                ...children.props.style,
-                ...style,
-                position: 'absolute',
-                transition: isDrag || !this.canDrag() ? '' : 'all .2s ease-out',
-              }
-            })
-          }
+          {children}
         </ResizeZoom>
       </Draggable>
     )

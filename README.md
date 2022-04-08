@@ -63,10 +63,10 @@ npm run csslint 检查css规范
     |   |-- base   // 基础原子标签样式和公共基础类
     |   |-- components // ui组件库的自定义样式(自定义组件和开源ui组件)
     |   |-- constants // 公共的less常量
+    |   |-- fonts // 字体文件
     |   |-- pages  // 页面业务相关的公共类
     |       |-- index.less
     |-- src
-    |   |-- api // 接口文件夹, 一个子文件代表一个功能模块
     |   |-- components // 全局要使用的组件必须要放在这里
     |   |-- constants // 项目所有的常量必须全部放在这里, 一个子文件代表一个功能模块，禁止在别处定义常量,分散不宜管理
     |   |-- core // 项目的业务代码都放在这里(公共的业务文件,兼容处理等等放在这里)
@@ -79,6 +79,7 @@ npm run csslint 检查css规范
     |   |   |-- index.js // 入口js文件
     |   |   |-- index.html // html模板
     |   |-- routes // 路由所在文件夹
+    |   |-- services // 接口所在文件夹
     |   |-- store    // redux仓库
     |   |-- utils   // js工具方法
     |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效

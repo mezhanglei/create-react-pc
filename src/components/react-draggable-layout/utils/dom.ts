@@ -108,12 +108,14 @@ export const sortLayout = (layout: GridItemEvent[]) => {
   });
 }
 
+// 获取整个布局多少行
 export function bottom(layout: GridItemEvent[]): number {
   let max = 0,
     bottomY;
   for (let i = 0, len = layout.length; i < len; i++) {
-    if (typeof layout[i].GridY === 'number' && typeof layout[i].h === 'number') {
-      bottomY = <number>layout[i].GridY + <number>layout[i].h;
+    const layoutItem = layout[i];
+    if (typeof layoutItem.GridY === 'number' && typeof layoutItem.h === 'number') {
+      bottomY = <number>layoutItem.GridY + <number>layoutItem.h;
       if (bottomY > max) max = bottomY;
     }
   }

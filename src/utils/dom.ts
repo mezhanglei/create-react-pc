@@ -65,6 +65,12 @@ export const getWindow = (el?: any) => {
   return ownerDocument ? (ownerDocument.defaultView || window) : window;
 };
 
+// 获取当前的document
+export const getOwnerDocument = (el?: any) => {
+  const ownerDocument = el?.ownerDocument || document?.ownerDocument;
+  return ownerDocument;
+};
+
 /**
  * 返回元素的视窗内的位置
  * @param el 
@@ -487,6 +493,7 @@ export const isBump = (move: BoundingRect, other: BoundingRect) => {
   return !(r1 - l2 < 0 || b1 - t2 < 0 || r2 - l1 < 0 || b2 - t1 < 0)
 }
 
+// 事件对象的在元素的方位
 export const getDirection = (e: MouseEvent | TouchEvent, ele: any) => {
   const eventXY = getEventPosition(e, ele);
   const offsetWH = getOffsetWH(ele);
