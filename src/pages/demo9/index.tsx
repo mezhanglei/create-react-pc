@@ -52,8 +52,8 @@ class List extends React.Component {
     const over = this.over;
 
     let data = this.state.data;
-    const from = getChildrenIndex(dragged, cloneDragged);
-    const to = getChildrenIndex(cloneDragged, dragged);
+    const from = getChildrenIndex(dragged, [cloneDragged]);
+    const to = getChildrenIndex(cloneDragged, [dragged]);
     if (typeof from === 'number' && typeof to === 'number') {
       data = arrayMove(data, from, to);
       this.setState({ data: data });
@@ -86,9 +86,9 @@ class List extends React.Component {
     const newOverPreRect = newOver.getBoundingClientRect();
     const draggedPreRect = cloneDragged.getBoundingClientRect();
     // 位置切换
-    const draggedIndex = getChildrenIndex(cloneDragged, dragged);
-    const newOverIndex = getChildrenIndex(newOver, dragged);
-    const oldOverIndex = getChildrenIndex(oldOver, dragged);
+    const draggedIndex = getChildrenIndex(cloneDragged, [dragged]);
+    const newOverIndex = getChildrenIndex(newOver, [dragged]);
+    const oldOverIndex = getChildrenIndex(oldOver, [dragged]);
     if (draggedIndex < newOverIndex) {
       insertAfter(cloneDragged, newOver);
       newOver.classList.add(OverClass.pre);

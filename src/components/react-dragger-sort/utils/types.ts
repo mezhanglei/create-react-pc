@@ -1,31 +1,24 @@
 import { CSSProperties } from "react";
 
 export type EventType = MouseEvent | TouchEvent;
-// 拖拽状态
-export enum DndStatus {
-  Start = 'start',
-  Move = 'move',
-  End = 'end'
-};
 
-// 可排序项
-export interface SortableItem {
+// 拖拽区域信息
+export interface DndSortable {
   groupName: string; // 所在列表的组名
   groupNode: HTMLElement; // 所在列表的dom
-  item: HTMLElement; // 拖拽元素
+  props: DndBaseProps; // 所在区域的props
+}
+
+// 可排序项
+export interface SortableItem extends DndSortable {
+  item: HTMLElement & { animated?: boolean }; // 拖拽元素
   index: number; // 位置序号
-  draggableIndex?: number; // 拖拽前在列表中的序号(排除不可拖拽的元素)
+  draggableIndex?: number; // 位置序号(排除不可拖拽的元素)
 }
 
 // 拖拽项
 export interface DragItem extends SortableItem {
   clone?: HTMLElement; // 拖拽元素的克隆体
-}
-
-// 可拖放的项
-export interface DropItem extends DndBaseProps {
-  groupName: string; // 所在列表的组名
-  groupNode: HTMLElement; // 所在列表的dom
 }
 
 // 拖拽源信息
@@ -42,7 +35,7 @@ export enum ActiveTypes {
 
 // 拖拽触发的函数的参数
 export interface DndParams extends DragParams {
-  drop?: SortableItem | DropItem
+  drop?: SortableItem | DndSortable
 }
 
 export interface DndBaseProps {
@@ -54,9 +47,11 @@ export interface DndBaseProps {
   // 拖拽相关的配置
   options: {
     group: string;
+    handle?: string; // 拖拽句柄
+    filter?: string; // 过滤句柄的选择器
     allowDrop: boolean; // 是否允许拖放新元素
+    allowSort?: boolean; // 是否可以动态插入排序
     childDrag: boolean | (HTMLElement | string)[]; // 子元素是否允许拖拽
-    sort?: boolean; // 是否允许排序
     direction?: string[]; // 允许拖拽的轴向
     sortSmallClass?: string; // 元素往序号小的排序时添加的class
     sortBigClass?: string; // 元素往序号大的排序时添加的class

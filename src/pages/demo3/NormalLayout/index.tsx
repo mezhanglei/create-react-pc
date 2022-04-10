@@ -10,7 +10,7 @@ const fakeData = () => {
   return Words.map((item, index) => {
     if (index % 4 === 0) Y++;
 
-    return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 3, uniqueKey: index + '' }
+    return { ...item, GridX: index % 4 * 4, GridY: Y * 4, w: 4, h: 3, uniqueKey: index + '', handle: '.ss' }
   })
 }
 
@@ -23,6 +23,7 @@ export const Card: (any: any) => any = React.forwardRef(({ item, style }, ref) =
       style={{ ...style, background: '#fff' }}
     >
       <div
+        className='ss'
         style={{ padding: 5, textAlign: 'center', color: '#595959' }}
       >
         <span>title</span>

@@ -127,7 +127,7 @@ const Demo1: React.FC<any> = (props) => {
               options={{
                 group: 'group1',
                 childDrag: true,
-                allowDrop: true
+                allowDrop: false
               }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               onUpdate={onUpdate}
@@ -165,7 +165,8 @@ const Demo1: React.FC<any> = (props) => {
         options={{
           group: 'group1',
           childDrag: true,
-          allowDrop: true
+          allowDrop: false,
+          allowSort: false
         }}>
         {loopChildren(data)}
       </DndSortable>

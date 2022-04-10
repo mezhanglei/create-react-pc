@@ -1,12 +1,12 @@
-import { ActiveTypes, DragItem, DropItem } from "./utils/types";
+import { ActiveTypes, SortableItem, DndSortable } from "./utils/types";
 
 // 管理拖拽的类
 export class DndManager<T extends Object = any> {
 
   // 可拖拽的节点集合
-  dragItemMap: Map<HTMLElement, DragItem>
+  dragItemMap: Map<HTMLElement, SortableItem>
   // 可拖放的节点集合
-  dropItemMap: Map<HTMLElement, DropItem>
+  dropItemMap: Map<HTMLElement, DndSortable>
   // 容器节点
   public constructor() {
     this.dragItemMap = new Map();
@@ -14,12 +14,12 @@ export class DndManager<T extends Object = any> {
   }
 
   // 添加可拖拽项
-  setDragItemsMap = (data: DragItem) => {
+  setDragItemsMap = (data: SortableItem) => {
     this.dragItemMap.set(data.item, data);
   }
 
   // 添加可拖放项
-  setDropItemsMap = (data: DropItem) => {
+  setDropItemsMap = (data: DndSortable) => {
     this.dropItemMap.set(data?.groupNode, data);
   }
 

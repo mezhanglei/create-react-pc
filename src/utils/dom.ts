@@ -7,10 +7,10 @@ import { getPrefixStyle } from "./cssPrefix";
  * 接收类名或节点，返回节点
  * @param target 目标参数
  */
-export const findElement = (target: any): null | HTMLElement => {
+export const findElement = (target: any, parent: any = document): null | HTMLElement => {
   let result = null;
   if (typeof target === "string") {
-    result = document.querySelector(target);
+    result = parent.querySelector(target);
   } else if (isDom(target)) {
     result = target;
   }
@@ -114,13 +114,16 @@ export function matches(el: any, selector: string) {
 }
 
 // 根据选择器返回在父元素内的序号
-export function getChildrenIndex(el: any, excluded?: HTMLElement, selector?: string) {
+export function getChildrenIndex(el: any, excluded?: Array<string | HTMLElement>, include?: Array<string | HTMLElement>) {
   const children = el?.parentNode?.children;
   if (!children) return -1;
   let index = 0;
   for (let i = 0; i < children?.length; i++) {
     const node = children[i] as HTMLElement;
-    if ((!selector || matches(node, selector)) && node !== excluded) {
+    if (
+      (!include || include?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)) &&
+      !excluded?.some((item) => typeof item === 'string' ? matches(node, item) : node == item)
+    ) {
       // 如果等于就结束循环
       if (el !== node) {
         index++
