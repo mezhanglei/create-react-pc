@@ -47,6 +47,7 @@ export interface DndBaseProps {
   // 拖拽相关的配置
   options: {
     group: string;
+    index?: number;
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
     allowDrop: boolean; // 是否允许拖放新元素
@@ -55,9 +56,6 @@ export interface DndBaseProps {
     direction?: string[]; // 允许拖拽的轴向
     sortSmallClass?: string; // 元素往序号小的排序时添加的class
     sortBigClass?: string; // 元素往序号大的排序时添加的class
-    amimate?: { // 动画相关的配置
-
-    }
   }
 }
 

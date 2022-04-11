@@ -2,8 +2,7 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndSortable, { arrayMove } from "@/components/react-dragger-sort";
-import { DragMoveHandle } from '@/components/react-dragger-sort/utils/types';
+import DndSortable, { DndHandle, arrayMove } from "@/components/react-dragger-sort";
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
@@ -33,56 +32,9 @@ const Demo1: React.FC<any> = (props) => {
     });
   };
 
-  const indexToArray = (pathStr: string) => `${pathStr}`.split('.').map(n => +n);
-
-  const getLastIndex = (pathStr: string) => {
-    const array = indexToArray(pathStr);
-    return (array.pop()) as number;
-  };
-
-  const getItem = (path: string, data: any) => {
-    const arr = indexToArray(path);
-    // 嵌套节点删除
-    let parent: any;
-    if (arr.length === 0) {
-      return data;
-    }
-    arr.forEach((item, index) => {
-      if (index === 0) {
-        parent = data[item];
-      } else {
-        parent = parent?.children?.[item];
-      }
-    });
-    if (parent.children) return parent.children;
-    return parent;
-  };
-
-  const setInfo = (pathStr: string, treeData: any, data: any) => {
-    const arr = indexToArray(pathStr);
-    treeData = klona(treeData);
-    let parent: any;
-    arr.forEach((item, index) => {
-      if (index == 0) {
-        parent = treeData[item];
-      } else {
-        parent = parent.children[item];
-      }
-    });
-    parent.children = data;
-    return treeData;
-  };
-
-  const getParentPath = (pathStr: string) => {
-    const pathArr = pathStr?.split('.');
-    pathArr?.pop();
-    return pathArr?.join('.');
-  }
-
-  const onUpdate: DragMoveHandle = (params) => {
-    const { source, target } = params;
+  const onUpdate: DndHandle = (params) => {
+    const { drag, drop } = params;
     console.log(params, '同区域');
-    // if (!source || !target) return;
     // const preIndex = getLastIndex(source.path);
     // const nextIndex = getLastIndex(target.path);
     // const parentPath = getParentPath(source.path);
@@ -94,10 +46,9 @@ const Demo1: React.FC<any> = (props) => {
     // }
   };
 
-  const onAdd: DragMoveHandle = (params) => {
-    const { source, target } = params;
+  const onAdd: DndHandle = (params) => {
+    const { drag, drop } = params;
     console.log(params, '跨区域');
-    if (!source || !target) return;
     // const sourceData = getItem(source.path, data);
     // const targetData = getItem(target.path, data);
     // const sourceIndex = getLastIndex(source.path);
@@ -127,7 +78,8 @@ const Demo1: React.FC<any> = (props) => {
               options={{
                 group: 'group1',
                 childDrag: true,
-                allowDrop: false
+                allowDrop: true,
+                allowSort: true
               }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               onUpdate={onUpdate}
@@ -162,11 +114,12 @@ const Demo1: React.FC<any> = (props) => {
       </div>
       <DndSortable
         onUpdate={onUpdate}
+        onAdd={onAdd}
         options={{
           group: 'group1',
           childDrag: true,
-          allowDrop: false,
-          allowSort: false
+          allowDrop: true,
+          allowSort: true
         }}>
         {loopChildren(data)}
       </DndSortable>

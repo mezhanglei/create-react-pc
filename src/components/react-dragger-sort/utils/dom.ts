@@ -1,5 +1,6 @@
 
 import { css } from "@/utils/dom";
+import { CSSProperties } from "react";
 export interface BoundingRect {
   left: number;
   top: number;
@@ -24,7 +25,7 @@ export function getMinDistance(event: { x: number, y: number }, other: BoundingR
 
 
 // 触发动画
-export function _animate(target: any, prevRect: any) {
+export function _animate(target: any, prevRect: any, transitionStyle?: CSSProperties) {
   const ms = 160
   if (ms) {
     // 目标后面的位置
@@ -45,7 +46,8 @@ export function _animate(target: any, prevRect: any) {
     // 目标重回现在的位置
     css(target, {
       'transition': `all ${ms}ms`,
-      'transform': 'translate3d(0,0,0)'
+      'transform': 'translate3d(0,0,0)',
+      ...transitionStyle
     });
 
     clearTimeout(target.animated);
