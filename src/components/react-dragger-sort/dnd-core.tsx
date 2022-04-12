@@ -69,16 +69,19 @@ export default function BuildDndSortable() {
       const options = this.getOptions(restProps?.options);
       const childNodes = this.sortArea?.children;
       const childDrag = options?.childDrag instanceof Array ? options?.childDrag : [];
-
+      const parentPath = options?.groupPath;
       // 初始化可拖拽元素
       children?.map((child: any, index: number) => {
         const childNode = childNodes[index];
+        const path = parentPath !== undefined ? `${parentPath}.${index}` : `${index}`;
         dndManager.setDragItemsMap({
           groupName: options.group,
           groupNode: this.sortArea,
           props: restProps,
           item: childNode,
           index,
+          path: path,
+          groupPath: parentPath,
           draggableIndex: getChildrenIndex(childNode, undefined, childDrag)
         });
       });
@@ -86,6 +89,7 @@ export default function BuildDndSortable() {
       dndManager.setDropItemsMap({
         groupName: options.group,
         groupNode: this.sortArea,
+        groupPath: parentPath,
         props: restProps
       });
     }
@@ -154,26 +158,31 @@ export default function BuildDndSortable() {
       const dragItem = dndManager.getDragItem(dragged);
       const overSortableItem = over && dndManager.getDragItem(over); // 目标可排序元素
       const dropItem = over && dndManager.getDropItem(over); // 目标可添加元素
+      const dropIndex = getChildrenIndex(cloneDragged, [dragged]); // drop目标的位置index
       if (dragItem) {
-        const params = {
+        const dragParams = {
           e,
           drag: {
             ...dragItem,
             clone: cloneDragged
-          },
-          drop: overSortableItem ? overSortableItem : dropItem
+          }
         };
         // 是否为同域排序
-        if (overSortableItem?.groupNode === sortArea) {
-          this.props.onUpdate && this.props.onUpdate(params);
+        if (overSortableItem && overSortableItem?.groupNode === sortArea) {
+          this.props.onUpdate && this.props.onUpdate({ ...dragParams, drop: { ...overSortableItem, dropIndex } });
         } else {
           // 跨域排序
           if (dropItem || overSortableItem) {
             const dropArea = overSortableItem ? dndManager.getDropItem(overSortableItem?.groupNode) : dropItem;
-            dropArea?.props?.onAdd && dropArea.props?.onAdd(params);
+            if (dropArea) {
+              dropArea?.props?.onAdd && dropArea.props?.onAdd({
+                ...dragParams,
+                drop: { ...dropArea, ...overSortableItem, dropIndex }
+              });
+            }
           }
         }
-        this.props.onEnd && this.props.onEnd(params);
+        this.props.onEnd && this.props.onEnd({ ...dragParams, drop: overSortableItem ? overSortableItem : dropItem });
       }
       this.resetData();
     }
@@ -251,7 +260,6 @@ export default function BuildDndSortable() {
     // 跨域在指定位置插入新元素
     insertNewOver = (dropItem: DndSortable, sortableItem: SortableItem) => {
       const dropArea = dropItem?.groupNode;
-      const dragged = this.dragged;
       const cloneDragged = this.cloneDragged;
       const oldOver = this.over;
       if (sortableItem) {
@@ -270,9 +278,9 @@ export default function BuildDndSortable() {
           this.over = newOver;
         } else {
           // 位置序号
-          const draggedIndex = getChildrenIndex(cloneDragged, [dragged]);
-          const newOverIndex = getChildrenIndex(newOver, [dragged]);
-          const oldOverIndex = getChildrenIndex(oldOver, [dragged]);
+          const draggedIndex = getChildrenIndex(cloneDragged);
+          const newOverIndex = getChildrenIndex(newOver);
+          const oldOverIndex = getChildrenIndex(oldOver);
           // 新元素插入之后
           if (draggedIndex < newOverIndex) {
             options?.allowSort && insertAfter(cloneDragged, newOver);
@@ -346,7 +354,7 @@ export default function BuildDndSortable() {
             ...dragItem,
             clone: cloneDragged
           },
-          drop: overSortableItem ? overSortableItem : dropItem
+          over: overSortableItem ? overSortableItem : dropItem
         };
         this.props.onMove && this.props.onMove(params);
       }

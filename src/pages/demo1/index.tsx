@@ -2,12 +2,13 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndSortable, { DndHandle, arrayMove } from "@/components/react-dragger-sort";
+import DndSortable, { DndHandle, arrayMove, DndProps } from "@/components/react-dragger-sort";
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
 import { exportWord } from '@/components/export-word';
 import { klona } from 'klona';
+import { getItem, getParent, indexToArray, itemAdd, itemRemove, setChildren } from './utils';
 
 const Demo1: React.FC<any> = (props) => {
   const [x, setX] = useState<any>(10);
@@ -32,51 +33,86 @@ const Demo1: React.FC<any> = (props) => {
     });
   };
 
-  const onUpdate: DndHandle = (params) => {
+  const onUpdate: DndProps['onUpdate'] = (params) => {
     const { drag, drop } = params;
     console.log(params, '同区域');
-    // const preIndex = getLastIndex(source.path);
-    // const nextIndex = getLastIndex(target.path);
-    // const parentPath = getParentPath(source.path);
-    // let parent = parentPath ? getItem(parentPath, data) : data;
-    // if (preIndex !== undefined && nextIndex !== undefined) {
-    //   parent = arrayMove(parent, Number(preIndex), Number(nextIndex));
-    //   const newData = parentPath ? setInfo(parentPath, data, parent) : parent;
-    //   setData(newData);
-    // }
+    const dragIndex = drag?.index;
+    const dropIndex = drop?.dropIndex;
+    const parentPath = drag?.groupPath;
+    let parent = parentPath ? getItem(data, parentPath) : data;
+    parent = arrayMove(parent, Number(dragIndex), Number(dropIndex));
+    const newData = parentPath ? setChildren(data, parent, parentPath) : parent;
+    setData(newData);
   };
 
-  const onAdd: DndHandle = (params) => {
+  // 先计算内层的数据再计算外层的数据
+  const onAdd: DndProps['onAdd'] = (params) => {
     const { drag, drop } = params;
     console.log(params, '跨区域');
-    // const sourceData = getItem(source.path, data);
-    // const targetData = getItem(target.path, data);
-    // const sourceIndex = getLastIndex(source.path);
-    // let targetIndex;
-    // if (target.path && target.path === target.path) {
-    //   targetIndex = targetData?.length;
+    const cloneData = klona(data);
+    const dragIndexPathArr = indexToArray(drag.path);
+    const dropIndexPathArr = indexToArray(drop?.path);
+    // 当从内部往外部拖拽时
+    if (dragIndexPathArr?.length > dropIndexPathArr?.length) {
+      const dragItem = getItem(cloneData, drag.path);
+      let newTreeData = itemRemove(cloneData, drag.path);
+      // 添加拖拽元素
+      newTreeData = itemAdd(newTreeData, dragItem, drop.path);
+    } else {
+      const dragItem = getItem(cloneData, drag.path);
+      // 添加拖拽元素
+      let newData = itemAdd(cloneData, dragItem, drop.path);
+      // 删除元素 获得新数据
+      newData = itemRemove(newData, drag?.path);
+    }
+    // const dragParentPath = drag.groupPath;
+    // const dragParent = dragParentPath ? getItem(cloneData, dragParentPath) : cloneData;
+    // const dragItem = getItem(cloneData, drag.path);
+    // const dragIndex = drag?.index;
+    // // 拖放区域的路径
+    // const dropParentPath = drop.groupPath;
+    // const dropParent = dropParentPath ? getItem(cloneData, dropParentPath) : cloneData;
+    // const dropIndex = drop?.dropIndex;
+    // // 在drop中指定位置插入新的元素
+    // if (drop?.item) {
+    //   if (dragItem instanceof Array) {
+    //     dropParent?.splice(dropIndex, 0, { children: dragItem });
+    //   } else {
+    //     dropParent?.splice(dropIndex, 0, dragItem);
+    //   }
+    // } else { // 在drop末尾添加新的元素
+    //   if (dragItem instanceof Array) {
+    //     dropParent?.push({ children: dragItem });
+    //   } else {
+    //     dropParent?.push(dragItem);
+    //   }
+    // }
+    // let newData;
+    // // add
+    // if (dropParentPath) {
+    //   newData = setChildren(cloneData, dropParent, dropParentPath);
     // } else {
-    //   targetIndex = getLastIndex(target.path);
+    //   newData = dropParent;
     // }
-    // if (sourceIndex >= 0 && targetIndex >= 0) {
-    //   targetData?.splice(targetIndex + 1, 0, sourceData?.[sourceIndex]);
-    //   sourceData?.splice(sourceIndex, 1);
-    //   // add
-    //   const afterAdd = setInfo(target.path, data, targetData);
-    //   // remove
-    //   const newData = setInfo(source.path, afterAdd, sourceData);
-    //   setData(newData);
+    // remove
+    // if (dragParentPath) {
+    //   // newData = itemRemove(newData, drag?.path);
+    // } else {
+    //   // newData?.splice(dragIndex, 1);
     // }
+    // setData(newData);
   };
 
-  const loopChildren = (arr: any[]) => {
+  const loopChildren = (arr: any[], parent?: string) => {
     return arr.map((item, index) => {
+      const path = parent === undefined ? String(index) : `${parent}.${index}`;
       if (item.children) {
         return (
-          <div data-id={index} key={index} style={index === 1 ? { padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block' } : {}}>
+          <div key={index} style={index === 1 ? { padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block' } : {}}>
             <DndSortable
               options={{
                 group: 'group1',
+                groupPath: path,
                 childDrag: true,
                 allowDrop: true,
                 allowSort: true
@@ -85,12 +121,12 @@ const Demo1: React.FC<any> = (props) => {
               onUpdate={onUpdate}
               onAdd={onAdd}
             >
-              {loopChildren(item.children)}
+              {loopChildren(item.children, path)}
             </DndSortable>
           </div>
         );
       }
-      return (<div data-id={index} style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={item.label}>{item.label}</div>);
+      return (<div style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={path}>{item.label}</div>);
     });
   };
 

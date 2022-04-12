@@ -3,7 +3,7 @@ import { Rate, Input, DatePicker, Tag } from 'antd';
 import Sortable from 'react-sortablejs';
 import update from 'immutability-helper';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-import { indexToArray, getItem, setParentPathData, isPath, getCloneItem, itemRemove, itemAdd, uniqueId } from './utils';
+import { indexToArray, getItem, setChildren, isPath, getCloneItem, itemRemove, itemAdd, uniqueId } from './utils';
 import { klona } from 'klona';
 
 const GlobalComponent = {
@@ -60,7 +60,7 @@ class Demo8 extends Component {
   }
 
   componentDidMount() {
-    
+
   }
 
   // 拖拽的添加方法
@@ -78,21 +78,21 @@ class Demo8 extends Component {
       // 旧的路径index
       const oldIndex = nameOrIndex;
       // 克隆要移动的元素
-      const dragItem = getCloneItem(oldIndex, this.state.Data);
+      const dragItem = getCloneItem(this.state.Data, oldIndex);
       // 比较路径的上下位置 先执行靠下的数据 再执行考上数据
       if (indexToArray(oldIndex) > indexToArray(newPath)) {
         // 删除元素 获得新数据
-        let newTreeData = itemRemove(oldIndex, this.state.Data);
+        let newTreeData = itemRemove(this.state.Data, oldIndex);
         // 添加拖拽元素
-        newTreeData = itemAdd(newPath, newTreeData, dragItem)
+        newTreeData = itemAdd(newTreeData, dragItem, newPath)
         // 更新视图
         this.setState({ Data: newTreeData })
         return;
       }
       // 添加拖拽元素
-      let newData = itemAdd(newPath, this.state.Data, dragItem)
+      let newData = itemAdd(this.state.Data, dragItem, newPath)
       // 删除元素 获得新数据
-      newData = itemRemove(oldIndex, newData);
+      newData = itemRemove(newData, oldIndex);
 
       this.setState({ Data: newData })
       return;
@@ -110,7 +110,7 @@ class Demo8 extends Component {
       newItem.children = []
     }
 
-    let Data = itemAdd(newPath, this.state.Data, newItem)
+    let Data = itemAdd(this.state.Data, newItem, newPath)
 
     this.setState({ Data });
   }
@@ -124,7 +124,7 @@ class Demo8 extends Component {
     const parentPath = evt.path[1].getAttribute('data-id');
 
     // 父元素 根节点时直接调用data
-    let parent = parentPath ? getItem(parentPath, this.state.Data) : this.state.Data;
+    let parent = parentPath ? getItem(this.state.Data, parentPath) : this.state.Data;
     // 当前拖拽元素
     const dragItem = parent[oldIndex];
     // 更新后的父节点
@@ -133,7 +133,7 @@ class Demo8 extends Component {
     });
 
     // 最新的数据 根节点时直接调用data
-    const Data = parentPath ? setParentPathData(parentPath, this.state.Data, parent) : parent
+    const Data = parentPath ? setChildren(this.state.Data, parent, parentPath) : parent
     // 调用父组件更新方法
     this.setState({ Data });
   }
@@ -206,7 +206,7 @@ class Demo8 extends Component {
             onUpdate: (evt) => (this.sortableUpdate(evt)),
             onAdd: (evt) => (this.sortableAdd(evt)),
           }}
-          style={{display: 'inline-block', width: '500px', height: '500px', background: 'green'}}
+          style={{ display: 'inline-block', width: '500px', height: '500px', background: 'green' }}
           key={uniqueId()}
         >
           {loop(this.state.Data)}
