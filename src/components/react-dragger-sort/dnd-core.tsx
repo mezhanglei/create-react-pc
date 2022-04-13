@@ -75,21 +75,19 @@ export default function BuildDndSortable() {
         const childNode = childNodes[index];
         const path = parentPath !== undefined ? `${parentPath}.${index}` : `${index}`;
         dndManager.setDragItemsMap({
-          groupName: options.group,
+          groupPath: parentPath,
           groupNode: this.sortArea,
           props: restProps,
           item: childNode,
           index,
           path: path,
-          groupPath: parentPath,
           draggableIndex: getChildrenIndex(childNode, undefined, childDrag)
         });
       });
       // 初始化可拖放元素
       dndManager.setDropItemsMap({
-        groupName: options.group,
-        groupNode: this.sortArea,
         groupPath: parentPath,
+        groupNode: this.sortArea,
         props: restProps
       });
     }

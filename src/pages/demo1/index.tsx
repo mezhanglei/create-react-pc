@@ -8,7 +8,6 @@ import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
 import { exportWord } from '@/components/export-word';
 import { klona } from 'klona';
-import { getItem, getParent, indexToArray, itemAdd, itemRemove, setChildren } from './utils';
 
 const Demo1: React.FC<any> = (props) => {
   const [x, setX] = useState<any>(10);
@@ -33,6 +32,63 @@ const Demo1: React.FC<any> = (props) => {
     });
   };
 
+  const indexToArray = (pathStr?: string) => pathStr ? `${pathStr}`.split('.').map(n => +n) : [];
+
+  const setChildren = (treeData: any, data: any, pathStr?: string) => {
+    const pathArr = indexToArray(pathStr);
+    treeData = klona(treeData);
+    let parent: any;
+    pathArr.forEach((item, index) => {
+      if (index == 0) {
+        parent = treeData[item];
+      } else {
+        parent = parent.children[item];
+      }
+    });
+    parent.children = data;
+    return treeData;
+  };
+
+  // 添加新元素(有副作用，会改变传入的data数据)
+  const addDragItem = (data: any[], dragItem: any, dropIndex?: number, groupPath?: string) => {
+    const dropContainer = groupPath ? getItem(data, groupPath) : data;
+    const item = dragItem instanceof Array ? { children: dragItem } : dragItem;
+    // 插入
+    if (dropIndex) {
+      dropContainer?.splice(dropIndex, 0, item);
+      // 末尾添加
+    } else {
+      dropContainer?.push(item);
+    }
+    return data;
+  };
+
+  // 移除拖拽元素(有副作用, 会改变传入的data数据)
+  const removeDragItem = (data: any[], dragIndex: number, groupPath?: string) => {
+    const dragContainer = groupPath ? getItem(data, groupPath) : data;
+    dragContainer?.splice(dragIndex, 1);
+    return data;
+  };
+
+  // 根据路径获取指定路径的元素
+  const getItem = (data: any[], path?: string) => {
+    const pathArr = indexToArray(path);
+    // 嵌套节点删除
+    let temp: any;
+    if (pathArr.length === 0) {
+      return data;
+    }
+    pathArr.forEach((item, index) => {
+      if (index === 0) {
+        temp = data[item];
+      } else {
+        temp = temp?.children?.[item];
+      }
+    });
+    if (temp.children) return temp.children;
+    return temp;
+  };
+
   const onUpdate: DndProps['onUpdate'] = (params) => {
     const { drag, drop } = params;
     console.log(params, '同区域');
@@ -50,57 +106,31 @@ const Demo1: React.FC<any> = (props) => {
     const { drag, drop } = params;
     console.log(params, '跨区域');
     const cloneData = klona(data);
-    const dragIndexPathArr = indexToArray(drag.path);
-    const dropIndexPathArr = indexToArray(drop?.path);
-    // 当从内部往外部拖拽时
-    if (dragIndexPathArr?.length > dropIndexPathArr?.length) {
-      const dragItem = getItem(cloneData, drag.path);
-      let newTreeData = itemRemove(cloneData, drag.path);
-      // 添加拖拽元素
-      newTreeData = itemAdd(newTreeData, dragItem, drop.path);
+    // 拖拽区域信息
+    const dragGroupPath = drag.groupPath;
+    const dragIndex = drag?.index;
+    const dragPath = drag?.path;
+    const dragItem = getItem(cloneData, dragPath);
+    // 拖放区域的信息
+    const dropGroupPath = drop.groupPath;
+    const dropIndex = drop?.dropIndex;
+    const dropPath = drop?.path;
+    const dragIndexPathArr = indexToArray(dragPath);
+    const dropIndexPathArr = indexToArray(dropPath || dropGroupPath);
+    // 先计算内部的变动，再计算外部的变动
+    if (dragIndexPathArr?.length > dropIndexPathArr?.length || !dropIndexPathArr?.length) {
+      // 减去拖拽的元素
+      const removeData = removeDragItem(cloneData, dragIndex, dragGroupPath);
+      // 添加新元素
+      const addAfterData = addDragItem(removeData, dragItem, dropIndex, dropGroupPath);
+      setData(addAfterData);
     } else {
-      const dragItem = getItem(cloneData, drag.path);
-      // 添加拖拽元素
-      let newData = itemAdd(cloneData, dragItem, drop.path);
-      // 删除元素 获得新数据
-      newData = itemRemove(newData, drag?.path);
+      // 添加新元素
+      const addAfterData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
+      // 减去拖拽的元素
+      const newData = removeDragItem(addAfterData, dragIndex, dragGroupPath);
+      setData(newData);
     }
-    // const dragParentPath = drag.groupPath;
-    // const dragParent = dragParentPath ? getItem(cloneData, dragParentPath) : cloneData;
-    // const dragItem = getItem(cloneData, drag.path);
-    // const dragIndex = drag?.index;
-    // // 拖放区域的路径
-    // const dropParentPath = drop.groupPath;
-    // const dropParent = dropParentPath ? getItem(cloneData, dropParentPath) : cloneData;
-    // const dropIndex = drop?.dropIndex;
-    // // 在drop中指定位置插入新的元素
-    // if (drop?.item) {
-    //   if (dragItem instanceof Array) {
-    //     dropParent?.splice(dropIndex, 0, { children: dragItem });
-    //   } else {
-    //     dropParent?.splice(dropIndex, 0, dragItem);
-    //   }
-    // } else { // 在drop末尾添加新的元素
-    //   if (dragItem instanceof Array) {
-    //     dropParent?.push({ children: dragItem });
-    //   } else {
-    //     dropParent?.push(dragItem);
-    //   }
-    // }
-    // let newData;
-    // // add
-    // if (dropParentPath) {
-    //   newData = setChildren(cloneData, dropParent, dropParentPath);
-    // } else {
-    //   newData = dropParent;
-    // }
-    // remove
-    // if (dragParentPath) {
-    //   // newData = itemRemove(newData, drag?.path);
-    // } else {
-    //   // newData?.splice(dragIndex, 1);
-    // }
-    // setData(newData);
   };
 
   const loopChildren = (arr: any[], parent?: string) => {
@@ -108,10 +138,9 @@ const Demo1: React.FC<any> = (props) => {
       const path = parent === undefined ? String(index) : `${parent}.${index}`;
       if (item.children) {
         return (
-          <div key={index} style={index === 1 ? { padding: '10px 10px 20px 10px', background: 'gray', display: 'inline-block' } : {}}>
+          <div key={index}>
             <DndSortable
               options={{
-                group: 'group1',
                 groupPath: path,
                 childDrag: true,
                 allowDrop: true,
@@ -152,7 +181,6 @@ const Demo1: React.FC<any> = (props) => {
         onUpdate={onUpdate}
         onAdd={onAdd}
         options={{
-          group: 'group1',
           childDrag: true,
           allowDrop: true,
           allowSort: true

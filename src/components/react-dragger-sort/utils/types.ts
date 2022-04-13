@@ -4,9 +4,8 @@ export type EventType = MouseEvent | TouchEvent;
 
 // 拖拽区域信息
 export interface DndSortable {
-  groupName: string; // 所在列表的组名
+  groupPath?: string; // group位置路径，'.' 分割
   groupNode: HTMLElement; // 所在列表的dom
-  groupPath?: string; // 位置路径，'.' 分割
   props: DndBaseProps; // 所在区域的props
 }
 
@@ -66,7 +65,6 @@ export interface DndBaseProps {
   onUpdate?: DndHandle; // 当前容器排序触发的函数
   // 拖拽相关的配置
   options: {
-    group: string;
     groupPath?: string; // 拖拽容器的路径
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
