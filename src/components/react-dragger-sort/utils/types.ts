@@ -2,6 +2,13 @@ import { CSSProperties } from "react";
 
 export type EventType = MouseEvent | TouchEvent;
 
+export enum DropEffect {
+  None = 'none', // 不能把元素拖放至此
+  Move = 'move', // 移动到目标
+  Copy = 'copy', // 复制到目标
+  Link = 'link' // 目标打开拖动元素（拖动元素必须是链接并有URL）
+}
+
 // 拖拽区域信息
 export interface DndSortable {
   groupPath?: string; // group位置路径，'.' 分割

@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
-import { DndProps, DndSortable, SortableItem } from "./utils/types";
+import { DndProps, DndSortable, SortableItem, DropEffect } from "./utils/types";
 import classNames from "classnames";
 import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, matches } from "@/utils/dom";
 import { DndManager } from './dnd-manager';
@@ -156,7 +156,6 @@ export default function BuildDndSortable() {
       const dragItem = dndManager.getDragItem(dragged);
       const overSortableItem = over && dndManager.getDragItem(over); // 目标可排序元素
       const dropItem = over && dndManager.getDropItem(over); // 目标可添加元素
-      const dropIndex = getChildrenIndex(cloneDragged, [dragged]); // drop目标的位置index
       if (dragItem) {
         const dragParams = {
           e,
@@ -167,12 +166,16 @@ export default function BuildDndSortable() {
         };
         // 是否为同域排序
         if (overSortableItem && overSortableItem?.groupNode === sortArea) {
+          const options = this.getOptions(this.props.options);
+          const dropIndex = options?.allowSort ? getChildrenIndex(cloneDragged, [dragged]) : overSortableItem?.index; // drop目标的位置index
           this.props.onUpdate && this.props.onUpdate({ ...dragParams, drop: { ...overSortableItem, dropIndex } });
         } else {
           // 跨域排序
           if (dropItem || overSortableItem) {
             const dropArea = overSortableItem ? dndManager.getDropItem(overSortableItem?.groupNode) : dropItem;
             if (dropArea) {
+              const options = dropArea?.props?.options;
+              const dropIndex = options?.allowSort ? getChildrenIndex(cloneDragged, [dragged]) : overSortableItem?.index; // drop目标的位置index
               dropArea?.props?.onAdd && dropArea.props?.onAdd({
                 ...dragParams,
                 drop: { ...dropArea, ...overSortableItem, dropIndex }
@@ -231,7 +234,6 @@ export default function BuildDndSortable() {
       const cloneDragged = this.cloneDragged;
       const oldOver = this.over;
       const options = this.getOptions(this.props.options);
-
       // 只允许一个动画
       if (!newOver || newOver?.animated) return;
       // 更换之前的初始位置
@@ -269,7 +271,6 @@ export default function BuildDndSortable() {
         // 更换之前的初始位置
         const newOverPreRect = newOver.getBoundingClientRect();
         const draggedPreRect = cloneDragged.getBoundingClientRect();
-
         // 新元素插入之前
         if (!dropArea?.contains(cloneDragged)) {
           options?.allowSort && insertBefore(cloneDragged, newOver);
@@ -317,32 +318,47 @@ export default function BuildDndSortable() {
       const dragged = this.dragged;
       const cloneDragged = this.cloneDragged;
       const sortArea = this.sortArea;
-      // 添加拖拽副本
-      if (dragged?.style?.display !== "none" && !isContains(sortArea, cloneDragged)) {
-        insertAfter(cloneDragged, dragged);
+      const options = this.getOptions(this.props?.options);
+      if (options?.allowSort) {
+        // 添加拖拽副本
+        if (dragged?.style?.display !== "none" && !isContains(sortArea, cloneDragged)) {
+          insertAfter(cloneDragged, dragged);
+        }
+        dragged.style.display = "none";
       }
-      dragged.style.display = "none";
+
       // 触发事件的目标
       const target = e.target;
 
       const dragItem = dndManager.getDragItem(dragged);
-      // 触发目标排除拖拽的直接父元素，拖拽元素，拖拽元素的子元素
-      if (dragItem && target !== sortArea && !dragged.contains(target)) {
-
+      // 触发目标
+      if (dragItem) {
         const overSortableItem = dndManager.getDragItem(target);
         const dropItem = dndManager.getDropItem(target);
-        // 是否为同域排序
-        if (overSortableItem?.groupNode === sortArea) {
-          this.sortInSameArea(overSortableItem?.item);
+        // 拖放行为是否在同域内
+        if (overSortableItem?.groupNode === sortArea || target == sortArea || dragged.contains(target)) {
+          if (overSortableItem) {
+            this.sortInSameArea(overSortableItem?.item);
+          } else {
+            this.over = undefined;
+          }
         } else {
           // 插入容器指定位置
           if (overSortableItem) {
             const dropArea = dndManager.getDropItem(overSortableItem?.groupNode);
-            if (dropArea && this.getOptions(dropArea?.props?.options)?.allowDrop) {
+            if (dropArea) {
+              if (!this.getOptions(dropArea?.props?.options)?.allowDrop) {
+                e.dataTransfer.dropEffect = DropEffect.Move;
+                return;
+              }
               this.insertNewOver(dropArea, overSortableItem);
             }
             // 插入容器的最后面
-          } else if (dropItem && this.getOptions(dropItem?.props?.options)?.allowDrop) {
+          } else if (dropItem) {
+            if (!this.getOptions(dropItem?.props?.options)?.allowDrop) {
+              e.dataTransfer.dropEffect = DropEffect.Move;
+              return;
+            }
             this.appendNewOver(dropItem);
           }
         }
