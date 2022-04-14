@@ -348,7 +348,7 @@ export default function BuildDndSortable() {
             const dropArea = dndManager.getDropItem(overSortableItem?.groupNode);
             if (dropArea) {
               if (!this.getOptions(dropArea?.props?.options)?.allowDrop) {
-                e.dataTransfer.dropEffect = DropEffect.Move;
+                e.dataTransfer.dropEffect = DropEffect.None;
                 return;
               }
               this.insertNewOver(dropArea, overSortableItem);
@@ -356,7 +356,7 @@ export default function BuildDndSortable() {
             // 插入容器的最后面
           } else if (dropItem) {
             if (!this.getOptions(dropItem?.props?.options)?.allowDrop) {
-              e.dataTransfer.dropEffect = DropEffect.Move;
+              e.dataTransfer.dropEffect = DropEffect.None;
               return;
             }
             this.appendNewOver(dropItem);
