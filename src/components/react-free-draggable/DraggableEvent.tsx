@@ -145,19 +145,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   removeLayerNode = () => {
     const { showLayer } = this.props;
     if (!showLayer) return;
-    const node = this.findDOMNode();
     const ownerDocument = this.findOwnerDocument();
-    const clientXY = getClientXY(node);
-    if (this.cloneLayer && clientXY) {
-      css(this.cloneLayer, {
-        left: clientXY.x + 'px',
-        top: clientXY?.y + 'px',
-        transition: 'all 0.15s'
-      })
-    }
-    setTimeout(() => {
-      ownerDocument.body.removeChild(this.cloneLayer)
-    }, 150);
+    ownerDocument.body.removeChild(this.cloneLayer);
   }
 
   handleDragStart = (e: EventType) => {

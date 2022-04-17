@@ -1,6 +1,35 @@
 
-import { css } from "@/utils/dom";
+import { css, getClientXY, getRect } from "@/utils/dom";
 import { CSSProperties } from "react";
+import { EventType } from "./types";
+
+// 事件是否在目标内部
+export const isMoveIn = (e: EventType, target: HTMLElement) => {
+  const eventXY = getClientXY(e);
+  const rect = getRect(target);
+  if (eventXY && rect) {
+    const { x, y } = eventXY;
+    const { left, top, right, bottom } = rect;
+    return !(x - left < 0 || y - top < 0 || x - right > 0 || y - bottom > 0);
+  }
+};
+
+// 判断事件对象在容器内处于前面还是后面
+export const getEventDirction = (e: any, ele: HTMLElement) => {
+  const eventXY = getClientXY(e);
+  if (!eventXY) return;
+  const rect = getRect(ele);
+  const { x, y } = eventXY;
+  const { left, top } = rect;
+  const leftDistance = x - left;
+  const topDistance = y - top;
+
+  if (topDistance < 20 && leftDistance < 20) {
+    return 'pre';
+  } else {
+    return 'next';
+  }
+};
 
 // 触发动画
 export function _animate(target: any, prevRect: any, transitionStyle?: CSSProperties) {

@@ -1,4 +1,5 @@
-import { ActiveTypes, SortableItem, DndSortable } from "./utils/types";
+import { isMoveIn } from "./utils/dom";
+import { EventType, ActiveTypes, SortableItem, DndSortable } from "./utils/types";
 
 // 管理拖拽的类
 export class DndManager<T extends Object = any> {
@@ -48,5 +49,28 @@ export class DndManager<T extends Object = any> {
     if (node.dataset.active === ActiveTypes.Active) {
       node.dataset.active = ActiveTypes.NotActive;
     }
+  }
+
+  // 事件对象最近的目标
+  findNearest = (e: EventType, self: HTMLElement) => {
+    const childs = [];
+    const dragItems = this.dragItemMap.keys();
+    const dropItems = this.dropItemMap.keys();
+    const items = new Set([...dragItems, ...dropItems]);
+    if (self && isMoveIn(e, self)) {
+      return self;
+    }
+    for (let child of items) {
+      if (isMoveIn(e, child)) {
+        childs.push(child);
+      }
+    }
+    let minChild;
+    for (let i = 0; i < childs.length; i++) {
+      if (!minChild || minChild?.contains(childs[i])) {
+        minChild = childs[i];
+      }
+    }
+    return minChild;
   }
 }

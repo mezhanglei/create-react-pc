@@ -85,6 +85,7 @@ export interface DraggableEventProps extends BaseDragProps {
   onMove?: EventHandler; // 拖拽进行事件
   onEnd?: EventHandler; // 拖拽结束事件
   showLayer?: boolean; // 是否展示拖拽阴影浮层
+  customLayer?: any; // 自定义的阴影浮层
   layerStyle?: CSSProperties; // 浮层的样式
 }
 
