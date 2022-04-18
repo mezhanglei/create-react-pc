@@ -28,4 +28,4 @@ export type ReducerStateHandler<State, Payload> = (state: State, payload: { type
 // reducer函数类型
 export type ReducerHandler<P> = ReducerStateHandler<CommonState, P>;
 // promise函数执行后的返回值
-export type GetPromiseReturnType<P extends (...args: any[]) => any> = ReturnType<P> extends Promise<infer X> ? X : never;
+export type GetPromiseReturnType<F extends (...args: any[]) => any> = ReturnType<F> extends Promise<infer X> ? X : never;

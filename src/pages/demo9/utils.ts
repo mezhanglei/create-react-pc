@@ -1,5 +1,5 @@
 import { klona } from 'klona';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'; // 有ie兼容性问题
 
 export const indexToArray = (pathStr?: string) => pathStr ? `${pathStr}`.split('.').map(n => +n) : [];
 

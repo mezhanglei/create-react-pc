@@ -6,6 +6,7 @@ import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent
 import { DndManager } from './dnd-manager';
 import { _animate } from './utils/dom';
 import { isMobile } from '@/utils/verify';
+import { isObjectEqual } from '@/utils/object';
 
 const ismobile = isMobile();
 export default function BuildDndSortable() {
@@ -43,6 +44,17 @@ export default function BuildDndSortable() {
       }
     }
 
+    static getDerivedStateFromProps(nextProps: DndProps, prevState: any) {
+      const optionsChanged = !isObjectEqual(nextProps.options, prevState.prevOptions);
+      if (optionsChanged) {
+        return {
+          ...prevState,
+          prevOptions: nextProps.options
+        };
+      }
+      return null;
+    }
+
     // 获取options
     getOptions = (options: DndProps['options']): DndProps['options'] => {
       const defaultOptions = {
@@ -59,7 +71,7 @@ export default function BuildDndSortable() {
 
     // 初始化manager的数据
     initManagerData = () => {
-      if(!this.sortArea) return;
+      if (!this.sortArea) return;
       const { children, className, style, ...restProps } = this.props;
       const options = this.getOptions(restProps?.options);
       const childNodes = this.sortArea?.children;

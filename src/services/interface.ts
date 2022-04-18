@@ -6,5 +6,4 @@ export interface ServiceRes<T = any> {
     success: boolean;
 }
 
-// 请求函数的类型
-export type RequestHanler<P, S> = (params?: P) => Promise<ServiceRes<S>>;
+export type RequestResponse<S> = Promise<ServiceRes<S>>;
