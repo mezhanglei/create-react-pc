@@ -122,6 +122,14 @@ class Demo9 extends Component {
     }
   }
 
+  onHover = (over) => {
+    over.style.opacity = '0.4';
+  }
+
+  onUnHover = (over) => {
+    over.style.opacity = '1';
+  }
+
   render() {
 
     const loopChildren = (arr: any[], parent?: string) => {
@@ -166,8 +174,8 @@ class Demo9 extends Component {
           }}
         >
           {
-            soundData.map(item => {
-              return <div data-id={item.name}><Tag>{item.name}</Tag></div>
+            soundData.map((item, index) => {
+              return <div key={index} data-id={item.name}><Tag>{item.name}</Tag></div>
             })
           }
         </DndSortable>
@@ -176,8 +184,10 @@ class Demo9 extends Component {
           options={{
             childDrag: true,
             allowDrop: true,
-            allowSort: true
+            allowSort: false
           }}
+          onHover={this.onHover}
+          onUnHover={this.onUnHover}
           onUpdate={this.onUpdate}
           onAdd={this.onAdd}
           style={{ display: 'inline-block', width: '500px', height: '500px', background: 'green' }}

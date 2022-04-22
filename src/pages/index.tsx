@@ -20,32 +20,53 @@ import "less/index.less";
 // }
 
 import ClickListen from "@/utils/listen-click";
+import { getUrlQuery } from "@/utils/url";
+import { clearUserInfo, initUserInfo, setToken } from "@/core/session";
 // 实例化一个节流类，在标签上有自定属性name的标签的click事件将被进行节流操作
 const event = new ClickListen({
-    name: "event-name=throttle",
-    callback: function (e) {
-        if (!this.timer) {
-            this.timer = setTimeout(() => {
-                e.cancelBubble = false;
-                this.timer = null;
-            }, 5000);
-        } else {
-            e.cancelBubble = true;
-        }
+  name: "event-name=throttle",
+  callback: function (e) {
+    if (!this.timer) {
+      this.timer = setTimeout(() => {
+        e.cancelBubble = false;
+        this.timer = null;
+      }, 5000);
+    } else {
+      e.cancelBubble = true;
     }
+  }
 });
 event.addEvent();
 
 setTimeout(() => {
-    objectFitImages();
+  objectFitImages();
 }, 100);
 
-
-ReactDOM.render(
-    <Provider store={store} >
+// 支持传token参数时直接登录进系统
+const token = getUrlQuery('token');
+if (token) {
+  clearUserInfo();
+  const tokenString = decodeURIComponent(token);
+  setToken(tokenString);
+  initUserInfo().then(() => {
+    ReactDOM.render(
+      <Provider store={store} >
         <ConfigProvider {...antdConfigs} >
-            <App />
+          <App />
         </ConfigProvider>
+      </Provider>,
+      document.getElementById("root")
+    );
+  })
+} else {
+  ReactDOM.render(
+    <Provider store={store} >
+      <ConfigProvider {...antdConfigs} >
+        <App />
+      </ConfigProvider>
     </Provider>,
     document.getElementById("root")
-);
+  );
+}
+
+

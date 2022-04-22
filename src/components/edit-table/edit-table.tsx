@@ -7,11 +7,11 @@ import { klona } from 'klona';
 import { nanoid } from 'nanoid';
 
 /**
- * 可编辑表格组件
+ * 可编辑表格组件(适用于有大量可编辑表格时提供虚拟渲染的能力)
  * 使用：
  * 1. 继承antd的table组件props
  * 2. 提供onSave，onDelete回调函数
- * 3. clumns中的renderEditCell方法提供三个参数对接表单控件：({save, toggleEdit, form, ...restProps}, inputRef) => void
+ * 3. clumns中的renderFormItem方法提供三个参数对接表单控件：({save, toggleEdit, form, ...restProps}, inputRef) => void
  */
 const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) => {
   const { onSave, onDelete, columns, className, ...restProps } = props;
@@ -76,7 +76,7 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
   // 包装渲染列数组
   const editColumns = columns?.map((col) => {
     // 如果不渲染可编辑单元格则返回正常单元格
-    if (!col.renderEditCell) {
+    if (!col.renderFormItem) {
       return col;
     }
     return {

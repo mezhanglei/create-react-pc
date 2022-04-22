@@ -1,7 +1,7 @@
 import axios, { Method } from "axios";
 import { STATUS_ERROR, CODE_ERROR, STATUS_ERROR_MAP, CODE_ERROR_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
 import { message } from "antd";
-import { loginOut, getToken } from "@/core/common";
+import { loginOut, getToken } from "@/core/session";
 import { trimParams } from "@/utils/character";
 import Loader from "@/components/loader/index";
 import { myBrowser } from "@/utils/brower";
@@ -150,11 +150,12 @@ http.interceptors.response.use(
 
 // 转换调用http请求的方式：例如http.post({}).then(res={})
 const request = {};
-['get', 'post', 'delete', 'put'].map((method: string) => {
+const RequestTypes = ['get', 'post', 'delete', 'put'] as Method[];
+RequestTypes.map((method) => {
     request[method] = function (configs: CustomConfig) {
         return http({
             ...configs,
-            method: (method as Method)
+            method: method
         });
     };
 });

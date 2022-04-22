@@ -37,7 +37,7 @@ export interface EditTableColProps extends ColumnProps {
 export interface ColumnProps {
   title: React.ReactNode; // 列的名
   dataIndex: string; // 列的渲染字段
-  renderEditCell?: (props: ColumnEditProps, inputRef: any) => any; // 渲染编辑框组件
+  renderFormItem?: (props: ColumnEditProps, inputRef: any) => any; // 渲染编辑框组件
   suffix: (props: ColumnEditProps, inputRef: any) => any; // 单元格内额外的组件
   rules: any[]; // 校验规则, 格式为antd的form的rules校验格式
   editStyle: CSSProperties; // 编辑区域容器的样式

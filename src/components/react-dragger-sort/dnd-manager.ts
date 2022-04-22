@@ -1,6 +1,6 @@
 import { css, getClientXY, getRect } from "@/utils/dom";
 import { dotToRect, isMoveIn } from "./utils/dom";
-import { EventType, ActiveTypes, SortableItem, DndSortable } from "./utils/types";
+import { EventType, SortableItem, DndSortable } from "./utils/types";
 
 // 管理拖拽的类
 export class DndManager<T extends Object = any> {
@@ -33,23 +33,6 @@ export class DndManager<T extends Object = any> {
   // 根据dom获取对应的可拖拽项
   getDragItem = (node: HTMLElement) => {
     return this.dragItemMap.get(node);
-  }
-
-  // 选中触发
-  setActive = (target: HTMLElement) => {
-    const node = target;
-    // 触发函数
-    if (node.dataset.active !== ActiveTypes.Active) {
-      node.dataset.active = ActiveTypes.Active;
-    }
-  }
-
-  // 移除触发
-  removeActive = (target: HTMLElement) => {
-    const node = target;
-    if (node.dataset.active === ActiveTypes.Active) {
-      node.dataset.active = ActiveTypes.NotActive;
-    }
   }
 
   // 事件对象over的目标

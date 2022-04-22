@@ -175,7 +175,7 @@ class demo5 extends React.Component {
   onClick = () => {
   }
 
-  onFieldsChange = ({ name, value }) => {
+  onFieldsChange = () => {
   }
 
   render() {

@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
-import { DndProps, DndSortable, SortableItem, DropEffect, EventType } from "./utils/types";
+import { DndProps, DndSortable, SortableItem, DropEffect, EventType, DndBaseProps } from "./utils/types";
 import classNames from "classnames";
 import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, matches } from "@/utils/dom";
 import { DndManager } from './dnd-manager';
@@ -147,17 +147,21 @@ export default function BuildDndSortable() {
         };
         // 是否为同域排序
         if (overSortableItem && overSortableItem?.groupNode === sortArea || over == sortArea || dragged.contains(over)) {
-          const options = this.getOptions(this.props.options);
+          const props = this.props;
+          const options = this.getOptions(props.options);
           const dropIndex = options?.allowSort ? getChildrenIndex(cloneDragged, [dragged]) : overSortableItem?.index; // drop目标的位置index
-          this.props.onUpdate && this.props.onUpdate({ ...dragParams, drop: { ...dropItem, ...overSortableItem, dropIndex } });
+          overSortableItem?.item && props?.onUnHover && props.onUnHover(overSortableItem?.item);
+          props.onUpdate && props.onUpdate({ ...dragParams, drop: { ...dropItem, ...overSortableItem, dropIndex } });
         } else {
           // 跨域排序
           if (dropItem || overSortableItem) {
             const dropGroup = overSortableItem ? dndManager.getDropItem(overSortableItem?.groupNode) : dropItem;
             if (dropGroup) {
-              const options = dropGroup?.props?.options;
+              const props = dropGroup?.props;
+              const options = this.getOptions(props?.options);
               const dropIndex = options?.allowSort ? getChildrenIndex(cloneDragged, [dragged]) : overSortableItem?.index; // drop目标的位置index
-              dropGroup?.props?.onAdd && dropGroup.props?.onAdd({
+              overSortableItem?.item && props?.onUnHover && props?.onUnHover(overSortableItem?.item);
+              props?.onAdd && props?.onAdd({
                 ...dragParams,
                 drop: { ...dropGroup, ...overSortableItem, dropIndex }
               });
@@ -195,18 +199,23 @@ export default function BuildDndSortable() {
       removeEvent(ownerDocument, 'dragover', this.onDragOver);
     }
 
-    handleDragOverClass = (params: { draggedIndex: number, newOverIndex: number, oldOverIndex: number, newOver: HTMLElement, oldOver?: HTMLElement, options: DndProps['options'] }) => {
-      const { draggedIndex, newOverIndex, oldOverIndex, newOver, oldOver, options } = params;
+    handleDragOverClass = (params: { draggedIndex: number, newOverIndex: number, oldOverIndex: number, newOver: HTMLElement, oldOver?: HTMLElement, props: DndBaseProps }) => {
+      const { draggedIndex, newOverIndex, oldOverIndex, newOver, oldOver, props } = params;
+      const { onHover, onUnHover } = props;
+      const options = this.getOptions(props?.options);
       const sortSmallClass = options?.sortSmallClass || '';
       const sortBigClass = options?.sortBigClass || '';
       newOver.classList.remove(sortSmallClass, sortBigClass);
       if (draggedIndex < newOverIndex) {
         newOver.classList.add(sortSmallClass);
+        onHover && onHover(newOver);
       } else {
         newOver.classList.add(sortBigClass);
+        onHover && onHover(newOver);
       }
       if (oldOver && newOverIndex !== oldOverIndex) {
         oldOver.classList.remove(sortBigClass, sortSmallClass);
+        onUnHover && onUnHover(oldOver);
       }
     }
 
@@ -274,7 +283,7 @@ export default function BuildDndSortable() {
             this.sortInSameArea(overSortableItem?.item);
           } else {
             if (sortArea === dropItem?.groupNode && dropItem) {
-              this.setDropChild(e, dropItem, cloneDragged);
+              this.setDropEndChild(e, dropItem, cloneDragged);
             }
           }
         } else {
@@ -344,7 +353,7 @@ export default function BuildDndSortable() {
         options?.allowSort && insertBefore(cloneDragged, newOver);
         this.over = newOver;
       }
-      this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver, options });
+      this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver, props: this.props });
       // 添加动画
       _animate(cloneDragged, draggedPreRect);
       _animate(newOver, newOverPreRect);
@@ -385,20 +394,21 @@ export default function BuildDndSortable() {
             options?.allowSort && insertBefore(cloneDragged, sortableOver);
             this.over = sortableOver;
           }
-          this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver: sortableOver, options });
+          this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver: sortableOver, props: dropItem?.props });
           // 添加动画
           _animate(cloneDragged, draggedPreRect);
           _animate(sortableOver, newOverPreRect);
         } else {
-          this.setDropChild(e, dropItem, cloneDragged)
+          this.setDropEndChild(e, dropItem, cloneDragged)
         }
       }
     }
 
     // 当在容器最后面时添加在最末尾
-    setDropChild = (e: EventType, dropItem: DndSortable, cloneDragged: HTMLElement) => {
+    setDropEndChild = (e: EventType, dropItem: DndSortable, cloneDragged: HTMLElement) => {
       const parent = dropItem?.groupNode;
-      const options = this.getOptions(dropItem.props.options);
+      const props = dropItem.props;
+      const options = this.getOptions(props.options);
       const near = dndManager.findNearest(e, parent);
       if (cloneDragged !== near && near === parent.lastChild) {
         if (options?.allowSort) {
@@ -406,6 +416,7 @@ export default function BuildDndSortable() {
           parent?.appendChild(cloneDragged);
           _animate(cloneDragged, draggedPreRect);
         }
+        this.over && props.onUnHover && props.onUnHover(this.over);
         this.over = parent;
       }
     }

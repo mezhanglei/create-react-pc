@@ -1,7 +1,7 @@
 import { CommonState } from './interface';
 
 const initState: CommonState = {
-    userInfo: undefined
+  userInfo: undefined
 };
 
 export default initState;

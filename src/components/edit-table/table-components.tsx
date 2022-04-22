@@ -25,7 +25,7 @@ export const EditTableCol: React.FC<EditTableColProps> = (props) => {
     children,
     title,
     dataIndex,
-    renderEditCell,
+    renderFormItem,
     suffix,
     rules,
     editStyle,
@@ -75,7 +75,7 @@ export const EditTableCol: React.FC<EditTableColProps> = (props) => {
         name={dataIndex}
         rules={rules}
       >
-        {renderEditCell && renderEditCell({ ...props, save, toggleEdit, form }, inputRef)}
+        {renderFormItem && renderFormItem({ ...props, save, toggleEdit, form }, inputRef)}
       </Form.Item>
     );
   };
@@ -101,7 +101,7 @@ export const EditTableCol: React.FC<EditTableColProps> = (props) => {
   return (
     <td {...restProps}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {renderEditCell ? (editing ? editNode() : switchNode()) : children}
+        {renderFormItem ? (editing ? editNode() : switchNode()) : children}
         {suffixNode}
       </div>
     </td>

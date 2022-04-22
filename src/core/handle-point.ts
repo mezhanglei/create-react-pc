@@ -9,7 +9,7 @@ import ClickListen from "@/utils/listen-click";
  * 1. 在入口文件处调用函数：Dpoint(url, data = {});
  * 2. 将name作为自定属性的标签将会被拦截点击事件，触发埋点发送请求的操作
  */
-export function Dpoint(url: string, data = {}) {
+export function Handlepoint(url: string, data = {}) {
   const event = new ClickListen({
     name: "click-type=point",
     callback: function (e) {

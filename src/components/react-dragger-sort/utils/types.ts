@@ -44,12 +44,6 @@ export interface DragParams {
   drag: DragItem;
 }
 
-// 是否激活
-export enum ActiveTypes {
-  Active = '0',
-  NotActive = '1'
-}
-
 // 拖拽触发的函数的参数
 export interface DndParams extends DragParams {
   drop: DropItem
@@ -70,6 +64,8 @@ export interface DndBaseProps {
   onEnd?: DragHandle; // 拖拽结束函数
   onAdd?: DndHandle; // 当前容器添加新元素触发的函数
   onUpdate?: DndHandle; // 当前容器排序触发的函数
+  onHover?: (over: HTMLElement) => void; // 被hover的元素触发的事件
+  onUnHover?: (over: HTMLElement) => void; // hover元素更换触发的事件
   // 拖拽相关的配置
   options: {
     groupPath?: string; // 拖拽容器的路径
