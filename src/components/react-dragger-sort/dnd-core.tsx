@@ -62,8 +62,8 @@ export default function BuildDndSortable() {
         allowDrop: true,
         allowSort: true,
         direction: DragDirectionCode,
-        sortSmallClass: 'over-pre',
-        sortBigClass: 'over-next'
+        sortPreClass: 'over-pre',
+        sortNextClass: 'over-next'
       };
       const newOptions = { ...defaultOptions, ...options };
       return newOptions;
@@ -182,8 +182,8 @@ export default function BuildDndSortable() {
       const over = this.over;
       const sortArea = this.sortArea;
       const options = this.getOptions(this.props.options);
-      const sortSmallClass = options?.sortSmallClass || '';
-      const sortBigClass = options?.sortBigClass || '';
+      const sortPreClass = options?.sortPreClass || '';
+      const sortNextClass = options?.sortNextClass || '';
       // 重置
       if (dragged) {
         dragged.draggable = undefined;
@@ -191,7 +191,7 @@ export default function BuildDndSortable() {
         dragged.style.display = this.lastDisplay;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
       }
-      over?.classList?.remove(sortBigClass, sortSmallClass);
+      over?.classList?.remove(sortNextClass, sortPreClass);
       this.cloneDragged = undefined;
       this.dragged = undefined;
       this.over = undefined;
@@ -203,18 +203,18 @@ export default function BuildDndSortable() {
       const { draggedIndex, newOverIndex, oldOverIndex, newOver, oldOver, props } = params;
       const { onHover, onUnHover } = props;
       const options = this.getOptions(props?.options);
-      const sortSmallClass = options?.sortSmallClass || '';
-      const sortBigClass = options?.sortBigClass || '';
-      newOver.classList.remove(sortSmallClass, sortBigClass);
+      const sortPreClass = options?.sortPreClass || '';
+      const sortNextClass = options?.sortNextClass || '';
+      newOver.classList.remove(sortPreClass, sortNextClass);
       if (draggedIndex < newOverIndex) {
-        newOver.classList.add(sortSmallClass);
+        newOver.classList.add(sortPreClass);
         onHover && onHover(newOver);
       } else {
-        newOver.classList.add(sortBigClass);
+        newOver.classList.add(sortNextClass);
         onHover && onHover(newOver);
       }
       if (oldOver && newOverIndex !== oldOverIndex) {
-        oldOver.classList.remove(sortBigClass, sortSmallClass);
+        oldOver.classList.remove(sortNextClass, sortPreClass);
         onUnHover && onUnHover(oldOver);
       }
     }

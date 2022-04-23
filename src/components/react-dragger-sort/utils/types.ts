@@ -75,8 +75,8 @@ export interface DndBaseProps {
     allowSort?: boolean; // 是否可以动态插入排序
     childDrag: boolean | (HTMLElement | string)[]; // 子元素是否允许拖拽
     direction?: string[]; // 允许拖拽的轴向
-    sortSmallClass?: string; // 元素往序号小的排序时添加的class
-    sortBigClass?: string; // 元素往序号大的排序时添加的class
+    sortPreClass?: string; // 元素往序号小的排序时添加的class
+    sortNextClass?: string; // 元素往序号大的排序时添加的class
   }
 }
 
