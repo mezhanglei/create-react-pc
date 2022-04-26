@@ -20,7 +20,7 @@ const watch = {
   'name1': (newValue, oldValue) => {
     console.log(newValue, oldValue)
   },
-  'name2.0': (newValue, oldValue) => {
+  'name2[0]': (newValue, oldValue) => {
     console.log(newValue, oldValue)
   },
   'name3': (newValue, oldValue) => {
@@ -50,7 +50,7 @@ class demo5 extends React.Component {
             props: {}
           },
           name8: {
-            label: "name1",
+            label: "name8",
             component: 'input',
             readOnly: true,
             render: '普通显示选项',
@@ -61,7 +61,7 @@ class demo5 extends React.Component {
             props: {}
           },
           name9: {
-            label: "name1",
+            label: "name9",
             component: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
@@ -70,7 +70,7 @@ class demo5 extends React.Component {
             props: {}
           },
           name10: {
-            label: "name1",
+            label: "name10",
             component: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],

@@ -32,7 +32,7 @@ export const classes_list = {
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
-  const store = useContext(FormStoreContext)
+  // const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
   const initialValues = useContext(FormValuesContext)
   const finalProps = { ...options, ...props };
@@ -56,17 +56,12 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const currentPath = path ? `${path}.${name}` : `${name}`;
   const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
 
-  // 渲染完成之前初始化数组的路径
-  if(currentPath !== undefined && !store?.formListPath?.includes(currentPath)) {
-    store?.formListPath.push(currentPath);
-  }
-
   const childs = React.Children.map(children, (child: any, index) => {
     const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
     const childValue = child?.props?.initialValue ?? initialValue?.[index];
     return child && cloneElement(child, {
       path: currentPath,
-      name: `${index}`,
+      name: `[${index}]`,
       rules: childRules,
       initialValue: childValue
     });

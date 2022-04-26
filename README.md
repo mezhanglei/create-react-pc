@@ -2,16 +2,16 @@
 
 ## 项目安装和依赖说明
 ```
-说明：基于webpack4.x + react16.12 + redux + react-redux + dva-core + ant-design等web开发脚手架,支持typescript
+说明：基于webpack5.x + react16.x + redux + react-redux + dva-core + ant-design等web开发脚手架,支持typescript
 依赖管理(注意设置合适的数据源): 
-npm i ---不更新package-lock.json(建议)
 npm install ---会创建package-lock.json
 ```
 ### 项目运行说明
 ```
 npm run start 运行项目
 npm run dll 如果想对某些基础包进行预编译,在webpack.dll.js中配置相关基础包,然后启动,最后在html中script引进
-npm run build 生产打包
+npm run build:sit 测试打包
+npm run build:prod 生产打包
 npm run eslint 检查js规范
 npm run csslint 检查css规范
 ```
@@ -19,8 +19,7 @@ npm run csslint 检查css规范
 ### 脚手架功能说明(mddir)
 ```
 1. 单页面开发, 纯净友好无冗余代码脚手架,开箱修改即用, 使用时注意遵循规范,看清楚目录结构!
-2. 可在configs中自定义不同使用场景,比如添加publicPath, 更改目录, 项目的一些配置开关等等
-3. 支持typescript开发
+2. 支持typescript开发
 ```
 
 ### css样式(两种解析方式)
@@ -82,9 +81,11 @@ npm run csslint 检查css规范
     |   |-- services // 接口所在文件夹
     |   |-- store    // redux仓库
     |   |-- utils   // js工具方法
-    |-- static     // 打包时要拷贝的静态资源, 需要在webpack/configs文件中配置引用路径后才能生效
+    |-- static     // 打包时要拷贝的静态资源
     |-- webpack   // webpack配置文件夹
         |-- configs.js  // 自定义配置
+        |-- paths.js  // 目录配置
+        |-- webpack.base.js // 基础配置环境
         |-- webpack.dev.js // 开发环境
         |-- webpack.dll.js // 预编译文件(需要预编译时使用)
         |-- webpack.prod.js // 生产环境

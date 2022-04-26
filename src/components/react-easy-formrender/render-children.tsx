@@ -12,10 +12,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const options = useContext(FormOptionsContext)
 
   const [fieldPropsMap, setFieldPropsMap] = useState<Map<string, any>>(new Map());
+  const [properties, setProperties] = useState<RenderFormChildrenProps['properties']>({});
 
   const {
     children,
-    properties,
     Fields = defaultFields,
     widgets,
     watch
@@ -29,14 +29,25 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
   });
 
+  // 获取最新的表单数据
   useEffect(() => {
-    if (!store) return;
+    setProperties(props?.properties)
+  }, [JSON.stringify(props?.properties)]);
+
+  // 变化时更新
+  useEffect(() => {
+    if (!store || !properties) return;
     handleFieldProps();
     initWatch();
     return () => {
       store?.removeListenStoreValue();
     }
   }, [store, JSON.stringify(properties)]);
+
+  // 更新properties
+  const updateProperties = (path: string, value: any) => {
+    
+  }
 
   // 初始化监听
   const initWatch = () => {
@@ -128,7 +139,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成组件的children
-  const generateChildren = (children?: JSX.Element | {component: string, props: FormFieldProps['props']}[]) => {
+  const generateChildren = (children?: JSX.Element | { component: string, props: FormFieldProps['props'] }[]) => {
     if (children instanceof Array) {
       return children?.map(({ component, props }) => {
         const Child = widgets?.[component];
@@ -224,10 +235,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   };
 
   // 渲染
-  const getFormList = (properties: SchemaData['properties'], render: (params: { name: string, field: FormFieldProps, path?: string }) => any) => {
+  const getFormList = (properties: SchemaData['properties'], renderItem: (params: { name: string, field: FormFieldProps, path?: string }) => any) => {
     return Object.entries(properties || {}).map(
       ([name, formField]) => {
-        return render({ name: name, field: formField });
+        return renderItem({ name: name, field: formField });
       }
     );
   }

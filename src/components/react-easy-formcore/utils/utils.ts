@@ -6,7 +6,8 @@ export function isExitPrefix(prefix: string, path: string | string[]) {
     return false;
   }
   return prefixParts?.every((str, index) => {
-    return str === parts[index]
+    const item = parts[index]?.replace(/\[/g, '').replace(/\]/g, '');
+    return str === item;
   });
 }
 
@@ -20,3 +21,6 @@ export function getValueFromEvent(...args: any[]) {
   const e = args[0] as React.ChangeEvent<any>
   return e && e.target ? (e.target.type === 'checkbox' ? e.target.checked : e.target.value) : e
 }
+
+// 判断字符是否是数组中的选项
+export const isListItem = (item: string) => (/\[(.{1}?)\]/gi.test(item));
