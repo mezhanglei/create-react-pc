@@ -1,24 +1,23 @@
 import React, { CSSProperties } from 'react'
 import classnames from 'classnames';
 import './list-item.less';
+import { LayoutEnum } from './form-options-context';
 
 export interface ListItemProps {
-  label?: any
-  suffix?: React.ReactNode
-  inline?: boolean
-  required?: boolean
-  labelWidth?: number
-  labelAlign?: 'left' | 'right'
-  gutter?: number
-  className?: string
-  children?: React.ReactNode
-  style?: CSSProperties
+  label?: any;
+  layout?: LayoutEnum;
+  labelStyle?: CSSProperties;
+  suffix?: React.ReactNode;
+  required?: boolean;
+  gutter?: number;
+  className?: string;
+  children?: React.ReactNode;
+  style?: CSSProperties;
 }
 
 const prefixCls = 'custom-list-item';
 export const classes_item = {
   field: prefixCls,
-  inline: `${prefixCls}--inline`,
   required: `${prefixCls}--required`,
 
   header: `${prefixCls}__header`,
@@ -30,10 +29,9 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const {
     label,
     suffix,
-    inline,
     required,
-    labelWidth,
-    labelAlign,
+    labelStyle,
+    layout = 'horizontal',
     gutter,
     className,
     children,
@@ -42,15 +40,14 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
 
   const cls = classnames(
     classes_item.field,
-    inline ? classes_item.inline : '',
     required ? classes_item.required : '',
-    className ? className : ''
+    className ? className : '',
+    `${classes_item.field}--${layout}`
   )
 
   const headerStyle = {
-    width: labelWidth,
     marginRight: gutter,
-    textAlign: labelAlign
+    ...labelStyle
   }
 
   return (
@@ -65,7 +62,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
       </div>
       {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
     </div>
-  )
-})
+  );
+});
 
 ListItem.displayName = 'ListItem';

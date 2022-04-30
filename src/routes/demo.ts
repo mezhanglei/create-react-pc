@@ -22,10 +22,6 @@ export const DemoRoute = [
   {
     path: "/demo3",
     component: loadable({ loader: () => import('@/pages/demo3/index') }),
-    animationConfig: {
-      enter: 'from-right',
-      exit: 'to-right'
-    }
   },
   {
     path: "/demo4",

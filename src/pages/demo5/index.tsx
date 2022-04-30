@@ -36,70 +36,71 @@ class demo5 extends React.Component {
     this.state = {
       list: [{ value: 'sss', key: 1 }, { value: 'aaaa', key: 2 }],
       schema: {
+        title: '1111',
         className: 'form-wrapper',
         properties: {
           name1: {
             label: "name1",
-            component: 'input',
+            widget: 'input',
             required: true,
             readOnly: true,
-            render: '普通显示选项',
+            readOnlyRender: 1111,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
+            layout: 'inline',
             hidden: '{{$form.name4 == true}}',
-            props: {}
+            widgetProps: {}
           },
           name8: {
             label: "name8",
-            component: 'input',
-            readOnly: true,
-            render: '普通显示选项',
+            widget: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
+            layout: 'inline',
             hidden: '{{$form.name4 == true}}',
-            props: {}
+            widgetProps: {}
           },
           name9: {
             label: "name9",
-            component: 'input',
+            widget: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
-            props: {}
+            widgetProps: {}
           },
           name10: {
             label: "name10",
-            component: 'input',
+            widget: 'input',
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
-            props: {}
+            widgetProps: {}
           },
           name2: {
             label: "name2",
             required: true,
             rules: [{ required: true, message: 'name2空了' }],
             properties: [{
-              component: 'select',
+              widget: 'select',
               required: true,
               rules: [{ required: true, message: 'name2空了' }],
               initialValue: { label: '选项1', value: '1', key: '1' },
-              props: {
+              widgetProps: {
                 labelInValue: true,
                 style: { width: '100%' },
-                children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }, { component: 'option', props: { key: 2, value: '2', children: '选项2' } }]
+                children: [{ widget: 'option', widgetProps: { key: 1, value: '1', children: '选项1' } }, { widget: 'option', widgetProps: { key: 2, value: '2', children: '选项2' } }]
               }
             }, {
-              component: 'select',
+              widget: 'select',
               required: true,
               rules: [{ required: true, message: 'name2空了' }],
-              props: {
+              widgetProps: {
                 labelInValue: true,
                 style: { width: '100%' },
-                children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
+                children: [{ widget: 'option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
               }
             }]
           },
@@ -109,40 +110,40 @@ class demo5 extends React.Component {
                 label: 'name3',
                 required: true,
                 rules: [{ required: true, message: 'name2空了' }],
-                component: 'select',
-                props: {
+                widget: 'select',
+                widgetProps: {
                   style: { width: '100%' },
-                  children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
+                  children: [{ widget: 'option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
                 }
               },
               second: {
                 label: '',
                 // required: true,
                 rules: [{ required: true, message: 'name2空了' }],
-                component: 'select',
-                props: {
+                widget: 'select',
+                widgetProps: {
                   style: { width: '100%' },
-                  children: [{ component: 'option', props: { key: 1, value: '1', children: '选项1' } }]
+                  children: [{ widget: 'option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
                 }
               }
             }
           },
           name4: {
             label: 'name4',
-            component: 'Checkbox',
+            widget: 'Checkbox',
             required: true,
             valueProp: 'checked',
             initialValue: true,
             rules: [{ required: true, message: 'name3空了' }],
-            props: {
+            widgetProps: {
               style: { width: '100%' },
               children: '多选框'
             }
           },
           button: {
-            component: 'button',
+            widget: 'button',
             label: '',
-            props: {
+            widgetProps: {
               htmlType: 'submit',
               children: 'xxx'
             }
@@ -184,45 +185,47 @@ class demo5 extends React.Component {
         {/* <Form store={this.store} onFieldsChange={this.onFieldsChange} onSubmit={this.onSubmit}>
           <Form.Item label="表单容器" name="a">
             <Form.List name="b">
-              <Form.Item key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{ width: '100%' }}
-                  placeholder="Please select"
-                  labelInValue
-                  onChange={this.onChange}
-                >
-                  {
-                    this.state.list?.map((item) => {
-                      return (
-                        <Select.Option key={item.key}>
-                          {item.value}
-                        </Select.Option>
-                      );
-                    })
-                  }
-                </Select>
-              </Form.Item>
-              <Form.Item key="name2" rules={[{ required: true, message: '不能为空2' }]}>
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{ width: '100%' }}
-                  placeholder="Please select"
-                  labelInValue
-                >
-                  {
-                    this.state.list?.map((item) => {
-                      return (
-                        <Select.Option key={item.key}>
-                          {item.value}
-                        </Select.Option>
-                      );
-                    })
-                  }
-                </Select>
-              </Form.Item>
+              <div>
+                <Form.Item key="name1" rules={[{ required: true, message: "不能为空1" }, { validator: this.validator, message: '自定义校验' }]}>
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    labelInValue
+                    onChange={this.onChange}
+                  >
+                    {
+                      this.state.list?.map((item) => {
+                        return (
+                          <Select.Option key={item.key}>
+                            {item.value}
+                          </Select.Option>
+                        );
+                      })
+                    }
+                  </Select>
+                </Form.Item>
+                <Form.Item key="name2" rules={[{ required: true, message: '不能为空2' }]}>
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    labelInValue
+                  >
+                    {
+                      this.state.list?.map((item) => {
+                        return (
+                          <Select.Option key={item.key}>
+                            {item.value}
+                          </Select.Option>
+                        );
+                      })
+                    }
+                  </Select>
+                </Form.Item>
+              </div>
             </Form.List>
           </Form.Item>
           <Form.Item label="">

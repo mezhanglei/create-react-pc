@@ -1,4 +1,4 @@
-import React, { cloneElement, CSSProperties, useContext, useEffect } from 'react'
+import React, { cloneElement, CSSProperties, useContext } from 'react'
 import { FormRule } from './form-store';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
@@ -19,7 +19,6 @@ export interface FormListProps extends FormOptions {
 const prefixCls = 'rh-form-list';
 export const classes_list = {
   list: prefixCls,
-  inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
   error: `${prefixCls}--error`,
@@ -45,40 +44,81 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     suffix,
     className,
     style,
-    inline,
+    layout = 'horizontal',
     compact,
     required,
-    labelWidth,
-    labelAlign,
+    labelStyle,
     gutter
   } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
   const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
 
-  const childs = React.Children.map(children, (child: any, index) => {
-    const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
-    const childValue = child?.props?.initialValue ?? initialValue?.[index];
-    return child && cloneElement(child, {
-      path: currentPath,
-      name: `[${index}]`,
-      rules: childRules,
-      initialValue: childValue
+  // 是否为表单控件
+  const isFormField = (child: any) => {
+    const displayName = child?.type?.displayName;
+    const formFields = ['FormItem', 'FormList'];
+    return formFields?.includes(displayName)
+  }
+
+  // 渲染子元素
+  const getChildren = (children: any) => {
+    return React.Children.map(children, (child: any, index) => {
+      if (isFormField(child)) {
+        return renderPropsChildrenItem(child, index);
+      } else {
+        return bindNestedChildren(child, index);
+      }
     });
-  });
+  }
+
+  // 递归遍历子元素(遇到表单域停止)
+  const bindNestedChildren = (child: any, index: number): any => {
+    const childs = child?.props?.children;
+    if (child !== undefined && !isFormField(child)) {
+      return cloneElement(child, {
+        children: React.Children.map(childs, (childItem: any, itemIndex: number) => {
+          if (isFormField(childItem)) {
+            return renderPropsChildrenItem(childItem, itemIndex)
+          } else {
+            return bindNestedChildren(childItem, itemIndex)
+          }
+        })
+      })
+    } else {
+      return renderPropsChildrenItem(child, index);
+    }
+  }
+
+  // 渲染子元素
+  const renderPropsChildrenItem = (child: any, index: number) => {
+    if (isFormField(child)) {
+      const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
+      const childValue = child?.props?.initialValue ?? initialValue?.[index];
+      return child && cloneElement(child, {
+        path: currentPath,
+        name: `[${index}]`,
+        rules: childRules,
+        initialValue: childValue
+      });
+    } else {
+      return child;
+    }
+  }
+
+  const childs = getChildren(children);
 
   const cls = classnames(
     classes_list.list,
-    inline ? classes_list.inline : '',
     compact ? classes_list.compact : '',
     required ? classes_list.required : '',
-    className ? className : ''
+    className ? className : '',
+    `${classes_list.list}--${layout}`
   )
 
   const headerStyle = {
-    width: labelWidth,
     marginRight: gutter,
-    textAlign: labelAlign
+    ...labelStyle
   }
 
   return (

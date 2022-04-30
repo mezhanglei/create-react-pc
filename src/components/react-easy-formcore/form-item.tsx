@@ -1,11 +1,11 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
-import { FormStoreContext, FormValuesContext } from './form-store-context'
-import { FormOptions, FormOptionsContext } from './form-options-context'
-import { getValuePropName, getValueFromEvent, isListItem } from './utils/utils'
-import { FormRule } from './form-store'
-import classnames from 'classnames'
-import { AopFactory } from '@/utils/function-aop'
-import { isObjectEqual } from '@/utils/object'
+import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
+import { FormStoreContext, FormValuesContext } from './form-store-context';
+import { FormOptions, FormOptionsContext } from './form-options-context';
+import { getValuePropName, getValueFromEvent, isListItem } from './utils/utils';
+import { FormRule } from './form-store';
+import classnames from 'classnames';
+import { AopFactory } from '@/utils/function-aop';
+import { isObjectEqual } from '@/utils/object';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
@@ -25,7 +25,6 @@ export interface FormItemProps extends FormOptions {
 const prefixCls = 'rh-form-field';
 export const classes = {
   field: prefixCls,
-  inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
   error: `${prefixCls}--error`,
@@ -52,11 +51,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     className,
     style,
-    inline,
+    layout = 'horizontal',
     compact,
     required,
-    labelWidth,
-    labelAlign,
+    labelStyle,
     gutter,
     errorClassName = 'error',
     onFieldsChange,
@@ -145,8 +143,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (!isValidElement(child)) return;
-    if (currentPath) {
+    if (currentPath && isValidElement(child)) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { onChange, className } = childProps || {};
@@ -159,30 +156,61 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     }
   }
 
-  const childs = React.Children.map(children, (child: any) => {
+  // 是否为表单控件
+  const isFormField = (child: any) => {
     const displayName = child?.type?.displayName;
-    if (['FormItem', 'FormList']?.includes(displayName)) {
-      return child && cloneElement(child, {
-        path: currentPath
+    const formFields = ['FormItem', 'FormList'];
+    return formFields?.includes(displayName)
+  }
+
+  // 渲染子元素
+  const getChildren = (children: any) => {
+    return React.Children.map(children, (child: any) => {
+      if (isFormField(child)) {
+        return cloneElement(child, {
+          path: currentPath
+        });
+      } else {
+        return bindNestedChildren(child);
+      }
+    })
+  }
+
+  // 递归遍历子元素
+  const bindNestedChildren = (child: any): any => {
+    const childs = child?.props?.children;
+    const dataType = child?.props?.['data-type'];
+    if (childs !== undefined && dataType === 'fragment') {
+      return cloneElement(child, {
+        children: React.Children.map(childs, (childItem: any) => {
+          if (isFormField(childItem)) {
+            return cloneElement(childItem, {
+              path: currentPath
+            });
+          } else {
+            return bindNestedChildren(childItem)
+          }
+        })
       })
     } else {
       return bindChild(child);
     }
-  });
+  }
+
+  const childs = getChildren(children);
 
   const cls = classnames(
     classes.field,
-    inline ? classes.inline : '',
     compact ? classes.compact : '',
     required ? classes.required : '',
     error ? classes.error : '',
-    className ? className : ''
+    className ? className : '',
+    `${classes.field}--${layout}`,
   )
 
   const headerStyle = {
-    width: labelWidth,
     marginRight: gutter,
-    textAlign: labelAlign
+    ...labelStyle
   }
 
   return (
@@ -193,7 +221,9 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         </div>
       )}
       <div className={classes.container}>
-        <div className={classes.control}>{childs}</div>
+        <div className={classes.control}>
+          {childs}
+        </div>
         <div className={classes.message}>{error}</div>
       </div>
       {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
