@@ -4,3 +4,4 @@ export default RenderForm;
 export { RenderFormChildren };
 export * from './types';
 export * from './register';
+export * from './formrender-store';

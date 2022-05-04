@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef, useCallback } from 'reac
 import "./index.less";
 import { Form, FormStore } from "@/components/react-easy-formcore";
 import { Checkbox, Input, Radio, Select } from 'antd';
-import RenderForm, { RenderFormChildren } from '@/components/react-easy-formrender';
+import RenderForm, { RenderFormChildren, FormRenderStore } from '@/components/react-easy-formrender';
 import Button from '@/components/button';
 
 // 原子组件
@@ -29,10 +29,11 @@ const watch = {
 }
 
 class demo5 extends React.Component {
-  store: FormStore<any>;
+  store: FormRenderStore<any>;
   constructor(props) {
     super(props);
-    this.store = new FormStore();
+    // this.store = new FormStore();
+    this.store = new FormRenderStore();
     this.state = {
       list: [{ value: 'sss', key: 1 }, { value: 'aaaa', key: 2 }],
       schema: {
@@ -47,7 +48,6 @@ class demo5 extends React.Component {
             readOnlyRender: 1111,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
-            layout: 'inline',
             hidden: '{{$form.name4 == true}}',
             widgetProps: {}
           },
@@ -57,7 +57,6 @@ class demo5 extends React.Component {
             required: true,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
-            layout: 'inline',
             hidden: '{{$form.name4 == true}}',
             widgetProps: {}
           },
@@ -105,10 +104,10 @@ class demo5 extends React.Component {
             }]
           },
           name3: {
+            label: 'name3',
+            required: true,
             properties: {
               first: {
-                label: 'name3',
-                required: true,
                 rules: [{ required: true, message: 'name2空了' }],
                 widget: 'select',
                 widgetProps: {
@@ -117,8 +116,6 @@ class demo5 extends React.Component {
                 }
               },
               second: {
-                label: '',
-                // required: true,
                 rules: [{ required: true, message: 'name2空了' }],
                 widget: 'select',
                 widgetProps: {
@@ -234,7 +231,7 @@ class demo5 extends React.Component {
         </Form> */}
         <RenderForm widgets={defaultWidgets} store={this.store} onSubmit={this.onSubmit} onFieldsChange={this.onFieldsChange} schema={this.state.schema} watch={watch} />
         {/* <Form store={this.store} onFieldsChange={this.onFieldsChange} onSubmit={this.onSubmit}>
-          <RenderFormChildren widgets={defaultWidgets} onFieldsChange={this.onFieldsChange} properties={this.state.schema?.properties} watch={watch} />
+          <RenderFormChildren widgets={defaultWidgets} onFieldsChange={this.onFieldsChange} schema={this.state.schema} watch={watch} />
         </Form> */}
       </div>
     );

@@ -44,7 +44,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     suffix,
     className,
     style,
-    layout = 'horizontal',
+    labelAlign = 'horizontal',
     compact,
     required,
     labelStyle,
@@ -77,11 +77,11 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     const childs = child?.props?.children;
     if (child !== undefined && !isFormField(child)) {
       return cloneElement(child, {
-        children: React.Children.map(childs, (childItem: any, itemIndex: number) => {
+        children: React.Children.map(childs, (childItem: any) => {
           if (isFormField(childItem)) {
-            return renderPropsChildrenItem(childItem, itemIndex)
+            return renderPropsChildrenItem(childItem, index)
           } else {
-            return bindNestedChildren(childItem, itemIndex)
+            return bindNestedChildren(childItem, index)
           }
         })
       })
@@ -113,7 +113,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     compact ? classes_list.compact : '',
     required ? classes_list.required : '',
     className ? className : '',
-    `${classes_list.list}--${layout}`
+    `${classes_list.list}--${labelAlign}`
   )
 
   const headerStyle = {

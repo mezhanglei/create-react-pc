@@ -4,21 +4,15 @@
   &--horizontal {
     display: flex;
     align-items: flex-start;
-    vertical-align: top;
   }
 
-  &--horizontal &__header {
+  &--horizontal &__header,
+  &--inline &__header {
     text-align: right;
-    margin-top: 5px;
   }
 
   &--inline {
     display: inline-flex;
-  }
-
-  &--inline &__header {
-    text-align: right;
-    margin-top: 5px;
   }
 
   &__header {
@@ -43,8 +37,6 @@
 
   &__container {
     position: relative;
-    margin-top: auto;
-    margin-bottom: auto;
     word-break: break-all;
     word-wrap: break-word;
   }

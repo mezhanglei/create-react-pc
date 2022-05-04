@@ -39,10 +39,9 @@ export class FormStore<T extends Object = any> {
 
   private fieldsProps: FormFieldsProps = {};
 
-  public constructor(values: Partial<T> = {}, fieldsProps?: FormFieldsProps<T>) {
+  public constructor(values: Partial<T> = {}) {
     this.initialValues = values
     this.values = klona(values)
-    this.fieldsProps = fieldsProps || {};
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)

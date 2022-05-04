@@ -51,7 +51,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     className,
     style,
-    layout = 'horizontal',
+    labelAlign = 'horizontal',
     compact,
     required,
     labelStyle,
@@ -180,7 +180,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const bindNestedChildren = (child: any): any => {
     const childs = child?.props?.children;
     const dataType = child?.props?.['data-type'];
-    if (childs !== undefined && dataType === 'fragment') {
+    const childType = child?.type;
+    if (childs !== undefined && (dataType === 'fragment' || childType === 'string')) {
       return cloneElement(child, {
         children: React.Children.map(childs, (childItem: any) => {
           if (isFormField(childItem)) {
@@ -205,7 +206,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     required ? classes.required : '',
     error ? classes.error : '',
     className ? className : '',
-    `${classes.field}--${layout}`,
+    `${classes.field}--${labelAlign}`,
   )
 
   const headerStyle = {

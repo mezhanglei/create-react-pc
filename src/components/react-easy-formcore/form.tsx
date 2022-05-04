@@ -8,9 +8,9 @@ import { FormOptions, FormOptionsContext } from './form-options-context'
 import { FormList } from './form-list'
 
 // 缓存数组类型的组件的路径
-export interface FormProps extends FormOptions {
+export interface FormProps<S = FormStore> extends FormOptions {
   className?: string;
-  store?: FormStore;
+  store?: S;
   style?: CSSProperties;
   children?: React.ReactNode;
   initialValues?: Partial<unknown>;

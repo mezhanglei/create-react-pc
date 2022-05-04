@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react'
 import classnames from 'classnames';
 import './list-item.less';
-import { LayoutEnum } from './form-options-context';
+import { LabelAlignEnum } from './form-options-context';
 
 export interface ListItemProps {
   label?: any;
-  layout?: LayoutEnum;
+  labelAlign?: LabelAlignEnum;
   labelStyle?: CSSProperties;
   suffix?: React.ReactNode;
   required?: boolean;
@@ -31,7 +31,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     suffix,
     required,
     labelStyle,
-    layout = 'horizontal',
+    labelAlign = 'horizontal',
     gutter,
     className,
     children,
@@ -42,7 +42,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     classes_item.field,
     required ? classes_item.required : '',
     className ? className : '',
-    `${classes_item.field}--${layout}`
+    `${classes_item.field}--${labelAlign}`
   )
 
   const headerStyle = {
