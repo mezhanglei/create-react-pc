@@ -216,7 +216,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
                 :
                 Object.entries(properties || {})?.map(
                   ([name, formField]) => {
-                    return generateTree({ name: name, field: formField, path: currentPath });
+                    return generateTree({ name: name, field: formField as FormFieldProps, path: currentPath });
                   }
                 )
             ) :
