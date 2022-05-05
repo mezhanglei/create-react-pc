@@ -1,8 +1,10 @@
 import React, { cloneElement, CSSProperties, useContext } from 'react'
 import { FormRule } from './form-store';
 import classnames from 'classnames';
-import { FormOptions, FormOptionsContext } from './form-options-context';
-import { FormStoreContext, FormValuesContext } from './form-store-context';
+import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
+import { FormValuesContext } from './form-store-context';
+import { Col } from 'react-flexbox-grid';
+import { getColProps } from './utils/utils';
 
 export interface FormListProps extends FormOptions {
   label?: string;
@@ -31,7 +33,6 @@ export const classes_list = {
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
-  // const store = useContext(FormStoreContext)
   const options = useContext(FormOptionsContext)
   const initialValues = useContext(FormValuesContext)
   const finalProps = { ...options, ...props };
@@ -44,7 +45,8 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     suffix,
     className,
     style,
-    labelAlign = 'horizontal',
+    labelAlign = LabelAlignEnum.Horizontal,
+    col,
     compact,
     required,
     labelStyle,
@@ -121,8 +123,10 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     ...labelStyle
   }
 
+  const colProps = getColProps({ labelAlign: labelAlign, col });
+
   return (
-    <div ref={ref} className={cls} style={style}>
+    <Col ref={ref} className={cls} style={{padding: 0, ...style}} {...colProps}>
       {label !== undefined && (
         <div className={classes_list.header} style={headerStyle}>
           {label}
@@ -132,7 +136,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
         {childs}
       </div>
       {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
-    </div>
+    </Col>
   )
 });
 

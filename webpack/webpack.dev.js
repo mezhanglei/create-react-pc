@@ -17,7 +17,7 @@ module.exports = merge(base, {
   // development 开启NamedChunksPlugin 和 NameModulesPlugin
   // production开启FlagDependencyUsagePlugin, FlagIncludedChunksPlugin, ModuleConcatenationPlugin(减少声明和闭包引起的内存开销,但对引入多次的模块无效), NoEmitOnErrorsPlugin, occurrenceOrderPlugin, SideEffectsFlagPlugin, TerserWebpackPlugin(统一提取js和css)
   mode: "development",
-  // 构建快，重建最快
+  // eval(构建快，重建最快)
   devtool: "eval",
   // 在初始构建之后，webpack 将继续监听任何已解析文件的更改
   watch: true,

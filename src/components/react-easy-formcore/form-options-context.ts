@@ -11,7 +11,16 @@ export enum LabelAlignEnum {
   Inline= 'inline' // 行内布局
 }
 
+export interface ColProps {
+  span?: number; // 所有屏幕显示列宽格数
+  xs?: number; // 屏幕 < 576px 响应式栅格
+  sm?: number; // 屏幕 ≥ 576px 响应式栅格
+  md?: number; // 屏幕 ≥ 768px 响应式栅格
+  lg?: number; // 屏幕 ≥ 992px 响应式栅格
+}
+
 export interface FormOptions extends FormFunc {
+  col?: ColProps;
   labelAlign?: LabelAlignEnum;
   labelStyle?: CSSProperties;
   initialValues?: Partial<unknown>;

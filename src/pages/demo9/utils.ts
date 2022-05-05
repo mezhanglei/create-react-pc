@@ -10,7 +10,7 @@ export const uniqueId = () => {
 export const setChildren = (treeData: any, data: any, pathStr?: string) => {
   const pathArr = indexToArray(pathStr);
   treeData = klona(treeData);
-  let parent: any;
+  let parent: any = treeData;
   pathArr.forEach((item, index) => {
     if (index == 0) {
       parent = treeData[item];

@@ -2,10 +2,14 @@ import React, { CSSProperties } from 'react'
 import classnames from 'classnames';
 import './list-item.less';
 import { LabelAlignEnum } from './form-options-context';
+import { Col } from 'react-flexbox-grid';
+import { getColProps } from './utils/utils';
+import { ColProps } from './form-options-context';
 
 export interface ListItemProps {
   label?: any;
   labelAlign?: LabelAlignEnum;
+  col?: ColProps
   labelStyle?: CSSProperties;
   suffix?: React.ReactNode;
   required?: boolean;
@@ -31,7 +35,8 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     suffix,
     required,
     labelStyle,
-    labelAlign = 'horizontal',
+    labelAlign = LabelAlignEnum.Horizontal,
+    col,
     gutter,
     className,
     children,
@@ -50,18 +55,20 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     ...labelStyle
   }
 
+  const colProps = getColProps({ labelAlign: labelAlign, col });
+
   return (
-    <div ref={ref} className={cls} style={style}>
-      {label !== undefined && (
-        <div className={classes_item.header} style={headerStyle}>
-          {label}
+    <Col ref={ref} className={cls} style={{padding: 0, ...style}} {...colProps}>
+        {label !== undefined && (
+          <div className={classes_item.header} style={headerStyle}>
+            {label}
+          </div>
+        )}
+        <div className={classes_item.container}>
+          {children}
         </div>
-      )}
-      <div className={classes_item.container}>
-        {children}
-      </div>
-      {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
-    </div>
+        {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
+    </Col>
   );
 });
 

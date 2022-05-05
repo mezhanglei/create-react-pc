@@ -2,25 +2,26 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, SchemaData } from './types';
 import { defaultFields } from './register';
 import { AopFactory } from '@/utils/function-aop';
-import { FormOptionsContext, LabelAlignEnum } from '../react-easy-formcore';
-import { Row, Col } from 'react-flexbox-grid';
+import { FormOptionsContext, FormStoreContext } from '../react-easy-formcore';
 import { isListItem } from '../react-easy-formcore/utils/utils';
-import { FormRenderStoreContext } from './formrender-store';
+import { FormRenderStore } from './formrender-store';
+import { isObjectEqual } from '@/utils/object';
 
 // 不带Form容器的组件
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
-  const store = useContext(FormRenderStoreContext)
+  const store = useContext<FormRenderStore | undefined>(FormStoreContext)
   const options = useContext(FormOptionsContext)
 
   const [fieldPropsMap, setFieldPropsMap] = useState<Map<string, any>>(new Map());
-  const [schema, setSchema] = useState<SchemaData>();
-  const properties = schema?.properties || {};
+  const [properties, setProperties] = useState<SchemaData['properties']>({});
 
   const {
     Fields = defaultFields,
     widgets,
-    watch
+    watch,
+    propertiesName = 'default',
+    onPropertiesChange
   } = props;
 
   const {
@@ -31,40 +32,37 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
   });
 
-  // 收集schema到store中
+  // 订阅更新properties的函数,j将传值更新到state里面
   useEffect(() => {
-    if(store) {
-      store.setStoreSchema(props?.schema)
-    }
-  }, [JSON.stringify(props?.schema)])
-
-  // 订阅更新schema的函数
-  useEffect(() => {
-    if (!store) return
+    if (!store || !propertiesName) return
     // 订阅目标控件
-    // const uninstall = store.subscribeValue(currentPath, (newValue, oldValue) => {
-    //   setValue(newValue);
-    //   // 不监听`initialValue`赋值
-    //   if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
-    //     onValuesChange && onValuesChange({ path: currentPath, value: newValue })
-    //   }
-
-    //   // setSchema(store?.schema)
-    // })
+    const uninstall = store.subscribeProperties(propertiesName, (newValue, oldValue) => {
+      setProperties(newValue);
+      if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
+        onPropertiesChange && onPropertiesChange(propertiesName, newValue)
+      }
+    })
     return () => {
-      // uninstall()
+      uninstall()
     }
-  }, [store]);
+  }, [propertiesName]);
+
+  // 收集properties到store中
+  useEffect(() => {
+    if (store && props?.properties) {
+      store.setProperties(propertiesName, props?.properties)
+    }
+  }, [JSON.stringify(props?.properties)]);
 
   // 变化时更新
   useEffect(() => {
-    if (!schema) return;
+    if (!properties) return;
     handleFieldProps();
     initWatch();
     return () => {
       store?.removeListenStoreValue();
     }
-  }, [JSON.stringify(schema)]);
+  }, [JSON.stringify(properties)]);
 
   // 初始化监听
   const initWatch = () => {
@@ -166,19 +164,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }
 
-  const getGridProps = (field: FormFieldProps) => {
-    const { xs, sm, md, lg, labelAlign, colspan } = field;
-    const linespan = 12;
-    // 默认
-    const defaultspan = labelAlign !== LabelAlignEnum.Inline && (colspan ?? linespan);
-    return {
-      xs: xs !== undefined ? xs : defaultspan,
-      sm: sm !== undefined ? sm : defaultspan,
-      md: md !== undefined ? md : defaultspan,
-      lg: lg !== undefined ? lg : defaultspan
-    }
-  }
-
   // 拼接当前项的path
   const getCurrentPath = (name?: string, parent?: string) => {
     if (name === undefined) return name;
@@ -198,56 +183,53 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
     const valuesCallback = aopOnValuesChange.addAfter(onValuesChange);
     const FormField = readOnly ? Fields?.['List.Item'] : (properties instanceof Array ? Fields['Form.List'] : Fields['Form.Item']);
-    const FieldComponent = widget && widgets?.[widget];
-    const { children, ...componentProps } = widgetProps || {};
-
+    const FormChild = widget && widgets?.[widget];
+    const { children, ...restWidgetProps } = widgetProps || {};
+    // 当前formChildren的表单渲染数据源
+    const formData = store?.getProperties(propertiesName);
     // 是否隐藏
     const hiddenResult = fieldPropsMap.get(`${currentPath}.hidden`);
     if (hiddenResult) return;
-    const gridProps = getGridProps(field);
     // 是否只读
     if (readOnly === true) {
       const Child = readOnlyWidget && widgets[readOnlyWidget]
       return (
-        <Col {...gridProps} data-type='fragment' key={name} style={{ padding: 0 }}>
-          <FormField {...restField}>
-            {
-              readOnlyRender ??
-              (Child !== undefined && <Child />)
-            }
-          </FormField>
-        </Col>
-      );
-    }
-
-    return (
-      <Col {...gridProps} data-type='fragment' key={name} style={{ padding: 0 }}>
-        <FormField {...restField} name={name} onValuesChange={valuesCallback}>
+        <FormField key={name} {...restField}>
           {
-            typeof properties === 'object' ?
-              (
-                properties instanceof Array ?
-                  properties?.map((formField, index) => {
-                    return generateTree({ name: `[${index}]`, field: formField, path: currentPath });
-                  })
-                  :
-                  Object.entries(properties || {})?.map(
-                    ([name, formField]) => {
-                      return generateTree({ name: name, field: formField, path: currentPath });
-                    }
-                  )
-              ) :
-              <FieldComponent {...componentProps}>{generateChildren(children)}</FieldComponent>
+            readOnlyRender ??
+            (Child !== undefined && <Child {...params} formdata={formData} formname={propertiesName} />)
           }
         </FormField>
-      </Col>
+      );
+    }
+    // 控件的props
+    const fieldChildProps = { ...params, ...restWidgetProps };
+    return (
+      <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
+        {
+          typeof properties === 'object' ?
+            (
+              properties instanceof Array ?
+                properties?.map((formField, index) => {
+                  return generateTree({ name: `[${index}]`, field: formField, path: currentPath });
+                })
+                :
+                Object.entries(properties || {})?.map(
+                  ([name, formField]) => {
+                    return generateTree({ name: name, field: formField, path: currentPath });
+                  }
+                )
+            ) :
+            (FormChild ? <FormChild {...fieldChildProps} formdata={formData} formname={propertiesName}>{generateChildren(children)}</FormChild> : null)
+        }
+      </FormField>
     );
   };
 
   // 渲染
   const getFormList = (properties: SchemaData['properties']) => {
     return (
-      <Row>
+      <>
         {
           Object.entries(properties || {}).map(
             ([name, formField]) => {
@@ -255,7 +237,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
             }
           )
         }
-      </Row>
+      </>
     )
   }
 

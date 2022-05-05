@@ -1,11 +1,12 @@
 import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
-import { FormOptions, FormOptionsContext } from './form-options-context';
-import { getValuePropName, getValueFromEvent, isListItem } from './utils/utils';
-import { FormRule } from './form-store';
+import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
+import { getValuePropName, getValueFromEvent, isListItem, getColProps } from './utils/utils';
+import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
 import { isObjectEqual } from '@/utils/object';
+import { Col } from 'react-flexbox-grid';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
@@ -37,7 +38,7 @@ export const classes = {
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
-  const store = useContext(FormStoreContext)
+  const store = useContext<FormStore>(FormStoreContext)
   const initialValues = useContext(FormValuesContext)
   const options = useContext(FormOptionsContext)
   const finalProps = { ...options, ...props };
@@ -51,7 +52,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     className,
     style,
-    labelAlign = 'horizontal',
+    labelAlign = LabelAlignEnum.Horizontal,
+    col,
     compact,
     required,
     labelStyle,
@@ -214,8 +216,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     ...labelStyle
   }
 
+  const colProps = getColProps({ labelAlign: labelAlign, col });
+
   return (
-    <div ref={ref} className={cls} style={style}>
+    <Col ref={ref} className={cls} style={{ padding: 0, ...style }} {...colProps}>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
           {label}
@@ -228,7 +232,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         <div className={classes.message}>{error}</div>
       </div>
       {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
-    </div>
+    </Col>
   )
 })
 

@@ -5,3 +5,4 @@ export { RenderFormChildren };
 export * from './types';
 export * from './register';
 export * from './formrender-store';
+export * from './use-formrender-store';

@@ -5,14 +5,15 @@ import { FormItem } from './form-item'
 import { FormStore } from './form-store'
 import { FormStoreContext, FormValuesContext } from './form-store-context'
 import { FormOptions, FormOptionsContext } from './form-options-context'
-import { FormList } from './form-list'
+import { FormList } from './form-list';
+import { Row } from 'react-flexbox-grid';
 
 // 缓存数组类型的组件的路径
 export interface FormProps<S = FormStore> extends FormOptions {
   className?: string;
   store?: S;
   style?: CSSProperties;
-  children?: React.ReactNode;
+  children?: any;
   initialValues?: Partial<unknown>;
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
   onReset?: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -33,7 +34,9 @@ export function Form(props: FormProps) {
       <FormStoreContext.Provider value={store}>
         <FormValuesContext.Provider value={initialValues}>
           <FormOptionsContext.Provider value={options}>
-            {children}
+            <Row>
+              {children}
+            </Row>
           </FormOptionsContext.Provider>
         </FormValuesContext.Provider>
       </FormStoreContext.Provider>

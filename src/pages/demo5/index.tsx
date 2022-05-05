@@ -48,6 +48,8 @@ class demo5 extends React.Component {
             readOnlyRender: 1111,
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
+            // labelAlign: 'vertical',
+            col: { span: 6 },
             hidden: '{{$form.name4 == true}}',
             widgetProps: {}
           },
@@ -55,6 +57,8 @@ class demo5 extends React.Component {
             label: "name8",
             widget: 'input',
             required: true,
+            // labelAlign: 'vertical',
+            col: { span: 6 },
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
@@ -64,6 +68,7 @@ class demo5 extends React.Component {
             label: "name9",
             widget: 'input',
             required: true,
+            col: { span: 6 },
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
@@ -73,6 +78,7 @@ class demo5 extends React.Component {
             label: "name10",
             widget: 'input',
             required: true,
+            col: { span: 6 },
             rules: [{ required: true, message: 'name1空了' }],
             initialValue: 1111,
             hidden: '{{$form.name4 == true}}',
@@ -82,6 +88,7 @@ class demo5 extends React.Component {
             label: "name2",
             required: true,
             rules: [{ required: true, message: 'name2空了' }],
+            col: { span: 6 },
             properties: [{
               widget: 'select',
               required: true,
@@ -106,6 +113,7 @@ class demo5 extends React.Component {
           name3: {
             label: 'name3',
             required: true,
+            col: { span: 6 },
             properties: {
               first: {
                 rules: [{ required: true, message: 'name2空了' }],
@@ -130,6 +138,7 @@ class demo5 extends React.Component {
             widget: 'Checkbox',
             required: true,
             valueProp: 'checked',
+            col: { span: 6 },
             initialValue: true,
             rules: [{ required: true, message: 'name3空了' }],
             widgetProps: {
@@ -138,6 +147,7 @@ class demo5 extends React.Component {
             }
           },
           button: {
+            col: { span: 6 },
             widget: 'button',
             label: '',
             widgetProps: {
@@ -173,7 +183,7 @@ class demo5 extends React.Component {
   onClick = () => {
   }
 
-  onFieldsChange = () => {
+  onFieldsChange = (params) => {
   }
 
   render() {
