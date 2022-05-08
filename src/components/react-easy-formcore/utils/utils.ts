@@ -30,7 +30,7 @@ export const isListItem = (item: string) => (/\[(.{1}?)\]/gi.test(item));
 // 列宽
 export const getColProps = (option: FormOptions) => {
   const { labelAlign, col } = option;
-  const { xs, sm, md, lg, span } = col || {};
+  const { xs, sm, md, lg, span, ...restProps } = col || {};
   const linespan = 12;
   // 默认
   const defaultspan = labelAlign !== LabelAlignEnum.Inline && (span ?? linespan);
@@ -38,6 +38,7 @@ export const getColProps = (option: FormOptions) => {
     xs: xs !== undefined ? xs : defaultspan,
     sm: sm !== undefined ? sm : defaultspan,
     md: md !== undefined ? md : defaultspan,
-    lg: lg !== undefined ? lg : defaultspan
+    lg: lg !== undefined ? lg : defaultspan,
+    ...restProps
   }
 }

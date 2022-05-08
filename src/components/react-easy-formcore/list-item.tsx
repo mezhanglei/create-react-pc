@@ -9,7 +9,8 @@ import { ColProps } from './form-options-context';
 export interface ListItemProps {
   label?: any;
   labelAlign?: LabelAlignEnum;
-  col?: ColProps
+  col?: ColProps;
+  colon?: boolean;
   labelStyle?: CSSProperties;
   suffix?: React.ReactNode;
   required?: boolean;
@@ -37,6 +38,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     labelStyle,
     labelAlign = LabelAlignEnum.Horizontal,
     col,
+    colon,
     gutter,
     className,
     children,
@@ -58,16 +60,16 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const colProps = getColProps({ labelAlign: labelAlign, col });
 
   return (
-    <Col ref={ref} className={cls} style={{padding: 0, ...style}} {...colProps}>
-        {label !== undefined && (
-          <div className={classes_item.header} style={headerStyle}>
-            {label}
-          </div>
-        )}
-        <div className={classes_item.container}>
-          {children}
+    <Col ref={ref} className={cls} style={{ padding: 0, ...style }} {...colProps}>
+      {label !== undefined && (
+        <div className={classes_item.header} style={headerStyle}>
+          {colon ? <>{label}:</> : label}
         </div>
-        {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
+      )}
+      <div className={classes_item.container}>
+        {children}
+      </div>
+      {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
     </Col>
   );
 });

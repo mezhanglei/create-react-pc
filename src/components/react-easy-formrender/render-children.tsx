@@ -6,6 +6,7 @@ import { FormOptionsContext, FormStoreContext } from '../react-easy-formcore';
 import { isListItem } from '../react-easy-formcore/utils/utils';
 import { FormRenderStore } from './formrender-store';
 import { isObjectEqual } from '@/utils/object';
+import { isEmpty } from '@/utils/type';
 
 // 不带Form容器的组件
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -190,7 +191,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 是否隐藏
     const hiddenResult = fieldPropsMap.get(`${currentPath}.hidden`);
     if (hiddenResult) return;
-    // 是否只读
+
+    // 只读组件
     if (readOnly === true) {
       const Child = readOnlyWidget && widgets[readOnlyWidget]
       return (
@@ -202,28 +204,35 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         </FormField>
       );
     }
-    // 控件的props
-    const fieldChildProps = { ...params, ...restWidgetProps };
-    return (
-      <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-        {
-          typeof properties === 'object' ?
-            (
-              properties instanceof Array ?
-                properties?.map((formField, index) => {
-                  return generateTree({ name: `[${index}]`, field: formField, path: currentPath });
-                })
-                :
-                Object.entries(properties || {})?.map(
-                  ([name, formField]) => {
-                    return generateTree({ name: name, field: formField as FormFieldProps, path: currentPath });
-                  }
-                )
-            ) :
-            (FormChild ? <FormChild {...fieldChildProps} formdata={formData} formname={propertiesName}>{generateChildren(children)}</FormChild> : null)
-        }
-      </FormField>
-    );
+
+    // 嵌套组件
+    if (typeof properties === 'object' && !isEmpty(properties)) {
+      return (
+        <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
+          {
+
+            properties instanceof Array ?
+              properties?.map((formField, index) => {
+                return generateTree({ name: `[${index}]`, field: formField, path: currentPath });
+              })
+              :
+              Object.entries(properties || {})?.map(
+                ([name, formField]) => {
+                  return generateTree({ name: name, field: formField as FormFieldProps, path: currentPath });
+                }
+              )
+          }
+        </FormField>
+      )
+      // widget组件
+    } else {
+      const fieldChildProps = { ...params, ...restWidgetProps };
+      return (
+        <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
+          {FormChild ? <FormChild {...fieldChildProps} formdata={formData} formname={propertiesName}>{generateChildren(children)}</FormChild> : null}
+        </FormField>
+      )
+    }
   };
 
   // 渲染

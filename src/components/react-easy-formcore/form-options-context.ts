@@ -21,6 +21,7 @@ export interface ColProps {
 
 export interface FormOptions extends FormFunc {
   col?: ColProps;
+  colon?: boolean;
   labelAlign?: LabelAlignEnum;
   labelStyle?: CSSProperties;
   initialValues?: Partial<unknown>;

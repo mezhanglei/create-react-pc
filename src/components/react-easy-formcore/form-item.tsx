@@ -54,6 +54,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     style,
     labelAlign = LabelAlignEnum.Horizontal,
     col,
+    colon,
     compact,
     required,
     labelStyle,
@@ -222,7 +223,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     <Col ref={ref} className={cls} style={{ padding: 0, ...style }} {...colProps}>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
-          {label}
+          {colon ? <>{label}:</> : label}
         </div>
       )}
       <div className={classes.container}>
