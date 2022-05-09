@@ -2,7 +2,6 @@
 import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { useFormRenderStore } from './form-render';
-import UploadFile from './upload-component/file-upload';
 
 export default function Demo5(props) {
 
@@ -35,6 +34,7 @@ export default function Demo5(props) {
         label: "输入框",
         widget: 'Input',
         required: true,
+        // labelAlign: 'vertical',
         // col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
@@ -44,6 +44,7 @@ export default function Demo5(props) {
       name3: {
         label: "数组",
         required: true,
+        // labelAlign: 'vertical',
         // col: { span: 6 },
         properties: [{
           widget: 'Select',
@@ -75,6 +76,7 @@ export default function Demo5(props) {
       name4: {
         label: '对象嵌套',
         required: true,
+        // labelAlign: 'vertical',
         // col: { span: 6 },
         properties: {
           first: {
@@ -96,8 +98,9 @@ export default function Demo5(props) {
         }
       },
       name5: {
-        label: 'name4',
+        label: 'name5',
         widget: 'Checkbox',
+        // labelAlign: 'vertical',
         required: true,
         valueProp: 'checked',
         // col: { span: 6 },
@@ -107,6 +110,14 @@ export default function Demo5(props) {
           style: { width: '100%' },
           children: '多选框'
         }
+      },
+      name6: {
+        label: 'Upload',
+        widget: 'Upload',
+        // labelAlign: 'vertical',
+        dependencies: ['name5', 'name4'],
+        required: true,
+        // col: { span: 6 }
       },
     }
   })
@@ -125,7 +136,6 @@ export default function Demo5(props) {
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>
       </div>
-      <UploadFile />
     </div>
   );
 }

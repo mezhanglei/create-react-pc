@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
+import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
 import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
 import { getValuePropName, getValueFromEvent, isListItem, getColProps } from './utils/utils';
@@ -101,8 +101,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     // 订阅目标控件
     const uninstall = store.subscribeValue(currentPath, (newValue, oldValue) => {
       setValue(newValue);
-      // 不监听`initialValue`赋值
-      if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
+      if (!isObjectEqual(newValue, oldValue)) {
         onValuesChange && onValuesChange({ path: currentPath, value: newValue })
       }
     })
@@ -128,25 +127,21 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useEffect(() => {
     if (!currentPath || !store) return;
     if (initialValue !== undefined) {
-      // 回填store.values
-      store.setFieldValue(currentPath, initialValue, true);
-      // 回填store.initialValues
+      // 回填store.initialValues和回填store.values
       store.setInitialValues(currentPath, initialValue);
     }
     store?.setFieldProps(currentPath, fieldProps);
     return () => {
       // 清除该表单域的props(在设置值的前面)
       store?.setFieldProps(currentPath, undefined);
-      // 清除值
-      store.setFieldValue(currentPath, undefined, true);
       // 清除初始值
-      store.setInitialValues(currentPath, undefined);
+      store.setInitialValues(currentPath, undefined, true);
     }
-  }, [currentPath, store]);
+  }, [currentPath, JSON.stringify(initialValue)]);
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (currentPath && isValidElement(child)) {
+    if (currentPath && child) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { onChange, className } = childProps || {};

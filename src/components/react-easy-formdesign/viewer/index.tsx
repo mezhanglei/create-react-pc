@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
+import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
 import { StoreContext } from '../design-context';
 import classnames from 'classnames';
 

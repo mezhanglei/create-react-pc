@@ -108,8 +108,9 @@ export const mergeObject = function (obj1: any, obj2: any) {
   const clone = klona(obj1);
   for (let key in obj2) {
     if (obj2[key] !== undefined) {
-      clone[key] = obj2[key];
-      if (obj1[key] === undefined) {
+      if (obj2[key].constructor == Object) {
+        clone[key] = mergeObject(clone[key], obj2[key]);
+      } else {
         clone[key] = obj2[key];
       }
     }

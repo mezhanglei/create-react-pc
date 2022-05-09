@@ -1,6 +1,6 @@
 import { FormItemProps, FormProps } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
-import { defaultFields } from './register';
+import { defaultFields } from './default-field';
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
@@ -31,7 +31,7 @@ export interface RenderFormProps extends FormProps<FormRenderStore> {
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps {
-  propertiesName: string; // 控件数据源的名
+  childrenName: string; // 当前渲染的children的名
   properties: SchemaData['properties']; // 控件数据源的数据
   onPropertiesChange?: (name: string, properties: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };

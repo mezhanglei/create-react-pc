@@ -94,12 +94,25 @@ export class FormStore<T extends Object = any> {
   }
 
   // 设置初始值
-  public setInitialValues(path: string, initialValue: any) {
+  public setInitialValues(path: string, initialValue: any, isHidden?: boolean) {
     this.initialValues = deepSet(this.initialValues, path, initialValue);
+    // 旧表单值存储
+    this.lastValues = klona(this.values);
+    // 设置值
+    this.values = deepSet(this.values, path, initialValue);
+    // 同步ui
+    this.notifyValue(path, isHidden);
+    // 同时触发另一个值的监听
+    this.notifyStoreValue(path, isHidden);
+  }
+
+  // 获取初始值
+  public getInitialValues(path?: string |string[]) {
+    return path === undefined ? (this.initialValues && { ...this.initialValues }) : deepGet(this.initialValues, path)
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(path: string | Partial<T>, value?: any, isMount?: boolean) {
+  public async setFieldValue(path: string | Partial<T>, value?: any) {
     if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = klona(this.values);
@@ -108,12 +121,12 @@ export class FormStore<T extends Object = any> {
       // 同步ui
       this.notifyValue(path);
       // 同时触发另一个值的监听
-      this.notifyStoreValue(path, isMount);
+      this.notifyStoreValue(path);
       // 规则
       const rules = this.fieldsProps?.[path]?.['rules'];
       if (rules?.length) {
         // 校验规则
-        await this.validate(path, isMount);
+        await this.validate(path);
       }
     } else if (typeof path === 'object') {
       await Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
@@ -162,8 +175,8 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(path: string, isMount?: boolean): Promise<string>
-  public async validate(path?: string, isMount?: boolean) {
+  public async validate(path: string): Promise<string>
+  public async validate(path?: string) {
     if (path === undefined) {
       const result = await Promise.all(Object.keys(this.fieldsProps)?.map((n) => {
         const rules = this.fieldsProps?.[n]?.['rules'];
@@ -177,7 +190,6 @@ export class FormStore<T extends Object = any> {
         values: this.getFieldValue()
       }
     } else {
-      if (isMount === true) return;
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
@@ -225,10 +237,10 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步值的变化
-  private notifyValue(path?: string) {
+  private notifyValue(path?: string, isHidden?: boolean) {
     if (path) {
       this.valueListeners.forEach((listener) => {
-        if (isExitPrefix(listener?.path, path)) {
+        if (listener?.path === path && !isHidden) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
         }
       })
@@ -238,15 +250,13 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步值的变化
-  private notifyStoreValue(path?: string, isMount?: boolean) {
+  private notifyStoreValue(path?: string, isHidden?: boolean) {
     if (path) {
-      if (!isMount) {
-        this.storeValueListeners.forEach((listener) => {
-          if (isExitPrefix(listener?.path, path)) {
-            listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
-          }
-        })
-      }
+      this.storeValueListeners.forEach((listener) => {
+        if (isExitPrefix(listener?.path, path) && !isHidden) {
+          listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
+        }
+      })
     } else {
       this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }

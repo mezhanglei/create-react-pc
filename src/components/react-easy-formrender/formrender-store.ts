@@ -43,22 +43,22 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 更新properties中指定路径的值
-  updatePropertiesByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  updatePropertiesByPath = (path: string, data?: Partial<FormFieldProps>, childrenName = "default") => {
+    const properties = this.getProperties(childrenName);
     if (properties) {
       let newProperties = updatePropertiesByPath(properties, path, data);
       newProperties = klona(newProperties);
-      this.setProperties(propertiesName, newProperties);
+      this.setProperties(childrenName, newProperties);
     }
   }
 
   // 覆盖设置properties中指定路径的值
-  setPropertiesByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  setPropertiesByPath = (path: string, data?: Partial<FormFieldProps>, childrenName = "default") => {
+    const properties = this.getProperties(childrenName);
     if (properties) {
       let newProperties = setPropertiesByPath(properties, path, data);
       newProperties = klona(newProperties);
-      this.setProperties(propertiesName, newProperties);
+      this.setProperties(childrenName, newProperties);
     }
   }
 
