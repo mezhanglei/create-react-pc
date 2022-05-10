@@ -136,7 +136,6 @@ export default class UploadImage extends React.Component<UploadImageProps, Uploa
     const { value, onChange, ...rest } = this.props;
     const { maxCount } = rest;
     const { fileList, previewVisible, previewImage, previewTitle } = this.state;
-    // console.log(this.props)
     const uploadButton = (
       <div>
         {/* <PlusOutlined /> */}

@@ -35,9 +35,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     if (data === undefined) {
       delete this.propertiesMap[name]
     } else {
-      const lastData = this.propertiesMap[name];
-      const newData = { ...lastData, ...data };
-      this.propertiesMap[name] = newData;
+      this.propertiesMap[name] = data;
     }
     this.notifyProperties(name);
   }

@@ -99,7 +99,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   useEffect(() => {
     if (!currentPath || !store) return
     // 订阅目标控件
-    const uninstall = store.subscribeValue(currentPath, (newValue, oldValue) => {
+    const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!isObjectEqual(newValue, oldValue)) {
         onValuesChange && onValuesChange({ path: currentPath, value: newValue })
@@ -126,16 +126,17 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   // 表单域初始化值
   useEffect(() => {
     if (!currentPath || !store) return;
+    // (在设置值的前面)
+    store?.setInitialFieldProps(currentPath, fieldProps);
     if (initialValue !== undefined) {
       // 回填store.initialValues和回填store.values
       store.setInitialValues(currentPath, initialValue);
     }
-    store?.setFieldProps(currentPath, fieldProps);
     return () => {
       // 清除该表单域的props(在设置值的前面)
-      store?.setFieldProps(currentPath, undefined);
+      store?.setInitialFieldProps(currentPath, undefined);
       // 清除初始值
-      store.setInitialValues(currentPath, undefined, true);
+      store.setInitialValues(currentPath, undefined);
     }
   }, [currentPath, JSON.stringify(initialValue)]);
 

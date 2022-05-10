@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, SchemaData } from './types';
 import { defaultFields } from './default-field';
 import { AopFactory } from '@/utils/function-aop';
@@ -15,7 +15,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const options = useContext(FormOptionsContext)
 
   const [fieldPropsMap, setFieldPropsMap] = useState<Map<string, any>>(new Map());
+  const [dependValuesMap, setDependValuesMap] = useState<Map<string, any>>(new Map());
   const [properties, setProperties] = useState<SchemaData['properties']>({});
+  const isMountRef = useRef<boolean>(true);
 
   const {
     Fields = defaultFields,
@@ -39,7 +41,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 订阅目标控件
     const uninstall = store.subscribeProperties(childrenName, (newValue, oldValue) => {
       setProperties(newValue);
-      if (oldValue !== undefined && !isObjectEqual(newValue, oldValue)) {
+      if (!isMountRef.current && !isObjectEqual(newValue, oldValue)) {
         onPropertiesChange && onPropertiesChange(childrenName, newValue)
       }
     })
@@ -52,6 +54,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   useEffect(() => {
     if (store && props?.properties) {
       store.setProperties(childrenName, props?.properties)
+      isMountRef.current = false;
     }
   }, [JSON.stringify(props?.properties)]);
 
@@ -61,7 +64,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
     initWatch();
     return () => {
-      store?.removeListenStoreValue();
+      store?.removeListenFormGlobal();
     }
   }, [JSON.stringify(properties)]);
 
@@ -70,11 +73,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Object.entries(watch || {})?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
-        store?.listenStoreValue(key, watcher)
+        store?.listenFormGlobal(key, watcher)
         // 对象形式
       } else if (typeof watcher === 'object') {
         if (typeof watcher.handler === 'function') {
-          store?.listenStoreValue(key, watcher.handler);
+          store?.listenFormGlobal(key, watcher.handler);
         }
         if (watcher.immediate) {
           watcher.handler(store?.getFieldValue(key), store?.getLastValue(key));
@@ -86,6 +89,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 递归遍历表单域的属性
   const handleFieldProps = () => {
     const fieldPropsMap = new Map();
+    const dependValuesMap = new Map();
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formField: FormFieldProps, parent: string) => {
       for (const key in formField) {
@@ -94,6 +98,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           const path = parent ? `${parent}.${key}` : key;
           const result = calcExpression(value);
           fieldPropsMap.set(path, result);
+          if (key === 'dependencies') {
+            const dependValues = getDependencies(result);
+            dependValuesMap.set(parent, dependValues);
+          }
         } else {
           if (value instanceof Array) {
             for (let i = 0; i < value?.length; i++) {
@@ -117,6 +125,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       deepHandle(formField, key);
     }
     setFieldPropsMap(fieldPropsMap);
+    setDependValuesMap(dependValuesMap);
   }
 
   // 展示计算完表达式之后的结果
@@ -166,7 +175,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 拼接当前项的path
-  const getCurrentPath = (name?: string, parent?: string) => {
+  const getCurrentPath = (name: string, parent?: string) => {
     if (name === undefined) return name;
     if (isListItem(name)) {
       return parent ? `${parent}${name}` : name;
@@ -180,7 +189,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const values = dependencies?.length ? {} : undefined;
     for (let i = 0; i < dependencies?.length; i++) {
       const pathStr = dependencies[i];
-      if (values) {
+      if (values && pathStr) {
         values[pathStr] = store?.getFieldValue(pathStr);
       }
     }
@@ -199,6 +208,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const FormItemChild = widget && widgets?.[widget];
     const { children, ...restWidgetProps } = widgetProps || {};
     const fieldChildProps = { ...params, ...restWidgetProps };
+    // 依赖的值
+    const dependvalues = dependValuesMap.get(currentPath);
     // 是否隐藏
     const hiddenResult = fieldPropsMap.get(`${currentPath}.hidden`);
     if (hiddenResult) return;
@@ -210,7 +221,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         <FormField key={name} {...restField}>
           {
             readOnlyRender ??
-            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} childrenname={childrenName} store={store} />)
+            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} childrenname={childrenName} dependvalues={dependvalues} store={store} />)
           }
         </FormField>
       );
@@ -238,7 +249,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     } else {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-          {FormItemChild ? <FormItemChild {...fieldChildProps} childrenname={childrenName} store={store}>{generateChildren(children)}</FormItemChild> : null}
+          {FormItemChild ? <FormItemChild {...fieldChildProps} childrenname={childrenName} dependvalues={dependvalues} store={store}>{generateChildren(children)}</FormItemChild> : null}
         </FormField>
       )
     }

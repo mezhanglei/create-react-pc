@@ -65,7 +65,7 @@ export interface DndBaseProps {
   onAdd?: DndHandle; // 当前容器添加新元素触发的函数
   onUpdate?: DndHandle; // 当前容器排序触发的函数
   onHover?: (over: HTMLElement) => void; // 被hover的元素触发的事件
-  onUnHover?: (over: HTMLElement) => void; // hover元素更换触发的事件
+  onUnHover?: (over: HTMLElement) => void; // 元素失去hover状态时触发的事件
   // 拖拽相关的配置
   options: {
     groupPath?: string; // 拖拽容器的路径

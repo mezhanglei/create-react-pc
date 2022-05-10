@@ -2,6 +2,7 @@
 import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { useFormRenderStore } from './form-render';
+// import {Form, useFormStore} from '@/components/react-easy-formcore'
 
 export default function Demo5(props) {
 
@@ -26,7 +27,7 @@ export default function Demo5(props) {
         readOnly: true,
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
-        // col: { span: 6 },
+        col: { span: 6 },
         hidden: '{{$form.name5 == true}}',
         widgetProps: {}
       },
@@ -35,7 +36,7 @@ export default function Demo5(props) {
         widget: 'Input',
         required: true,
         // labelAlign: 'vertical',
-        // col: { span: 6 },
+        col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
         hidden: '{{$form.name5 == true}}',
@@ -45,7 +46,7 @@ export default function Demo5(props) {
         label: "数组",
         required: true,
         // labelAlign: 'vertical',
-        // col: { span: 6 },
+        col: { span: 6 },
         properties: [{
           widget: 'Select',
           required: true,
@@ -77,7 +78,7 @@ export default function Demo5(props) {
         label: '对象嵌套',
         required: true,
         // labelAlign: 'vertical',
-        // col: { span: 6 },
+        col: { span: 6 },
         properties: {
           first: {
             rules: [{ required: true, message: 'name4空了' }],
@@ -103,7 +104,7 @@ export default function Demo5(props) {
         // labelAlign: 'vertical',
         required: true,
         valueProp: 'checked',
-        // col: { span: 6 },
+        col: { span: 6 },
         initialValue: true,
         rules: [{ required: true, message: 'name3空了' }],
         widgetProps: {
@@ -114,10 +115,10 @@ export default function Demo5(props) {
       name6: {
         label: 'Upload',
         widget: 'Upload',
+        dependencies: ['name3', 'name4'],
         // labelAlign: 'vertical',
-        dependencies: ['name5', 'name4'],
         required: true,
-        // col: { span: 6 }
+        col: { span: 6 }
       },
     }
   })
