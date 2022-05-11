@@ -28,16 +28,23 @@ export interface RenderFormProps extends FormProps<FormRenderStore> {
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   widgets?: { [key: string]: any };
   Fields?: typeof defaultFields;
+  // 自定义渲染子元素
+  customRender?: (properties: SchemaData['properties'], generate: generateChildFunc, path?: string) => JSX.Element | undefined;
 };
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps {
-  childrenName: string; // 当前渲染的children的名
+  propertiesName: string; // 当前渲染的表单的名
   properties: SchemaData['properties']; // 控件数据源的数据
   onPropertiesChange?: (name: string, properties: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   widgets: { [key: string]: any };
   Fields?: typeof defaultFields;
+  // 自定义渲染子元素
+  customRender?: (properties: SchemaData['properties'], generate: generateChildFunc, path?: string) => JSX.Element | undefined;
 };
 
 export type ValueOf<T> = T[keyof T];
+
+// 生成子元素
+export type generateChildFunc = (params: { name: string, field: FormFieldProps, path?: string }) => JSX.Element | undefined

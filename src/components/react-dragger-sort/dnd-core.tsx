@@ -26,7 +26,9 @@ export default function BuildDndSortable() {
     }
 
     componentDidMount() {
-      this.initManagerData();
+      setTimeout(() => {
+        this.initManagerData();
+      }, 0);
     }
 
     componentWillUnmount() {

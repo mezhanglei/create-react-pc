@@ -1,8 +1,9 @@
 // export default demo5;
 import { Button } from 'antd';
 import React, { useState } from 'react';
-import RenderForm, { useFormRenderStore } from './form-render';
+import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore'
+import DndSortable, { arrayMove, DndProps } from '@/components/react-dragger-sort';
 
 export default function Demo5(props) {
 
@@ -27,7 +28,7 @@ export default function Demo5(props) {
         readOnly: true,
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
-        col: { span: 6 },
+        // col: { span: 6 },
         hidden: '{{$form.name5 == true}}',
         widgetProps: {}
       },
@@ -36,7 +37,7 @@ export default function Demo5(props) {
         widget: 'Input',
         required: true,
         // labelAlign: 'vertical',
-        col: { span: 6 },
+        // col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
         hidden: '{{$form.name5 == true}}',
@@ -46,10 +47,11 @@ export default function Demo5(props) {
         label: "数组",
         required: true,
         // labelAlign: 'vertical',
-        col: { span: 6 },
+        // col: { span: 6 },
         properties: [{
           widget: 'Select',
           required: true,
+          // col: { span: 6 },
           rules: [{ required: true, message: 'name3[0]空了' }],
           initialValue: { label: '选项1', value: '1', key: '1' },
           widgetProps: {
@@ -63,6 +65,7 @@ export default function Demo5(props) {
         }, {
           widget: 'Select',
           required: true,
+          // col: { span: 6 },
           rules: [{ required: true, message: 'name3[1]空了' }],
           widgetProps: {
             labelInValue: true,
@@ -78,19 +81,41 @@ export default function Demo5(props) {
         label: '对象嵌套',
         required: true,
         // labelAlign: 'vertical',
-        col: { span: 6 },
+        // col: { span: 6 },
         properties: {
           first: {
             rules: [{ required: true, message: 'name4空了' }],
             widget: 'Select',
+            // col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
-            }
+            },
+            // properties: {
+            //   first: {
+            //     rules: [{ required: true, message: 'name4空了' }],
+            //     widget: 'Select',
+            //     col: { span: 6 },
+            //     widgetProps: {
+            //       style: { width: '100%' },
+            //       children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+            //     }
+            //   },
+            //   second: {
+            //     rules: [{ required: true, message: 'name2空了' }],
+            //     widget: 'Select',
+            //     col: { span: 6 },
+            //     widgetProps: {
+            //       style: { width: '100%' },
+            //       children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+            //     }
+            //   }
+            // }
           },
           second: {
             rules: [{ required: true, message: 'name2空了' }],
             widget: 'Select',
+            // col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
@@ -104,7 +129,7 @@ export default function Demo5(props) {
         // labelAlign: 'vertical',
         required: true,
         valueProp: 'checked',
-        col: { span: 6 },
+        // col: { span: 6 },
         initialValue: true,
         rules: [{ required: true, message: 'name3空了' }],
         widgetProps: {
@@ -117,7 +142,8 @@ export default function Demo5(props) {
         widget: 'Upload',
         dependencies: ['name3', 'name4'],
         // labelAlign: 'vertical',
-        required: true,
+        // required: true,
+        // rules: [{ required: true, message: 'name3空了' }],
         col: { span: 6 }
       },
     }
@@ -131,9 +157,37 @@ export default function Demo5(props) {
     console.log(result, '表单结果');
   };
 
+  const customRender: RenderFormProps['customRender'] = (properties, generate, path) => {
+    return (
+      <DndSortable
+        options={{
+          groupPath: 'components',
+          childDrag: true,
+          allowDrop: true,
+          allowSort: true
+        }}
+      >
+        {
+          properties instanceof Array ?
+            properties?.map((formField, index) => {
+              return generate({ name: `[${index}]`, field: formField, path });
+            })
+            :
+            Object.entries(properties || {})?.map(
+              ([name, formField]) => {
+                return generate({ name: name, field: formField, path });
+              }
+            )
+        }
+      </DndSortable>
+    )
+  }
+
   return (
     <div>
-      <RenderForm store={store} schema={schema} watch={watch} />
+      <RenderForm store={store} schema={schema} watch={watch}
+      // customRender={customRender}
+      />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>
       </div>

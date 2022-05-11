@@ -60,7 +60,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const colProps = getColProps({ labelAlign: labelAlign, col });
 
   return (
-    <Col ref={ref} className={cls} style={{ padding: 0, ...style }} {...colProps}>
+    <Col ref={ref} className={cls} style={style} {...colProps}>
       {label !== undefined && (
         <div className={classes_item.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}

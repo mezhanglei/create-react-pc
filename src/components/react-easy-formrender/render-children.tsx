@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { FormFieldProps, RenderFormChildrenProps, SchemaData } from './types';
+import { FormFieldProps, generateChildFunc, RenderFormChildrenProps, SchemaData } from './types';
 import { defaultFields } from './default-field';
 import { AopFactory } from '@/utils/function-aop';
 import { FormOptionsContext, FormStoreContext } from '../react-easy-formcore';
@@ -23,8 +23,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Fields = defaultFields,
     widgets,
     watch,
-    childrenName = 'default',
-    onPropertiesChange
+    propertiesName = 'default',
+    onPropertiesChange,
+    customRender
   } = props;
 
   const {
@@ -37,23 +38,23 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 订阅更新properties的函数,j将传值更新到state里面
   useEffect(() => {
-    if (!store || !childrenName) return
+    if (!store || !propertiesName) return
     // 订阅目标控件
-    const uninstall = store.subscribeProperties(childrenName, (newValue, oldValue) => {
+    const uninstall = store.subscribeProperties(propertiesName, (newValue, oldValue) => {
       setProperties(newValue);
       if (!isMountRef.current && !isObjectEqual(newValue, oldValue)) {
-        onPropertiesChange && onPropertiesChange(childrenName, newValue)
+        onPropertiesChange && onPropertiesChange(propertiesName, newValue)
       }
     })
     return () => {
       uninstall()
     }
-  }, [childrenName]);
+  }, [propertiesName]);
 
   // 收集properties到store中
   useEffect(() => {
     if (store && props?.properties) {
-      store.setProperties(childrenName, props?.properties)
+      store.setProperties(propertiesName, props?.properties)
       isMountRef.current = false;
     }
   }, [JSON.stringify(props?.properties)]);
@@ -196,8 +197,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return values;
   }
 
-  // 生成组件树
-  const generateTree = (params: { name: string, field: FormFieldProps, path?: string }) => {
+  // 生成表单控件
+  const generateChild: generateChildFunc = (params) => {
     const { name, field, path } = params || {};
     const currentPath = getCurrentPath(name, path);
     const newField = showCalcFieldProps(field, currentPath);
@@ -221,7 +222,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         <FormField key={name} {...restField}>
           {
             readOnlyRender ??
-            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} childrenname={childrenName} dependvalues={dependvalues} store={store} />)
+            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} propertiesname={propertiesName} dependvalues={dependvalues} store={store} />)
           }
         </FormField>
       );
@@ -231,44 +232,41 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (typeof properties === 'object' && !isEmpty(properties)) {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-          {
-            properties instanceof Array ?
-              properties?.map((formField, index) => {
-                return generateTree({ name: `[${index}]`, field: formField, path: currentPath });
-              })
-              :
-              Object.entries(properties || {})?.map(
-                ([name, formField]) => {
-                  return generateTree({ name: name, field: formField as FormFieldProps, path: currentPath });
-                }
-              )
-          }
+          {renderChildrenList(properties, generateChild, currentPath)}
         </FormField>
       )
       // widget组件
     } else {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-          {FormItemChild ? <FormItemChild {...fieldChildProps} childrenname={childrenName} dependvalues={dependvalues} store={store}>{generateChildren(children)}</FormItemChild> : null}
+          {FormItemChild ? <FormItemChild {...fieldChildProps} propertiesname={propertiesName} dependvalues={dependvalues} store={store}>{generateChildren(children)}</FormItemChild> : null}
         </FormField>
       )
     }
   };
 
-  // 渲染
-  const getFormList = (properties: SchemaData['properties']) => {
+  // 根据properties渲染子列表
+  const renderChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, path?: string) => {
+    if (customRender) {
+      return customRender(properties, generate, path);
+    }
     return (
       <>
         {
-          Object.entries(properties || {}).map(
-            ([name, formField]) => {
-              return generateTree({ name: name, field: formField });
-            }
-          )
+          properties instanceof Array ?
+            properties?.map((formField, index) => {
+              return generate({ name: `[${index}]`, field: formField, path });
+            })
+            :
+            Object.entries(properties || {})?.map(
+              ([name, formField]) => {
+                return generate({ name: name, field: formField, path });
+              }
+            )
         }
       </>
     )
   }
 
-  return getFormList(properties);
+  return renderChildrenList(properties, generateChild);
 }

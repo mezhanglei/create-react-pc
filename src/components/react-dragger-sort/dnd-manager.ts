@@ -45,7 +45,7 @@ export class DndManager<T extends Object = any> {
       return self;
     }
     for (let child of items) {
-      if (isMoveIn(e, child)) {
+      if (child && isMoveIn(e, child)) {
         childs.push(child);
       }
     }
@@ -66,7 +66,7 @@ export class DndManager<T extends Object = any> {
     let near;
     for (let i = 0; i < children?.length; i++) {
       const node = children[i] as HTMLElement;
-      if (css(node, 'display') !== 'none') {
+      if (node && css(node, 'display') !== 'none') {
         if (near) {
           const minChildRect = getRect(near)
           const nextChildRect = getRect(node)

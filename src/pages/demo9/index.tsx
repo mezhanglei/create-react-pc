@@ -49,11 +49,7 @@ class Demo9 extends Component {
     super(props);
     this.state = {
       data: [{
-        name: 'Input',
-        attr: {
-          size: 'large',
-          value: '第一个'
-        }
+        name: 'Input'
       }],
     };
   }
@@ -137,7 +133,7 @@ class Demo9 extends Component {
         const path = parent === undefined ? String(index) : `${parent}.${index}`;
         if (item.children) {
           return (
-            <div {...item.attr} key={uniqueId()}>
+            <div key={uniqueId()}>
               <DndSortable
                 options={{
                   groupPath: path,
@@ -158,7 +154,7 @@ class Demo9 extends Component {
           );
         }
         const ComponentInfo = GlobalComponent[item.name];
-        return (<div key={path}><ComponentInfo {...item.attr} /></div>);
+        return (<div key={path}><ComponentInfo /></div>);
       });
     };
 
@@ -184,7 +180,7 @@ class Demo9 extends Component {
           options={{
             childDrag: true,
             allowDrop: true,
-            allowSort: false
+            allowSort: true
           }}
           onHover={this.onHover}
           onUnHover={this.onUnHover}

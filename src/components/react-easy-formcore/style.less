@@ -1,10 +1,6 @@
-.flex-form-row.row {
-  margin-left: 0px;
-  margin-right: 0px;
-}
 .rh-form-field,
 .rh-form-list {
-  margin-bottom: 16px;
+  padding: 8px;
   &--horizontal {
     display: flex;
     align-items: flex-start;
@@ -52,6 +48,11 @@
     flex: 1;
   }
 
+  &__control.row {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
   &__message {
     position: absolute;
     top: 100%;
@@ -66,9 +67,11 @@
   }
 
   &--error &__container &__control {
+
     .ant-input,
     .ant-select-selector {
       border-color: #ff4d4f;
+
       &:hover {
         border-color: #ff7875;
         box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);

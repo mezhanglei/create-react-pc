@@ -6,7 +6,7 @@ import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
 import { isObjectEqual } from '@/utils/object';
-import { Col } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
@@ -61,7 +61,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     gutter,
     errorClassName = 'error',
     onFieldsChange,
-    onValuesChange
+    onValuesChange,
+    initialValue,
+    rules,
+    ...restField
   } = fieldProps;
 
   // 拼接当前项的path
@@ -75,7 +78,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   }
 
   const currentPath = getCurrentPath(name, path);
-  const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
+  const initialItemValue = initialValues?.[currentPath as string] ?? initialValue;
   const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
   const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
 
@@ -128,9 +131,9 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     if (!currentPath || !store) return;
     // (在设置值的前面)
     store?.setInitialFieldProps(currentPath, fieldProps);
-    if (initialValue !== undefined) {
+    if (initialItemValue !== undefined) {
       // 回填store.initialValues和回填store.values
-      store.setInitialValues(currentPath, initialValue);
+      store.setInitialValues(currentPath, initialItemValue);
     }
     return () => {
       // 清除该表单域的props(在设置值的前面)
@@ -138,7 +141,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       // 清除初始值
       store.setInitialValues(currentPath, undefined);
     }
-  }, [currentPath, JSON.stringify(initialValue)]);
+  }, [currentPath, JSON.stringify(initialItemValue)]);
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
@@ -216,16 +219,16 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const colProps = getColProps({ labelAlign: labelAlign, col });
 
   return (
-    <Col ref={ref} className={cls} style={{ padding: 0, ...style }} {...colProps}>
+    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}
         </div>
       )}
       <div className={classes.container}>
-        <div className={classes.control}>
+        <Row className={classes.control}>
           {childs}
-        </div>
+        </Row>
         <div className={classes.message}>{error}</div>
       </div>
       {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}

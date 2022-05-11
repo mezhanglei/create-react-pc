@@ -32,7 +32,7 @@ export const getColProps = (option: FormOptions) => {
   const { labelAlign, col } = option;
   const { xs, sm, md, lg, span, ...restProps } = col || {};
   const linespan = 12;
-  // 默认
+  // inline时不传参数
   const defaultspan = labelAlign !== LabelAlignEnum.Inline && (span ?? linespan);
   return {
     xs: xs !== undefined ? xs : defaultspan,

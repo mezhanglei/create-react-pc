@@ -3,7 +3,7 @@ import { FormRule } from './form-store';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
-import { Col } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
 
 export interface FormListProps extends FormOptions {
@@ -51,11 +51,15 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     compact,
     required,
     labelStyle,
-    gutter
+    gutter,
+    onFieldsChange,
+    onValuesChange,
+    initialValue,
+    ...restField
   } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-  const initialValue = initialValues?.[currentPath as string] ?? fieldProps?.initialValue;
+  const initialListValue = initialValues?.[currentPath as string] ?? initialValue;
 
   // 是否为表单控件
   const isFormField = (child: any) => {
@@ -97,7 +101,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const renderPropsChildrenItem = (child: any, index: number) => {
     if (isFormField(child)) {
       const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
-      const childValue = child?.props?.initialValue ?? initialValue?.[index];
+      const childValue = child?.props?.initialValue ?? initialListValue?.[index];
       return child && cloneElement(child, {
         path: currentPath,
         name: `[${index}]`,
@@ -127,14 +131,16 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const colProps = getColProps({ labelAlign: labelAlign, col });
 
   return (
-    <Col ref={ref} className={cls} style={{padding: 0, ...style}} {...colProps}>
+    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
       {label !== undefined && (
         <div className={classes_list.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}
         </div>
       )}
       <div className={classes_list.container}>
-        {childs}
+        <Row className={classes_list.control}>
+          {childs}
+        </Row>
       </div>
       {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
     </Col>
