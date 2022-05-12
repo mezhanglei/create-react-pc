@@ -1,6 +1,6 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
-import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
+import { FormOptions, FormOptionsContext, Layout } from './form-options-context';
 import { getValuePropName, getValueFromEvent, isListItem, getColProps } from './utils/utils';
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
@@ -52,7 +52,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     className,
     style,
-    labelAlign = LabelAlignEnum.Horizontal,
+    layout = Layout.Horizontal,
     col,
     colon,
     compact,
@@ -208,7 +208,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     required ? classes.required : '',
     error ? classes.error : '',
     className ? className : '',
-    `${classes.field}--${labelAlign}`,
+    `${classes.field}--${layout}`,
   )
 
   const headerStyle = {
@@ -216,7 +216,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     ...labelStyle
   }
 
-  const colProps = getColProps({ labelAlign: labelAlign, col });
+  const colProps = getColProps({ layout: layout, col });
 
   return (
     <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>

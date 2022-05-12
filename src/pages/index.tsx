@@ -10,6 +10,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // 引入全局样式
 import "less/index.less";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
 // 只在开发环境下引入
 // if (process.env.NODE_ENV === 'development') {

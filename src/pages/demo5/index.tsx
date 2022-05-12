@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore'
 import DndSortable, { arrayMove, DndProps } from '@/components/react-dragger-sort';
+import './index.less'
 
 export default function Demo5(props) {
 
@@ -78,49 +79,51 @@ export default function Demo5(props) {
         }]
       },
       name4: {
-        label: '对象嵌套',
+        // label: '对象嵌套',
         required: true,
         // labelAlign: 'vertical',
         // col: { span: 6 },
         properties: {
           first: {
+            label: '对象嵌套1',
             rules: [{ required: true, message: 'name4空了' }],
             widget: 'Select',
-            // col: { span: 6 },
-            widgetProps: {
-              style: { width: '100%' },
-              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
-            },
-            // properties: {
-            //   first: {
-            //     rules: [{ required: true, message: 'name4空了' }],
-            //     widget: 'Select',
-            //     col: { span: 6 },
-            //     widgetProps: {
-            //       style: { width: '100%' },
-            //       children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
-            //     }
-            //   },
-            //   second: {
-            //     rules: [{ required: true, message: 'name2空了' }],
-            //     widget: 'Select',
-            //     col: { span: 6 },
-            //     widgetProps: {
-            //       style: { width: '100%' },
-            //       children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
-            //     }
-            //   }
-            // }
-          },
-          second: {
-            rules: [{ required: true, message: 'name2空了' }],
-            widget: 'Select',
-            // col: { span: 6 },
+            col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
             }
-          }
+          },
+          second: {
+            label: '对象嵌套2',
+            rules: [{ required: true, message: 'name2空了' }],
+            widget: 'Select',
+            col: { span: 6 },
+            widgetProps: {
+              style: { width: '100%' },
+              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+            }
+          },
+          first1: {
+            label: '对象嵌套3',
+            rules: [{ required: true, message: 'name4空了' }],
+            widget: 'Select',
+            col: { span: 6 },
+            widgetProps: {
+              style: { width: '100%' },
+              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+            }
+          },
+          second1: {
+            label: '对象嵌套4',
+            rules: [{ required: true, message: 'name2空了' }],
+            widget: 'Select',
+            col: { span: 6 },
+            widgetProps: {
+              style: { width: '100%' },
+              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+            }
+          },
         }
       },
       name5: {
@@ -157,36 +160,70 @@ export default function Demo5(props) {
     console.log(result, '表单结果');
   };
 
-  const customRender: RenderFormProps['customRender'] = (properties, generate, path) => {
+  const getChildrenList: RenderFormProps['customRender'] = (properties, generate, parent) => {
+    const { path } = parent || {};
     return (
-      <DndSortable
-        options={{
-          groupPath: 'components',
-          childDrag: true,
-          allowDrop: true,
-          allowSort: true
-        }}
-      >
-        {
-          properties instanceof Array ?
-            properties?.map((formField, index) => {
-              return generate({ name: `[${index}]`, field: formField, path });
-            })
-            :
-            Object.entries(properties || {})?.map(
-              ([name, formField]) => {
-                return generate({ name: name, field: formField, path });
-              }
-            )
-        }
-      </DndSortable>
+      properties instanceof Array ?
+        properties?.map((formField, index) => {
+          return generate({ name: `[${index}]`, field: formField, path });
+        })
+        :
+        Object.entries(properties || {})?.map(
+          ([name, formField]) => {
+            return generate({ name: name, field: formField, path });
+          }
+        )
     )
+  }
+
+  const customRender: RenderFormProps['customRender'] = (properties, generate, parent) => {
+    const { name, field } = parent || {};
+    if (!parent) {
+      return (
+        <DndSortable
+          className='dnd-box'
+          options={{
+            groupPath: 'components',
+            childDrag: true,
+            allowDrop: true,
+            allowSort: true
+          }}
+        >
+          {getChildrenList(properties, generate, parent)}
+        </DndSortable>
+      )
+    } else if (name == 'name4') {
+      return (
+        <div style={{ background: '#fff', padding: '20px', width: '100%' }}>
+          <DndSortable
+            className='dnd-box'
+            style={{ background: '#f5f5f5' }}
+            options={{
+              groupPath: 'components',
+              childDrag: true,
+              allowDrop: true,
+              allowSort: true
+            }}
+          >
+            {getChildrenList(properties, generate, parent)}
+          </DndSortable>
+        </div>
+      )
+    } else {
+      return getChildrenList(properties, generate, parent)
+    }
+  }
+
+  const onFieldsChange = ({ path }) => {
+    // store.delItemByPath('name3[0]')
+    // console.log(store.getItemByPath('name3[0]'))
   }
 
   return (
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
-      // customRender={customRender}
+        onFieldsChange={onFieldsChange}
+        // customRender={customRender}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

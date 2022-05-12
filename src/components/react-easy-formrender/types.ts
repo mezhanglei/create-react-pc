@@ -8,9 +8,9 @@ export interface FormFieldProps extends FormItemProps {
   readOnly?: boolean; // 只读模式
   readOnlyWidget?: string; // 只读模式下的组件，和readOnlyRender只能生效一个，readOnlyRender优先级最高
   readOnlyRender?: any; // 只读模式下的组件，和readOnlyWidget只能生效一个，readOnlyRender优先级最高
+  hidden?: string | boolean; // 显示隐藏的逻辑，支持字符串表达式
   widget?: string; // 表单控件代表的字符串，和properties属性不能同时存在
   widgetProps?: { children?: any | Array<{ widget: string, widgetProps: FormFieldProps['widgetProps'] }>, [key: string]: any }; // 表单控件自有的props属性
-  hidden?: string | boolean; // 显示隐藏的逻辑，支持字符串表达式
   properties?: { [name: string]: FormFieldProps } | FormFieldProps[]; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
@@ -29,7 +29,7 @@ export interface RenderFormProps extends FormProps<FormRenderStore> {
   widgets?: { [key: string]: any };
   Fields?: typeof defaultFields;
   // 自定义渲染子元素
-  customRender?: (properties: SchemaData['properties'], generate: generateChildFunc, path?: string) => JSX.Element | undefined;
+  customRender?: getChildrenList;
 };
 
 // 不带form容器的渲染组件props
@@ -41,10 +41,13 @@ export interface RenderFormChildrenProps {
   widgets: { [key: string]: any };
   Fields?: typeof defaultFields;
   // 自定义渲染子元素
-  customRender?: (properties: SchemaData['properties'], generate: generateChildFunc, path?: string) => JSX.Element | undefined;
+  customRender?: getChildrenList;
 };
 
 export type ValueOf<T> = T[keyof T];
+
+// 返回列表
+export type getChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, parent?: { name: string, field: FormFieldProps, path?: string }) => any;
 
 // 生成子元素
 export type generateChildFunc = (params: { name: string, field: FormFieldProps, path?: string }) => JSX.Element | undefined

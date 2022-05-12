@@ -1,4 +1,4 @@
-import { FormOptions, LabelAlignEnum } from "../form-options-context";
+import { FormOptions, Layout } from "../form-options-context";
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
@@ -29,11 +29,11 @@ export const isListItem = (item: string) => (/\[(.{1}?)\]/gi.test(item));
 
 // 列宽
 export const getColProps = (option: FormOptions) => {
-  const { labelAlign, col } = option;
+  const { layout, col } = option;
   const { xs, sm, md, lg, span, ...restProps } = col || {};
   const linespan = 12;
   // inline时不传参数
-  const defaultspan = labelAlign !== LabelAlignEnum.Inline && (span ?? linespan);
+  const defaultspan = layout !== Layout.Inline && (span ?? linespan);
   return {
     xs: xs !== undefined ? xs : defaultspan,
     sm: sm !== undefined ? sm : defaultspan,

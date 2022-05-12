@@ -1,7 +1,7 @@
 import React, { cloneElement, CSSProperties, useContext } from 'react'
 import { FormRule } from './form-store';
 import classnames from 'classnames';
-import { FormOptions, FormOptionsContext, LabelAlignEnum } from './form-options-context';
+import { FormOptions, FormOptionsContext, Layout } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
 import { Col, Row } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
@@ -45,7 +45,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     suffix,
     className,
     style,
-    labelAlign = LabelAlignEnum.Horizontal,
+    layout = Layout.Horizontal,
     col,
     colon,
     compact,
@@ -120,7 +120,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     compact ? classes_list.compact : '',
     required ? classes_list.required : '',
     className ? className : '',
-    `${classes_list.list}--${labelAlign}`
+    `${classes_list.list}--${layout}`
   )
 
   const headerStyle = {
@@ -128,7 +128,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     ...labelStyle
   }
 
-  const colProps = getColProps({ labelAlign: labelAlign, col });
+  const colProps = getColProps({ layout: layout, col });
 
   return (
     <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>

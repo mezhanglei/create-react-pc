@@ -5,7 +5,7 @@ export interface FormFunc {
   onValuesChange?: (obj: { path?: string, value: any }) => void;
 }
 
-export enum LabelAlignEnum {
+export enum Layout {
   Horizontal= 'horizontal', // 水平布局
   Vertical= 'vertical', // 垂直布局
   Inline= 'inline' // 行内布局
@@ -22,7 +22,7 @@ export interface ColProps {
 export interface FormOptions extends FormFunc {
   col?: ColProps;
   colon?: boolean;
-  labelAlign?: LabelAlignEnum;
+  layout?: Layout;
   labelStyle?: CSSProperties;
   initialValues?: Partial<unknown>;
   compact?: boolean;

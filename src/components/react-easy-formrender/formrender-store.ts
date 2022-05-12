@@ -1,7 +1,7 @@
 import { klona } from "klona";
 import { FormStore } from "../react-easy-formcore"
 import { FormFieldProps, SchemaData } from "./types";
-import { setPropertiesByPath, updatePropertiesByPath } from "./utils/utils";
+import { getItemByPath, setPropertiesByPath, updatePropertiesByPath } from "./utils/utils";
 
 export type FormRenderListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
 export type PropertiesMap = { [key: string]: SchemaData['properties'] }
@@ -20,43 +20,58 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 获取当前组件的properties
-  public getProperties(name?: string) {
-    if (name) {
-      return this.propertiesMap?.[name]
+  public getProperties(propertiesName?: string) {
+    if (propertiesName) {
+      return this.propertiesMap?.[propertiesName]
     } else {
       return this.propertiesMap
     }
   }
 
   // 设置properties
-  setProperties(name: string, data: SchemaData['properties']) {
-    if (!name) return;
+  setProperties(propertiesName: string, data: SchemaData['properties']) {
+    if (!propertiesName) return;
     this.lastPropertiesMap = klona(this.propertiesMap);
     if (data === undefined) {
-      delete this.propertiesMap[name]
+      delete this.propertiesMap[propertiesName]
     } else {
-      this.propertiesMap[name] = data;
+      this.propertiesMap[propertiesName] = data;
     }
-    this.notifyProperties(name);
+    this.notifyProperties(propertiesName);
   }
 
-  // 更新properties中指定路径的值
-  updatePropertiesByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
+  // 更新指定路径的值
+  updateItemByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
     const properties = this.getProperties(propertiesName);
     if (properties) {
       let newProperties = updatePropertiesByPath(properties, path, data);
-      newProperties = klona(newProperties);
       this.setProperties(propertiesName, newProperties);
     }
   }
 
-  // 覆盖设置properties中指定路径的值
-  setPropertiesByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
+  // 设置指定路径的值
+  setItemByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
     const properties = this.getProperties(propertiesName);
     if (properties) {
       let newProperties = setPropertiesByPath(properties, path, data);
-      newProperties = klona(newProperties);
       this.setProperties(propertiesName, newProperties);
+    }
+  }
+
+  // 根据path删除一条
+  delItemByPath = (path: string, propertiesName = "default") => {
+    const properties = this.getProperties(propertiesName);
+    if (properties) {
+      let newProperties = setPropertiesByPath(properties, path, undefined);
+      this.setProperties(propertiesName, newProperties);
+    }
+  }
+
+  // 获取指定路径的项
+  getItemByPath = (path: string, propertiesName = "default") => {
+    const properties = this.getProperties(propertiesName);
+    if (properties) {
+      return getItemByPath(properties, path);
     }
   }
 

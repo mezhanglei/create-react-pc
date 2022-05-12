@@ -286,7 +286,7 @@ module.exports = {
       // script引入的公共js文件
       commonJs: [
         // 'static/dll/base_dll.js'
-        // '//'
+        // 'es6-shim.min.js'
       ],
       // link引入的公共css文件
       commonCSS: [
