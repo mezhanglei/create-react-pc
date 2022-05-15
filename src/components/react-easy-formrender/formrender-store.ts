@@ -1,7 +1,7 @@
 import { klona } from "klona";
 import { FormStore } from "../react-easy-formcore"
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setPropertiesByPath, updatePropertiesByPath } from "./utils/utils";
+import { getItemByPath, setPropertiesByPath, updatePropertiesByPath, swapItemByPath } from "./utils/utils";
 
 export type FormRenderListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
 export type PropertiesMap = { [key: string]: SchemaData['properties'] }
@@ -72,6 +72,15 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     const properties = this.getProperties(propertiesName);
     if (properties) {
       return getItemByPath(properties, path);
+    }
+  }
+
+  // 根据两个path交换两方位置
+  swapItemByPath = (path1: string, path2: string, propertiesName = "default") => {
+    const properties = this.getProperties(propertiesName);
+    if (properties) {
+      let newProperties = swapItemByPath(properties, path1, path2);
+      // this.setProperties(propertiesName, newProperties);
     }
   }
 

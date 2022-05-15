@@ -183,7 +183,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     const childs = child?.props?.children;
     const dataType = child?.props?.['data-type'];
     const childType = child?.type;
-    if (childs !== undefined && (dataType === 'fragment' || childType === 'string')) {
+    if (childs !== undefined && (dataType === 'fragment' || typeof childType === 'string')) {
       return cloneElement(child, {
         children: React.Children.map(childs, (childItem: any) => {
           if (isFormField(childItem)) {

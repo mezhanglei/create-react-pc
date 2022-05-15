@@ -227,7 +227,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const dependvalues = dependValuesMap.get(currentPath);
     // 是否隐藏
     const hiddenResult = fieldPropsMap.get(`${currentPath}.hidden`);
-    if (hiddenResult || !FormField) return;
+    if (hiddenResult || !FormField || !newField) return;
 
     // 只读组件
     if (readOnly === true) {

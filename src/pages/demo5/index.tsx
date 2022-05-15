@@ -160,6 +160,17 @@ export default function Demo5(props) {
     console.log(result, '表单结果');
   };
 
+  const onUpdate: DndProps['onUpdate'] = (params) => {
+    const { drag, drop } = params;
+    console.log(params, '同区域');
+    const dragIndex = drag?.index;
+    const dropIndex = drop?.dropIndex;
+    const parentPath = drag?.groupPath;
+    let parent = parentPath ? store.getItemByPath(parentPath) : schema['properties'];
+    // parent = arrayMove(parent, Number(dragIndex), Number(dropIndex));
+    // const newData = parentPath ? store.setItemByPath(parentPath, parent) : parent;
+  }
+
   const getChildrenList: RenderFormProps['customRender'] = (properties, generate, parent) => {
     const { path } = parent || {};
     return (
@@ -177,29 +188,17 @@ export default function Demo5(props) {
   }
 
   const customRender: RenderFormProps['customRender'] = (properties, generate, parent) => {
-    const { name, field } = parent || {};
-    if (!parent) {
+    const { path, field } = parent || {};
+    if (field?.properties) {
       return (
-        <DndSortable
-          className='dnd-box'
-          options={{
-            groupPath: 'components',
-            childDrag: true,
-            allowDrop: true,
-            allowSort: true
-          }}
-        >
-          {getChildrenList(properties, generate, parent)}
-        </DndSortable>
-      )
-    } else if (name == 'name4') {
-      return (
-        <div style={{ background: '#fff', padding: '20px', width: '100%' }}>
+        <div data-type="fragment" style={{ background: '#fff', padding: '20px', width: '100%' }}>
           <DndSortable
+            onUpdate={onUpdate}
+            data-type="fragment"
             className='dnd-box'
             style={{ background: '#f5f5f5' }}
             options={{
-              groupPath: 'components',
+              groupPath: path,
               childDrag: true,
               allowDrop: true,
               allowSort: true
@@ -210,12 +209,26 @@ export default function Demo5(props) {
         </div>
       )
     } else {
-      return getChildrenList(properties, generate, parent)
+      return (
+        <DndSortable
+          onUpdate={onUpdate}
+          data-type="fragment"
+          className='dnd-box'
+          options={{
+            groupPath: path,
+            childDrag: true,
+            allowDrop: true,
+            allowSort: true
+          }}
+        >
+          {getChildrenList(properties, generate, parent)}
+        </DndSortable>
+      )
     }
   }
 
   const onFieldsChange = ({ path }) => {
-    // store.delItemByPath('name3[0]')
+    // store.setItemByPath('name3[0]', { widget: 'Input' })
     // console.log(store.getItemByPath('name3[0]'))
   }
 
@@ -223,7 +236,7 @@ export default function Demo5(props) {
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
         onFieldsChange={onFieldsChange}
-        // customRender={customRender}
+        customRender={customRender}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

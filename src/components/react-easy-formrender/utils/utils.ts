@@ -86,3 +86,9 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr: str
   });
   return temp;
 };
+
+// 交换两个路径的位置
+export const swapItemByPath = (properties: SchemaData['properties'], pathStr1: string, pathStr2: string) => {
+  let temp = properties;
+  
+}
