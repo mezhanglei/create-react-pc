@@ -2,9 +2,9 @@ import React, { CSSProperties } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
 import { DndProps, DndSortable, SortableItem, DropEffect, EventType, DndBaseProps } from "./utils/types";
 import classNames from "classnames";
-import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, matches } from "@/utils/dom";
+import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, matches, getClientXY } from "@/utils/dom";
 import { DndManager } from './dnd-manager';
-import { _animate } from './utils/dom';
+import { createAnimate } from './utils/dom';
 import { isEventTouch, isMobile } from '@/utils/verify';
 import { isObjectEqual } from '@/utils/object';
 
@@ -200,13 +200,13 @@ export default function BuildDndSortable() {
       // 重置
       if (dragged) {
         dragged.draggable = undefined;
-        cloneDragged.draggable = undefined;
         dragged.style.display = this.lastDisplay;
+        this.dragged = undefined;
+        cloneDragged.draggable = undefined;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
+        this.cloneDragged = undefined;
       }
       over?.classList?.remove(sortNextClass, sortPreClass);
-      this.cloneDragged = undefined;
-      this.dragged = undefined;
       this.over = undefined;
       const ownerDocument = getOwnerDocument(sortArea);
       removeEvent(ownerDocument, 'dragover', this.onDragOver);
@@ -294,24 +294,22 @@ export default function BuildDndSortable() {
           if (overSortableItem) {
             this.sortInSameArea(overSortableItem?.item);
           } else {
-            if (sortArea === dropItem?.groupNode && dropItem) {
+            if (dropItem && sortArea === dropItem?.groupNode) {
               this.setDropEndChild(e, dropItem, cloneDragged);
             }
           }
         } else {
-          // 插入新容器
-          if (overSortableItem || dropItem) {
-            const dropGroup = overSortableItem ? dndManager.getDropItem(overSortableItem?.groupNode) : dropItem;
-            if (dropGroup) {
-              if (!this.getOptions(dropGroup?.props?.options)?.allowDrop) {
-                // 鼠标的样式更改
-                if (e.dataTransfer) {
-                  e.dataTransfer.dropEffect = DropEffect.None;
-                }
-                return;
+          // 移动到新的容器内
+          const dropGroup = overSortableItem ? dndManager.getDropItem(overSortableItem?.groupNode) : dropItem;
+          if (dropGroup) {
+            if (!this.getOptions(dropGroup?.props?.options)?.allowDrop) {
+              // 鼠标的样式更改
+              if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = DropEffect.None;
               }
-              this.addNewOver(e, dropGroup, overSortableItem);
+              return;
             }
+            this.addNewOver(e, dropGroup, overSortableItem);
           }
         }
         const params = {
@@ -346,9 +344,8 @@ export default function BuildDndSortable() {
       const options = this.getOptions(this.props.options);
       // 只允许一个动画
       if (!newOver || newOver?.animated) return;
-      // 更换之前的初始位置
-      const newOverPreRect = newOver.getBoundingClientRect();
-      const draggedPreRect = cloneDragged.getBoundingClientRect();
+      // 移动前创建动画实例记录位置和dom
+      const animateInstance = createAnimate(cloneDragged?.parentNode?.children);
       // 位置序号
       const draggedIndex = getChildrenIndex(cloneDragged, [dragged]);
       const newOverIndex = getChildrenIndex(newOver, [dragged]);
@@ -362,9 +359,8 @@ export default function BuildDndSortable() {
         this.over = newOver;
       }
       this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver, props: this.props });
-      // 添加动画
-      _animate(cloneDragged, draggedPreRect);
-      _animate(newOver, newOverPreRect);
+      // 执行动画
+      animateInstance();
     }
 
     // 跨域添加新元素
@@ -373,56 +369,65 @@ export default function BuildDndSortable() {
       const cloneDragged = this.cloneDragged;
       const options = this.getOptions(dropItem.props.options);
       const oldOver = this.over;
-      // 第一次往容器后面添加
+      const sortableOver = sortableItem?.item;
+      // 刚开始插入新元素
       if (!dropGroupNode?.contains(cloneDragged) && options?.allowSort) {
         this.over = dropGroupNode;
-        const draggedPreRect = cloneDragged.getBoundingClientRect();
-        dropGroupNode?.appendChild(cloneDragged);
-        _animate(cloneDragged, draggedPreRect);
+        if (sortableOver) {
+          const animateInstance = createAnimate([sortableOver, cloneDragged]);
+          insertBefore(cloneDragged, sortableOver)
+          animateInstance()
+        } else {
+          const animateInstance = createAnimate([cloneDragged]);
+          dropGroupNode?.appendChild(cloneDragged);
+          animateInstance();
+        }
+        // 插入新元素后的拖拽排序
       } else {
-        const sortableOver = sortableItem?.item;
-        // 如果有可排序的over目标则进行排序
         if (sortableOver) {
           // 只允许一个动画
           if (sortableOver?.animated) return;
-
-          // 更换之前的初始位置
-          const newOverPreRect = sortableOver.getBoundingClientRect();
-          const draggedPreRect = cloneDragged.getBoundingClientRect();
+          // 创建动画实例记录移动前的dom和位置
+          const animateInstance = createAnimate(cloneDragged?.parentNode?.children);
           // 位置序号
           const draggedIndex = getChildrenIndex(cloneDragged);
           const newOverIndex = getChildrenIndex(sortableOver);
           const oldOverIndex = getChildrenIndex(oldOver);
-          // 新元素插入之后
+          // 交换位置
           if (draggedIndex < newOverIndex) {
             options?.allowSort && insertAfter(cloneDragged, sortableOver);
             this.over = sortableOver;
           } else {
-            // 目标比元素小，插到其前面
             options?.allowSort && insertBefore(cloneDragged, sortableOver);
             this.over = sortableOver;
           }
           this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver: sortableOver, props: dropItem?.props });
-          // 添加动画
-          _animate(cloneDragged, draggedPreRect);
-          _animate(sortableOver, newOverPreRect);
+          // 执行动画
+          animateInstance();
         } else {
           this.setDropEndChild(e, dropItem, cloneDragged)
         }
       }
     }
 
-    // 当在容器最后面时添加在最末尾
+    // 判断是否添加在末尾
     setDropEndChild = (e: EventType, dropItem: DndSortable, cloneDragged: HTMLElement) => {
       const parent = dropItem?.groupNode;
+      const lastChild = parent.lastChild as HTMLElement;
       const props = dropItem.props;
       const options = this.getOptions(props.options);
-      const near = dndManager.findNearest(e, parent);
-      if (cloneDragged !== near && near === parent.lastChild) {
-        if (options?.allowSort) {
-          const draggedPreRect = cloneDragged.getBoundingClientRect();
-          parent?.appendChild(cloneDragged);
-          _animate(cloneDragged, draggedPreRect);
+      if (cloneDragged !== lastChild && lastChild) {
+        const lastChildRect = lastChild.getBoundingClientRect();
+        const cloneRect = cloneDragged.getBoundingClientRect();
+        const eventRect = getClientXY(e);
+        if (options?.allowSort && eventRect) {
+          const isToBttom = cloneRect?.top < lastChildRect?.top && eventRect?.y > lastChildRect?.top;
+          const isToRight = cloneRect?.left < lastChildRect?.left && eventRect?.x > lastChildRect?.left;
+          if (isToBttom || isToRight) {
+            const animateInstance = createAnimate([cloneDragged]);
+            parent?.appendChild(cloneDragged);
+            animateInstance();
+          }
         }
         const oldOver = this.over;
         oldOver && props.onUnHover && props.onUnHover(oldOver);

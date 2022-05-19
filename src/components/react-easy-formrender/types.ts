@@ -47,7 +47,7 @@ export interface RenderFormChildrenProps {
 export type ValueOf<T> = T[keyof T];
 
 // 返回列表
-export type getChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, parent?: { name: string, field: FormFieldProps, path?: string }) => any;
+export type getChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, parent?: { name: string, field: FormFieldProps, path?: string }, index?: number) => any;
 
 // 生成子元素
-export type generateChildFunc = (params: { name: string, field: FormFieldProps, path?: string }) => JSX.Element | undefined
+export type generateChildFunc = (params: { name: string, field: FormFieldProps, path?: string }, index?: number) => JSX.Element | undefined

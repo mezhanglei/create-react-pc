@@ -1,5 +1,6 @@
 
 import { css, getClientXY, getRect } from "@/utils/dom";
+import { isDom } from "@/utils/type";
 import { CSSProperties } from "react";
 import { EventType } from "./types";
 
@@ -56,5 +57,25 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
       });
       target.animated = false;
     }, ms);
+  }
+}
+
+// 收集dom，返回可以执行动画的函数
+export function createAnimate(doms: any[]) {
+  const collect: any[] = [];
+  for (let i = 0; i < doms?.length; i++) {
+    const dom = doms[i];
+    collect.push({
+      dom,
+      rect: dom?.getBoundingClientRect()
+    })
+  }
+  return () => {
+    for (let i = 0; i < collect?.length; i++) {
+      const item = collect[i];
+      if (item) {
+        _animate(item.dom, item.rect);
+      }
+    }
   }
 }

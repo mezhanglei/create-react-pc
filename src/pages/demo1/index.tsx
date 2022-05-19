@@ -2,7 +2,7 @@ import React, { Component, useState, useRef, useEffect } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndSortable, { DndHandle, arrayMove, DndProps } from "@/components/react-dragger-sort";
+import DndSortable, { DndHandle, arraySwap, DndProps } from "@/components/react-dragger-sort";
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
@@ -40,7 +40,7 @@ const Demo1: React.FC<any> = (props) => {
     const dropIndex = drop?.dropIndex;
     const parentPath = drag?.groupPath;
     let parent = parentPath ? getItem(data, parentPath) : data;
-    parent = arrayMove(parent, Number(dragIndex), Number(dropIndex));
+    parent = arraySwap(parent, Number(dragIndex), Number(dropIndex));
     const newData = parentPath ? setChildren(data, parent, parentPath) : parent;
     setData(newData);
   };

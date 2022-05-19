@@ -1,5 +1,4 @@
-import { css, getClientXY, getRect } from "@/utils/dom";
-import { dotToRect, isMoveIn } from "./utils/dom";
+import { isMoveIn } from "./utils/dom";
 import { EventType, SortableItem, DndSortable } from "./utils/types";
 
 // 管理拖拽的类
@@ -56,30 +55,5 @@ export class DndManager<T extends Object = any> {
       }
     }
     return minChild;
-  }
-
-  // 事件对象最近的目标
-  findNearest = (e: EventType, parent: HTMLElement) => {
-    const children = parent?.children;
-    const eventXY = getClientXY(e);
-    if (!eventXY) return;
-    let near;
-    for (let i = 0; i < children?.length; i++) {
-      const node = children[i] as HTMLElement;
-      if (node && css(node, 'display') !== 'none') {
-        if (near) {
-          const minChildRect = getRect(near)
-          const nextChildRect = getRect(node)
-          const currentDis = dotToRect(minChildRect, eventXY)
-          const nextDis = dotToRect(nextChildRect, eventXY)
-          if (nextDis < currentDis) {
-            near = node;
-          }
-        } else {
-          near = node;
-        }
-      }
-    }
-    return near;
   }
 }

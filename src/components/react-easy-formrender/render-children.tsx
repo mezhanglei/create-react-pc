@@ -211,7 +211,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成表单控件
-  const generateChild: generateChildFunc = (params) => {
+  const generateChild: generateChildFunc = (params, index) => {
     const { name, field, path } = params || {};
     const currentPath = getCurrentPath(name, path);
     const newField = showCalcFieldProps(field, currentPath);
@@ -248,7 +248,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (typeof properties === 'object' && !isEmpty(properties)) {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-          {renderChildrenList(properties, generateChild, { name, path: currentPath, field: newField })}
+          {renderChildrenList(properties, generateChild, { name, path: currentPath, field: newField }, index)}
         </FormField>
       )
       // widget组件
@@ -262,20 +262,20 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   };
 
   // 根据properties渲染子列表
-  const renderChildrenList: getChildrenList = (properties, generate, parent) => {
+  const renderChildrenList: getChildrenList = (properties, generate, parent, itemIndex) => {
     if (customRender) {
-      return customRender(properties, generate, parent);
+      return customRender(properties, generate, parent, itemIndex);
     }
     const { path } = parent || {};
     return (
       properties instanceof Array ?
         properties?.map((formField, index) => {
-          return generate({ name: `[${index}]`, field: formField, path });
+          return generate({ name: `[${index}]`, field: formField, path }, index);
         })
         :
         Object.entries(properties || {})?.map(
-          ([name, formField]) => {
-            return generate({ name: name, field: formField, path });
+          ([name, formField], index) => {
+            return generate({ name: name, field: formField, path }, index);
           }
         )
     )

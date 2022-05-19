@@ -181,19 +181,12 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   // 递归遍历子元素
   const bindNestedChildren = (child: any): any => {
     const childs = child?.props?.children;
-    const dataType = child?.props?.['data-type'];
+    const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
+    const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
     const childType = child?.type;
-    if (childs !== undefined && (dataType === 'fragment' || typeof childType === 'string')) {
+    if (childs !== undefined && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
       return cloneElement(child, {
-        children: React.Children.map(childs, (childItem: any) => {
-          if (isFormField(childItem)) {
-            return cloneElement(childItem, {
-              path: currentPath
-            });
-          } else {
-            return bindNestedChildren(childItem)
-          }
-        })
+        children: getChildren(childs)
       })
     } else {
       return bindChild(child);

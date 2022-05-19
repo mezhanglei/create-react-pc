@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Rate, Input, DatePicker, Tag } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 import { klona } from 'klona';
-import DndSortable, { arrayMove, DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
 import { addDragItem, getItem, indexToArray, removeDragItem, setChildren, uniqueId } from './utils';
 
 const GlobalComponent = {
@@ -66,7 +66,7 @@ class Demo9 extends Component {
     const dropIndex = drop?.dropIndex;
     const parentPath = drag?.groupPath;
     let parent = parentPath ? getItem(data, parentPath) : data;
-    parent = arrayMove(parent, Number(dragIndex), Number(dropIndex));
+    parent = arraySwap(parent, Number(dragIndex), Number(dropIndex));
     const newData = parentPath ? setChildren(data, parent, parentPath) : parent;
     this.setState({ data: newData });
   }

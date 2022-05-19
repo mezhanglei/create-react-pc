@@ -21,7 +21,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
 
   // 获取当前组件的properties
   public getProperties(propertiesName?: string) {
-    if (propertiesName) {
+    if (propertiesName !== undefined) {
       return this.propertiesMap?.[propertiesName]
     } else {
       return this.propertiesMap
@@ -29,13 +29,13 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 设置properties
-  setProperties(propertiesName: string, data: SchemaData['properties']) {
+  setProperties(propertiesName: string, data?: SchemaData['properties']) {
     if (!propertiesName) return;
     this.lastPropertiesMap = klona(this.propertiesMap);
     if (data === undefined) {
       delete this.propertiesMap[propertiesName]
     } else {
-      this.propertiesMap[propertiesName] = data;
+      this.propertiesMap[propertiesName] = klona(data);
     }
     this.notifyProperties(propertiesName);
   }
@@ -75,12 +75,12 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     }
   }
 
-  // 根据两个path交换两方位置
-  swapItemByPath = (path1: string, path2: string, propertiesName = "default") => {
+  // 交换两方位置
+  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }, propertiesName = "default") => {
     const properties = this.getProperties(propertiesName);
     if (properties) {
-      let newProperties = swapItemByPath(properties, path1, path2);
-      // this.setProperties(propertiesName, newProperties);
+      let newProperties = swapItemByPath(properties, from, to);
+      this.setProperties(propertiesName, newProperties);
     }
   }
 

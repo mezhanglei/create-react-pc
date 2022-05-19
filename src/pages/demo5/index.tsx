@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore'
-import DndSortable, { arrayMove, DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
 import './index.less'
 
 export default function Demo5(props) {
@@ -166,9 +166,60 @@ export default function Demo5(props) {
     const dragIndex = drag?.index;
     const dropIndex = drop?.dropIndex;
     const parentPath = drag?.groupPath;
-    let parent = parentPath ? store.getItemByPath(parentPath) : schema['properties'];
-    // parent = arrayMove(parent, Number(dragIndex), Number(dropIndex));
-    // const newData = parentPath ? store.setItemByPath(parentPath, parent) : parent;
+    store.swapItemByPath({ index: dragIndex, parentPath: parentPath }, { index: dropIndex, parentPath: parentPath });
+  }
+
+  const onAdd: DndProps['onAdd'] = (params) => {
+    const { drag, drop } = params;
+    console.log(params, '跨区域');
+    // 拖拽区域信息
+    const dragGroupPath = drag.groupPath;
+    const dragIndex = drag?.index;
+    const dragPath = drag?.path;
+    // 拖放区域的信息
+    const dropGroupPath = drop.groupPath;
+    const dropIndex = drop?.dropIndex;
+    const dropPath = drop?.path;
+    // 容器外面添加进来
+    // if (drag?.groupPath === 'components') {
+    //   // 拖拽项
+    //   let dragItem = getItem(soundData, `${drag?.index}`);
+    //   dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
+    //   // 放置项
+    //   const dropGroupPath = drop.groupPath;
+    //   const dropIndex = drop?.dropIndex;
+    //   const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
+    //   this.setState({
+    //     data: newData
+    //   });
+    //   // 容器内部拖拽
+    // } else {
+    //   // 拖拽区域信息
+    //   const dragGroupPath = drag.groupPath;
+    //   const dragIndex = drag?.index;
+    //   const dragPath = drag?.path;
+    //   const dragItem = getItem(cloneData, dragPath);
+    //   // 拖放区域的信息
+    //   const dropGroupPath = drop.groupPath;
+    //   const dropIndex = drop?.dropIndex;
+    //   const dropPath = drop?.path;
+    //   const dragIndexPathArr = indexToArray(dragPath);
+    //   const dropIndexPathArr = indexToArray(dropPath || dropGroupPath);
+    //   // 先计算内部的变动，再计算外部的变动
+    //   if (dragIndexPathArr?.length > dropIndexPathArr?.length || !dropIndexPathArr?.length) {
+    //     // 减去拖拽的元素
+    //     const removeData = removeDragItem(cloneData, dragIndex, dragGroupPath);
+    //     // 添加新元素
+    //     const addAfterData = addDragItem(removeData, dragItem, dropIndex, dropGroupPath);
+    //     this.setState({ data: addAfterData });
+    //   } else {
+    //     // 添加新元素
+    //     const addAfterData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
+    //     // 减去拖拽的元素
+    //     const newData = removeDragItem(addAfterData, dragIndex, dragGroupPath);
+    //     this.setState({ data: newData });
+    //   }
+    // }
   }
 
   const getChildrenList: RenderFormProps['customRender'] = (properties, generate, parent) => {
@@ -194,6 +245,7 @@ export default function Demo5(props) {
         <div data-type="fragment" style={{ background: '#fff', padding: '20px', width: '100%' }}>
           <DndSortable
             onUpdate={onUpdate}
+            onAdd={onAdd}
             data-type="fragment"
             className='dnd-box'
             style={{ background: '#f5f5f5' }}
@@ -212,6 +264,7 @@ export default function Demo5(props) {
       return (
         <DndSortable
           onUpdate={onUpdate}
+          onAdd={onAdd}
           data-type="fragment"
           className='dnd-box'
           options={{
@@ -227,15 +280,9 @@ export default function Demo5(props) {
     }
   }
 
-  const onFieldsChange = ({ path }) => {
-    // store.setItemByPath('name3[0]', { widget: 'Input' })
-    // console.log(store.getItemByPath('name3[0]'))
-  }
-
   return (
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
-        onFieldsChange={onFieldsChange}
         customRender={customRender}
       />
       <div style={{ marginLeft: '120px' }}>
