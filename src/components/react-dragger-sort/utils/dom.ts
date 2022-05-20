@@ -1,15 +1,7 @@
 
 import { css, getClientXY, getRect } from "@/utils/dom";
-import { isDom } from "@/utils/type";
 import { CSSProperties } from "react";
 import { EventType } from "./types";
-
-// 获取点到矩形框的最短距离
-export function dotToRect(rect: { left: number, top: number, right: number, bottom: number }, p: { x: number, y: number }) {
-  const dx = Math.max(rect.left - p.x, 0, p.x - rect.right);
-  const dy = Math.max(rect.top - p.y, 0, p.y - rect.bottom);
-  return Math.sqrt(dx * dx + dy * dy);
-}
 
 // 事件是否在目标内部
 export const isMoveIn = (e: EventType, target: HTMLElement) => {
@@ -61,7 +53,7 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
 }
 
 // 收集dom，返回可以执行动画的函数
-export function createAnimate(doms: any[]) {
+export function createAnimate(doms) {
   const collect: any[] = [];
   for (let i = 0; i < doms?.length; i++) {
     const dom = doms[i];

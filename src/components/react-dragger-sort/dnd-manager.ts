@@ -35,14 +35,11 @@ export class DndManager<T extends Object = any> {
   }
 
   // 事件对象over的目标
-  findOver = (e: EventType, self: HTMLElement) => {
+  findOver = (e: EventType) => {
     const childs = [];
     const dragItems = this.dragItemMap.keys();
     const dropItems = this.dropItemMap.keys();
     const items = new Set([...dragItems, ...dropItems]);
-    if (self && isMoveIn(e, self)) {
-      return self;
-    }
     for (let child of items) {
       if (child && isMoveIn(e, child)) {
         childs.push(child);
