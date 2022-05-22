@@ -142,31 +142,90 @@ const handleList = (dataList: DataListType[], type?: 'array' | 'object') => {
   }
 };
 
-// 交换两个路径的位置
-export const swapItemByPath = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
-  // const dataList = objToArr(properties);
+// 移除列表中的元素(有副作用, 会改变传入的data数据)
+export const removeItem = (properties: SchemaData['properties'], fromIndex: number, parentPath?: string) => {
+  const parent = getItemByPath(properties, parentPath);
+  const child = parentPath ? parent?.properties : parent;
+  const childList = objToArr(child);
+  const removeItem = childList[fromIndex];
+  childList?.splice(fromIndex, 1);
+  const type = getPropertiesType(child);
+  const result = handleList(childList, type);
+  if (parentPath) {
+    parent.properties = result;
+    return { properties, removeItem };
+  } else {
+    return { properties: result, removeItem };
+  }
+};
+
+// 添加新元素(有副作用，会改变传入的data数据)
+export const addItem = (properties: SchemaData['properties'], data: DataListType, toIndex?: number, toParentPath?: string) => {
+  const parent = getItemByPath(properties, toParentPath);
+  const child = toParentPath ? parent?.properties : parent;
+  const childList = objToArr(child);
+  if (typeof toIndex === 'number') {
+    childList?.splice(toIndex, 0, data);
+  } else {
+    childList?.push(data);
+  }
+  const type = getPropertiesType(child);
+  const result = handleList(childList, type);
+  if (toParentPath) {
+    parent.properties = result;
+    return properties;
+  } else {
+    return result;
+  }
+};
+
+// 同级交换
+export const swapSameLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+  // 拖拽源
   const fromParentPath = from?.parentPath;
   const fromIndex = from?.index;
+  // 拖放源
   const toParentPath = to?.parentPath;
   const toIndex = to?.index;
   // 同域排序
   if (fromParentPath === toParentPath) {
+    let parent = getItemByPath(properties, fromParentPath);
+    const child = fromParentPath ? parent?.properties : parent;
+    const childList = objToArr(child);
+    const swapList = arraySwap(childList, fromIndex, toIndex);
+    const type = getPropertiesType(child);
+    const result = handleList(swapList, type);
     if (fromParentPath) {
-      const parent = getItemByPath(properties, fromParentPath);
-      const subList = objToArr(parent?.properties);
-      const result = arraySwap(subList, fromIndex, toIndex);
-      const resultType = getPropertiesType(parent?.properties);
-      parent.properties = handleList(result, resultType);
+      parent.properties = result;
       return properties;
     } else {
-      const list = objToArr(properties);
-      const result = arraySwap(list, fromIndex, toIndex);
-      const resultType = getPropertiesType(properties);
-      const swapResult = handleList(result, resultType);
-      return swapResult;
+      return result;
     }
-  } else {
-    // 跨域排序
+  }
+}
+// 跨级交换
+export const swapDiffLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+  // 拖拽源
+  const fromParentPath = from?.parentPath;
+  const fromIndex = from?.index;
+  const fromParentPathArr = pathToArray(fromParentPath);
+  // 拖放源
+  const toParentPath = to?.parentPath;
+  const toIndex = to?.index;
+  const toParentPathArr = pathToArray(toParentPath);
 
+  // 先计算内部变动，再计算外部变动
+  if (fromParentPathArr?.length > toParentPathArr?.length || !toParentPathArr?.length) {
+    const removeResult = removeItem(properties, fromIndex, fromParentPath);
+    const addResult = removeResult?.properties && addItem(removeResult?.properties, removeResult?.removeItem, toIndex, toParentPath);
+    return addResult;
+  } else {
+    const fromParent = getItemByPath(properties, fromParentPath);
+    const fromChild = fromParentPath ? fromParent?.properties : fromParent;
+    const fromChildList = objToArr(fromChild);
+    const fromItem = fromChildList[fromIndex];
+    const addResult = addItem(properties, fromItem, toIndex, toParentPath);
+    const removeResult = addResult && removeItem(addResult, fromIndex, fromParentPath);
+    return removeResult?.properties;
   }
 }

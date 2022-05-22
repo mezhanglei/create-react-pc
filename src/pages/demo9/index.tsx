@@ -98,9 +98,8 @@ class Demo9 extends Component {
       // 拖放区域的信息
       const dropGroupPath = drop.groupPath;
       const dropIndex = drop?.dropIndex;
-      const dropPath = drop?.path;
-      const dragIndexPathArr = indexToArray(dragPath);
-      const dropIndexPathArr = indexToArray(dropPath || dropGroupPath);
+      const dragIndexPathArr = indexToArray(dragGroupPath);
+      const dropIndexPathArr = indexToArray(dropGroupPath);
       // 先计算内部的变动，再计算外部的变动
       if (dragIndexPathArr?.length > dropIndexPathArr?.length || !dropIndexPathArr?.length) {
         // 减去拖拽的元素

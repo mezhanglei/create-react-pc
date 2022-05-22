@@ -160,66 +160,28 @@ export default function Demo5(props) {
     console.log(result, '表单结果');
   };
 
-  const onUpdate: DndProps['onUpdate'] = (params) => {
+  const onItemSwap: DndProps['onUpdate'] = (params) => {
     const { drag, drop } = params;
-    console.log(params, '同区域');
-    const dragIndex = drag?.index;
-    const dropIndex = drop?.dropIndex;
-    const parentPath = drag?.groupPath;
-    store.swapItemByPath({ index: dragIndex, parentPath: parentPath }, { index: dropIndex, parentPath: parentPath });
-  }
-
-  const onAdd: DndProps['onAdd'] = (params) => {
-    const { drag, drop } = params;
-    console.log(params, '跨区域');
+    console.log(params, '同域拖放');
     // 拖拽区域信息
     const dragGroupPath = drag.groupPath;
     const dragIndex = drag?.index;
-    const dragPath = drag?.path;
     // 拖放区域的信息
     const dropGroupPath = drop.groupPath;
     const dropIndex = drop?.dropIndex;
-    const dropPath = drop?.path;
-    // 容器外面添加进来
-    // if (drag?.groupPath === 'components') {
-    //   // 拖拽项
-    //   let dragItem = getItem(soundData, `${drag?.index}`);
-    //   dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
-    //   // 放置项
-    //   const dropGroupPath = drop.groupPath;
-    //   const dropIndex = drop?.dropIndex;
-    //   const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
-    //   this.setState({
-    //     data: newData
-    //   });
-    //   // 容器内部拖拽
-    // } else {
-    //   // 拖拽区域信息
-    //   const dragGroupPath = drag.groupPath;
-    //   const dragIndex = drag?.index;
-    //   const dragPath = drag?.path;
-    //   const dragItem = getItem(cloneData, dragPath);
-    //   // 拖放区域的信息
-    //   const dropGroupPath = drop.groupPath;
-    //   const dropIndex = drop?.dropIndex;
-    //   const dropPath = drop?.path;
-    //   const dragIndexPathArr = indexToArray(dragPath);
-    //   const dropIndexPathArr = indexToArray(dropPath || dropGroupPath);
-    //   // 先计算内部的变动，再计算外部的变动
-    //   if (dragIndexPathArr?.length > dropIndexPathArr?.length || !dropIndexPathArr?.length) {
-    //     // 减去拖拽的元素
-    //     const removeData = removeDragItem(cloneData, dragIndex, dragGroupPath);
-    //     // 添加新元素
-    //     const addAfterData = addDragItem(removeData, dragItem, dropIndex, dropGroupPath);
-    //     this.setState({ data: addAfterData });
-    //   } else {
-    //     // 添加新元素
-    //     const addAfterData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
-    //     // 减去拖拽的元素
-    //     const newData = removeDragItem(addAfterData, dragIndex, dragGroupPath);
-    //     this.setState({ data: newData });
-    //   }
-    // }
+    store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+  }
+
+  const onItemAdd: DndProps['onUpdate'] = (params) => {
+    const { drag, drop } = params;
+    console.log(params, '跨域拖放');
+    // 拖拽区域信息
+    const dragGroupPath = drag.groupPath;
+    const dragIndex = drag?.index;
+    // 拖放区域的信息
+    const dropGroupPath = drop.groupPath;
+    const dropIndex = drop?.dropIndex;
+    store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   const getChildrenList: RenderFormProps['customRender'] = (properties, generate, parent) => {
@@ -240,12 +202,12 @@ export default function Demo5(props) {
 
   const customRender: RenderFormProps['customRender'] = (properties, generate, parent) => {
     const { path, field } = parent || {};
-    if (field?.properties) {
+    if (!(field?.properties instanceof Array)) {
       return (
         <div data-type="fragment" style={{ background: '#fff', padding: '20px', width: '100%' }}>
           <DndSortable
-            onUpdate={onUpdate}
-            onAdd={onAdd}
+            onUpdate={onItemSwap}
+            onAdd={onItemAdd}
             data-type="fragment"
             className='dnd-box'
             style={{ background: '#f5f5f5' }}
@@ -260,15 +222,14 @@ export default function Demo5(props) {
           </DndSortable>
         </div>
       )
-    } else {
+    } else if (!parent) {
       return (
         <DndSortable
-          onUpdate={onUpdate}
-          onAdd={onAdd}
+          onUpdate={onItemSwap}
+          onAdd={onItemAdd}
           data-type="fragment"
           className='dnd-box'
           options={{
-            groupPath: path,
             childDrag: true,
             allowDrop: true,
             allowSort: true
@@ -277,6 +238,8 @@ export default function Demo5(props) {
           {getChildrenList(properties, generate, parent)}
         </DndSortable>
       )
+    } else {
+      return getChildrenList(properties, generate, parent);
     }
   }
 

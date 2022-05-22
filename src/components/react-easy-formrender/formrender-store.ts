@@ -1,7 +1,7 @@
 import { klona } from "klona";
 import { FormStore } from "../react-easy-formcore"
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setPropertiesByPath, updatePropertiesByPath, swapItemByPath } from "./utils/utils";
+import { getItemByPath, setPropertiesByPath, updatePropertiesByPath, swapSameLevel, swapDiffLevel } from "./utils/utils";
 
 export type FormRenderListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
 export type PropertiesMap = { [key: string]: SchemaData['properties'] }
@@ -79,7 +79,12 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }, propertiesName = "default") => {
     const properties = this.getProperties(propertiesName);
     if (properties) {
-      let newProperties = swapItemByPath(properties, from, to);
+      let newProperties;
+      if (from?.parentPath === to?.parentPath) {
+        newProperties = swapSameLevel(properties, from, to);
+      } else {
+        newProperties = swapDiffLevel(properties, from, to);
+      }
       this.setProperties(propertiesName, newProperties);
     }
   }
