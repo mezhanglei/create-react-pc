@@ -24,7 +24,7 @@ export type WatchHandler = (newValue: any, oldValue: string) => void
 export interface BaseRenderProps {
   onPropertiesChange?: (properties: SchemaData['properties'], oldProperties?: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
-  widgets: { [key: string]: any };
+  widgets?: any;
   Fields?: typeof defaultFields;
   // 自定义渲染子元素
   customRender?: getChildrenList;
