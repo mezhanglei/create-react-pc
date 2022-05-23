@@ -3,7 +3,7 @@ import { Rate, Input, DatePicker, Tag } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 import { klona } from 'klona';
 import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
-import { addDragItem, getItem, indexToArray, removeDragItem, setChildren, uniqueId } from './utils';
+import { addDragItem, getItem, indexToArray, removeDragItem, uniqueId } from './utils';
 
 const GlobalComponent = {
   Rate,
@@ -62,12 +62,20 @@ class Demo9 extends Component {
     const { drag, drop } = params;
     console.log(params, '同区域');
     const { data } = this.state;
+    const cloneData = klona(data);
     const dragIndex = drag?.index;
     const dropIndex = drop?.dropIndex;
     const parentPath = drag?.groupPath;
-    let parent = parentPath ? getItem(data, parentPath) : data;
-    parent = arraySwap(parent, Number(dragIndex), Number(dropIndex));
-    const newData = parentPath ? setChildren(data, parent, parentPath) : parent;
+    const parent = getItem(cloneData, parentPath);
+    const childs = parentPath ? parent.children : cloneData;
+    const swapResult = arraySwap(childs, Number(dragIndex), Number(dropIndex));
+    let newData;
+    if (parentPath) {
+      parent.children = swapResult;
+      newData = cloneData;
+    } else {
+      newData = swapResult;
+    }
     this.setState({ data: newData });
   }
 

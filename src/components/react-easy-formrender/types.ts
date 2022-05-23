@@ -4,7 +4,7 @@ import { defaultFields } from './default-field';
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
-  dependencies?: string[]; // 当前字段依赖的字段项，会将依赖的字段作为dependvalues属性注入到当前对应的控件中
+  dependencies?: string[]; // 当前字段依赖的字段项，会将依赖的字段放到dependvalues属性中注入到当前对应的控件中
   readOnly?: boolean; // 只读模式
   readOnlyWidget?: string; // 只读模式下的组件，和readOnlyRender只能生效一个，readOnlyRender优先级最高
   readOnlyRender?: any; // 只读模式下的组件，和readOnlyWidget只能生效一个，readOnlyRender优先级最高
@@ -21,27 +21,23 @@ export interface SchemaData extends FormProps<FormRenderStore> {
 
 export type WatchHandler = (newValue: any, oldValue: string) => void
 
-// 带form容器的渲染组件props
-export interface RenderFormProps extends FormProps<FormRenderStore> {
-  schema: SchemaData;
-  onPropertiesChange?: (name: string, properties: SchemaData['properties']) => void;
-  watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
-  widgets?: { [key: string]: any };
-  Fields?: typeof defaultFields;
-  // 自定义渲染子元素
-  customRender?: getChildrenList;
-};
-
-// 不带form容器的渲染组件props
-export interface RenderFormChildrenProps {
-  propertiesName: string; // 当前渲染的表单的名
-  properties: SchemaData['properties']; // 控件数据源的数据
-  onPropertiesChange?: (name: string, properties: SchemaData['properties']) => void;
+export interface BaseRenderProps {
+  onPropertiesChange?: (properties: SchemaData['properties'], oldProperties?: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   widgets: { [key: string]: any };
   Fields?: typeof defaultFields;
   // 自定义渲染子元素
   customRender?: getChildrenList;
+}
+
+// 带form容器的渲染组件props
+export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderProps {
+  schema: SchemaData;
+};
+
+// 不带form容器的渲染组件props
+export interface RenderFormChildrenProps extends BaseRenderProps {
+  properties: SchemaData['properties']; // 控件数据源的数据
 };
 
 export type ValueOf<T> = T[keyof T];

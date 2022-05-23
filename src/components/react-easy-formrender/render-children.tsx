@@ -23,7 +23,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Fields,
     widgets,
     watch,
-    propertiesName = 'default',
     onPropertiesChange,
     customRender
   } = props;
@@ -40,23 +39,23 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 订阅更新properties的函数,j将传值更新到state里面
   useEffect(() => {
-    if (!store || !propertiesName) return
+    if (!store) return
     // 订阅目标控件
-    const uninstall = store.subscribeProperties(propertiesName, (newValue, oldValue) => {
+    const uninstall = store.subscribeProperties((newValue, oldValue) => {
       setProperties(newValue);
       if (!isMountRef.current && !isObjectEqual(newValue, oldValue)) {
-        onPropertiesChange && onPropertiesChange(propertiesName, newValue)
+        onPropertiesChange && onPropertiesChange(newValue, oldValue)
       }
     })
     return () => {
       uninstall()
     }
-  }, [propertiesName]);
+  }, []);
 
   // 收集properties到store中
   useEffect(() => {
     if (store && props?.properties) {
-      store.setProperties(propertiesName, props?.properties)
+      store.setProperties(props?.properties)
       isMountRef.current = false;
     }
   }, [JSON.stringify(props?.properties)]);
@@ -238,7 +237,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         <FormField key={name} {...(fieldType === 'Form.Item' ? restField : listItemProps)}>
           {
             readOnlyRender ??
-            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} propertiesname={propertiesName} dependvalues={dependvalues} store={store} />)
+            (ListItemChild !== undefined && <ListItemChild {...fieldChildProps} dependvalues={dependvalues} store={store} />)
           }
         </FormField>
       );
@@ -255,7 +254,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     } else {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
-          {FormItemChild ? <FormItemChild {...fieldChildProps} propertiesname={propertiesName} dependvalues={dependvalues} store={store}>{generateChildren(children)}</FormItemChild> : null}
+          {FormItemChild ? <FormItemChild {...fieldChildProps} dependvalues={dependvalues} store={store}>{generateChildren(children)}</FormItemChild> : null}
         </FormField>
       )
     }

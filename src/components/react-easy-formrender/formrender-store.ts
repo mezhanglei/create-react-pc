@@ -1,83 +1,83 @@
 import { klona } from "klona";
 import { FormStore } from "../react-easy-formcore"
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setPropertiesByPath, updatePropertiesByPath, swapSameLevel, swapDiffLevel } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex } from "./utils/utils";
 
-export type FormRenderListener = { name: string, onChange: (newValue?: any, oldValue?: any) => void }
-export type PropertiesMap = { [key: string]: SchemaData['properties'] }
+export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
+export type Properties = SchemaData['properties'];
 
 // 管理formrender过程中的数据
 export class FormRenderStore<T extends Object = any> extends FormStore {
-  private propertiesMap: PropertiesMap | {};
-  private lastPropertiesMap: PropertiesMap | {};
+  private properties: Properties | undefined;
+  private lastProperties: Properties | undefined;
   private propertiesListeners: FormRenderListener[] = [];
   constructor(values: Partial<T> = {}) {
     super(values);
-    this.propertiesMap = {};
-    this.lastPropertiesMap = {};
+    this.properties = undefined;
+    this.lastProperties = undefined;
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
   }
 
   // 获取当前组件的properties
-  public getProperties(propertiesName?: string) {
-    if (propertiesName !== undefined) {
-      return this.propertiesMap?.[propertiesName]
-    } else {
-      return this.propertiesMap
-    }
+  public getProperties() {
+    return this.properties;
   }
 
   // 设置properties
-  setProperties(propertiesName: string, data?: SchemaData['properties']) {
-    if (!propertiesName) return;
-    this.lastPropertiesMap = klona(this.propertiesMap);
-    if (data === undefined) {
-      delete this.propertiesMap[propertiesName]
-    } else {
-      this.propertiesMap[propertiesName] = klona(data);
-    }
-    this.notifyProperties(propertiesName);
+  setProperties(data?: SchemaData['properties']) {
+    this.lastProperties = klona(this.properties);
+    this.properties = klona(data);
+    this.notifyProperties();
   }
 
   // 更新指定路径的值
-  updateItemByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  updateItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
+    const properties = this.getProperties();
     if (properties) {
-      let newProperties = updatePropertiesByPath(properties, path, data);
-      this.setProperties(propertiesName, newProperties);
+      let newProperties = updateItemByPath(properties, path, data);
+      this.setProperties(newProperties);
     }
   }
 
   // 设置指定路径的值
-  setItemByPath = (path: string, data?: Partial<FormFieldProps>, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  setItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
+    const properties = this.getProperties();
     if (properties) {
-      let newProperties = setPropertiesByPath(properties, path, data);
-      this.setProperties(propertiesName, newProperties);
+      let newProperties = setItemByPath(properties, path, data);
+      this.setProperties(newProperties);
+    }
+  }
+
+  // 插入值，默认末尾
+  addItemByIndex = (data: { name: string, field: FormFieldProps }, index?: number, parentPath?: string) => {
+    const properties = this.getProperties();
+    if (properties) {
+      let newProperties = addItemByIndex(properties, data, index, parentPath);
+      this.setProperties(newProperties);
     }
   }
 
   // 根据path删除一条
-  delItemByPath = (path: string, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  delItemByPath = (path: string) => {
+    const properties = this.getProperties();
     if (properties) {
-      let newProperties = setPropertiesByPath(properties, path, undefined);
-      this.setProperties(propertiesName, newProperties);
+      let newProperties = setItemByPath(properties, path, undefined);
+      this.setProperties(newProperties);
     }
   }
 
   // 获取指定路径的项
-  getItemByPath = (path: string, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  getItemByPath = (path: string) => {
+    const properties = this.getProperties();
     if (properties) {
       return getItemByPath(properties, path);
     }
   }
 
-  // 交换两方位置
-  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }, propertiesName = "default") => {
-    const properties = this.getProperties(propertiesName);
+  // 从from到to更换位置
+  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+    const properties = this.getProperties();
     if (properties) {
       let newProperties;
       if (from?.parentPath === to?.parentPath) {
@@ -85,31 +85,22 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
       } else {
         newProperties = swapDiffLevel(properties, from, to);
       }
-      this.setProperties(propertiesName, newProperties);
+      this.setProperties(newProperties);
     }
   }
 
   // 订阅表单渲染数据的变动
-  public subscribeProperties(name: string, listener: FormRenderListener['onChange']) {
-    this.propertiesListeners.push({
-      onChange: listener,
-      name: name
-    });
+  public subscribeProperties(listener: FormRenderListener) {
+    this.propertiesListeners.push(listener);
     return () => {
-      this.propertiesListeners = this.propertiesListeners.filter((sub) => sub.name !== name)
+      this.propertiesListeners = [];
     }
   }
 
   // 同步表单渲染数据的变化
-  private notifyProperties(name?: string) {
-    if (name) {
-      this.propertiesListeners.forEach((listener) => {
-        if (listener?.name === name) {
-          listener?.onChange && listener?.onChange(this.propertiesMap[listener.name], this.lastPropertiesMap[listener.name])
-        }
-      })
-    } else {
-      this.propertiesListeners.forEach((listener) => listener.onChange(this.propertiesMap[listener.name], this.lastPropertiesMap[listener.name]))
-    }
+  private notifyProperties() {
+    this.propertiesListeners.forEach((onChange) => {
+      onChange && onChange(this.properties, this.lastProperties);
+    })
   }
 }

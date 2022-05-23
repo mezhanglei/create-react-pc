@@ -22,7 +22,7 @@ export default function RenderForm(props: RenderFormProps) {
 
   return (
     <Form store={store} {...rest}>
-      <RenderFormChildren propertiesName="default" customRender={customRender} onPropertiesChange={onPropertiesChange} properties={properties} watch={watch} widgets={widgets} Fields={Fields} />
+      <RenderFormChildren customRender={customRender} onPropertiesChange={onPropertiesChange} properties={properties} watch={watch} widgets={widgets} Fields={Fields} />
     </Form>
   );
 }
