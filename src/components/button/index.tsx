@@ -7,36 +7,23 @@ import "./index.less";
 import classNames from "classnames";
 
 // 类型
-export enum BUTTON_TYPE {
-    PRIMARY = "primary", // 实心
-    DEFAULT = "default", // 空心
-    DASHED = "dashed" // 虚线
-}
+export type BUTTON_TYPE  = "primary" | "default" | "dashed"
 
 // 功能
-export enum HTML_TYPE {
-    BUTTON = "button", // 按钮功能
-    SUBMIT = "submit", // 提交表单功能
-    RESET = "reset" // 清空表单功能
-}
+export type HTML_TYPE = "button" | "submit" | "reset";
 
 // 形状
-export enum SHAPE_TYPE {
-    CIRCLE = "circle" // 圆形
-}
+export type SHAPE_TYPE = "circle"
 
 // 大小
-export enum SIZE_TYPE {
-    LARGE = "large", // 大按钮
-    SMALL = "small" // 小按钮
-}
+export type SIZE_TYPE = "large" | "small";
 
 export interface ButtonProps {
     prefixCls?: string;
-    type?: `${BUTTON_TYPE}`; // 按钮类型
-    htmlType?: `${HTML_TYPE}`; // 功能
-    shape?: `${SHAPE_TYPE}`; // 形状
-    size?: `${SIZE_TYPE}`; // 大小
+    type?: BUTTON_TYPE; // 按钮类型
+    htmlType?: HTML_TYPE; // 功能
+    shape?: SHAPE_TYPE; // 形状
+    size?: SIZE_TYPE; // 大小
     danger?: boolean; // 是否为警告颜色
     disabled?: boolean; // 禁用
     onClick?: (e: any) => any;
@@ -50,8 +37,8 @@ const Button = React.forwardRef<any, ButtonProps>((props, ref) => {
 
     const {
         prefixCls = "mine-button",
-        type = BUTTON_TYPE.PRIMARY,
-        htmlType = HTML_TYPE.BUTTON,
+        type = 'primary',
+        htmlType = "button",
         shape,
         danger,
         size,

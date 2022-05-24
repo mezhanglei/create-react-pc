@@ -76,7 +76,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 从from到to更换位置
-  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
     const properties = this.getProperties();
     if (properties) {
       let newProperties;

@@ -37,11 +37,12 @@ const Demo1: React.FC<any> = (props) => {
     const { drag, drop } = params;
     console.log(params, '同区域');
     const dragIndex = drag?.index;
-    const dropIndex = drop?.dropIndex;
+    let dropIndex = drop?.index;
     const parentPath = drag?.groupPath;
     const cloneData = klona(data);
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
+    dropIndex = typeof dropIndex === 'number' ? dropIndex : childs?.length;
     const swapResult = arraySwap(childs, Number(dragIndex), Number(dropIndex));
     let newData;
     if (parentPath) {
@@ -65,7 +66,7 @@ const Demo1: React.FC<any> = (props) => {
     const dragItem = getItem(cloneData, dragPath);
     // 拖放区域的信息
     const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.dropIndex;
+    const dropIndex = drop?.index;
     const dragIndexPathArr = indexToArray(dragGroupPath);
     const dropIndexPathArr = indexToArray(dropGroupPath);
     // 先计算内部的变动，再计算外部的变动

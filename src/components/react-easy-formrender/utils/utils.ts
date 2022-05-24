@@ -183,19 +183,20 @@ export const addItemByIndex = (properties: SchemaData['properties'], data: { nam
 };
 
 // 同级调换位置
-export const swapSameLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+export const swapSameLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
   // 拖拽源
   const fromParentPath = from?.parentPath;
   const fromIndex = from?.index;
   // 拖放源
   const toParentPath = to?.parentPath;
-  const toIndex = to?.index;
+  let toIndex = to?.index;
   // 同域排序
   if (fromParentPath === toParentPath) {
     let parent = getItemByPath(properties, fromParentPath);
     const childProperties = fromParentPath ? parent?.properties : parent;
     // 转成列表以便排序
     const childList = objToArr(childProperties);
+    toIndex = typeof toIndex === 'number' ? toIndex : childList?.length;
     const swapList = arraySwap(childList, fromIndex, toIndex);
     const type = getPropertiesType(childProperties);
     const result = arrayToTree(swapList, type);
@@ -209,7 +210,7 @@ export const swapSameLevel = (properties: SchemaData['properties'], from: { pare
 }
 
 // 跨级调换位置
-export const swapDiffLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index: number }) => {
+export const swapDiffLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
   // 拖拽源
   const fromParentPath = from?.parentPath;
   const fromIndex = from?.index;

@@ -168,7 +168,7 @@ export default function Demo5(props) {
     const dragIndex = drag?.index;
     // 拖放区域的信息
     const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.dropIndex;
+    const dropIndex = drop?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
@@ -180,7 +180,7 @@ export default function Demo5(props) {
     const dragIndex = drag?.index;
     // 拖放区域的信息
     const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.dropIndex;
+    const dropIndex = drop?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 

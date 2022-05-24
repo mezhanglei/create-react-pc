@@ -64,7 +64,7 @@ class Demo9 extends Component {
     const { data } = this.state;
     const cloneData = klona(data);
     const dragIndex = drag?.index;
-    const dropIndex = drop?.dropIndex;
+    const dropIndex = drop?.index;
     const parentPath = drag?.groupPath;
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
@@ -91,7 +91,7 @@ class Demo9 extends Component {
       dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
       // 放置项
       const dropGroupPath = drop.groupPath;
-      const dropIndex = drop?.dropIndex;
+      const dropIndex = drop?.index;
       const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
       this.setState({
         data: newData
@@ -105,7 +105,7 @@ class Demo9 extends Component {
       const dragItem = getItem(cloneData, dragPath);
       // 拖放区域的信息
       const dropGroupPath = drop.groupPath;
-      const dropIndex = drop?.dropIndex;
+      const dropIndex = drop?.index;
       const dragIndexPathArr = indexToArray(dragGroupPath);
       const dropIndexPathArr = indexToArray(dropGroupPath);
       // 先计算内部的变动，再计算外部的变动
