@@ -40,27 +40,21 @@ export interface DropItem extends DndSortable {
 // 拖拽源信息
 export interface DragParams {
   e: EventType;
-  drag: DragItem;
+  from: DragItem;
 }
 
 // 拖拽触发的函数的参数
 export interface DndParams extends DragParams {
-  drop: DropItem
-}
-
-// 拖拽过程触发的函数的参数
-export interface DndMoveParams extends DragParams {
-  over?: DropItem
+  to?: DropItem
 }
 
 // 拖拽触发的函数
 export type DndHandle = (params: DndParams) => void;
-export type DragHandle = (params: DndMoveParams) => void;
 
 export interface DndBaseProps {
-  onStart?: DragHandle; // 拖拽开始触发的函数
-  onMove?: DragHandle; // 拖拽进行中触发的函数
-  onEnd?: DragHandle; // 拖拽结束函数
+  onStart?: DndHandle; // 拖拽开始触发的函数
+  onMove?: DndHandle; // 拖拽进行中触发的函数
+  onEnd?: DndHandle; // 拖拽结束函数
   onAdd?: DndHandle; // 当前容器添加新元素触发的函数
   onUpdate?: DndHandle; // 当前容器排序触发的函数
   onHover?: (over: HTMLElement) => void; // 被hover的子元素触发的事件
@@ -70,8 +64,8 @@ export interface DndBaseProps {
     groupPath?: string; // 拖拽容器的路径
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
-    allowDrop: boolean | ((params: DndMoveParams, options: DndProps['options']) => boolean); // 是否允许拖放新元素
-    allowSort?: boolean | ((params: DndMoveParams, options: DndProps['options']) => boolean); // 是否可以动态插入排序
+    allowDrop: boolean | ((params: DndParams, options: DndProps['options']) => boolean); // 是否允许拖放新元素
+    allowSort?: boolean | ((params: DndParams, options: DndProps['options']) => boolean); // 是否可以动态插入排序
     childDrag: boolean | (HTMLElement | string)[] | ((el: HTMLElement, options: DndProps['options']) => boolean); // 子元素是否允许拖拽
     direction?: string[]; // 允许拖拽的轴向
     sortPreClass?: string; // 元素往序号小的排序时添加的class

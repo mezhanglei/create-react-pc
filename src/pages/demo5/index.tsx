@@ -161,26 +161,26 @@ export default function Demo5(props) {
   };
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '同域拖放');
     // 拖拽区域信息
-    const dragGroupPath = drag.groupPath;
-    const dragIndex = drag?.index;
+    const dragGroupPath = from.groupPath;
+    const dragIndex = from?.index;
     // 拖放区域的信息
-    const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.index;
+    const dropGroupPath = to.groupPath;
+    const dropIndex = to?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '跨域拖放');
     // 拖拽区域信息
-    const dragGroupPath = drag.groupPath;
-    const dragIndex = drag?.index;
+    const dragGroupPath = from.groupPath;
+    const dragIndex = from?.index;
     // 拖放区域的信息
-    const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.index;
+    const dropGroupPath = to.groupPath;
+    const dropIndex = to?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 

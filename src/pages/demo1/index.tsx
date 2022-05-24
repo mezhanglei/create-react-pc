@@ -34,11 +34,11 @@ const Demo1: React.FC<any> = (props) => {
   };
 
   const onUpdate: DndProps['onUpdate'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '同区域');
-    const dragIndex = drag?.index;
-    let dropIndex = drop?.index;
-    const parentPath = drag?.groupPath;
+    const dragIndex = from?.index;
+    let dropIndex = to?.index;
+    const parentPath = from?.groupPath;
     const cloneData = klona(data);
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
@@ -56,17 +56,17 @@ const Demo1: React.FC<any> = (props) => {
 
   // 先计算内层的数据再计算外层的数据
   const onAdd: DndProps['onAdd'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '跨区域');
     const cloneData = klona(data);
     // 拖拽区域信息
-    const dragGroupPath = drag.groupPath;
-    const dragIndex = drag?.index;
-    const dragPath = drag?.path;
+    const dragGroupPath = from.groupPath;
+    const dragIndex = from?.index;
+    const dragPath = from?.path;
     const dragItem = getItem(cloneData, dragPath);
     // 拖放区域的信息
-    const dropGroupPath = drop.groupPath;
-    const dropIndex = drop?.index;
+    const dropGroupPath = to.groupPath;
+    const dropIndex = to?.index;
     const dragIndexPathArr = indexToArray(dragGroupPath);
     const dropIndexPathArr = indexToArray(dropGroupPath);
     // 先计算内部的变动，再计算外部的变动

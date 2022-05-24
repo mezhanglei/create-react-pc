@@ -59,13 +59,13 @@ class Demo9 extends Component {
   }
 
   onUpdate: DndProps['onUpdate'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '同区域');
     const { data } = this.state;
     const cloneData = klona(data);
-    const dragIndex = drag?.index;
-    const dropIndex = drop?.index;
-    const parentPath = drag?.groupPath;
+    const dragIndex = from?.index;
+    const dropIndex = to?.index;
+    const parentPath = from?.groupPath;
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
     const swapResult = arraySwap(childs, Number(dragIndex), Number(dropIndex));
@@ -80,18 +80,18 @@ class Demo9 extends Component {
   }
 
   onAdd: DndProps['onAdd'] = (params) => {
-    const { drag, drop } = params;
+    const { from, to } = params;
     console.log(params, '跨区域');
     const { data } = this.state;
     const cloneData = klona(data);
     // 容器外面添加进来
-    if (drag?.groupPath === 'components') {
+    if (from?.groupPath === 'components') {
       // 拖拽项
-      let dragItem = getItem(soundData, `${drag?.index}`);
+      let dragItem = getItem(soundData, `${from?.index}`);
       dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
       // 放置项
-      const dropGroupPath = drop.groupPath;
-      const dropIndex = drop?.index;
+      const dropGroupPath = to.groupPath;
+      const dropIndex = to?.index;
       const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
       this.setState({
         data: newData
@@ -99,13 +99,13 @@ class Demo9 extends Component {
       // 容器内部拖拽
     } else {
       // 拖拽区域信息
-      const dragGroupPath = drag.groupPath;
-      const dragIndex = drag?.index;
-      const dragPath = drag?.path;
+      const dragGroupPath = from.groupPath;
+      const dragIndex = from?.index;
+      const dragPath = from?.path;
       const dragItem = getItem(cloneData, dragPath);
       // 拖放区域的信息
-      const dropGroupPath = drop.groupPath;
-      const dropIndex = drop?.index;
+      const dropGroupPath = to.groupPath;
+      const dropIndex = to?.index;
       const dragIndexPathArr = indexToArray(dragGroupPath);
       const dropIndexPathArr = indexToArray(dropGroupPath);
       // 先计算内部的变动，再计算外部的变动
