@@ -1,7 +1,7 @@
 import React, { cloneElement, CSSProperties, useContext } from 'react'
 import { FormRule } from './form-store';
 import classnames from 'classnames';
-import { FormOptions, FormOptionsContext, Layout } from './form-options-context';
+import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
 import { Col, Row } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
@@ -45,7 +45,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     suffix,
     className,
     style,
-    layout = Layout.Horizontal,
+    layout = "horizontal",
     col,
     colon,
     compact,
@@ -59,12 +59,12 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   } = fieldProps
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-  const initialListValue = initialValues?.[currentPath as string] ?? initialValue;
+  const initialListValue = initialValue ?? initialValues?.[currentPath];
 
   // 是否为表单控件
   const isFormField = (child: any) => {
     const displayName = child?.type?.displayName;
-    const formFields = ['FormItem', 'FormList'];
+    const formFields = ['Form.Item', 'Form.List'];
     return formFields?.includes(displayName)
   }
 
@@ -147,4 +147,4 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   )
 });
 
-FormList.displayName = 'FormList';
+FormList.displayName = 'Form.List';

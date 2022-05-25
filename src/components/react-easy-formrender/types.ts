@@ -4,7 +4,7 @@ import { defaultFields } from './default-field';
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
-  dependencies?: string[]; // 当前字段依赖的字段项，会将依赖的字段放到dependvalues属性中注入到当前对应的控件中
+  dependencies?: string[]; // 当前字段依赖的字段项，会将依赖的字段收集到dependvalues属性中注入到当前对应的控件中
   readOnly?: boolean; // 只读模式
   readOnlyWidget?: string; // 只读模式下的组件，和readOnlyRender只能生效一个，readOnlyRender优先级最高
   readOnlyRender?: any; // 只读模式下的组件，和readOnlyWidget只能生效一个，readOnlyRender优先级最高

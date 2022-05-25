@@ -66,7 +66,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
     initWatch();
     return () => {
-      store?.removeListenFormGlobal();
+      store?.unsubscribeFormGlobal();
     }
   }, [JSON.stringify(properties)]);
 
@@ -75,11 +75,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Object.entries(watch || {})?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
-        store?.listenFormGlobal(key, watcher)
+        store?.subscribeFormGlobal(key, watcher)
         // 对象形式
       } else if (typeof watcher === 'object') {
         if (typeof watcher.handler === 'function') {
-          store?.listenFormGlobal(key, watcher.handler);
+          store?.subscribeFormGlobal(key, watcher.handler);
         }
         if (watcher.immediate) {
           watcher.handler(store?.getFieldValue(key), store?.getLastValue(key));
@@ -204,7 +204,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       return 'List.Item';
     }
     if (properties instanceof Array) {
-      return 'Form.List'
+      return 'Form.List';
     }
     return 'Form.Item';
   }
@@ -230,7 +230,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
     // 只读组件
     if (readOnly === true) {
-      const ListItemChild = readOnlyWidget && widgets[readOnlyWidget]
+      const ListItemChild = readOnlyWidget && widgets?.[readOnlyWidget]
       // 当fieldType === 'Form.Item'的传参
       const { rules, initialValue, ...listItemProps } = restField;
       return (

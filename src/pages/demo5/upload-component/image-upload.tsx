@@ -107,6 +107,7 @@ export default class UploadImage extends React.Component<UploadImageProps, Uploa
     // 本地上传完成或移除
     if (file.status === 'uploading' && file.percent == 100 || file.status === 'removed') {
       console.log(params, '上传到浏览器完成或删除上传元素时')
+      onChange && onChange(fileList)
       this.setState({
         fileList: fileList
       })

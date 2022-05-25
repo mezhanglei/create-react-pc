@@ -1,7 +1,7 @@
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useContext } from 'react'
 import classnames from 'classnames';
 import './list-item.less';
-import { FormOptions, Layout } from './form-options-context';
+import { FormOptions, FormOptionsContext } from './form-options-context';
 import { Col } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
 
@@ -24,20 +24,22 @@ export const classes_item = {
 }
 
 export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
+  const options = useContext(FormOptionsContext)
+  const finalProps = { ...options, ...props };
+  const { children, ...fieldProps } = finalProps;
   const {
     label,
     suffix,
     required,
     labelStyle,
-    layout = Layout.Horizontal,
+    layout = "horizontal",
     col,
     colon,
     gutter,
     className,
-    children,
     style,
     ...restProps
-  } = props
+  } = fieldProps;
 
   const cls = classnames(
     classes_item.field,
@@ -68,4 +70,4 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   );
 });
 
-ListItem.displayName = 'ListItem';
+ListItem.displayName = 'List.Item';

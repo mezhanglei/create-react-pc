@@ -24,13 +24,11 @@ export type FormFieldsProps<T = any> = { [key in keyof T]: FieldProps }
 export class FormStore<T extends Object = any> {
   private initialValues: Partial<T>
 
-  private valueListeners: FormListener[] = []
+  private formItemListeners: FormListener[] = []
 
-  private storeValueListeners: FormListener[] = []
+  private formGlobalListeners: FormListener[] = []
 
   private errorListeners: FormListener[] = []
-
-  private propsListeners: FormListener[] = []
 
   private values: Partial<T>
   private lastValues?: Partial<T>
@@ -55,10 +53,9 @@ export class FormStore<T extends Object = any> {
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribeFormItem = this.subscribeFormItem.bind(this)
-    this.listenFormGlobal = this.listenFormGlobal.bind(this)
-    this.removeListenFormGlobal = this.removeListenFormGlobal.bind(this)
+    this.subscribeFormGlobal = this.subscribeFormGlobal.bind(this)
+    this.unsubscribeFormGlobal = this.unsubscribeFormGlobal.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
-    this.subscribeProps = this.subscribeProps.bind(this)
   }
 
   // 获取
@@ -80,7 +77,6 @@ export class FormStore<T extends Object = any> {
       const newField = { ...lastField, ...field };
       this.initialFieldProps[path] = newField;
     }
-    this.notifyProps(path);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
@@ -129,7 +125,8 @@ export class FormStore<T extends Object = any> {
       // 同时触发另一个值的监听
       this.notifyFormGlobal(path);
       // 规则
-      const rules = this.initialFieldProps?.[path]?.['rules'];
+      const fieldProps = this.getInitialFieldProps();
+      const rules = fieldProps?.[path]?.['rules'];
       if (rules?.length) {
         // 校验规则
         await this.validate(path);
@@ -148,9 +145,10 @@ export class FormStore<T extends Object = any> {
   }
 
   // 重置表单
-  public reset() {
+  public reset(endValues?: Partial<T>) {
+    const end = endValues || this.initialValues;
     this.setFieldsError({});
-    this.setFieldsValue(this.initialValues);
+    this.setFieldsValue(end);
   }
 
   // 获取error信息
@@ -183,9 +181,10 @@ export class FormStore<T extends Object = any> {
   public async validate(): Promise<ValidateResult<T>>
   public async validate(path: string): Promise<string>
   public async validate(path?: string) {
+    const fieldProps = this.getInitialFieldProps();
     if (path === undefined) {
-      const result = await Promise.all(Object.keys(this.initialFieldProps)?.map((n) => {
-        const rules = this.initialFieldProps?.[n]?.['rules'];
+      const result = await Promise.all(Object.keys(fieldProps)?.map((n) => {
+        const rules = fieldProps?.[n]?.['rules'];
         if (rules) {
           return this.validate(n)
         }
@@ -199,7 +198,7 @@ export class FormStore<T extends Object = any> {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
-      const rules = this.initialFieldProps?.[path]?.['rules'];
+      const rules = fieldProps?.[path]?.['rules'];
 
       // 表单校验处理规则
       const handleRule = async (rule: FormRule) => {
@@ -245,26 +244,26 @@ export class FormStore<T extends Object = any> {
   // 同步当前表单域值的变化
   private notifyFormItem(path?: string) {
     if (path) {
-      this.valueListeners.forEach((listener) => {
+      this.formItemListeners.forEach((listener) => {
         if (listener?.path === path) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
         }
       })
     } else {
-      this.valueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
+      this.formItemListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }
   }
 
   // 同步整个表单值的变化
   private notifyFormGlobal(path?: string) {
     if (path) {
-      this.storeValueListeners.forEach((listener) => {
+      this.formGlobalListeners.forEach((listener) => {
         if (isExitPrefix(listener?.path, path)) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
         }
       })
     } else {
-      this.storeValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
+      this.formGlobalListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }
   }
 
@@ -281,47 +280,34 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 同步props的变化
-  private notifyProps(path?: string) {
-    if (path) {
-      this.propsListeners.forEach((listener) => {
-        if (listener?.path === path) {
-          listener?.onChange && listener?.onChange()
-        }
-      })
-    } else {
-      this.propsListeners.forEach((listener) => listener.onChange())
-    }
-  }
-
-  // 订阅当前表单域值的变动
+  // 订阅当前表单域值的变动(当表单域消失时会卸载)
   public subscribeFormItem(path: string, listener: FormListener['onChange']) {
-    this.valueListeners.push({
+    this.formItemListeners.push({
       onChange: listener,
       path: path
     });
     return () => {
-      this.valueListeners = this.valueListeners.filter((sub) => sub.path !== path)
+      this.formItemListeners = this.formItemListeners.filter((sub) => sub.path !== path)
     }
   }
 
   // 主动订阅整个表单值的变动(表单控件消失不会卸载)
-  public listenFormGlobal(path: string, listener: FormListener['onChange']) {
-    this.storeValueListeners.push({
+  public subscribeFormGlobal(path: string, listener: FormListener['onChange']) {
+    this.formGlobalListeners.push({
       onChange: listener,
       path: path
     });
     return () => {
-      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.path !== path)
+      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
     }
   }
 
   // 卸载
-  public removeListenFormGlobal(path?: string) {
+  public unsubscribeFormGlobal(path?: string) {
     if (typeof path === 'string') {
-      this.storeValueListeners = this.storeValueListeners.filter((sub) => sub.path !== path)
+      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
     } else {
-      this.storeValueListeners = []
+      this.formGlobalListeners = []
     }
   }
 
@@ -333,17 +319,6 @@ export class FormStore<T extends Object = any> {
     });
     return () => {
       this.errorListeners = this.errorListeners.filter((sub) => sub.path !== path)
-    }
-  }
-
-  // 订阅表单的props的变动
-  public subscribeProps(path: string, listener: FormListener['onChange']) {
-    this.propsListeners.push({
-      onChange: listener,
-      path: path
-    });
-    return () => {
-      this.propsListeners = this.propsListeners.filter((sub) => sub.path !== path)
     }
   }
 }

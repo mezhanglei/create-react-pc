@@ -1,6 +1,6 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
-import { FormOptions, FormOptionsContext, Layout } from './form-options-context';
+import { FormOptions, FormOptionsContext } from './form-options-context';
 import { getValuePropName, getValueFromEvent, isListItem, getColProps } from './utils/utils';
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
@@ -52,7 +52,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     path,
     className,
     style,
-    layout = Layout.Horizontal,
+    layout = "horizontal",
     col,
     colon,
     compact,
@@ -78,7 +78,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   }
 
   const currentPath = getCurrentPath(name, path);
-  const initialItemValue = initialValues?.[currentPath as string] ?? initialValue;
+  const initialItemValue = initialValue ?? (currentPath && initialValues?.[currentPath]);
   const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
   const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
 
@@ -147,7 +147,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const bindChild = (child: any) => {
     if (currentPath && child) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
-      const childProps = child?.props as any;
+      const childProps = child?.props;
       const { onChange, className } = childProps || {};
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const aopAfterFn = aopOnchange.addAfter(onChange);
@@ -161,7 +161,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   // 是否为表单控件
   const isFormField = (child: any) => {
     const displayName = child?.type?.displayName;
-    const formFields = ['FormItem', 'FormList'];
+    const formFields = ['Form.Item', 'Form.List'];
     return formFields?.includes(displayName)
   }
 
@@ -229,4 +229,4 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   )
 })
 
-FormItem.displayName = 'FormItem';
+FormItem.displayName = 'Form.Item';

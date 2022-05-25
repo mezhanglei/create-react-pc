@@ -2,8 +2,8 @@
 import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
-// import {Form, useFormStore} from '@/components/react-easy-formcore'
-import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
+// import {Form, useFormStore} from '@/components/react-easy-formcore';
+import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import './index.less'
 
 export default function Demo5(props) {
@@ -21,6 +21,7 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
+    layout: 'vertical',
     properties: {
       name1: {
         label: "只读展示",
@@ -37,7 +38,6 @@ export default function Demo5(props) {
         label: "输入框",
         widget: 'Input',
         required: true,
-        // labelAlign: 'vertical',
         // col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
@@ -47,7 +47,6 @@ export default function Demo5(props) {
       name3: {
         label: "数组",
         required: true,
-        // labelAlign: 'vertical',
         // col: { span: 6 },
         properties: [{
           widget: 'Select',
@@ -81,7 +80,6 @@ export default function Demo5(props) {
       name4: {
         // label: '对象嵌套',
         required: true,
-        // labelAlign: 'vertical',
         // col: { span: 6 },
         properties: {
           first: {
@@ -129,7 +127,6 @@ export default function Demo5(props) {
       name5: {
         label: 'name5',
         widget: 'Checkbox',
-        // labelAlign: 'vertical',
         required: true,
         valueProp: 'checked',
         // col: { span: 6 },
@@ -144,9 +141,8 @@ export default function Demo5(props) {
         label: 'Upload',
         widget: 'Upload',
         dependencies: ['name3', 'name4'],
-        // labelAlign: 'vertical',
         // required: true,
-        // rules: [{ required: true, message: 'name3空了' }],
+        rules: [{ required: true, message: '上传空了' }],
         col: { span: 6 }
       },
     }
@@ -167,7 +163,7 @@ export default function Demo5(props) {
     const dragGroupPath = from.groupPath;
     const dragIndex = from?.index;
     // 拖放区域的信息
-    const dropGroupPath = to.groupPath;
+    const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
@@ -179,7 +175,7 @@ export default function Demo5(props) {
     const dragGroupPath = from.groupPath;
     const dragIndex = from?.index;
     // 拖放区域的信息
-    const dropGroupPath = to.groupPath;
+    const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }

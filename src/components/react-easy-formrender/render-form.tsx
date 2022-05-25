@@ -18,7 +18,7 @@ export default function RenderForm(props: RenderFormProps) {
   } = props;
 
   const { properties, ...schemaRest } = schema;
-  const rest = { ...schemaRest, ...restProps };
+  const rest = { ...restProps, ...schemaRest };
 
   return (
     <Form store={store} {...rest}>
