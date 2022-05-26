@@ -92,19 +92,14 @@ export interface DraggableEventProps extends BaseDragProps {
 // Draggable的props的类型
 export interface DraggableProps extends BaseDragProps {
   children?: any;
-  x?: number; // 在页面中的位置
-  y?: number; // 在页面中的位置
+  x?: number; // 受控位置，参考系位置为bounds的位置
+  y?: number; // 受控位置，参考系位置为bounds的位置
   positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
   bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.boundsParent元素内部范围的限制拖拽范围
   fixed?: boolean; // 当为非受控组件时，是否固定元素
   onStart?: DragHandler; // 拖拽开始事件
   onMove?: DragHandler; // 拖拽进行事件
   onEnd?: DragHandler; // 拖拽结束事件
-  width?: number; // 受控尺寸
-  height?: number; // 受控尺寸
-  onResizeStart?: EventHandler; // 拖拽开始事件
-  onResizeMoving?: EventHandler; // 拖拽进行中事件
-  onResizeEnd?: EventHandler; // 拖拽结束事件
 }
 
 // 拖拽类型
