@@ -243,7 +243,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       );
     }
 
-    // 嵌套组件
+    // 容器组件
     if (typeof properties === 'object' && !isEmpty(properties)) {
       return (
         <FormField key={name} {...restField} name={name} onValuesChange={valuesCallback}>
