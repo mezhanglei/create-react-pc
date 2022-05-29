@@ -198,6 +198,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     };
 
     this.initLayerNode();
+    // 如果没有完成渲染或者返回false则禁止拖拽
     this.props?.onStart && this.props?.onStart(e, this.eventData);
 
     // 滚动过程中选中文本被添加样式

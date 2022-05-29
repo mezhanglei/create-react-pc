@@ -78,7 +78,7 @@ export default function Demo5(props) {
         }]
       },
       name4: {
-        // label: '对象嵌套',
+        label: '对象嵌套',
         required: true,
         // col: { span: 6 },
         properties: {
@@ -142,8 +142,7 @@ export default function Demo5(props) {
         widget: 'Upload',
         dependencies: ['name3', 'name4'],
         // required: true,
-        rules: [{ required: true, message: '上传空了' }],
-        col: { span: 6 }
+        rules: [{ required: true, message: '上传空了' }]
       },
     }
   })
@@ -185,12 +184,12 @@ export default function Demo5(props) {
     return (
       properties instanceof Array ?
         properties?.map((formField, index) => {
-          return generate({ name: `[${index}]`, field: formField, path });
+          return generate({ name: `[${index}]`, field: { ...formField, style: { background: '#fff', padding: '8px' } }, path });
         })
         :
         Object.entries(properties || {})?.map(
           ([name, formField]) => {
-            return generate({ name: name, field: formField, path });
+            return generate({ name: name, field: { ...formField, style: { background: '#fff', padding: '8px' } }, path });
           }
         )
     )
@@ -198,15 +197,15 @@ export default function Demo5(props) {
 
   const customRender: RenderFormProps['customRender'] = (properties, generate, parent) => {
     const { path, field } = parent || {};
-    if (!(field?.properties instanceof Array)) {
+    if (field?.properties) {
       return (
-        <div data-type="fragment" style={{ background: '#fff', padding: '20px', width: '100%' }}>
+        <div data-type="fragment" style={{ padding: '20px', width: '100%' }}>
           <DndSortable
             onUpdate={onItemSwap}
             onAdd={onItemAdd}
             data-type="fragment"
             className='dnd-box'
-            style={{ background: '#f5f5f5' }}
+            style={{ padding: '10px', background: '#f5f5f5' }}
             options={{
               groupPath: path,
               childDrag: true,

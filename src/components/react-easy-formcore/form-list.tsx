@@ -72,7 +72,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const getChildren = (children: any) => {
     return React.Children.map(children, (child: any, index) => {
       if (isFormField(child)) {
-        return renderPropsChildrenItem(child, index);
+        return renderChildItem(child, index);
       } else {
         return bindNestedChildren(child, index);
       }
@@ -86,19 +86,19 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
       return cloneElement(child, {
         children: React.Children.map(childs, (childItem: any) => {
           if (isFormField(childItem)) {
-            return renderPropsChildrenItem(childItem, index)
+            return renderChildItem(childItem, index)
           } else {
             return bindNestedChildren(childItem, index)
           }
         })
       })
     } else {
-      return renderPropsChildrenItem(child, index);
+      return renderChildItem(child, index);
     }
   }
 
   // 渲染子元素
-  const renderPropsChildrenItem = (child: any, index: number) => {
+  const renderChildItem = (child: any, index: number) => {
     if (isFormField(child)) {
       const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
       const childValue = child?.props?.initialValue ?? initialListValue?.[index];
