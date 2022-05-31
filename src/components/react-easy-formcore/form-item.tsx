@@ -35,7 +35,7 @@ export const classes = {
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
   footer: `${prefixCls}__footer`,
-}
+};
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const store = useContext<FormStore>(FormStoreContext)
@@ -75,7 +75,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     } else {
       return parent ? `${parent}.${name}` : name;
     }
-  }
+  };
 
   const currentPath = getCurrentPath(name, path);
   const initialItemValue = initialValue ?? (currentPath && initialValues?.[currentPath]);
@@ -94,7 +94,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       }
     },
     [currentPath, store, valueGetter]
-  )
+  );
 
   const aopOnchange = new AopFactory(onChange);
 
@@ -107,10 +107,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       if (!isObjectEqual(newValue, oldValue)) {
         onValuesChange && onValuesChange({ path: currentPath, value: newValue })
       }
-    })
+    });
     return () => {
-      uninstall()
-    }
+      uninstall();
+    };
   }, [currentPath, store]);
 
   // 订阅组件更新错误的函数
@@ -120,10 +120,14 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     const uninstall = store.subscribeError(currentPath, () => {
       const error = store?.getFieldError(currentPath);
       setError(error);
-    })
+    });
     return () => {
-      uninstall()
-    }
+      uninstall();
+      // 清除该表单域的props(在设置值的前面)
+      store?.setInitialFieldProps(currentPath, undefined);
+      // 清除初始值
+      store.setInitialValues(currentPath, undefined);
+    };
   }, [currentPath, store]);
 
   // 表单域初始化值
@@ -131,15 +135,11 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     if (!currentPath || !store) return;
     // (在设置值的前面)
     store?.setInitialFieldProps(currentPath, fieldProps);
-    if (initialItemValue !== undefined) {
+    const oldValue = store?.getFieldValue(currentPath);
+    // 只有初始化时才进行赋值
+    if (oldValue === undefined) {
       // 回填store.initialValues和回填store.values
       store.setInitialValues(currentPath, initialItemValue);
-    }
-    return () => {
-      // 清除该表单域的props(在设置值的前面)
-      store?.setInitialFieldProps(currentPath, undefined);
-      // 清除初始值
-      store.setInitialValues(currentPath, undefined);
     }
   }, [currentPath, JSON.stringify(initialItemValue)]);
 
@@ -156,14 +156,14 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     } else {
       return child;
     }
-  }
+  };
 
   // 是否为表单控件
   const isFormField = (child: any) => {
     const displayName = child?.type?.displayName;
     const formFields = ['Form.Item', 'Form.List'];
     return formFields?.includes(displayName)
-  }
+  };
 
   // 渲染子元素
   const getChildren = (children: any) => {
@@ -175,8 +175,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       } else {
         return bindNestedChildren(child);
       }
-    })
-  }
+    });
+  };
 
   // 递归遍历子元素
   const bindNestedChildren = (child: any): any => {
@@ -187,11 +187,11 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     if (childs !== undefined && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
       return cloneElement(child, {
         children: getChildren(childs)
-      })
+      });
     } else {
       return bindChild(child);
     }
-  }
+  };
 
   const childs = getChildren(children);
 
@@ -202,12 +202,12 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     error ? classes.error : '',
     className ? className : '',
     `${classes.field}--${layout}`,
-  )
+  );
 
   const headerStyle = {
     marginRight: gutter,
     ...labelStyle
-  }
+  };
 
   const colProps = getColProps({ layout: layout, col });
 
@@ -226,7 +226,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       </div>
       {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
     </Col>
-  )
-})
+  );
+});
 
 FormItem.displayName = 'Form.Item';

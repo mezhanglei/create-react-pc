@@ -97,8 +97,8 @@ export const getKeyValueByIndex = (properties: SchemaData['properties'], index: 
   return {
     name: key,
     field: childProperties[key]
-  }
-}
+  };
+};
 
 interface DataListType extends FormFieldProps {
   propertiesType?: 'array' | 'object';
@@ -109,12 +109,12 @@ interface DataListType extends FormFieldProps {
 const getPropertiesType = (properties?: SchemaData['properties']) => {
   if (properties) {
     if (properties instanceof Array) {
-      return 'array'
+      return 'array';
     } else if (typeof properties === 'object') {
-      return 'object'
+      return 'object';
     }
   }
-}
+};
 
 // 将树中的选项转化为列表中的选项
 export const treeItemToListItem = (name: string, field: FormFieldProps): DataListType => {
@@ -124,8 +124,8 @@ export const treeItemToListItem = (name: string, field: FormFieldProps): DataLis
     ...field,
     propertiesType: getPropertiesType(childs),
     properties: childs && objToArr(childs)
-  }
-}
+  };
+};
 
 // 将树对象转化成树数组
 export const objToArr = (properties: SchemaData['properties']) => {
@@ -138,7 +138,7 @@ export const objToArr = (properties: SchemaData['properties']) => {
     }
   }
   return temp;
-}
+};
 
 // 将嵌套数组还原成嵌套树对象
 const arrayToTree = (dataList: DataListType[], type?: 'array' | 'object') => {
@@ -146,7 +146,8 @@ const arrayToTree = (dataList: DataListType[], type?: 'array' | 'object') => {
   if (typeof dataList === 'object') {
     for (let key in dataList) {
       const current = dataList[key];
-      const name = current?.name;
+      const name = type === 'array' ? key : current?.name;
+      current.name = name;
       if (typeof name === 'string') {
         temp[name] = current;
         const properties = current?.properties;
@@ -207,7 +208,7 @@ export const swapSameLevel = (properties: SchemaData['properties'], from: { pare
       return result;
     }
   }
-}
+};
 
 // 跨级调换位置
 export const swapDiffLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
@@ -232,4 +233,4 @@ export const swapDiffLevel = (properties: SchemaData['properties'], from: { pare
     result && setItemByPath(result, fromPath, undefined);
     return result;
   }
-}
+};

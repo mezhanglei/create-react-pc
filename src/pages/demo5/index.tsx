@@ -65,7 +65,7 @@ export default function Demo5(props) {
         }, {
           widget: 'Select',
           required: true,
-          // col: { span: 6 },
+          col: { span: 6 },
           rules: [{ required: true, message: 'name3[1]空了' }],
           widgetProps: {
             labelInValue: true,

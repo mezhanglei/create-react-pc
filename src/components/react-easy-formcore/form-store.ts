@@ -89,7 +89,7 @@ export class FormStore<T extends Object = any> {
     return path === undefined ? (this.lastValues && { ...this.lastValues }) : deepGet(this.lastValues, path)
   }
 
-  // 设置初始值
+  // 设置初始值(只有初始化时才进行赋值)
   public setInitialValues(path: string, initialValue: any) {
     this.initialValues = deepSet(this.initialValues, path, initialValue);
     // 旧表单值存储

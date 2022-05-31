@@ -30,11 +30,11 @@ export const classes_list = {
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
   footer: `${prefixCls}__footer`,
-}
+};
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
-  const options = useContext(FormOptionsContext)
-  const initialValues = useContext(FormValuesContext)
+  const options = useContext(FormOptionsContext);
+  const initialValues = useContext(FormValuesContext);
   const finalProps = { ...options, ...props };
   const { children, ...fieldProps } = finalProps;
   const {
@@ -56,7 +56,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     onValuesChange,
     initialValue,
     ...restField
-  } = fieldProps
+  } = fieldProps;
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
   const initialListValue = initialValue ?? initialValues?.[currentPath];
@@ -65,53 +65,48 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const isFormField = (child: any) => {
     const displayName = child?.type?.displayName;
     const formFields = ['Form.Item', 'Form.List'];
-    return formFields?.includes(displayName)
-  }
+    return formFields?.includes(displayName);
+  };
 
   // 渲染子元素
+  let index = 0;
   const getChildren = (children: any) => {
-    return React.Children.map(children, (child: any, index) => {
+    return React.Children.map(children, (child: any) => {
       if (isFormField(child)) {
-        return renderChildItem(child, index);
+        return renderFormItem(child);
       } else {
-        return bindNestedChildren(child, index);
+        return bindNestedChildren(child);
       }
     });
-  }
+  };
 
   // 递归遍历子元素(遇到表单域停止)
-  const bindNestedChildren = (child: any, index: number): any => {
+  const bindNestedChildren = (child: any): any => {
     const childs = child?.props?.children;
     if (child !== undefined && !isFormField(child)) {
       return cloneElement(child, {
-        children: React.Children.map(childs, (childItem: any) => {
-          if (isFormField(childItem)) {
-            return renderChildItem(childItem, index)
-          } else {
-            return bindNestedChildren(childItem, index)
-          }
-        })
-      })
-    } else {
-      return renderChildItem(child, index);
-    }
-  }
-
-  // 渲染子元素
-  const renderChildItem = (child: any, index: number) => {
-    if (isFormField(child)) {
-      const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
-      const childValue = child?.props?.initialValue ?? initialListValue?.[index];
-      return child && cloneElement(child, {
-        path: currentPath,
-        name: `[${index}]`,
-        rules: childRules,
-        initialValue: childValue
+        children: getChildren(childs)
       });
+    } else if (isFormField(child)) {
+      return renderFormItem(child);
     } else {
       return child;
     }
-  }
+  };
+
+  // 渲染表单域子元素
+  const renderFormItem = (child: any) => {
+    const currentIndex = index;
+    index++;
+    const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
+    const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
+    return child && cloneElement(child, {
+      path: currentPath,
+      name: `[${currentIndex}]`,
+      rules: childRules,
+      initialValue: childValue
+    });
+  };
 
   const childs = getChildren(children);
 
@@ -121,12 +116,12 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     required ? classes_list.required : '',
     className ? className : '',
     `${classes_list.list}--${layout}`
-  )
+  );
 
   const headerStyle = {
     marginRight: gutter,
     ...labelStyle
-  }
+  };
 
   const colProps = getColProps({ layout: layout, col });
 
@@ -144,7 +139,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
       </div>
       {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
     </Col>
-  )
+  );
 });
 
 FormList.displayName = 'Form.List';
