@@ -1,7 +1,8 @@
 import { arraySwap } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
+import { handleListPath, pathToArr } from "@/utils/object";
 
-export const pathToArray = (pathStr?: string) => pathStr ? pathStr.replace(/\[/g, '.').replace(/\]/g, '').split('.') : [];
+export const pathToArray = (pathStr?: string) => pathStr ? pathToArr(pathStr) : [];
 // 根据路径更新数据
 export const updateItemByPath = (properties: SchemaData['properties'], pathStr: string, data?: Partial<FormFieldProps>) => {
   const pathArr = pathToArray(pathStr);
@@ -9,7 +10,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const path = item?.replace(/\[/g, '').replace(/\]/g, '');
+    const path = handleListPath(item);
     if (index === 0) {
       temp = temp[path];
     } else {
@@ -41,7 +42,7 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const path = item?.replace(/\[/g, '').replace(/\]/g, '');
+    const path = handleListPath(item);
     if (index === 0) {
       temp = temp[path];
     } else {
@@ -78,7 +79,7 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
     return temp;
   }
   pathArr.forEach((item, index) => {
-    const path = item?.replace(/\[/g, '').replace(/\]/g, '');
+    const path = handleListPath(item);
     if (index === 0) {
       temp = temp[path];
     } else {

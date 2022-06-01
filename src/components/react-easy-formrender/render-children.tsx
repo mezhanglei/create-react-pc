@@ -151,6 +151,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
         target = target?.replace(/\$form/g, 'store && store.getFieldValue()');
         const actionStr = "return " + target;
+        // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function('store', actionStr);
         const value = action(store);
         return value;

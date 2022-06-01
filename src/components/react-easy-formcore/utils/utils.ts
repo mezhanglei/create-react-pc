@@ -1,14 +1,15 @@
 import { FormOptions } from "../form-options-context";
+import { handleListPath, pathToArr } from "@/utils/object";
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
-  const prefixParts = prefix?.replace?.(/\[/g, '.').replace(/\]/g, '').split('.');
-  const parts = !Array.isArray(path) ? path.replace(/\[/g, '.').replace(/\]/g, '').split('.') : path;
+  const prefixParts = pathToArr(prefix);
+  const parts = !Array.isArray(path) ? pathToArr(path) : path;
   if (prefixParts?.length > parts?.length || !prefixParts?.length || !parts?.length) {
     return false;
   }
   return prefixParts?.every((str, index) => {
-    const item = parts[index]?.replace(/\[/g, '').replace(/\]/g, '');
+    const item = handleListPath(parts[index]);
     return str === item;
   });
 }

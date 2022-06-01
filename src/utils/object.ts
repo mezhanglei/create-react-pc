@@ -55,13 +55,23 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
   return Object.fromEntries(entries);
 }
 
+// 路径根据规则分割成数组
+export function pathToArr(path: string) {
+  return path?.replace?.(/\[/g, '.')?.replace(/\]/g, '')?.split('.');
+}
+
+// 处理将路径中的数组项转换成普通字符串
+export function handleListPath(str: string) {
+  return str?.replace(/\[/g, '')?.replace(/\]/g, '');
+}
+
 // 根据路径获取目标对象中的值
 export function deepGet(obj: object | undefined, keys: string | string[]): any {
   return (
     (!Array.isArray(keys)
-      ? keys.replace(/\[/g, '.').replace(/\]/g, '').split('.')
+      ? pathToArr(keys)
       : keys
-    ).reduce((o, k) => (o || {})[k?.replace(/\[/g, '').replace(/\]/g, '')], obj)
+    ).reduce((o, k) => (o || {})[handleListPath(k)], obj)
   );
 }
 
@@ -70,7 +80,7 @@ export function deepSet(obj: any, path: string | string[], value: any) {
   if (typeof obj !== 'object') return obj;
   let temp = klona(obj);
   const root = temp;
-  const parts = !Array.isArray(path) ? path.replace(/\[/g, '.').replace(/\]/g, '').split('.') : path;
+  const parts = !Array.isArray(path) ? pathToArr(path) : path;
   const length = parts.length;
   // 过滤出其中的数组项
   const listItems = !Array.isArray(path) ? path.match(/\[(.{1}?)\]/gi) : path;
@@ -80,7 +90,7 @@ export function deepSet(obj: any, path: string | string[], value: any) {
     const next = parts[i + 1];
     // 下个字段是否为数组项
     const isListItem = listItems?.some((item) => {
-      const listItem = item?.replace(/\[/g, '').replace(/\]/g, '')
+      const listItem = handleListPath(item);
       return listItem === next;
     });
 
