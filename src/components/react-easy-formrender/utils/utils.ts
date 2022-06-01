@@ -1,6 +1,6 @@
 import { arraySwap } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
-import { handleListPath, pathToArr } from "@/utils/object";
+import { handleListPath, pathToArr } from "../../react-easy-formcore";
 
 export const pathToArray = (pathStr?: string) => pathStr ? pathToArr(pathStr) : [];
 // 根据路径更新数据

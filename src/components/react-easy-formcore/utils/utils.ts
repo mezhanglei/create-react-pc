@@ -1,5 +1,6 @@
 import { FormOptions } from "../form-options-context";
 import { handleListPath, pathToArr } from "@/utils/object";
+export { handleListPath, pathToArr };
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
