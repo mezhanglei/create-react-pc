@@ -137,7 +137,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     store?.setInitialFieldProps(currentPath, fieldProps);
     const oldValue = store?.getFieldValue(currentPath);
     // 只有初始化时才进行赋值
-    if (oldValue === undefined) {
+    if (oldValue === undefined && initialItemValue !== undefined) {
       // 回填store.initialValues和回填store.values
       store.setInitialValues(currentPath, initialItemValue);
     }
