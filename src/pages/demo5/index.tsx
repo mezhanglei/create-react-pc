@@ -5,6 +5,8 @@ import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
 import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import './index.less'
+import Wrapper from './wrapper';
+import { getCurrentPath } from '@/components/react-easy-formcore';
 
 export default function Demo5(props) {
 
@@ -121,7 +123,7 @@ export default function Demo5(props) {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
             }
-          },
+          }
         }
       },
       name5: {
@@ -148,6 +150,7 @@ export default function Demo5(props) {
   })
 
   const store = useFormRenderStore();
+  const [activePath, setActivePath] = useState<string>();
 
   const onSubmit = async (e) => {
     e?.preventDefault?.();
@@ -179,43 +182,25 @@ export default function Demo5(props) {
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
-  const getChildrenList: RenderFormProps['customRender'] = (properties, generate, parent) => {
-    const { path } = parent || {};
-    return (
-      properties instanceof Array ?
-        properties?.map((formField, index) => {
-          return generate({ name: `[${index}]`, field: { ...formField, style: { background: '#fff', padding: '8px' } }, path });
-        })
-        :
-        Object.entries(properties || {})?.map(
-          ([name, formField]) => {
-            return generate({ name: name, field: { ...formField, style: { background: '#fff', padding: '8px' } }, path });
-          }
-        )
-    )
-  }
-
-  const customRender: RenderFormProps['customRender'] = (properties, generate, parent) => {
+  const customList: RenderFormProps['customList'] = ({ children, parent }) => {
     const { path, field } = parent || {};
     if (field?.properties) {
       return (
-        <div data-type="fragment" style={{ padding: '20px', width: '100%' }}>
-          <DndSortable
-            onUpdate={onItemSwap}
-            onAdd={onItemAdd}
-            data-type="fragment"
-            className='dnd-box'
-            style={{ padding: '10px', background: '#f5f5f5' }}
-            options={{
-              groupPath: path,
-              childDrag: true,
-              allowDrop: true,
-              allowSort: true
-            }}
-          >
-            {getChildrenList(properties, generate, parent)}
-          </DndSortable>
-        </div>
+        <DndSortable
+          onUpdate={onItemSwap}
+          onAdd={onItemAdd}
+          data-type="fragment"
+          className='dnd-box'
+          style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
+          options={{
+            groupPath: path,
+            childDrag: true,
+            allowDrop: true,
+            allowSort: true
+          }}
+        >
+          {children}
+        </DndSortable>
       )
     } else if (!parent) {
       return (
@@ -230,18 +215,29 @@ export default function Demo5(props) {
             allowSort: true
           }}
         >
-          {getChildrenList(properties, generate, parent)}
+          {children}
         </DndSortable>
       )
     } else {
-      return getChildrenList(properties, generate, parent);
+      return children;
     }
   }
+
+  const wrapper = ({ children, ...restProps }) => {
+    const { name, path } = restProps;
+    const currentPath = getCurrentPath(name, path);
+    return (
+      <Wrapper {...restProps} active={currentPath === activePath}>
+        {children}
+      </Wrapper>
+    );
+  };
 
   return (
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
-        customRender={customRender}
+        customList={customList}
+        customChild={wrapper}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

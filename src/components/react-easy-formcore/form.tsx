@@ -34,7 +34,7 @@ export function Form(props: FormProps) {
       <FormStoreContext.Provider value={store}>
         <FormValuesContext.Provider value={initialValues}>
           <FormOptionsContext.Provider value={options}>
-            <Row>
+            <Row className='form-wrapper'>
               {children}
             </Row>
           </FormOptionsContext.Provider>

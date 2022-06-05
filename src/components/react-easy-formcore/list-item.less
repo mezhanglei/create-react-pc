@@ -14,10 +14,10 @@
   &--inline &__header {
     text-align: right;
     margin-top: 5px;
+    margin-right: 8px;
   }
 
   &__header {
-    margin-right: 8px;
     font-size: 14px;
     width: 120px;
     word-break: break-all;
@@ -38,10 +38,16 @@
 
   &__container {
     position: relative;
+    flex: 1;
+  }
+
+  &__control.row {
+    margin-left: 0px;
+    margin-right: 0px;
+    min-height: 32px;
+    align-items: center;
     word-break: break-all;
     word-wrap: break-word;
-    margin-top: auto;
-    margin-bottom: auto;
   }
 
   &__footer {

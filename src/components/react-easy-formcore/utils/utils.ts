@@ -44,3 +44,13 @@ export const getColProps = (option: FormOptions) => {
     ...restProps
   }
 }
+
+// 拼接当前项的path
+export const getCurrentPath = (name?: string, parent?: string) => {
+  if (name === undefined) return name;
+  if (isListItem(name)) {
+    return parent ? `${parent}${name}` : name;
+  } else {
+    return parent ? `${parent}.${name}` : name;
+  }
+};

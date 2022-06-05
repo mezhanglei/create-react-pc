@@ -1,7 +1,7 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
 import { FormOptions, FormOptionsContext } from './form-options-context';
-import { getValuePropName, getValueFromEvent, isListItem, getColProps } from './utils/utils';
+import { getValuePropName, getValueFromEvent, isListItem, getColProps, getCurrentPath } from './utils/utils';
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
@@ -66,16 +66,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     rules,
     ...restField
   } = fieldProps;
-
-  // 拼接当前项的path
-  const getCurrentPath = (name?: string, parent?: string) => {
-    if (name === undefined) return name;
-    if (isListItem(name)) {
-      return parent ? `${parent}${name}` : name;
-    } else {
-      return parent ? `${parent}.${name}` : name;
-    }
-  };
 
   const currentPath = getCurrentPath(name, path);
   const initialItemValue = initialValue ?? (currentPath && initialValues?.[currentPath]);

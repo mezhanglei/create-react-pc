@@ -1,0 +1,20 @@
+@form-primary-color: #FF4040; // 全局主色
+
+.field-wrapper {
+  margin: 4px 0;
+  padding: 8px;
+  position: relative;
+  background-color: #fff;
+
+  &-active {
+    border: 1px solid @form-primary-color;
+  }
+
+  .wrapper-tools {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+  }
+}

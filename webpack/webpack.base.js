@@ -290,7 +290,7 @@ module.exports = {
       ],
       // link引入的公共css文件
       commonCSS: [
-        // `static/fonts/iconfont.css?time=${new Date().getTime()}`
+        `static/iconfont/iconfont.css?time=${new Date().getTime()}`
       ]
     }),
     // 热更新
