@@ -1,7 +1,7 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
 import { FormOptions, FormOptionsContext } from './form-options-context';
-import { getValuePropName, getValueFromEvent, isListItem, getColProps, getCurrentPath } from './utils/utils';
+import { getValuePropName, getValueFromEvent, getColProps, getCurrentPath } from './utils/utils';
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
