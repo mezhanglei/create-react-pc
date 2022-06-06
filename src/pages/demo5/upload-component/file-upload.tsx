@@ -1,6 +1,6 @@
 import { getToken } from '@/core/session';
 import { UploadFileUrl } from '@/services/file';
-import { isObjectEqual } from '@/utils/object';
+import { isEqual } from '@/utils/object';
 import { Button, message, Upload, UploadProps } from 'antd';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import React from 'react';
@@ -48,7 +48,7 @@ export default class UploadFiles extends React.Component<UploadFileProps, Upload
 
   // 当state数据改变时触发更新
   componentDidUpdate(prevProps: UploadFileProps) {
-    const valueChanged = this.props.value !== undefined && !isObjectEqual(this.props.value, prevProps.value);
+    const valueChanged = this.props.value !== undefined && !isEqual(this.props.value, prevProps.value);
     if (valueChanged) {
       this.setState({
         fileList: this.props.value || []
@@ -58,7 +58,7 @@ export default class UploadFiles extends React.Component<UploadFileProps, Upload
 
   // 获取外部props更新时去更新state
   static getDerivedStateFromProps(nextProps: UploadFileProps, prevState: UploadFileState) {
-    const valueChanged = !isObjectEqual(nextProps.value, prevState.prevFileList);
+    const valueChanged = !isEqual(nextProps.value, prevState.prevFileList);
     if (valueChanged) {
       return {
         ...prevState,

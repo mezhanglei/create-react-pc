@@ -1,5 +1,5 @@
+import { deepClone } from "@/utils/object";
 import { GridItemEvent } from "../grid-item-types";
-import { klona } from 'klona';
 
 // 根据key获取目标
 export function getLayoutItem(layout: GridItemEvent[], id: string) {
@@ -93,7 +93,7 @@ export const layoutCheck = function () {
 }();
 
 export const sortLayout = (layout: GridItemEvent[]) => {
-  const newLayout = klona(layout);
+  const newLayout = deepClone(layout);
   return newLayout?.sort((a: GridItemEvent, b: GridItemEvent) => {
     if (typeof a.GridY === 'number' && typeof a.GridX === 'number' && typeof b.GridY === 'number' && typeof b.GridX === 'number') {
       if (a.forbid || b.forbid) {

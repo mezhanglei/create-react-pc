@@ -7,8 +7,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { GetUrlRelativePath } from '@/utils/url';
 import { exportWord } from '@/components/export-word';
-import { klona } from 'klona';
 import { addDragItem, getItem, indexToArray, removeDragItem } from './utils';
+import { deepClone } from '@/utils/object';
 
 const Demo1: React.FC<any> = (props) => {
   const [x, setX] = useState<any>(10);
@@ -39,7 +39,7 @@ const Demo1: React.FC<any> = (props) => {
     const dragIndex = from?.index;
     let dropIndex = to?.index;
     const parentPath = from?.groupPath;
-    const cloneData = klona(data);
+    const cloneData = deepClone(data);
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
     dropIndex = typeof dropIndex === 'number' ? dropIndex : childs?.length;
@@ -58,7 +58,7 @@ const Demo1: React.FC<any> = (props) => {
   const onAdd: DndProps['onAdd'] = (params) => {
     const { from, to } = params;
     console.log(params, '跨区域');
-    const cloneData = klona(data);
+    const cloneData = deepClone(data);
     // 拖拽区域信息
     const dragGroupPath = from.groupPath;
     const dragIndex = from?.index;

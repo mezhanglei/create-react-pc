@@ -5,15 +5,16 @@ import { getValuePropName, getValueFromEvent, getColProps, getCurrentPath } from
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
-import { isObjectEqual } from '@/utils/object';
+import { isEqual } from '@/utils/object';
 import { Col, Row } from 'react-flexbox-grid';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
   name?: string;
+  suffix?: React.ReactNode; // 右边节点
+  footer?: React.ReactNode; // 底部节点
   valueProp?: string | ((type: any) => string);
   valueGetter?: (...args: any[]) => any;
-  suffix?: React.ReactNode;
   rules?: FormRule[];
   path?: string;
   initialValue?: any;
@@ -34,7 +35,8 @@ export const classes = {
   container: `${prefixCls}__container`,
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
-  footer: `${prefixCls}__footer`,
+  suffix: `${prefixCls}__suffix`,
+  footer: `${prefixCls}__footer`
 };
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
@@ -49,6 +51,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     valueProp = 'value',
     valueGetter = getValueFromEvent,
     suffix,
+    footer,
     path,
     className,
     style,
@@ -94,7 +97,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     // 订阅目标控件
     const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
-      if (!isObjectEqual(newValue, oldValue)) {
+      if (!isEqual(newValue, oldValue)) {
         onValuesChange && onValuesChange({ path: currentPath, value: newValue })
       }
     });
@@ -211,10 +214,11 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       <div className={classes.container}>
         <Row className={classes.control}>
           {childs}
+          {footer !== undefined && <div className={classes.footer}>{footer}</div>}
         </Row>
+        {suffix !== undefined && <div className={classes.suffix}>{suffix}</div>}
         <div className={classes.message}>{error}</div>
       </div>
-      {suffix !== undefined && <div className={classes.footer}>{suffix}</div>}
     </Col>
   );
 });

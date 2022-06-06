@@ -44,6 +44,7 @@
   &__container {
     position: relative;
     flex: 1;
+    display: flex;
   }
 
   &__control.row {
@@ -51,6 +52,7 @@
     margin-right: 0px;
     min-height: 32px;
     align-items: center;
+    flex: 1;
   }
 
   &__message {
@@ -61,13 +63,16 @@
     color: red;
   }
 
-  &__footer {
+  &__suffix {
     margin-left: 10px;
     font-size: 14px;
   }
 
-  &--error &__container &__control {
+  &__footer {
+    width: 100%;
+  }
 
+  &--error &__container &__control {
     .ant-input,
     .ant-select-selector {
       border-color: #ff4d4f;

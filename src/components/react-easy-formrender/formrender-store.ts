@@ -1,5 +1,5 @@
-import { klona } from "klona";
-import { FormStore } from "../react-easy-formcore"
+import { deepClone } from "@/utils/object";
+import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
 import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex } from "./utils/utils";
 
@@ -26,8 +26,8 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
 
   // 设置properties
   setProperties(data?: SchemaData['properties']) {
-    this.lastProperties = klona(this.properties);
-    this.properties = klona(data);
+    this.lastProperties = deepClone(this.properties);
+    this.properties = deepClone(data);
     this.notifyProperties();
   }
 

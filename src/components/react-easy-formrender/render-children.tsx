@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormFieldProps, generateChildFunc, getChildrenList, RenderFormChildrenProps, SchemaData } from './types';
 import { defaultFields } from './default-field';
 import { FormOptionsContext, FormStoreContext } from '../react-easy-formcore';
-import { getColProps, getCurrentPath, isListItem } from '../react-easy-formcore/utils/utils';
+import { getColProps, getCurrentPath } from '../react-easy-formcore/utils/utils';
 import { FormRenderStore } from './formrender-store';
-import { isObjectEqual } from '@/utils/object';
+import { isEqual } from '@/utils/object';
 
 // 不带Form容器的组件
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -42,7 +42,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 订阅目标控件
     const uninstall = store.subscribeProperties((newValue, oldValue) => {
       setProperties(newValue);
-      if (!isMountRef.current && !isObjectEqual(newValue, oldValue)) {
+      if (!isMountRef.current && !isEqual(newValue, oldValue)) {
         onPropertiesChange && onPropertiesChange(newValue, oldValue)
       }
     })
@@ -57,7 +57,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       store.setProperties(props?.properties)
       isMountRef.current = false;
     }
-  }, [JSON.stringify(props?.properties)]);
+  }, [props?.properties]);
 
   // 变化时更新
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return () => {
       store?.unsubscribeFormGlobal();
     }
-  }, [JSON.stringify(properties)]);
+  }, [properties]);
 
   // 初始化监听
   const initWatch = () => {

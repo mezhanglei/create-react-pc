@@ -1,8 +1,7 @@
 
 import { asyncSequentialExe } from '@/utils/common';
 import { isExitPrefix } from './utils/utils';
-import { klona } from 'klona';
-import { deepGet, deepSet } from '@/utils/object';
+import { deepClone, deepGet, deepSet } from '@/utils/object';
 import { validatorsMap } from './rules-validator';
 
 export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
@@ -39,7 +38,7 @@ export class FormStore<T extends Object = any> {
 
   public constructor(values: Partial<T> = {}) {
     this.initialValues = values
-    this.values = klona(values)
+    this.values = deepClone(values)
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
     this.setFieldsValue = this.setFieldsValue.bind(this)
@@ -93,7 +92,7 @@ export class FormStore<T extends Object = any> {
   public setInitialValues(path: string, initialValue: any) {
     this.initialValues = deepSet(this.initialValues, path, initialValue);
     // 旧表单值存储
-    this.lastValues = klona(this.values);
+    this.lastValues = deepClone(this.values);
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
     // 异步更新, 只有组件渲染成功了，才会去同步ui操作
@@ -117,7 +116,7 @@ export class FormStore<T extends Object = any> {
   public async setFieldValue(path: string | Partial<T>, value?: any) {
     if (typeof path === 'string') {
       // 旧表单值存储
-      this.lastValues = klona(this.values);
+      this.lastValues = deepClone(this.values);
       // 设置值
       this.values = deepSet(this.values, path, value);
       // 同步ui
@@ -138,7 +137,7 @@ export class FormStore<T extends Object = any> {
 
   // 设置表单值(覆盖更新)
   public async setFieldsValue(values: Partial<T>) {
-    this.lastValues = klona(this.values);
+    this.lastValues = deepClone(this.values);
     this.values = values;
     this.notifyFormItem();
     this.notifyFormGlobal();
@@ -173,7 +172,7 @@ export class FormStore<T extends Object = any> {
 
   // 设置error信息(覆盖更新)
   private async setFieldsError(erros: FormErrors<T>) {
-    this.formErrors = klona(erros);
+    this.formErrors = deepClone(erros);
     this.notifyError();
   }
 

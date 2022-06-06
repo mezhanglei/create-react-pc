@@ -1,29 +1,14 @@
 import { isObject } from "./type";
-import { klona } from 'klona';
+import { copy } from 'copy-anything';
+import compare from 'react-fast-compare';
+
+export function deepClone<T = any>(value: T) {
+  return copy(value);
+}
 
 // 判断两个值是否相等
-export function isObjectEqual(a: any, b: any) {
-  if (!(typeof a == 'object' && typeof b === 'object')) {
-    return a === b;
-  };
-  let aProps = Object.getOwnPropertyNames(a);
-  let bProps = Object.getOwnPropertyNames(b);
-  if (aProps.length != bProps.length) {
-    return false;
-  }
-  for (let i = 0; i < aProps.length; i++) {
-    let propName = aProps[i];
-    let propA = a[propName];
-    let propB = b[propName];
-    if ((typeof (propA) === 'object')) {
-      if (!isObjectEqual(propA, propB)) {
-        return false;
-      }
-    } else if (propA !== propB) {
-      return false;
-    }
-  }
-  return true;
+export function isEqual(a: any, b: any) {
+  return compare(a, b);
 }
 
 /**
@@ -78,7 +63,7 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
 // 给对象目标属性添加值
 export function deepSet(obj: any, path: string | string[], value: any) {
   if (typeof obj !== 'object') return obj;
-  let temp = klona(obj);
+  let temp = deepClone(obj);
   const root = temp;
   const parts = !Array.isArray(path) ? pathToArr(path) : path;
   const length = parts.length;
@@ -115,7 +100,7 @@ export const mergeObject = function (obj1: any, obj2: any) {
   if (!isObject(obj1) || !isObject(obj2)) {
     return obj1;
   }
-  const clone = klona(obj1);
+  const clone = deepClone(obj1);
   for (let key in obj2) {
     if (obj2[key] !== undefined) {
       if (obj2[key].constructor == Object) {

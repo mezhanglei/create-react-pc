@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { EditTableRow, EditTableCol } from './table-components';
 import { EditTableRef, EditTableProps, RowData, ColumnProps, ColumnTypes } from './types';
-import { klona } from 'klona';
 import { nanoid } from 'nanoid';
+import { deepClone } from '@/utils/object';
 
 /**
  * 可编辑表格组件(适用于有大量可编辑表格时提供虚拟渲染的能力)
@@ -26,7 +26,7 @@ const EditTable = React.forwardRef<EditTableRef, EditTableProps>((props, ref) =>
   }));
 
   useEffect(() => {
-    setDataSource(klona(props?.dataSource as any[]) || []);
+    setDataSource(deepClone(props?.dataSource as any[]) || []);
   }, [JSON.stringify(props?.dataSource)]);
 
   // 触发保存事件

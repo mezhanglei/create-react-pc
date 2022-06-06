@@ -8,8 +8,9 @@ import { getColProps } from './utils/utils';
 
 export interface FormListProps extends FormOptions {
   label?: string;
-  suffix?: React.ReactNode;
   name?: string;
+  suffix?: React.ReactNode; // 右边节点
+  footer?: React.ReactNode; // 底部节点
   rules?: FormRule[];
   path?: string;
   initialValue?: any[];
@@ -29,7 +30,8 @@ export const classes_list = {
   container: `${prefixCls}__container`,
   control: `${prefixCls}__control`,
   message: `${prefixCls}__message`,
-  footer: `${prefixCls}__footer`,
+  suffix: `${prefixCls}__suffix`,
+  footer: `${prefixCls}__footer`
 };
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
@@ -43,6 +45,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     path,
     label,
     suffix,
+    footer,
     className,
     style,
     layout = "horizontal",
@@ -135,9 +138,10 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
       <div className={classes_list.container}>
         <Row className={classes_list.control}>
           {childs}
+          {footer !== undefined && <div className={classes_list.footer}>{footer}</div>}
         </Row>
+        {suffix !== undefined && <div className={classes_list.suffix}>{suffix}</div>}
       </div>
-      {suffix !== undefined && <div className={classes_list.footer}>{suffix}</div>}
     </Col>
   );
 });

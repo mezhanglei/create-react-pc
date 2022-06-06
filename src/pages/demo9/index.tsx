@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Rate, Input, DatePicker, Tag } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-import { klona } from 'klona';
 import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
 import { addDragItem, getItem, indexToArray, removeDragItem, uniqueId } from './utils';
+import { deepClone } from '@/utils/object';
 
 const GlobalComponent = {
   Rate,
@@ -62,7 +62,7 @@ class Demo9 extends Component {
     const { from, to } = params;
     console.log(params, '同区域');
     const { data } = this.state;
-    const cloneData = klona(data);
+    const cloneData = deepClone(data);
     const dragIndex = from?.index;
     const dropIndex = to?.index;
     const parentPath = from?.groupPath;
@@ -83,7 +83,7 @@ class Demo9 extends Component {
     const { from, to } = params;
     console.log(params, '跨区域');
     const { data } = this.state;
-    const cloneData = klona(data);
+    const cloneData = deepClone(data);
     // 容器外面添加进来
     if (from?.groupPath === 'components') {
       // 拖拽项

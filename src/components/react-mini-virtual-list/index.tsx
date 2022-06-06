@@ -11,7 +11,7 @@ import {
   STYLE_ITEM
 } from './constants';
 import { ALIGNMENT, DIRECTION } from "./types";
-import { isObjectEqual } from '@/utils/object';
+import { isEqual } from '@/utils/object';
 
 /**
  * 虚拟列表:
@@ -111,7 +111,7 @@ class VirtualList extends React.Component<VirtualListProps, ListState> {
   componentDidUpdate(prevProps: VirtualListProps, prevState: ListState) {
 
     const scrollSizeChange = this.state.scrollSize !== prevState.scrollSize;
-    const dataChange = !isObjectEqual(this.props.dataSource, prevProps?.dataSource);
+    const dataChange = !isEqual(this.props.dataSource, prevProps?.dataSource);
     const limitChange = this.props.limit !== prevProps.limit;
     const itemSizeChange = this.props.itemSize !== prevProps?.itemSize;
     const estimatedItemSizeChange = this.props.estimatedItemSize !== prevProps?.estimatedItemSize;
@@ -163,7 +163,7 @@ class VirtualList extends React.Component<VirtualListProps, ListState> {
   static getDerivedStateFromProps(nextProps: VirtualListProps, prevState: ListState) {
 
     const limitChange = nextProps.limit !== prevState.prevLimit;
-    const dataChange = !isObjectEqual(nextProps.dataSource, prevState?.prevDataSource);
+    const dataChange = !isEqual(nextProps.dataSource, prevState?.prevDataSource);
     const itemSizeChange = nextProps.itemSize !== prevState?.prevItemSize;
     const estimatedItemSizeChange = nextProps.estimatedItemSize !== prevState?.prevEstimatedItemSize;
     const scrollToAlignmentChange = nextProps.scrollToAlignment !== prevState?.prevScrollToAlignment;

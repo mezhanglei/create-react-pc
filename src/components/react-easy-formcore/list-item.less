@@ -39,6 +39,7 @@
   &__container {
     position: relative;
     flex: 1;
+    display: flex;
   }
 
   &__control.row {
@@ -48,11 +49,16 @@
     align-items: center;
     word-break: break-all;
     word-wrap: break-word;
+    flex: 1;
+  }
+
+  &__suffix {
+    margin-left: 10px;
+    font-size: 14px;
   }
 
   &__footer {
-    margin-left: 10px;
-    font-size: 14px;
+    width: 100%;
   }
 
   &--compact {

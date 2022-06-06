@@ -1,9 +1,9 @@
 import React, { ReactNode, CSSProperties } from 'react';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
-import Raf from "./utils/requestAnimationFrame";
-import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "./utils/dom";
-import { isDom } from "./utils/type";
-import { isMobile } from './utils/verify';
+import Raf from "@/utils/requestAnimationFrame";
+import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "@/utils/dom";
+import { isDom } from "@/utils/type";
+import { isMobile } from '@/utils/verify';
 
 type fn = () => any;
 type EventType = MouseEvent | TouchEvent;

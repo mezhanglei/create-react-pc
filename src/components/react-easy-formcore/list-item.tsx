@@ -7,7 +7,8 @@ import { getColProps } from './utils/utils';
 
 export interface ListItemProps extends FormOptions {
   label?: any;
-  suffix?: React.ReactNode;
+  suffix?: React.ReactNode; // 右边节点
+  footer?: React.ReactNode; // 底部节点
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
@@ -22,6 +23,7 @@ export const classes_item = {
   header: `${prefixCls}__header`,
   container: `${prefixCls}__container`,
   control: `${prefixCls}__control`,
+  suffix: `${prefixCls}__suffix`,
   footer: `${prefixCls}__footer`
 }
 
@@ -32,6 +34,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const {
     label,
     suffix,
+    footer,
     required,
     labelStyle,
     layout = "horizontal",
@@ -69,9 +72,10 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
       <div className={classes_item.container}>
         <Row className={classes_item.control}>
           {children}
+          {footer !== undefined && <div className={classes_item.footer}>{footer}</div>}
         </Row>
+        {suffix !== undefined && <div className={classes_item.suffix}>{suffix}</div>}
       </div>
-      {suffix !== undefined && <div className={classes_item.footer}>{suffix}</div>}
     </Col>
   );
 });
