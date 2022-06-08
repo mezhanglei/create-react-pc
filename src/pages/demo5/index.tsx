@@ -1,5 +1,5 @@
 // export default demo5;
-import { Button } from 'antd';
+// import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
@@ -7,6 +7,7 @@ import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import './index.less'
 import Wrapper from './wrapper';
 import { getCurrentPath } from '@/components/react-easy-formcore';
+import Button from '@/components/button';
 
 export default function Demo5(props) {
 
@@ -49,7 +50,7 @@ export default function Demo5(props) {
       name3: {
         label: "数组",
         required: true,
-        footer: "1111",
+        footer: <Button>新增一条</Button>,
         // col: { span: 6 },
         properties: [{
           widget: 'Select',
@@ -224,7 +225,7 @@ export default function Demo5(props) {
     }
   }
 
-  const wrapper = ({ children, ...restProps }) => {
+  const wrapper: RenderFormProps['customChild'] = ({ children, ...restProps }) => {
     const { name, path } = restProps;
     const currentPath = getCurrentPath(name, path);
     return (

@@ -1,6 +1,6 @@
 import { FormItemProps, FormProps } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
-import { defaultFields } from './default-field';
+import { defaultFields } from './default-components';
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
@@ -24,11 +24,12 @@ export interface BaseRenderProps {
   onPropertiesChange?: (properties: SchemaData['properties'], oldProperties?: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   widgets?: any;
+  slotWidgets?: any;
   Fields?: typeof defaultFields;
   // 自定义渲染列表
-  customList?: any;
+  customList?: React.ComponentType<CustomListProps>;
   // 自定义渲染子元素
-  customChild?: any;
+  customChild?: React.ComponentType<GenerateParams>;
 }
 
 // 带form容器的渲染组件props
@@ -43,8 +44,10 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 
+// 列表组件的params
+export interface CustomListProps {children: any, properties: SchemaData['properties'], parent?: GenerateParams};
 // 生成子元素
 export interface GenerateParams { name: string, field: FormFieldProps, path?: string, index?: number };
 // 返回列表
 export type getChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, parent?: GenerateParams) => any;
-export type generateChildFunc = (params: GenerateParams) => JSX.Element | undefined
+export type generateChildFunc = (params: GenerateParams) => JSX.Element | undefined;

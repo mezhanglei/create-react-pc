@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormFieldProps, generateChildFunc, getChildrenList, RenderFormChildrenProps, SchemaData } from './types';
-import { defaultFields } from './default-field';
+import { defaultFields, defaultSlotWidgets } from './default-components';
 import { FormOptionsContext, FormStoreContext } from '../react-easy-formcore';
 import { getColProps, getCurrentPath } from '../react-easy-formcore/utils/utils';
 import { FormRenderStore } from './formrender-store';
@@ -19,6 +19,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const {
     Fields,
     widgets,
+    slotWidgets,
     watch,
     onPropertiesChange,
     customList,
@@ -26,6 +27,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   } = props;
 
   const FieldsRegister = { ...defaultFields, ...Fields };
+  const slotWidgetsRegister = { ...defaultSlotWidgets, ...slotWidgets };
 
   const {
     onValuesChange
@@ -236,7 +238,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const childs = Object.entries(properties || {})?.map(([name, formField], index) => {
       const currentPath = getCurrentPath(name, path);
       const newField = showCalcFieldProps(formField, currentPath);
-      const Wrapper = customChild;
+      const Wrapper = customChild as any;
       const childProps = { name: name, field: newField, path, index };
       if (newField?.hidden === true) {
         return;
@@ -253,9 +255,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       }
       return generate(childProps);
     });
-
-    if (customList) {
-      return customList({ children: childs, parent: parent, properties: properties });
+    const RenderList = customList as any;
+    if (RenderList) {
+      return <RenderList children={childs} parent={parent} properties={properties} />
     }
     return childs;
   }

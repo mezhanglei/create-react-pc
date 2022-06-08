@@ -72,6 +72,11 @@
     width: 100%;
   }
 
+  // 当在列表中为相邻元素时，因为Col标签带有padding，所以footer也添加padding对齐
+  & + &__footer {
+    padding-left: 8px;
+  }
+
   &--error &__container &__control {
     .ant-input,
     .ant-select-selector {

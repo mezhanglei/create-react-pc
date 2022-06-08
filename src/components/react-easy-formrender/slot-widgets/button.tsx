@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import "./index.less";
+import "./button.less";
 import classNames from "classnames";
 const isString = (val: any) => typeof val === 'string';
 // 类型
