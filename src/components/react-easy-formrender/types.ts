@@ -1,6 +1,6 @@
 import { FormItemProps, FormProps } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
-import { defaultFields } from './default-components';
+import { defaultFields } from './components';
 
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends FormItemProps {
@@ -43,9 +43,11 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 };
 
 export type ValueOf<T> = T[keyof T];
-
+// slot组件的params
+export interface SlotParams { type: string, props?: any };
+export interface WidgetParams { widget: string, widgetProps: FormFieldProps['widgetProps'] };
 // 列表组件的params
-export interface CustomListProps {children: any, properties: SchemaData['properties'], parent?: GenerateParams};
+export interface CustomListProps { children: any, properties: SchemaData['properties'], parent?: GenerateParams };
 // 生成子元素
 export interface GenerateParams { name: string, field: FormFieldProps, path?: string, index?: number };
 // 返回列表

@@ -1,5 +1,6 @@
-import { Form, ListItem } from '../react-easy-formcore';
-import Button from './slot-widgets/button';
+import { Form, ListItem } from '../../react-easy-formcore';
+import Button from '@/components/button';
+import { DeleteBtn } from './delete-btn';
 
 // === 内置组件
 
@@ -12,5 +13,6 @@ export const defaultFields = {
 
 // 插槽组件
 export const defaultSlotWidgets = {
-  'Button': Button
+  'add': Button,
+  'delete': DeleteBtn
 }
