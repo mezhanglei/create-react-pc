@@ -21,7 +21,7 @@ export type FieldProps = { rules?: FormRule[], [other: string]: any };
 export type FormFieldsProps<T = any> = { [key in keyof T]: FieldProps }
 
 export class FormStore<T extends Object = any> {
-  private initialValues: Partial<T>
+  private initialValues?: Partial<T>
 
   private formItemListeners: FormListener[] = []
 
@@ -29,15 +29,17 @@ export class FormStore<T extends Object = any> {
 
   private errorListeners: FormListener[] = []
 
-  private values: Partial<T>
+  private values?: Partial<T>
   private lastValues?: Partial<T>
 
   private formErrors: FormErrors = {}
 
-  private initialFieldProps: FormFieldsProps = {};
+  private fieldProps: FormFieldsProps = {};
 
-  public constructor(values: Partial<T> = {}) {
+  public constructor(values?: Partial<T>) {
     this.initialValues = values
+    this.fieldProps = {}
+    this.formErrors = {}
     this.values = deepClone(values)
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
@@ -46,8 +48,8 @@ export class FormStore<T extends Object = any> {
     this.setFieldError = this.setFieldError.bind(this)
     this.setFieldsError = this.setFieldsError.bind(this)
 
-    this.getInitialFieldProps = this.getInitialFieldProps.bind(this)
-    this.setInitialFieldProps = this.setInitialFieldProps.bind(this)
+    this.getFieldProps = this.getFieldProps.bind(this)
+    this.setFieldProps = this.setFieldProps.bind(this)
 
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
@@ -58,34 +60,34 @@ export class FormStore<T extends Object = any> {
   }
 
   // 获取
-  public getInitialFieldProps(path?: string) {
+  public getFieldProps(path?: string) {
     if (path) {
-      return this.initialFieldProps?.[path]
+      return this.fieldProps?.[path]
     } else {
-      return this.initialFieldProps
+      return this.fieldProps
     }
   }
 
   // 设置表单域
-  public setInitialFieldProps(path: string, field?: FieldProps) {
+  public setFieldProps(path: string, field?: FieldProps) {
     if (!path) return;
     if (field === undefined) {
-      delete this.initialFieldProps[path]
+      delete this.fieldProps[path]
     } else {
-      const lastField = this.initialFieldProps[path];
+      const lastField = this.fieldProps[path];
       const newField = { ...lastField, ...field };
-      this.initialFieldProps[path] = newField;
+      this.fieldProps[path] = newField;
     }
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
   public getFieldValue(path?: string | string[]) {
-    return path === undefined ? (this.values && { ...this.values }) : deepGet(this.values, path)
+    return path === undefined ? this.values : deepGet(this.values, path)
   }
 
   // 获取旧表单值
   public getLastValue(path?: string | string[]) {
-    return path === undefined ? (this.lastValues && { ...this.lastValues }) : deepGet(this.lastValues, path)
+    return path === undefined ? this.lastValues : deepGet(this.lastValues, path)
   }
 
   // 设置初始值(只有初始化时才进行赋值)
@@ -97,7 +99,7 @@ export class FormStore<T extends Object = any> {
     this.values = deepSet(this.values, path, initialValue);
     // 异步更新, 只有组件渲染成功了，才会去同步ui操作
     setTimeout(() => {
-      const fieldProps = this.getInitialFieldProps(path);
+      const fieldProps = this.getFieldProps(path);
       if (fieldProps) {
         // 同步ui
         this.notifyFormItem(path);
@@ -109,11 +111,11 @@ export class FormStore<T extends Object = any> {
 
   // 获取初始值
   public getInitialValues(path?: string | string[]) {
-    return path === undefined ? (this.initialValues && { ...this.initialValues }) : deepGet(this.initialValues, path)
+    return path === undefined ? this.initialValues : deepGet(this.initialValues, path)
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(path: string | Partial<T>, value?: any) {
+  public async setFieldValue(path: string | Partial<T>, value?: any, noError?: boolean) {
     if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = deepClone(this.values);
@@ -124,9 +126,9 @@ export class FormStore<T extends Object = any> {
       // 同时触发另一个值的监听
       this.notifyFormGlobal(path);
       // 规则
-      const fieldProps = this.getInitialFieldProps();
+      const fieldProps = this.getFieldProps();
       const rules = fieldProps?.[path]?.['rules'];
-      if (rules?.length) {
+      if (rules?.length && !noError) {
         // 校验规则
         await this.validate(path);
       }
@@ -136,7 +138,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 设置表单值(覆盖更新)
-  public async setFieldsValue(values: Partial<T>) {
+  public async setFieldsValue(values?: Partial<T>) {
     this.lastValues = deepClone(this.values);
     this.values = values;
     this.notifyFormItem();
@@ -180,7 +182,7 @@ export class FormStore<T extends Object = any> {
   public async validate(): Promise<ValidateResult<T>>
   public async validate(path: string): Promise<string>
   public async validate(path?: string) {
-    const fieldProps = this.getInitialFieldProps();
+    const fieldProps = this.getFieldProps(path);
     if (path === undefined) {
       const result = await Promise.all(Object.keys(fieldProps)?.map((n) => {
         const rules = fieldProps?.[n]?.['rules'];
@@ -197,7 +199,7 @@ export class FormStore<T extends Object = any> {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
-      const rules = fieldProps?.[path]?.['rules'];
+      const rules = fieldProps?.['rules'];
 
       // 表单校验处理规则
       const handleRule = async (rule: FormRule) => {

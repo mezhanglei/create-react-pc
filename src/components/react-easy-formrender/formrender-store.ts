@@ -11,7 +11,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   private properties: Properties | undefined;
   private lastProperties: Properties | undefined;
   private propertiesListeners: FormRenderListener[] = [];
-  constructor(values: Partial<T> = {}) {
+  constructor(values: Partial<T>) {
     super(values);
     this.properties = undefined;
     this.lastProperties = undefined;

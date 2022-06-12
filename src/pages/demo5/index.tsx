@@ -50,7 +50,7 @@ export default function Demo5(props) {
       name3: {
         label: "数组",
         required: true,
-        footer: <Button>新增一条</Button>,
+        actions: [{ type: 'add' }, { type: 'delete' }],
         // col: { span: 6 },
         properties: [{
           widget: 'Select',
@@ -144,9 +144,8 @@ export default function Demo5(props) {
       name6: {
         label: 'Upload',
         widget: 'Upload',
-        dependencies: ['name3', 'name4'],
         // required: true,
-        rules: [{ required: true, message: '上传空了' }]
+        // rules: [{ required: true, message: '上传空了' }]
       },
     }
   })

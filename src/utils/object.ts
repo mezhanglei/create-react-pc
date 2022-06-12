@@ -56,15 +56,14 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
     (!Array.isArray(keys)
       ? pathToArr(keys)
       : keys
-    ).reduce((o, k) => (o || {})[handleListPath(k)], obj)
+    ).reduce((o, k) => (o)?.[handleListPath(k)], obj)
   );
 }
 
 // 给对象目标属性添加值
 export function deepSet(obj: any, path: string | string[], value: any) {
-  if (typeof obj !== 'object') return obj;
   let temp = deepClone(obj);
-  const root = temp;
+  let root = temp;
   const parts = !Array.isArray(path) ? pathToArr(path) : path;
   const length = parts.length;
   // 过滤出其中的数组项
@@ -74,18 +73,39 @@ export function deepSet(obj: any, path: string | string[], value: any) {
     const p = parts[i];
     const next = parts[i + 1];
     // 下个字段是否为数组项
-    const isListItem = listItems?.some((item) => {
+    const nextIsListItem = listItems?.some((item) => {
       const listItem = handleListPath(item);
       return listItem === next;
     });
+    // 当前字段是否为数组项
+    const isListItem = listItems?.some((item) => {
+      const listItem = handleListPath(item);
+      return listItem === p;
+    });
+
+    // 当传入的值为空赋值初始值
+    if (typeof obj !== 'object' && i === 0) {
+      if (isListItem) {
+        root = [];
+        temp = [];
+      } else {
+        root = {};
+        temp = {};
+      }
+    }
 
     if (i === length - 1) {
       if (value === undefined) {
-        delete temp[p];
+        if (isListItem) {
+          const index = +p;
+          temp?.splice(index, 1);
+        } else {
+          delete temp[p];
+        }
       } else {
         temp[p] = value;
       }
-    } else if (typeof temp[p] !== 'object' && isListItem) {
+    } else if (typeof temp[p] !== 'object' && nextIsListItem) {
       temp[p] = [];
     } else if (typeof temp[p] !== 'object') {
       temp[p] = {};

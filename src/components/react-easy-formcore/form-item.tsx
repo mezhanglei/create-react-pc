@@ -72,8 +72,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const currentPath = getCurrentPath(name, path);
   const initialItemValue = initialValue ?? (currentPath && initialValues?.[currentPath]);
-  const [value, setValue] = useState(currentPath && store ? store.getFieldValue(currentPath) : undefined);
-  const [error, setError] = useState(currentPath && store ? store.getFieldError(currentPath) : undefined);
+  const storeValue = currentPath && store?.getFieldValue(currentPath);
+  const storeError = currentPath && store.getFieldError(currentPath);
+  const [value, setValue] = useState(storeValue);
+  const [error, setError] = useState(storeError);
+
+  // 初始化获取初始props
+  currentPath && store?.setFieldProps(currentPath, fieldProps);
 
   // 给子元素绑定的onChange
   const onChange = useCallback(
@@ -90,6 +95,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   );
 
   const aopOnchange = new AopFactory(onChange);
+
+  // 回填storeValue
+  useEffect(() => {
+    if (!isEqual(storeValue, value)) {
+      setValue(storeValue);
+    }
+  }, [storeValue])
 
   // 订阅更新值的函数
   useEffect(() => {
@@ -116,25 +128,23 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     });
     return () => {
       uninstall();
-      // 清除该表单域的props(在设置值的前面)
-      store?.setInitialFieldProps(currentPath, undefined);
-      // 清除初始值
-      store.setInitialValues(currentPath, undefined);
     };
   }, [currentPath, store]);
 
   // 表单域初始化值
   useEffect(() => {
     if (!currentPath || !store) return;
-    // (在设置值的前面)
-    store?.setInitialFieldProps(currentPath, fieldProps);
-    const oldValue = store?.getFieldValue(currentPath);
-    // 只有初始化时才进行赋值
-    if (oldValue === undefined && initialItemValue !== undefined) {
-      // 回填store.initialValues和回填store.values
+    // 回填store.initialValues和回填store.values
+    if (initialItemValue !== undefined) {
       store.setInitialValues(currentPath, initialItemValue);
     }
-  }, [currentPath, JSON.stringify(initialItemValue)]);
+    return () => {
+      // 清除该表单域的props(在设置值的前面)
+      currentPath && store?.setFieldProps(currentPath, undefined);
+      // 清除初始值
+      currentPath && store.setInitialValues(currentPath, undefined);
+    }
+  }, [currentPath]);
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
