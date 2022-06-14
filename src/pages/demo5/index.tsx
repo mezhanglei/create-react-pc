@@ -34,7 +34,7 @@ export default function Demo5(props) {
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
         // col: { span: 6 },
-        hidden: '{{$form.name5 == true}}',
+        hidden: '{{$formvalues.name5 == true}}',
         widgetProps: {}
       },
       name2: {
@@ -44,17 +44,34 @@ export default function Demo5(props) {
         // col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
-        hidden: '{{$form.name5 == true}}',
+        hidden: '{{$formvalues.name5 == true}}',
         widgetProps: {}
       },
       name3: {
         label: "数组",
         required: true,
-        actions: [{ type: 'add' }, { type: 'delete' }],
+        footer: {
+          type: 'add',
+          addItem: {
+            widget: 'Select',
+            required: true,
+            rules: [{ required: true, message: 'name3[0]空了' }],
+            suffix: { type: 'delete' },
+            widgetProps: {
+              labelInValue: true,
+              style: { width: '100%' },
+              children: [
+                { widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } },
+                { widget: 'Select.Option', widgetProps: { key: 2, value: '2', children: '选项2' } }
+              ]
+            }
+          }
+        },
         // col: { span: 6 },
         properties: [{
           widget: 'Select',
           required: true,
+          suffix: { type: 'delete' },
           // col: { span: 6 },
           rules: [{ required: true, message: 'name3[0]空了' }],
           initialValue: { label: '选项1', value: '1', key: '1' },
@@ -69,6 +86,7 @@ export default function Demo5(props) {
         }, {
           widget: 'Select',
           required: true,
+          suffix: { type: 'delete' },
           // col: { span: 6 },
           rules: [{ required: true, message: 'name3[1]空了' }],
           widgetProps: {

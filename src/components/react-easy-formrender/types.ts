@@ -44,7 +44,7 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // slot组件的params
-export interface SlotParams { type: string, props?: any, hidden?: boolean };
+export interface SlotParams { type: string, props?: any, hidden?: boolean, addItem?: FormFieldProps };
 export interface WidgetParams { widget: string, widgetProps: FormFieldProps['widgetProps'] };
 // 列表组件的params
 export interface CustomListProps { children: any, properties: SchemaData['properties'], parent?: GenerateParams };

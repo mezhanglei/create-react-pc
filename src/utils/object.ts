@@ -86,11 +86,11 @@ export function deepSet(obj: any, path: string | string[], value: any) {
     // 当传入的值为空赋值初始值
     if (typeof obj !== 'object' && i === 0) {
       if (isListItem) {
-        root = [];
         temp = [];
+        root = temp;
       } else {
-        root = {};
         temp = {};
+        root = temp;
       }
     }
 

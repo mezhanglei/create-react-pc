@@ -7,8 +7,8 @@ import { getColProps } from './utils/utils';
 
 export interface ListItemProps extends FormOptions {
   label?: any;
-  suffix?: React.ReactNode; // 右边节点
-  footer?: React.ReactNode; // 底部节点
+  suffix?: React.ReactNode | any; // 右边节点
+  footer?: React.ReactNode | any; // 底部节点
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;

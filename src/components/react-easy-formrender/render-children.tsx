@@ -138,7 +138,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       const hiddenStr = value?.match(reg)?.[0];
       if (hiddenStr) {
         let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
-        target = target?.replace(/\$form/g, 'store && store.getFieldValue()');
+        target = target?.replace(/\$formvalues/g, 'store && store.getFieldValue()');
+        target = target?.replace(/\$store/g, 'store');
         const actionStr = "return " + target;
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function('store', actionStr);
@@ -192,15 +193,15 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       });
     } else {
       const Child = slotWidgetsRegister[child?.type];
-      const ChildProps = child?.props;
-      // 如果是组件实例则实例化
+      // 注册组件
       if (Child) {
-        const slotHidden = typeof child?.hidden === 'function' ? child?.hidden() : child?.hidden;
+        const slotHidden = calcExpression(child?.hidden);
         if (slotHidden === true) {
           return;
         }
+        const ChildProps = child?.props;
         return <Child {...ChildProps} children={generateSlot(ChildProps?.children)} />
-        // 如果是组件声明则进行实例化
+        // 声明的组件
       } else if (typeof child?.render === 'function') {
         const Slot = child;
         return <Slot />;
@@ -210,34 +211,45 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }
 
-  // // 内置按钮
-  // const getDefaultSlot = (child: any, params: GenerateParams) => {
-  //   const { type, props: slotProps } = child || {};
-  //   if (type) {
-  //     const { path, field } = params;
-  //     const btnClick = () => {
-  //       // 只有数组列表才可以设置增加按钮
-  //       if (type === 'add' && field?.properties instanceof Array) {
-  //         const len = field?.properties?.length || 0;
-  //         const newField = { widget: field?.properties?.[len - 1]?.widget };
-  //         const newIndex = len;
-  //         if (newField) {
-  //           store?.addItemByIndex({ name: `${newIndex}`, field: newField }, newIndex, path)
-  //         }
-  //         // 删除按钮
-  //       } else if (type === 'delete') {
-  //         path && store?.setFieldValue(path, undefined, true);
-  //         path && store?.delItemByPath(path);
-  //       }
-  //     }
-  //     const slotHidden = typeof child?.hidden === 'function' ? child?.hidden(params) : child?.hidden;
-  //     if (slotHidden === true) {
-  //       return;
-  //     }
-  //     const Slot = defaultSlotWidgets[type];
-  //     return <Slot onClick={btnClick} children={type === 'add' && '新增一条'} {...slotProps} />
-  //   }
-  // }
+  // 内置按钮(目前只有增加和删除按钮)
+  const getDefaultSlot = (child: SlotParams, params: GenerateParams) => {
+    const type = child?.type;
+    const slotProps = child?.props;
+    if (type) {
+      const { path, field } = params;
+      const btnClick = () => {
+        // 给列表增加按钮
+        if (type === 'add') {
+          const properties = field?.properties;
+          const addItem = child?.addItem;
+          const newField = addItem && { ...addItem };
+          if (properties instanceof Array) {
+            const len = properties?.length || 0;
+            const newIndex = len;
+            if (newField) {
+              store?.addItemByIndex({ name: `${newIndex}`, field: newField }, newIndex, path)
+            }
+          } else if (typeof properties === 'object') {
+            const len = Object?.keys(properties)?.length || 0;
+            const newIndex = len;
+            if (newField?.name) {
+              store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, path);
+            }
+          }
+          // 删除按钮
+        } else if (type === 'delete') {
+          path && store?.setFieldValue(path, undefined, true);
+          path && store?.delItemByPath(path);
+        }
+      }
+      const slotHidden = calcExpression(child?.hidden);
+      if (slotHidden === true) {
+        return;
+      }
+      const Slot = defaultSlotWidgets[type];
+      return <Slot onClick={btnClick} children={type === 'add' && '新增一条'} {...slotProps} />
+    }
+  }
 
   // 生成表单控件
   const generateChild: generateChildFunc = (params, parent) => {
@@ -247,8 +259,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const fieldType = getFieldType(readOnly, properties);
     const FormField = FieldsRegister[fieldType];
     const FormItemChild = widget && widgets?.[widget];
-    const slotFooter = generateSlot(footer);
-    const slotSuffix = generateSlot(suffix);
+    const slotFooter = (footer?.type == 'add') ? getDefaultSlot(footer, params) : generateSlot(footer);
+    const slotSuffix = (suffix?.type == 'delete') ? getDefaultSlot(suffix, params) : generateSlot(suffix);
     // 是否隐藏
     if (!FormField || !field) return;
 

@@ -5,14 +5,14 @@ import { getValuePropName, getValueFromEvent, getColProps, getCurrentPath } from
 import { FormRule, FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
-import { isEqual } from '@/utils/object';
+import { deepGet, isEqual } from '@/utils/object';
 import { Col, Row } from 'react-flexbox-grid';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
   name?: string;
-  suffix?: React.ReactNode; // 右边节点
-  footer?: React.ReactNode; // 底部节点
+  suffix?: React.ReactNode | any; // 右边节点
+  footer?: React.ReactNode | any; // 底部节点
   valueProp?: string | ((type: any) => string);
   valueGetter?: (...args: any[]) => any;
   rules?: FormRule[];
@@ -71,7 +71,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   } = fieldProps;
 
   const currentPath = getCurrentPath(name, path);
-  const initialItemValue = initialValue ?? (currentPath && initialValues?.[currentPath]);
+  const initialItemValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
   const storeValue = currentPath && store?.getFieldValue(currentPath);
   const storeError = currentPath && store.getFieldError(currentPath);
   const [value, setValue] = useState(storeValue);

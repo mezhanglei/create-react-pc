@@ -5,12 +5,13 @@ import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
 import { Col, Row } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
+import { deepGet } from '@/utils/object';
 
 export interface FormListProps extends FormOptions {
   label?: string;
   name?: string;
-  suffix?: React.ReactNode; // 右边节点
-  footer?: React.ReactNode; // 底部节点
+  suffix?: React.ReactNode | any; // 右边节点
+  footer?: React.ReactNode | any; // 底部节点
   rules?: FormRule[];
   path?: string;
   initialValue?: any[];
@@ -62,7 +63,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   } = fieldProps;
 
   const currentPath = path ? `${path}.${name}` : `${name}`;
-  const initialListValue = initialValue ?? initialValues?.[currentPath];
+  const initialListValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
 
   // 是否为表单控件
   const isFormField = (child: any) => {
