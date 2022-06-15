@@ -327,7 +327,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     });
     const RenderList = customList as any;
     if (RenderList) {
-      return <RenderList children={childs} parent={parent} properties={properties} />
+      return <RenderList data-type="fragment" children={childs} parent={parent} properties={properties} />
     }
     return childs;
   }
