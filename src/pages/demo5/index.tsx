@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
-import DndSortable, { DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import './index.less'
 import Wrapper from './wrapper';
 import { getCurrentPath } from '@/components/react-easy-formcore';
@@ -204,6 +204,19 @@ export default function Demo5(props) {
   const customList: RenderFormProps['customList'] = ({ children, parent }) => {
     const { path, field } = parent || {};
     if (field?.properties) {
+      const isList = field?.properties instanceof Array;
+      // 列表元素不允许拖出和拖进
+      const outCondition: DndCondition = (params, options) => {
+        if (isList) {
+          const { from, to } = params;
+          if (from?.groupPath === to?.groupPath) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      }
       return (
         <DndSortable
           onUpdate={onItemSwap}
@@ -214,7 +227,8 @@ export default function Demo5(props) {
           options={{
             groupPath: path,
             childDrag: true,
-            allowDrop: true,
+            childOut: outCondition,
+            allowDrop: isList ? false : true,
             allowSort: true
           }}
         >

@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
-import { DndProps, DndSortable, SortableItem, DropEffect, EventType, DndBaseProps, DndParams } from "./utils/types";
+import { DndProps, DndSortable, SortableItem, DropEffect, EventType, DndBaseProps, DndParams, DragItem } from "./utils/types";
 import classNames from "classnames";
 import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, matches, getClientXY } from "@/utils/dom";
 import { DndManager } from './dnd-manager';
@@ -61,6 +61,7 @@ export default function BuildDndSortable() {
     getOptions = (options: DndProps['options']): DndProps['options'] => {
       const defaultOptions = {
         childDrag: true,
+        childOut: true,
         allowDrop: true,
         allowSort: true,
         direction: DragDirectionCode,
@@ -102,14 +103,27 @@ export default function BuildDndSortable() {
       });
     }
 
-    isCanDrag = (drag: HTMLElement, options: DndProps['options']) => {
+    isChildDrag = (item: DragItem, options: DndProps['options']) => {
       const childDrag = options?.childDrag;
+      const dragNode = item?.item;
       if (typeof childDrag == 'boolean') {
         return childDrag;
       } if (typeof childDrag === 'function') {
-        return childDrag(drag, options);
+        return childDrag(item, options);
       } else if (childDrag instanceof Array) {
-        return childDrag?.some((item) => typeof item === 'string' ? matches(drag, item) : drag === item);
+        return childDrag?.some((item) => typeof item === 'string' ? matches(dragNode, item) : dragNode === item);
+      }
+    }
+
+    isChildOut = (params: DndParams, options: DndProps['options']) => {
+      const childOut = options?.childOut;
+      const dragNode = params?.from?.item;
+      if (typeof childOut == 'boolean') {
+        return childOut;
+      } if (typeof childOut === 'function') {
+        return childOut(params, options);
+      } else if (childOut instanceof Array) {
+        return childOut?.some((item) => typeof item === 'string' ? matches(dragNode, item) : dragNode === item);
       }
     }
 
@@ -138,8 +152,9 @@ export default function BuildDndSortable() {
         e.stopPropagation();
       }
       const currentTarget = e.currentTarget;
+      const dragItem = dndManager.getDragItem(currentTarget);
       const options = this.getOptions(this.props?.options);
-      if (currentTarget && this.isCanDrag(currentTarget, options)) {
+      if (currentTarget && dragItem && this.isChildDrag(dragItem, options)) {
         currentTarget.draggable = true;
         this.lastDisplay = css(currentTarget)?.display;
       }
@@ -168,18 +183,20 @@ export default function BuildDndSortable() {
       const dragItem = dndManager.getDragItem(dragged);
       const overItem = over && (dndManager.getDragItem(over) || dndManager.getDropItem(over)) as any;
       if (dragItem) {
-        const dragParams = {
+        const params = {
           e,
           from: {
             ...dragItem,
             clone: cloneDragged
-          }
-        };
+          },
+          to: overItem
+        }
         const dropGroup = dndManager.getDropItem(overItem?.groupNode);
         if (dropGroup) {
           const props = dropGroup?.props;
           const options = this.getOptions(props?.options);
-          const canSort = this.isCanSort({ ...dragParams, to: overItem }, options)
+          const canSort = this.isCanSort(params, options);
+          const isChildOut = this.isChildOut(params, options);
           if (canSort) {
             overItem.index = getChildrenIndex(cloneDragged, [dragged]);
           }
@@ -187,20 +204,17 @@ export default function BuildDndSortable() {
           if (overItem?.groupNode === sortArea) {
             // 结束时移除hover状态
             over && props?.onUnHover && props.onUnHover(over);
-            props.onUpdate && props.onUpdate({ ...dragParams, to: overItem });
-          } else {
+            props.onUpdate && props.onUpdate(params);
+          } else if (isChildOut) {
             // 跨域排序
             if (dropGroup) {
               // 结束时移除hover状态
               over && props?.onUnHover && props?.onUnHover(over);
-              props?.onAdd && props?.onAdd({
-                ...dragParams,
-                to: overItem
-              });
+              props?.onAdd && props?.onAdd(params);
             }
           }
         }
-        this.props.onEnd && this.props.onEnd({ ...dragParams, to: overItem });
+        this.props.onEnd && this.props.onEnd(params);
       }
       this.sortEnd();
     }
@@ -302,9 +316,19 @@ export default function BuildDndSortable() {
       const isOverSelf = isMoveIn(e, cloneDragged);
       const target = dndManager.findOver(e);
       const dragItem = dndManager.getDragItem(dragged);
+      const options = this.getOptions(this.props.options);
       // 触发目标
       if (dragItem) {
         const overItem = target && (dndManager.getDragItem(target) || dndManager.getDropItem(target)) as any;
+        const params = {
+          e,
+          from: {
+            ...dragItem,
+            clone: cloneDragged
+          },
+          to: overItem
+        };
+        const isChildOut = this.isChildOut(params, options);
         // 拖放行为是否在同域内
         if (overItem?.groupNode === sortArea) {
           if (!isOverSelf) {
@@ -314,7 +338,7 @@ export default function BuildDndSortable() {
               this.setDropEndChild(e, overItem, cloneDragged);
             }
           }
-        } else {
+        } else if (isChildOut) {
           // 移动到新的容器内
           const dropGroup = dndManager.getDropItem(overItem?.groupNode);
           if (dropGroup) {
@@ -330,14 +354,6 @@ export default function BuildDndSortable() {
             this.addNewOver(e, dropGroup, overItem);
           }
         }
-        const params = {
-          e,
-          from: {
-            ...dragItem,
-            clone: cloneDragged
-          },
-          to: overItem
-        };
         this.props.onMove && this.props.onMove(params);
       }
     }

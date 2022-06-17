@@ -51,6 +51,9 @@ export interface DndParams extends DragParams {
 // 拖拽触发的函数
 export type DndHandle = (params: DndParams) => void;
 
+// 拖拽条件函数
+export type DndCondition = (params: DndParams, options: DndProps['options']) => boolean;
+
 export interface DndBaseProps {
   onStart?: DndHandle; // 拖拽开始触发的函数
   onMove?: DndHandle; // 拖拽进行中触发的函数
@@ -64,9 +67,10 @@ export interface DndBaseProps {
     groupPath?: string; // 拖拽容器的路径
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
-    allowDrop: boolean | ((params: DndParams, options: DndProps['options']) => boolean); // 是否允许拖放新元素
-    allowSort?: boolean | ((params: DndParams, options: DndProps['options']) => boolean); // 是否可以动态插入排序
-    childDrag: boolean | (HTMLElement | string)[] | ((el: HTMLElement, options: DndProps['options']) => boolean); // 子元素是否允许拖拽
+    allowDrop: boolean | DndCondition; // 是否允许拖放新元素
+    allowSort?: boolean | DndCondition; // 是否可以动态插入排序
+    childOut?: boolean | (HTMLElement | string)[] | DndCondition; // 子元素是否可以拖出当前区域
+    childDrag: boolean | (HTMLElement | string)[] | ((from: DragItem, options: DndProps['options']) => boolean); // 子元素是否允许在区域内拖拽
     direction?: string[]; // 允许拖拽的轴向
     sortPreClass?: string; // 元素往序号小的排序时添加的class
     sortNextClass?: string; // 元素往序号大的排序时添加的class
