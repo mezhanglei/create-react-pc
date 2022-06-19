@@ -6,18 +6,18 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2076383",
+      "name": "表单控件 删除",
+      "font_class": "biaodankongjianshanchu",
+      "unicode": "e8c1",
+      "unicode_decimal": 59585
+    },
+    {
       "icon_id": "3655957",
       "name": "复制",
       "font_class": "fuzhi",
       "unicode": "e631",
       "unicode_decimal": 58929
-    },
-    {
-      "icon_id": "11372693",
-      "name": "删除",
-      "font_class": "shanchu",
-      "unicode": "e8b6",
-      "unicode_decimal": 59574
     }
   ]
 }

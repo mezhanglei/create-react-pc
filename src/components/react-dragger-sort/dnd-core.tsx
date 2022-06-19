@@ -343,7 +343,7 @@ export default function BuildDndSortable() {
           const dropGroup = dndManager.getDropItem(overItem?.groupNode);
           if (dropGroup) {
             const options = this.getOptions(dropGroup?.props?.options);
-            const canDrop = this.isCanDrop({ e, from: { ...dragItem, clone: cloneDragged }, to: overItem }, options)
+            const canDrop = this.isCanDrop(params, options);
             if (!canDrop) {
               // 鼠标的样式更改
               if (e.dataTransfer) {

@@ -106,7 +106,7 @@ export default function Demo5(props) {
         properties: {
           first: {
             label: '对象嵌套1',
-            rules: [{ required: true, message: 'name4空了' }],
+            rules: [{ required: true, message: 'name1空了' }],
             widget: 'Select',
             col: { span: 6 },
             widgetProps: {
@@ -126,7 +126,7 @@ export default function Demo5(props) {
           },
           first1: {
             label: '对象嵌套3',
-            rules: [{ required: true, message: 'name4空了' }],
+            rules: [{ required: true, message: 'name3空了' }],
             widget: 'Select',
             col: { span: 6 },
             widgetProps: {
@@ -136,7 +136,7 @@ export default function Demo5(props) {
           },
           second1: {
             label: '对象嵌套4',
-            rules: [{ required: true, message: 'name2空了' }],
+            rules: [{ required: true, message: 'name4空了' }],
             widget: 'Select',
             col: { span: 6 },
             widgetProps: {
@@ -153,7 +153,7 @@ export default function Demo5(props) {
         valueProp: 'checked',
         // col: { span: 6 },
         initialValue: true,
-        rules: [{ required: true, message: 'name3空了' }],
+        rules: [{ required: true, message: 'name5空了' }],
         widgetProps: {
           style: { width: '100%' },
           children: '多选框'
@@ -161,9 +161,7 @@ export default function Demo5(props) {
       },
       name6: {
         label: 'Upload',
-        widget: 'Upload',
-        // required: true,
-        // rules: [{ required: true, message: '上传空了' }]
+        widget: 'Upload'
       },
     }
   })

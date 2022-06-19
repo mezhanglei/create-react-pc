@@ -1,5 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
+import './delete-btn.less';
 
 export interface DeleteBtnProps {
   onClick?: () => void;
@@ -13,6 +14,6 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     ...restProps
   } = props;
 
-  const cls = classnames('iconfont icon-shanchu', className)
+  const cls = classnames('iconfont icon-biaodankongjianshanchu', className)
   return <i className={cls} {...restProps} />
 }
