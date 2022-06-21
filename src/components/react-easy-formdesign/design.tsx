@@ -4,6 +4,8 @@ import Sidebar from './sidebar';
 import Viewer from './viewer';
 import Properties from './properties';
 import classnames from 'classnames';
+import { Col, Row } from 'react-flexbox-grid';
+import './design.less';
 
 export interface DesignFormProps {
   className?: string
@@ -13,7 +15,7 @@ export interface DesignFormProps {
 const prefixCls = 'fr-generator-container';
 const classes_design = {
   design: prefixCls,
-  component: `${prefixCls}__component`,
+  sidebar: `${prefixCls}__sidebar`,
   viewer: `${prefixCls}__viewer`,
   properties: `${prefixCls}__properties`
 }
@@ -21,11 +23,11 @@ const classes_design = {
 const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
   return (
     <Provider ref={ref} {...props}>
-      <div className={classnames(classes_design.design, className)}>
-        <Sidebar />
-        <Viewer />
-        <Properties />
-      </div>
+      <Row className={classnames(classes_design.design, className)}>
+        <Col className={classes_design.sidebar} xs={12} sm={6} md={4} lg={4}><Sidebar /></Col>
+        <Col className={classes_design.viewer} xs={12} sm={6} md={4} lg={4}><Viewer /></Col>
+        <Col className={classes_design.properties} xs={12} sm={6} md={4} lg={4}><Properties /></Col>
+      </Row>
     </Provider>
   );
 }

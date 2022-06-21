@@ -1,11 +1,11 @@
 import React, { Component, useState, useEffect, useRef } from 'react';
 import EasyDesign from '@/components/react-easy-formdesign';
-
+import './index.less'
 
 const demo7: React.FC<any> = (props) => {
 
   return (
-    <div>
+    <div className='design-box'>
       <EasyDesign />
     </div>
   );
