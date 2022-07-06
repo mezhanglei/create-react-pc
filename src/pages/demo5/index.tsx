@@ -1,7 +1,7 @@
 // export default demo5;
 // import { Button } from 'antd';
 import React, { useState } from 'react';
-import RenderForm, { RenderFormProps, useFormRenderStore } from './form-render';
+import RenderForm, { RenderFormProps, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
 import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import './index.less'
@@ -203,7 +203,7 @@ export default function Demo5(props) {
     const { path, field } = parent || {};
     if (field?.properties) {
       const isList = field?.properties instanceof Array;
-      // 列表元素不允许拖出和拖进
+      // 允许拖出的条件
       const outCondition: DndCondition = (params, options) => {
         if (isList) {
           const { from, to } = params;
@@ -215,6 +215,19 @@ export default function Demo5(props) {
         }
         return true;
       }
+      // 允许拖进的条件
+      const dropCondition: DndCondition = (params, options) => {
+        if (isList) {
+          const { from } = params;
+          if (from?.groupPath === 'sidebar') {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      }
+
       return (
         <DndSortable
           onUpdate={onItemSwap}
@@ -226,7 +239,7 @@ export default function Demo5(props) {
             groupPath: path,
             childDrag: true,
             childOut: outCondition,
-            allowDrop: isList ? false : true,
+            allowDrop: dropCondition,
             allowSort: true
           }}
         >
@@ -254,11 +267,9 @@ export default function Demo5(props) {
     }
   }
 
-  const wrapper: RenderFormProps['customChild'] = ({ children, ...restProps }) => {
-    const { name, path } = restProps;
-    const currentPath = getCurrentPath(name, path);
+  const wrapper: RenderFormProps['customInner'] = ({ children, ...restProps }) => {
     return (
-      <Wrapper {...restProps} active={currentPath === activePath}>
+      <Wrapper {...restProps}>
         {children}
       </Wrapper>
     );
@@ -268,7 +279,7 @@ export default function Demo5(props) {
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
         customList={customList}
-        customChild={wrapper}
+        customInner={wrapper}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

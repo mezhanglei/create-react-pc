@@ -1,7 +1,5 @@
-import Button from '@/components/button';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
-import { Col } from 'react-flexbox-grid';
 import './wrapper.less';
 
 export interface WrapperProps {
@@ -36,10 +34,10 @@ function Wrapper(props: WrapperProps, ref: any) {
   );
 
   return (
-    <Col ref={ref} className={cls} style={style} {...restProps}>
+    <div ref={ref} className={cls} style={style} {...restProps}>
       {active ? Tool : null}
       {children}
-    </Col>
+    </div>
   );
 };
 

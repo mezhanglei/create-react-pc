@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
 import { Col, Row } from 'react-flexbox-grid';
-import { getColProps } from './utils/utils';
+import { getColProps, getCurrentPath } from './utils/utils';
 import { deepGet } from '@/utils/object';
 
 export interface FormListProps extends FormOptions {
@@ -14,15 +14,19 @@ export interface FormListProps extends FormOptions {
   footer?: React.ReactNode | any; // 底部节点
   rules?: FormRule[];
   path?: string;
+  index?: number;
   initialValue?: any[];
   className?: string;
   style?: CSSProperties;
   children?: React.ReactNode;
+  customInner?: any;
 }
 
 const prefixCls = 'rh-form-list';
 export const classes_list = {
   list: prefixCls,
+  inner: 'field-inner',
+  inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
   error: `${prefixCls}--error`,
@@ -50,10 +54,13 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     className,
     style,
     layout = "horizontal",
+    customInner,
+    inline,
     col,
     colon,
     compact,
     required,
+    labelWidth,
     labelStyle,
     gutter,
     onFieldsChange,
@@ -62,7 +69,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     ...restField
   } = fieldProps;
 
-  const currentPath = path ? `${path}.${name}` : `${name}`;
+  const currentPath = getCurrentPath(name, path);
   const initialListValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
 
   // 是否为表单控件
@@ -118,19 +125,22 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     classes_list.list,
     compact ? classes_list.compact : '',
     required ? classes_list.required : '',
+    inline ? classes_list.inline : '',
     className ? className : '',
-    `${classes_list.list}--${layout}`
   );
+
+  const innerCls = classnames(classes_list.inner, `${classes_list.inner}--${layout}`);
 
   const headerStyle = {
     marginRight: gutter,
+    width: labelWidth,
     ...labelStyle
   };
 
-  const colProps = getColProps({ layout: layout, col });
+  const colProps = getColProps({ inline: inline, col });
 
-  return (
-    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
+  const InnerContent = (
+    <>
       {label !== undefined && (
         <div className={classes_list.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}
@@ -143,6 +153,16 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
         </Row>
         {suffix !== undefined && <div className={classes_list.suffix}>{suffix}</div>}
       </div>
+    </>
+  )
+
+  const Inner = customInner || 'div';
+  const innerProps = { name, path: path, field: fieldProps };
+  return (
+    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
+      <Inner className={innerCls} {...(customInner ? innerProps : {})}>
+        {InnerContent}
+      </Inner>
     </Col>
   );
 });

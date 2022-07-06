@@ -1,22 +1,22 @@
 .form-wrapper.row {
   margin-left: 0;
   margin-right: 0;
+  align-content: flex-start;
+  height: 100%;
 }
+
 .rh-form-field,
 .rh-form-list {
   margin: 8px 0;
   min-height: 32px;
-  &--horizontal {
-    display: flex;
-    align-items: flex-start;
+  .field-inner {
+    &--horizontal {
+      display: flex;
+      align-items: flex-start;
+    }
   }
 
-  &--inline {
-    display: inline-flex;
-  }
-
-  &--horizontal &__header,
-  &--inline &__header {
+  .field-inner--horizontal>&__header {
     text-align: right;
     margin-top: 5px;
     margin-right: 8px;
@@ -71,14 +71,16 @@
 
   &__footer {
     width: 100%;
+    margin-top: 8px;
   }
 
   // 当在列表中为相邻元素时，因为Col标签带有padding，所以footer也添加padding对齐
-  & + &__footer {
+  &+&__footer {
     padding-left: 8px;
   }
 
   &--error &__container &__control {
+
     .ant-input,
     .ant-select-selector {
       border-color: #ff4d4f;

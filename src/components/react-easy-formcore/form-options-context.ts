@@ -6,7 +6,7 @@ export interface FormRoot {
   onValuesChange?: (obj: { path?: string, value: any }) => void;
 }
 
-export type Layout = 'horizontal' | 'vertical' | 'inline' | string;
+export type Layout = 'horizontal' | 'vertical' | string;
 
 export interface FromColProps extends ColProps {
   span?: number; // 所有屏幕显示列宽格数
@@ -20,6 +20,8 @@ export interface FormOptions extends FormRoot {
   col?: FromColProps;
   colon?: boolean;
   layout?: Layout;
+  labelWidth?: number;
+  inline?: boolean;
   labelStyle?: CSSProperties;
   compact?: boolean;
   required?: boolean;

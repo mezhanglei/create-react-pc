@@ -1,6 +1,10 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
-import { StoreContext } from '../design-context';
 import classnames from 'classnames';
+import { Tabs } from 'antd';
+import { FormRenderContext } from '../design-context';
+import ItemSettings from './item-settings';
+import GlobalSettings from './global-settings';
+import './index.less';
 
 export interface DesignPropertiesProps {
   className?: string
@@ -8,7 +12,6 @@ export interface DesignPropertiesProps {
 }
 const prefixCls = 'easy-form-design-properties';
 function DesignProperties(props: DesignPropertiesProps, ref: any) {
-  const store = useContext(StoreContext);
   const {
     style,
     className
@@ -18,7 +21,14 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-3333
+      <Tabs className='properties-tabs' defaultActiveKey="1">
+        <Tabs.TabPane tab="组件配置" key="1">
+        <ItemSettings />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="表单配置" key="2">
+        <GlobalSettings />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   )
 };

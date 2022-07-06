@@ -1,6 +1,6 @@
 import { FormOptions } from "../form-options-context";
-import { handleListPath, pathToArr } from "@/utils/object";
-export { handleListPath, pathToArr };
+import { formatPath, pathToArr } from "@/utils/object";
+export { formatPath, pathToArr };
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
@@ -10,7 +10,7 @@ export function isExitPrefix(prefix: string, path: string | string[]) {
     return false;
   }
   return prefixParts?.every((str, index) => {
-    const item = handleListPath(parts[index]);
+    const item = formatPath(parts[index]);
     return str === item;
   });
 }
@@ -31,16 +31,20 @@ export const isListItem = (item: string) => (/\[(.{1}?)\]/gi.test(item));
 
 // 列宽
 export const getColProps = (option: FormOptions) => {
-  const { layout, col } = option;
+  const { inline, col } = option;
   const { xs, sm, md, lg, span, ...restProps } = col || {};
   const maxspan = 12;
-  // inline时不传参数
-  const defaultspan = layout !== "inline" && (span ?? maxspan);
+  // 计算layout带来的影响
+  const getValue = (inline?: boolean, value?: number) => {
+    if (!inline) {
+      return value ?? (span || maxspan);
+    }
+  }
   return {
-    xs: xs !== undefined ? xs : defaultspan,
-    sm: sm !== undefined ? sm : defaultspan,
-    md: md !== undefined ? md : defaultspan,
-    lg: lg !== undefined ? lg : defaultspan,
+    xs: getValue(inline, xs),
+    sm: getValue(inline, sm),
+    md: getValue(inline, md),
+    lg: getValue(inline, lg),
     ...restProps
   }
 }

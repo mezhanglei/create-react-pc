@@ -22,13 +22,13 @@ const classes_design = {
 
 const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
   return (
-    <Provider ref={ref} {...props}>
-      <Row className={classnames(classes_design.design, className)}>
-        <Col className={classes_design.sidebar} xs={12} sm={6} md={4} lg={4}><Sidebar /></Col>
-        <Col className={classes_design.viewer} xs={12} sm={6} md={4} lg={4}><Viewer /></Col>
-        <Col className={classes_design.properties} xs={12} sm={6} md={4} lg={4}><Properties /></Col>
-      </Row>
-    </Provider>
+    <Row ref={ref} className={classnames(classes_design.design, className)}>
+      <Provider {...props}>
+        <Col className={classes_design.sidebar} xs={12} sm={12} md={2} lg={2}><Sidebar /></Col>
+        <Col className={classes_design.viewer} xs={12} sm={12} md={8} lg={8}><Viewer /></Col>
+        <Col className={classes_design.properties} xs={12} sm={12} md={2} lg={2}><Properties /></Col>
+      </Provider>
+    </Row>
   );
 }
 

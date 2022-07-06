@@ -18,6 +18,13 @@
       "font_class": "fuzhi",
       "unicode": "e631",
       "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "11372693",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e8b6",
+      "unicode_decimal": 59574
     }
   ]
 }

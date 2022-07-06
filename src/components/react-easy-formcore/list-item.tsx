@@ -12,11 +12,15 @@ export interface ListItemProps extends FormOptions {
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
+  customInner?: any;
+  index?: number;
 }
 
 const prefixCls = 'custom-list-item';
 export const classes_item = {
   field: prefixCls,
+  inner: 'field-inner',
+  inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
 
@@ -36,8 +40,11 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     suffix,
     footer,
     required,
+    labelWidth,
     labelStyle,
     layout = "horizontal",
+    customInner,
+    inline,
     compact,
     col,
     colon,
@@ -51,19 +58,22 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     classes_item.field,
     compact ? classes_item.compact : '',
     required ? classes_item.required : '',
-    className ? className : '',
-    `${classes_item.field}--${layout}`
+    inline ? classes_item.inline : '',
+    className ? className : ''
   )
+
+  const innerCls = classnames(classes_item.inner, `${classes_item.inner}--${layout}`);
 
   const headerStyle = {
     marginRight: gutter,
+    width: labelWidth,
     ...labelStyle
   }
 
-  const colProps = getColProps({ layout: layout, col });
+  const colProps = getColProps({ inline: inline, col });
 
-  return (
-    <Col ref={ref} className={cls} style={style} {...colProps} {...restProps}>
+  const InnerContent = (
+    <>
       {label !== undefined && (
         <div className={classes_item.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}
@@ -76,6 +86,16 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
         </Row>
         {suffix !== undefined && <div className={classes_item.suffix}>{suffix}</div>}
       </div>
+    </>
+  )
+
+  const Inner = customInner || 'div';
+  const innerProps = { field: fieldProps };
+  return (
+    <Col ref={ref} className={cls} style={style} {...colProps} {...restProps}>
+      <Inner className={innerCls} {...(customInner ? innerProps : {})}>
+        {InnerContent}
+      </Inner>
     </Col>
   );
 });

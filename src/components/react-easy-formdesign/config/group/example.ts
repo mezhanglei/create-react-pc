@@ -1,8 +1,8 @@
-export const exampleElements = [
-  {
-    text: '复杂结构样例',
-    name: 'something',
-    schema: {
+export const exampleElements = {
+  something: {
+    label: '复杂结构样例',
+    properties: {
+
     }
   }
-]
+}

@@ -1,19 +1,19 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
 
 // 管理formrender过程中的数据
 export class FormRenderStore<T extends Object = any> extends FormStore {
-  private properties: Properties | undefined;
+  private properties: Properties;
   private lastProperties: Properties | undefined;
   private propertiesListeners: FormRenderListener[] = [];
   constructor(values?: Partial<T>) {
     super(values);
-    this.properties = undefined;
+    this.properties = {};
     this.lastProperties = undefined;
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
@@ -27,7 +27,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   // 设置properties
   setProperties(data?: SchemaData['properties']) {
     this.lastProperties = deepClone(this.properties);
-    this.properties = deepClone(data);
+    this.properties = deepClone(data || {});
     this.notifyProperties();
   }
 
@@ -50,7 +50,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 插入值，默认末尾
-  addItemByIndex = (data: { name: string, field: FormFieldProps }, index?: number, parentPath?: string) => {
+  addItemByIndex = (data: AddItem | AddItem[], index?: number, parentPath?: string) => {
     const properties = this.getProperties();
     if (properties) {
       let newProperties = addItemByIndex(properties, data, index, parentPath);

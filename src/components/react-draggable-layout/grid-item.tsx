@@ -26,6 +26,16 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     direction: [...DragDirectionCode, ...ResizeDirectionCode]
   }
 
+  // shouldComponentUpdate(props: GridItemProps, state: any) {
+  //   let isUpdate = false
+  //   Object.keys(props).forEach((key) => {
+  //     if ((props as any)[key] !== (this.props as any)[key]) {
+  //       isUpdate = true
+  //     }
+  //   })
+  //   return isUpdate
+  // }
+
   // 计算每列的宽度
   calcolsWidth = () => {
     const { containerWidth, cols, containerPadding, margin } = this.props;

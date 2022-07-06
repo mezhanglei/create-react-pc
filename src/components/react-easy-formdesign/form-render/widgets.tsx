@@ -1,5 +1,4 @@
 import { Input, InputNumber, Checkbox, DatePicker, Mentions, Radio, Rate, Select, Slider, Switch, TimePicker } from 'antd';
-import UploadFile from '../upload-component/image-upload';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const AntdBaseWidgets = {
@@ -23,6 +22,5 @@ export const AntdBaseWidgets = {
   "Slider": Slider, // 滑动输入项
   "Switch": Switch, // 切换组件
   "TimePicker": TimePicker, // 时分秒控件
-  "TimePicker.RangePicker": TimePicker.RangePicker, // 时分秒范围控件
-  "Upload": UploadFile
+  "TimePicker.RangePicker": TimePicker.RangePicker // 时分秒范围控件
 }

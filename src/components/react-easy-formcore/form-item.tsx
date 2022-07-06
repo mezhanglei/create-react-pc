@@ -17,16 +17,20 @@ export interface FormItemProps extends FormOptions {
   valueGetter?: (...args: any[]) => any;
   rules?: FormRule[];
   path?: string;
+  index?: number;
   initialValue?: any;
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
   errorClassName?: string;
+  customInner?: any
 }
 
 const prefixCls = 'rh-form-field';
 export const classes = {
   field: prefixCls,
+  inner: 'field-inner',
+  inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
   error: `${prefixCls}--error`,
@@ -56,10 +60,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     className,
     style,
     layout = "horizontal",
+    inline,
+    customInner,
     col,
     colon,
     compact,
     required,
+    labelWidth,
     labelStyle,
     gutter,
     errorClassName = 'error',
@@ -203,19 +210,22 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     compact ? classes.compact : '',
     required ? classes.required : '',
     error ? classes.error : '',
-    className ? className : '',
-    `${classes.field}--${layout}`,
+    inline ? classes.inline : '',
+    className ? className : ''
   );
+
+  const innerCls = classnames(classes.inner, `${classes.inner}--${layout}`);
 
   const headerStyle = {
     marginRight: gutter,
+    width: labelWidth,
     ...labelStyle
   };
 
-  const colProps = getColProps({ layout: layout, col });
+  const colProps = getColProps({ inline: inline, col });
 
-  return (
-    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
+  const InnerContent = (
+    <>
       {label !== undefined && (
         <div className={classes.header} style={headerStyle}>
           {colon ? <>{label}:</> : label}
@@ -229,6 +239,15 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         {suffix !== undefined && <div className={classes.suffix}>{suffix}</div>}
         <div className={classes.message}>{error}</div>
       </div>
+    </>
+  )
+  const Inner = customInner || 'div';
+  const innerProps = { name, path: path, field: fieldProps };
+  return (
+    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
+      <Inner className={innerCls} {...(customInner ? innerProps : {})}>
+        {InnerContent}
+      </Inner>
     </Col>
   );
 });

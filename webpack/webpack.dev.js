@@ -38,7 +38,8 @@ module.exports = merge(base, {
     // 有时无法访问可能是端口被占用n
     port: 8033,
     // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
-    host: configs.getNetworkIp(),
+    // host: configs.getNetworkIp(),
+    host: '0.0.0.0',
     // 开启热更新
     hot: true,
     // 一切服务都启用gzip 压缩(也可以通过webpack-dev-server --compress启动)

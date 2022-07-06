@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3450641 */
-  src: url('iconfont.woff2?t=1655550093806') format('woff2'),
-       url('iconfont.woff?t=1655550093806') format('woff'),
-       url('iconfont.ttf?t=1655550093806') format('truetype');
+  src: url('iconfont.woff2?t=1656940583890') format('woff2'),
+       url('iconfont.woff?t=1656940583890') format('woff'),
+       url('iconfont.ttf?t=1656940583890') format('truetype');
 }
 
 .iconfont {
@@ -19,5 +19,9 @@
 
 .icon-fuzhi:before {
   content: "\e631";
+}
+
+.icon-shanchu:before {
+  content: "\e8b6";
 }
 

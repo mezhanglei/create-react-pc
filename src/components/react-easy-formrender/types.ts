@@ -15,30 +15,31 @@ export interface FormFieldProps extends FormItemProps {
 
 // schema
 export interface SchemaData extends FormProps<FormRenderStore> {
-  properties: { [key: string]: FormFieldProps } | FormFieldProps[]
+  properties?: { [key: string]: FormFieldProps } | FormFieldProps[]
 }
 
 export type WatchHandler = (newValue: any, oldValue: string) => void
 
 export interface BaseRenderProps {
-  onPropertiesChange?: (properties: SchemaData['properties'], oldProperties?: SchemaData['properties']) => void;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   widgets?: any;
   slotWidgets?: any;
   Fields?: typeof defaultFields;
   // 自定义渲染列表
-  customList?: React.ComponentType<CustomListProps>;
+  customList?: React.ComponentType<CustomListProps & { children: any }>;
   // 自定义渲染子元素
-  customChild?: React.ComponentType<GenerateParams>;
+  customInner?: React.ComponentType<GenerateParams & { children: any }>;
 }
 
 // 带form容器的渲染组件props
 export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderProps {
+  onSchemaChange?: (newValue: SchemaData) => void;
   schema: SchemaData;
 };
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends BaseRenderProps {
+  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties']) => void;
   properties: SchemaData['properties']; // 控件数据源的数据
 };
 
@@ -47,9 +48,9 @@ export type ValueOf<T> = T[keyof T];
 export interface SlotParams { type: string, props?: any, hidden?: boolean, addItem?: FormFieldProps };
 export interface WidgetParams { widget: string, widgetProps: FormFieldProps['widgetProps'] };
 // 列表组件的params
-export interface CustomListProps { children: any, properties: SchemaData['properties'], parent?: GenerateParams };
+export interface CustomListProps { properties: SchemaData['properties'], parent?: GenerateParams };
 // 生成子元素
-export interface GenerateParams { name: string, field: FormFieldProps, path?: string, index?: number };
+export interface GenerateParams { name: string, field: FormFieldProps, path?: string };
 // 返回列表
 export type getChildrenList = (properties: SchemaData['properties'], generate: generateChildFunc, parent?: GenerateParams) => any;
 export type generateChildFunc = (params: GenerateParams, properties?: SchemaData['properties']) => JSX.Element | undefined;

@@ -178,7 +178,7 @@ class Demo9 extends Component {
         >
           {
             soundData.map((item, index) => {
-              return <div key={index} data-id={item.name}><Tag>{item.name}</Tag></div>
+              return <div key={index}><Tag>{item.name}</Tag></div>
             })
           }
         </DndSortable>
