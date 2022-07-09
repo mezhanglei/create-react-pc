@@ -183,9 +183,9 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       // 边界处理
       const node = data?.node;
 
-      const newPositionXY = getPositionByBounds(node, { x: nowX, y: nowY }, bounds);
-      nowX = newPositionXY.x;
-      nowY = newPositionXY.y;
+      const boundsXY = getPositionByBounds(node, { x: nowX, y: nowY }, bounds);
+      nowX = boundsXY.x;
+      nowY = boundsXY.y;
       const nowTranslateX = translateX + nowX - x;
       const nowTranslateY = translateY + nowY - y;
 

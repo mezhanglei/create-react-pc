@@ -24,7 +24,7 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
       prevRect = prevRect.getBoundingClientRect()
     }
 
-    // 目标初始化位置为之前位置
+    // 动画起始位置
     css(target, {
       transition: 'none',
       'transform': `translate3d(${prevRect.left - currentRect.left}px, ${prevRect.top - currentRect.top}px,0)`
@@ -33,7 +33,7 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
     // dom的宽高位置属性会回流重绘目前的布局样式
     target.offsetWidth;
 
-    // 目标重回现在的位置
+    // 动画终点位置
     css(target, {
       'transition': `all ${ms}ms`,
       'transform': 'translate3d(0,0,0)',

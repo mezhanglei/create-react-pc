@@ -24,6 +24,9 @@ function getNetworkIp() {
         }
       });
     });
+    if (!needHost) {
+      needHost = "localhost";
+    }
   } catch (e) {
     needHost = "localhost";
   }

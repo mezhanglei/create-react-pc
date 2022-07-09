@@ -101,19 +101,15 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       for (const propsKey in formField) {
         const value = formField[propsKey];
         if (propsKey !== 'properties') {
-          const path = getCurrentPath(propsKey, parent);
+          const path = getCurrentPath(propsKey, parent) as string;
           const result = calcExpression(value);
-          if(path) {
-            fieldPropsMap[path] = result;
-          }
+          fieldPropsMap[path] = result;
         } else {
           for (const childKey in value) {
             const name = value instanceof Array ? `[${childKey}]` : childKey;
-            const path = getCurrentPath(name, parent);
+            const path = getCurrentPath(name, parent) as string;
             const childField = value[childKey];
-            if(path) {
-              deepHandle(childField, path);
-            }
+            deepHandle(childField, path);
           }
         }
       }

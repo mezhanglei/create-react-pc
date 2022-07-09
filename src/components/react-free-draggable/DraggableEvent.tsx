@@ -28,7 +28,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   eventData: EventData | undefined;
   child: any;
   cloneLayer: any;
-  initPos: { left: number, top: number } | undefined
+  initStyle: { width: string, height: string, left: number, top: number } | undefined
   moveStartFlag: boolean;
   constructor(props: DraggableEventProps) {
     super(props);
@@ -105,8 +105,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const cloneLayer = node.cloneNode(true);
     this.cloneLayer = cloneLayer;
     const clientXY = getClientXY(node);
+    const win = getWindow();
+    const nodeStyle = win?.getComputedStyle(node);
     if (cloneLayer && clientXY) {
       css(cloneLayer, {
+        width: nodeStyle.getPropertyValue('width'),
+        height: nodeStyle.getPropertyValue('height'),
         left: clientXY?.x + 'px',
         top: clientXY?.y + 'px',
         position: 'fixed',
@@ -116,7 +120,9 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
         margin: 0,
         ...layerStyle
       })
-      this.initPos = {
+      this.initStyle = {
+        width: nodeStyle.getPropertyValue('width'),
+        height: nodeStyle.getPropertyValue('height'),
         left: clientXY?.x,
         top: clientXY?.y
       }
@@ -128,14 +134,16 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const { showLayer } = this.props;
     const { deltaX, deltaY } = delta;
     if (!showLayer) return;
-    if (this.initPos) {
-      const newLeft = this.initPos?.left + deltaX;
-      const newTop = this.initPos?.top + deltaY;
+    if (this.initStyle) {
+      const newLeft = this.initStyle?.left + deltaX;
+      const newTop = this.initStyle?.top + deltaY;
       css(this.cloneLayer, {
+        ...this.initStyle,
         left: newLeft + 'px',
         top: newTop + 'px'
       })
-      this.initPos = {
+      this.initStyle = {
+        ...this.initStyle,
         left: newLeft,
         top: newTop
       }
