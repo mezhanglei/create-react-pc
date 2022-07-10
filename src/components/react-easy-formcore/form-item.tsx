@@ -15,6 +15,7 @@ export interface FormItemProps extends FormOptions {
   footer?: React.ReactNode | any; // 底部节点
   valueProp?: string | ((type: any) => string);
   valueGetter?: (...args: any[]) => any;
+  valueSetter?: (value: any) => any;
   rules?: FormRule[];
   path?: string;
   index?: number;
@@ -54,6 +55,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     name,
     valueProp = 'value',
     valueGetter = getValueFromEvent,
+    valueSetter,
     suffix,
     footer,
     path,
@@ -67,6 +69,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     compact,
     required,
     labelWidth,
+    labelAlign,
     labelStyle,
     gutter,
     errorClassName = 'error',
@@ -153,6 +156,14 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     }
   }, [currentPath]);
 
+  const childValue = (value: any) => {
+    if(typeof valueSetter === 'function') {
+      return valueSetter(value);
+    } else {
+      return value;
+    }
+  }
+
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
     if (currentPath && child) {
@@ -161,7 +172,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       const { onChange, className } = childProps || {};
       // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
       const aopAfterFn = aopOnchange.addAfter(onChange);
-      const newChildProps = { className: classnames(className, error && errorClassName), [valuePropName]: value, onChange: aopAfterFn }
+      const valueResult = childValue(value);
+      const newChildProps = { className: classnames(className, error && errorClassName), [valuePropName]: valueResult, onChange: aopAfterFn }
       return cloneElement(child, newChildProps)
     } else {
       return child;
@@ -219,6 +231,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const headerStyle = {
     marginRight: gutter,
     width: labelWidth,
+    textAlign: labelAlign,
     ...labelStyle
   };
 

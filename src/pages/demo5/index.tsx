@@ -25,6 +25,7 @@ export default function Demo5(props) {
 
   const [schema, setSchema] = useState({
     layout: 'vertical',
+    col: { span: 6 },
     properties: {
       name1: {
         label: "只读展示",
@@ -33,7 +34,6 @@ export default function Demo5(props) {
         readOnly: true,
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
-        // col: { span: 6 },
         hidden: '{{$formvalues.name5 == true}}',
         widgetProps: {}
       },
@@ -41,7 +41,6 @@ export default function Demo5(props) {
         label: "输入框",
         widget: 'Input',
         required: true,
-        // col: { span: 6 },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
         hidden: '{{$formvalues.name5 == true}}',
@@ -67,12 +66,10 @@ export default function Demo5(props) {
             }
           }
         },
-        // col: { span: 6 },
         properties: [{
           widget: 'Select',
           required: true,
           suffix: { type: 'delete' },
-          // col: { span: 6 },
           rules: [{ required: true, message: 'name3[0]空了' }],
           initialValue: { label: '选项1', value: '1', key: '1' },
           widgetProps: {
@@ -87,7 +84,6 @@ export default function Demo5(props) {
           widget: 'Select',
           required: true,
           suffix: { type: 'delete' },
-          // col: { span: 6 },
           rules: [{ required: true, message: 'name3[1]空了' }],
           widgetProps: {
             labelInValue: true,
@@ -102,13 +98,11 @@ export default function Demo5(props) {
       name4: {
         label: '对象嵌套',
         required: true,
-        // col: { span: 6 },
         properties: {
           first: {
             label: '对象嵌套1',
             rules: [{ required: true, message: 'name1空了' }],
             widget: 'Select',
-            col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
@@ -118,7 +112,6 @@ export default function Demo5(props) {
             label: '对象嵌套2',
             rules: [{ required: true, message: 'name2空了' }],
             widget: 'Select',
-            col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
@@ -128,7 +121,6 @@ export default function Demo5(props) {
             label: '对象嵌套3',
             rules: [{ required: true, message: 'name3空了' }],
             widget: 'Select',
-            col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
@@ -138,7 +130,6 @@ export default function Demo5(props) {
             label: '对象嵌套4',
             rules: [{ required: true, message: 'name4空了' }],
             widget: 'Select',
-            col: { span: 6 },
             widgetProps: {
               style: { width: '100%' },
               children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
@@ -146,12 +137,26 @@ export default function Demo5(props) {
           }
         }
       },
+      "col": {
+        label: '整体布局',
+        widget: 'Select',
+        initialValue: { span: 12 },
+        valueSetter: "{{(value)=> (value && value['span'])}}",
+        valueGetter: "{{(value) => ({span: value})}}",
+        widgetProps: {
+          style: { width: '100%' },
+          children: [
+            { widget: 'Select.Option', widgetProps: { key: 1, value: 12, children: '一行一列' } },
+            { widget: 'Select.Option', widgetProps: { key: 2, value: 6, children: '一行二列' } },
+            { widget: 'Select.Option', widgetProps: { key: 3, value: 4, children: '一行三列' } }
+          ]
+        }
+      },
       name5: {
         label: 'name5',
         widget: 'Checkbox',
         required: true,
         valueProp: 'checked',
-        // col: { span: 6 },
         initialValue: true,
         rules: [{ required: true, message: 'name5空了' }],
         widgetProps: {

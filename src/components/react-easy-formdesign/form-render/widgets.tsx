@@ -1,4 +1,5 @@
 import { Input, InputNumber, Checkbox, DatePicker, Mentions, Radio, Rate, Select, Slider, Switch, TimePicker } from 'antd';
+import { SliderNumber } from './slider-number';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const AntdBaseWidgets = {
@@ -7,6 +8,7 @@ export const AntdBaseWidgets = {
   "Input.Password": Input.Password, // 输入密码组件
   "Input.Search": Input.Search, // 输入搜索组件
   "InputNumber": InputNumber, // 数字输入控件
+  "SliderNumber": SliderNumber, // 带数字输入框的控件
   "Mentions": Mentions, // 携带@提示的输入控件
   "Mentions.Option": Mentions.Option, // 提示控件的option
   "Checkbox": Checkbox, // 多选组件

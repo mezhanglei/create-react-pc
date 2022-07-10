@@ -41,6 +41,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
     footer,
     required,
     labelWidth,
+    labelAlign,
     labelStyle,
     layout = "horizontal",
     customInner,
@@ -67,6 +68,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   const headerStyle = {
     marginRight: gutter,
     width: labelWidth,
+    textAlign: labelAlign,
     ...labelStyle
   }
 

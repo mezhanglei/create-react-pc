@@ -61,6 +61,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     compact,
     required,
     labelWidth,
+    labelAlign,
     labelStyle,
     gutter,
     onFieldsChange,
@@ -134,6 +135,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const headerStyle = {
     marginRight: gutter,
     width: labelWidth,
+    textAlign: labelAlign,
     ...labelStyle
   };
 

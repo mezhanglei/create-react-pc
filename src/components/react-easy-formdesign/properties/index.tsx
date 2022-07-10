@@ -23,10 +23,10 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
     <div ref={ref} className={cls} style={style}>
       <Tabs className='properties-tabs' defaultActiveKey="1">
         <Tabs.TabPane tab="组件配置" key="1">
-        <ItemSettings />
+          <ItemSettings />
         </Tabs.TabPane>
         <Tabs.TabPane tab="表单配置" key="2">
-        <GlobalSettings />
+          <GlobalSettings />
         </Tabs.TabPane>
       </Tabs>
     </div>

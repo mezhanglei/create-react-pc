@@ -6,7 +6,7 @@ export { baseConfig, groupConfig }
 
 // 列表中的元素类型
 export interface SideBarElement extends FormFieldProps {
-  setting?: SchemaData;
+  setting?: SchemaData['properties'];
 }
 
 // 侧边栏tab的内容类型

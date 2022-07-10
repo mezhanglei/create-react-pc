@@ -4,7 +4,10 @@ export const atomElements = {
     label: '输入框',
     widget: 'Input',
     setting: {
-
+      initialValue: {
+        label: '默认值',
+        widget: 'Input'
+      }
     }
   }
 }

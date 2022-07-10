@@ -21,6 +21,7 @@ export interface FormOptions extends FormRoot {
   colon?: boolean;
   layout?: Layout;
   labelWidth?: number;
+  labelAlign?: CSSProperties['textAlign'],
   inline?: boolean;
   labelStyle?: CSSProperties;
   compact?: boolean;
