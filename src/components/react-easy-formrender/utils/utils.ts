@@ -10,11 +10,11 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const path = formatPath(item);
+    const name = formatPath(item);
     if (index === 0) {
-      temp = temp[path];
+      temp = temp[name];
     } else {
-      temp = temp?.properties?.[path];
+      temp = temp?.properties?.[name];
     }
   });
   // 计算
@@ -42,11 +42,11 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const path = formatPath(item);
+    const name = formatPath(item);
     if (index === 0) {
-      temp = temp[path];
+      temp = temp[name];
     } else {
-      temp = temp?.properties?.[path];
+      temp = temp?.properties?.[name];
     }
   });
   // 计算
@@ -79,11 +79,11 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
     return temp;
   }
   pathArr.forEach((item, index) => {
-    const path = formatPath(item);
+    const name = formatPath(item);
     if (index === 0) {
-      temp = temp[path];
+      temp = temp[name];
     } else {
-      temp = temp?.properties?.[path];
+      temp = temp?.properties?.[name];
     }
   });
   return temp;
