@@ -2,8 +2,8 @@ import React, { CSSProperties } from 'react'
 import { ColProps } from 'react-flexbox-grid';
 
 export interface FormRoot {
-  onFieldsChange?: (obj: { path: string, value: any }) => void;
-  onValuesChange?: (obj: { path?: string, value: any }) => void;
+  onFieldsChange?: (obj: { path: string, name?: string, value: any }) => void;
+  onValuesChange?: (obj: { path?: string, name?: string, value: any }) => void;
 }
 
 export type Layout = 'horizontal' | 'vertical' | string;

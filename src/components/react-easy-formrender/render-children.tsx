@@ -56,7 +56,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return () => {
       uninstall()
     }
-  }, []);
+  }, [onPropertiesChange]);
 
   // 收集properties到store中
   useEffect(() => {

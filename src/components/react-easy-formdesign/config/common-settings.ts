@@ -55,9 +55,5 @@ export const commonSettings = {
   footer: {
     label: '描述',
     widget: 'Input'
-  },
-  placeholder: {
-    label: '占位输入字符',
-    widget: 'Input'
-  },
+  }
 }

@@ -14,15 +14,18 @@ function GlobalSettings(props: GlobalSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { store } = useContext(FormRenderContext);
+  const { formRenderStore } = useContext(FormRenderContext);
   const formRender = useFormRenderStore();
 
   const cls = classnames(prefixCls, className)
 
+  const schema = {
+    properties: globalSettings
+  }
+
   return (
     <div ref={ref} className={cls} style={style}>
-       <RenderForm store={formRender} schema={globalSettings}
-      />
+      <RenderForm store={formRender} schema={schema} />
     </div>
   );
 };

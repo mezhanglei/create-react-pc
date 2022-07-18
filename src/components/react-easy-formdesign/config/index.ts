@@ -1,17 +1,14 @@
 import { FormFieldProps, SchemaData } from "@/components/react-easy-formrender";
-import { baseConfig } from "./base";
-import { groupConfig } from "./group";
+import { exampleElements } from "./group/example";
+import { atomElements } from "./base/atom";
+import { layoutElements } from "./base/layout";
 
-export { baseConfig, groupConfig }
+export const allElements = { ...atomElements, ...layoutElements, ...exampleElements };
+export { atomElements, layoutElements, exampleElements };
 
 // 列表中的元素类型
-export interface SideBarElement extends FormFieldProps {
-  setting?: SchemaData['properties'];
+export interface ELementProps extends FormFieldProps {
+  settings?: SchemaData['properties'];
 }
 
-// 侧边栏tab的内容类型
-export interface TabContent {
-  title: string;
-  group: string;
-  elements: { [key: string]: SideBarElement };
-}
+export interface SideBarElement { [key: string]: ELementProps }

@@ -27,7 +27,7 @@ export function Form(props: FormProps) {
 
   useEffect(() => {
     onMount && onMount();
-  }, []);
+  }, [onMount]);
 
   return (
     <form className={classNames} style={style} onSubmit={onSubmit} onReset={onReset}>

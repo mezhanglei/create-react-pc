@@ -1,6 +1,6 @@
 // 表单全局配置项
 export const globalSettings = {
-  "col": {
+  col: {
     label: '整体布局',
     widget: 'Select',
     initialValue: { span: 12 },
@@ -15,7 +15,7 @@ export const globalSettings = {
       ]
     }
   },
-  "labelWidth": {
+  labelWidth: {
     label: '标签宽度',
     widget: 'SliderNumber',
     initialValue: 120,
@@ -24,7 +24,7 @@ export const globalSettings = {
       max: 300
     }
   },
-  "layout": {
+  layout: {
     label: "标签展示模式",
     widget: "Radio.Group",
     initialValue: "vertical",

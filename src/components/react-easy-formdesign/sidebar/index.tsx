@@ -2,7 +2,7 @@ import React, { cloneElement, useCallback, useContext, useState, CSSProperties, 
 import classnames from 'classnames';
 import { Tabs } from 'antd';
 import './index.less';
-import { baseConfig, groupConfig, SideBarElement } from '../config';
+import { atomElements, ELementProps, exampleElements, layoutElements } from '../config';
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { defaultGetId, getParent, getSelectedIndex, isSelecteList } from '../utils/utils';
 import SidebarList from './sidebar-list';
@@ -22,11 +22,11 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   } = props;
 
   const { formRenderStore, selected, schema } = useContext(FormRenderContext);
-  const setEdit = useContext<any>(FormEditContext);
+  const setEdit = useContext(FormEditContext);
 
   const cls = classnames(prefixCls, className);
 
-  const onChange = (name: string, item: SideBarElement) => {
+  const onChange = (name: string, item: ELementProps) => {
     let newId;
     if (isSelecteList(selected)) {
       // 当选中项为为空数组内部，则设置为空字符串
@@ -38,20 +38,22 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     }
     const newIndex = getSelectedIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
-    const addItem = { name: newId, field: item }; // 插入组件
+    const { settings, ...field } = item;
+    const addItem = { name: newId, field: field }; // 插入组件
     formRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
     const newPath = getCurrentPath(newId, parentPath);
-    setEdit({ selected: newPath });
+    setEdit({ selected: newPath, selectedType: name });
   }
 
   return (
     <div ref={ref} className={cls} style={style}>
       <Tabs className='sidebar-tabs' defaultActiveKey="1">
         <Tabs.TabPane tab="基础组件" key="1">
-          <SidebarList data={baseConfig} onChange={onChange} />
+          <SidebarList title="基础控件" group="sidebar" elements={atomElements} onChange={onChange} />
+          <SidebarList title="布局组件" group="sidebar" elements={layoutElements} onChange={onChange} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="复杂组件" key="2">
-          <SidebarList data={groupConfig} onChange={onChange} />
+          <SidebarList title="复杂示例" group="sidebar" elements={exampleElements} onChange={onChange} />
         </Tabs.TabPane>
       </Tabs>
     </div>

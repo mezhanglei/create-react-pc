@@ -1,28 +1,32 @@
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import { SideBarElement, TabContent } from '../config';
+import { ELementProps, SideBarElement } from '../config';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './sidebar-list.less';
 
 export interface SideBarProps {
-  className?: string
-  style?: CSSProperties
-  data?: TabContent[]
-  onChange?: (name: string, item: SideBarElement) => void
+  className?: string;
+  style?: CSSProperties;
+  title: string;
+  group: string;
+  elements?: SideBarElement;
+  onChange?: (name: string, item: ELementProps) => void;
 }
 const prefixCls = 'sidebar-list';
 function SideBarList(props: SideBarProps, ref: any) {
   const {
     style,
     className,
-    data,
+    title,
+    group,
+    elements,
     onChange
   } = props;
 
   const cls = classnames(prefixCls, className)
 
-  const renderElements = (group: string, elements: TabContent['elements']) => {
+  const renderElements = (group: string, elements?: SideBarElement) => {
     return (
       <DndSortable
         className='elements-list'
@@ -42,20 +46,12 @@ function SideBarList(props: SideBarProps, ref: any) {
     );
   }
 
-  const renderContent = () => {
-    return data?.map((item, index) => {
-      return (
-        <div key={index}>
-          <div>{item?.title}</div>
-          {renderElements(item?.group, item?.elements)}
-        </div>
-      );
-    })
-  }
-
   return (
     <div ref={ref} className={cls} style={style}>
-      {renderContent()}
+      <div>
+        <div>{title}</div>
+        {renderElements(group, elements)}
+      </div>
     </div>
   );
 };

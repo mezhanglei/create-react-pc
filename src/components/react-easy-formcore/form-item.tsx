@@ -98,10 +98,10 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
         // 设置值
         store.setFieldValue(currentPath, value);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ path: currentPath, value: value });
+        onFieldsChange && onFieldsChange({ path: currentPath, name: name, value: value });
       }
     },
-    [currentPath, store, valueGetter]
+    [currentPath, store, valueGetter, onFieldsChange]
   );
 
   const aopOnchange = new AopFactory(onChange);
@@ -120,13 +120,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!isEqual(newValue, oldValue)) {
-        onValuesChange && onValuesChange({ path: currentPath, value: newValue })
+        onValuesChange && onValuesChange({ path: currentPath, name: name, value: newValue })
       }
     });
     return () => {
       uninstall();
     };
-  }, [currentPath, store]);
+  }, [currentPath, store, onValuesChange]);
 
   // 订阅组件更新错误的函数
   useEffect(() => {

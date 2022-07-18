@@ -30,7 +30,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   }
 
   const viewerClick = () => {
-    setEdit({ selected: undefined });
+    setEdit({ selected: "#" });
   }
 
   return (

@@ -3,7 +3,7 @@ export const atomElements = {
   input: {
     label: '输入框',
     widget: 'Input',
-    setting: {
+    settings: {
       initialValue: {
         label: '默认值',
         widget: 'Input'
