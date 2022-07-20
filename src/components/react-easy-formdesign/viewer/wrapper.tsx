@@ -1,6 +1,6 @@
 import { getCurrentPath } from '@/components/react-easy-formcore';
 import { FormEditContext, FormRenderContext } from '@/components/react-easy-formdesign/design-context';
-import { defaultGetId, isSelecteList } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { GenerateParams } from '../form-render';
@@ -28,7 +28,7 @@ function Wrapper(props: WrapperProps, ref: any) {
   const nextIndex = (field?.index as number) + 1;
   const copyItem = () => {
     let newId;
-    if (isSelecteList(currentPath)) {
+    if (endIsListItem(currentPath)) {
       newId = `[${nextIndex}]`;
     } else {
       // 非数组项才生成id

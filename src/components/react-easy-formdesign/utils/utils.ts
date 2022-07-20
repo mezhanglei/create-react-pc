@@ -1,3 +1,4 @@
+import { getCurrentPath } from '@/components/react-easy-formcore';
 import { SchemaData } from '@/components/react-easy-formrender';
 import { getItemByPath, pathToArray } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
@@ -6,25 +7,44 @@ export const defaultGetId = (name: string) => {
   return `${name}_${nanoid(6)}`;
 };
 
-// 根据路径返回父元素路径
+// 根据路径返回父元素路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
 export const getParent = (path: string) => {
   const pathArr = pathToArray(path);
   const end = pathArr?.pop();
   if (pathArr?.length && typeof end === 'string') {
     const index = path?.lastIndexOf(end);
-    const parentPath = path.substring(0, index - 1);
-    return parentPath;
+    const parentPath = path.substring(0, index);
+    return parentPath?.replace(/\[$/g, '')?.replace(/\.$/g, '');
   }
 }
 
-// 根据路径判断当前是否为数组项
-export const isSelecteList = (path: string) => {
+// 路径末尾项是否为数组项
+export const endIsListItem = (path: string) => {
   const pathArr = pathToArray(path);
   const end = pathArr?.pop();
   if (typeof end === 'string') {
-    const index = path?.lastIndexOf(`[${end}]`);
-    return index === path?.length - (end?.length + 2);
+    const listItem = `[${end}]`;
+    const index = path?.lastIndexOf(listItem);
+    return index === path?.length - listItem?.length;
   }
+}
+
+// 更改当前的path
+export const changeSelected = (path: string, name: string) => {
+  if (name && path) {
+    const parent = getParent(path);
+    const newPath = getCurrentPath(name, parent);
+    return newPath;
+  }
+}
+
+// 获取末尾节点
+export const getPathEnd = (path: string) => {
+  let parent = getParent(path);
+  parent = parent?.replace('[', '\\[')?.replace(']', '\\]');
+  const reg = parent ? new RegExp(`${parent}(\\S*)`) : new RegExp(`(\\S*)`);
+  const end = path.match(reg)?.[1];
+  return end?.replace(/^\./, '');
 }
 
 // 根据路径返回在父元素中的当前位置, 没有则返回-1;

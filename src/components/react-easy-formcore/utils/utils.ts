@@ -27,7 +27,7 @@ export function getValueFromEvent(...args: any[]) {
 }
 
 // 判断字符是否是数组中的选项
-export const isListItem = (item: string) => (/\[(\d+?)\]/gi.test(item));
+export const isListItem = (item: string) => (/\[(\d+)\]/gi.test(item));
 
 // 列宽
 export const getColProps = (option: FormOptions) => {

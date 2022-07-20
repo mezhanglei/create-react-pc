@@ -4,7 +4,7 @@ import { Tabs } from 'antd';
 import './index.less';
 import { atomElements, ELementProps, exampleElements, layoutElements } from '../config';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import { defaultGetId, getParent, getSelectedIndex, isSelecteList } from '../utils/utils';
+import { defaultGetId, getParent, getSelectedIndex, endIsListItem } from '../utils/utils';
 import SidebarList from './sidebar-list';
 import { pathToArray } from '@/components/react-easy-formrender/utils/utils';
 import { getCurrentPath } from '@/components/react-easy-formcore';
@@ -28,7 +28,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const onChange = (name: string, item: ELementProps) => {
     let newId;
-    if (isSelecteList(selected)) {
+    if (endIsListItem(selected)) {
       // 当选中项为为空数组内部，则设置为空字符串
       const end = pathToArray(selected)?.pop() as string || '-1';
       newId = `[${+end + 1}]`;

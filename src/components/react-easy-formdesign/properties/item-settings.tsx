@@ -4,7 +4,7 @@ import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render'
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { allElements, ELementProps } from '../config';
 import { commonSettings, nameSettings } from '../config/common-settings';
-import { isSelecteList } from '../utils/utils';
+import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 
 export interface ItemSettingsProps {
   className?: string
@@ -30,8 +30,10 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
     const newSettings = createSettings(selected, itemSettings, commonSettings)
     const lastFormValues = formRenderStore.getItemByPath(selected);
     // const defaultFormValues = form.getFieldValue();
+    if (!endIsListItem(selected)) {
+      lastFormValues['name'] = getPathEnd(selected);
+    }
     form?.reset(lastFormValues);
-    console.log(newSettings)
     setSettingSchema({ properties: newSettings });
   }, [selected]);
 
@@ -39,16 +41,21 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
   const createSettings = (selected: string, item: ELementProps['settings'], common: ELementProps['settings']) => {
     let baseSettings = { ...item, ...common };
     // 非数组项添加字段名编辑控件
-    if (!isSelecteList(selected)) {
+    if (!endIsListItem(selected)) {
       baseSettings = { ...nameSettings, ...baseSettings }
     }
     return baseSettings;
   }
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
+    if (!selected) return;
     const formValues = form.getFieldValue();
     formRenderStore?.setInitialValues(selected, formValues?.initialValue); // 更新控件的值
     formRenderStore?.updateItemByPath(selected, formValues); // 更新控件的属性
+    if (formValues?.name) {
+      const newSelected = changeSelected(selected, formValues?.name);
+      setEdit({ selected: newSelected });
+    }
   }
 
   return (

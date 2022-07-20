@@ -21,12 +21,12 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
 
   // 获取当前组件的properties
   public getProperties() {
-    return this.properties;
+    return deepClone(this.properties);
   }
 
   // 设置properties
   setProperties(data?: SchemaData['properties']) {
-    this.lastProperties = deepClone(this.properties);
+    this.lastProperties = this.properties;
     this.properties = deepClone(data || {});
     this.notifyProperties();
   }

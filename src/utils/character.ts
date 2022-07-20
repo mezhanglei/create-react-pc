@@ -249,3 +249,17 @@ export const matchChar = (content: string, keyWords?: string) => {
     return content?.replace(matchReg, replaceReturn)
   }
 };
+
+// 截取两个字符串之间的字符
+export const sliceBetweenStr = (str: string, firstStr: string, endStr?: string) => {
+  if (str == "" || str == null || str == undefined) { // "",null,undefined
+    return "";
+  }
+  if (str.indexOf(firstStr) < 0) {
+    return "";
+  }
+  const subFirstStr = str.substring(str.indexOf(firstStr) + firstStr.length, str.length);
+  const endIndex = endStr ? subFirstStr.indexOf(endStr) : subFirstStr?.length;
+  const subSecondStr = subFirstStr.substring(0, endIndex);
+  return subSecondStr;
+}
