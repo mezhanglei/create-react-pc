@@ -21,9 +21,9 @@ export const getParent = (path: string) => {
 export const isSelecteList = (path: string) => {
   const pathArr = pathToArray(path);
   const end = pathArr?.pop();
-  if (pathArr?.length && typeof end === 'string') {
+  if (typeof end === 'string') {
     const index = path?.lastIndexOf(`[${end}]`);
-    return index === pathArr?.length;
+    return index === path?.length - (end?.length + 2);
   }
 }
 

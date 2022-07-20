@@ -89,6 +89,15 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
   return temp;
 };
 
+// 对象中的key更换成新的key
+export const updateKey = (parent: SchemaData['properties'], oldKey: string, newKey: string) => {
+  if (!oldKey || !newKey || !parent) return parent;
+  const oldValue = parent[oldKey];
+  delete parent[oldKey];
+  parent[newKey] = oldValue;
+  return parent;
+}
+
 // 根据index获取键值对
 export const getKeyValueByIndex = (properties: SchemaData['properties'], index: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);

@@ -39,7 +39,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const newIndex = getSelectedIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
     const { settings, ...field } = item;
-    const addItem = { name: newId, field: field }; // 插入组件
+    // 生成新控件
+    const addItem = { name: newId, field: field };
     formRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
     const newPath = getCurrentPath(newId, parentPath);
     setEdit({ selected: newPath, selectedType: name });

@@ -26,8 +26,8 @@ export const commonSettings = {
     widgetProps: {
       style: { width: '100%' },
       children: [
-        { widget: "Radio", widgetProps: { value: "vertical", children: "同行" } },
-        { widget: "Radio", widgetProps: { value: "horizontal", children: "单独一行" } }
+        { widget: "Radio", widgetProps: { key: 'horizontal', value: "horizontal", children: "同行" } },
+        { widget: "Radio", widgetProps: { key: 'vertical', value: "vertical", children: "单独一行" } }
       ]
     }
   },
@@ -54,6 +54,14 @@ export const commonSettings = {
   },
   footer: {
     label: '描述',
+    widget: 'Input'
+  }
+}
+
+// 字段名的配置项
+export const nameSettings = {
+  name: {
+    label: '字段名',
     widget: 'Input'
   }
 }
