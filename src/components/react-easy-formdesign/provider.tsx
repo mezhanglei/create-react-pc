@@ -15,7 +15,7 @@ export interface ProviderProps {
 
 function Provider(props: ProviderProps) {
 
-  const formRenderStore = useFormRenderStore();
+  const viewerRenderStore = useFormRenderStore();
 
   const [state, setEdit] = useSet({
     isNewVersion: true, // 用schema字段，还是用propsSchema字段，这是一个问题
@@ -25,7 +25,7 @@ function Provider(props: ProviderProps) {
     globalFormProps: {}, // 表单的全局属性
     selected: undefined, // 当前选中的路径
     selectedType: undefined, // 当前选中的控件类型
-    selectedSettingsForm: null, // 当前选择控件的属性的渲染表单
+    settingsForm: null, // 当前选择控件的属性的渲染表单
     operateIndex: undefined, // 记录栈中当前操作的序号
     operateHistory: [] // 缓存的操作记录栈
   });
@@ -35,7 +35,7 @@ function Provider(props: ProviderProps) {
   } = props;
 
   const params = {
-    formRenderStore,
+    viewerRenderStore,
     ...state
   }
 

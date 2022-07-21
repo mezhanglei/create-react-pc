@@ -12,7 +12,7 @@ function DndList(props: DndListProps, ref: any) {
   const { children, parent } = props;
   const { path, field } = parent || {};
 
-  const { formRenderStore, schema, selected } = useContext(FormRenderContext);
+  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -23,7 +23,7 @@ function DndList(props: DndListProps, ref: any) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    formRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -35,7 +35,7 @@ function DndList(props: DndListProps, ref: any) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    formRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   if (field?.properties) {

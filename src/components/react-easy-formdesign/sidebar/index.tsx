@@ -21,7 +21,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { formRenderStore, selected, schema } = useContext(FormRenderContext);
+  const { viewerRenderStore, selected, schema } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
 
   const cls = classnames(prefixCls, className);
@@ -41,7 +41,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const { settings, ...field } = item;
     // 生成新控件
     const addItem = { name: newId, field: field };
-    formRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
+    viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
     const newPath = getCurrentPath(newId, parentPath);
     setEdit({ selected: newPath, selectedType: name });
   }

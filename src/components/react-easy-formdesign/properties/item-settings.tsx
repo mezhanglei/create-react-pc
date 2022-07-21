@@ -5,6 +5,7 @@ import { FormEditContext, FormRenderContext } from '../design-context';
 import { allElements, ELementProps } from '../config';
 import { commonSettings, nameSettings } from '../config/common-settings';
 import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
+import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 
 export interface ItemSettingsProps {
   className?: string
@@ -16,7 +17,7 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { formRenderStore, selected, selectedType } = useContext(FormRenderContext);
+  const { viewerRenderStore, selected, selectedType } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const form = useFormRenderStore();
 
@@ -26,20 +27,20 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
 
   useEffect(() => {
     if (!selected || selected === '#') return;
-    const itemSettings = allElements[selectedType]?.['settings'];
-    const newSettings = createSettings(selected, itemSettings, commonSettings)
-    const lastFormValues = formRenderStore.getItemByPath(selected);
-    // const defaultFormValues = form.getFieldValue();
-    if (!endIsListItem(selected)) {
-      lastFormValues['name'] = getPathEnd(selected);
-    }
-    form?.reset(lastFormValues);
+    const newSettings = createSettings(selected);
+    const lastValues = getLastValues(selected, newSettings);
+    form?.reset(lastValues);
     setSettingSchema({ properties: newSettings });
+    setEdit({ settingsForm: form });
+    // 同步属性到viewer组件
+    const { name, ...rest } = lastValues;
+    viewerRenderStore?.updateItemByPath(selected, rest);
   }, [selected]);
 
   // 生成当前控件的settings
-  const createSettings = (selected: string, item: ELementProps['settings'], common: ELementProps['settings']) => {
-    let baseSettings = { ...item, ...common };
+  const createSettings = (selected: string) => {
+    const itemSettings = allElements[selectedType]?.['settings'];
+    let baseSettings = { ...itemSettings, ...commonSettings };
     // 非数组项添加字段名编辑控件
     if (!endIsListItem(selected)) {
       baseSettings = { ...nameSettings, ...baseSettings }
@@ -49,13 +50,26 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
     if (!selected) return;
-    const formValues = form.getFieldValue();
-    formRenderStore?.setInitialValues(selected, formValues?.initialValue); // 更新控件的值
-    formRenderStore?.updateItemByPath(selected, formValues); // 更新控件的属性
-    if (formValues?.name) {
-      const newSelected = changeSelected(selected, formValues?.name);
+    const settingsValues = form.getFieldValue();
+    const { name, ...rest } = settingsValues;
+    viewerRenderStore?.setInitialValues(selected, rest?.initialValue); // 更新控件的值
+    viewerRenderStore?.updateItemByPath(selected, rest); // 更新控件的属性
+    if (name) {
+      const newSelected = changeSelected(selected, name);
+      viewerRenderStore?.updateNameByPath(selected, name);
       setEdit({ selected: newSelected });
     }
+  }
+
+  // 当前控件的缓存属性
+  const getLastValues = (selected: string, curSettings: ELementProps['settings']) => {
+    const viewerValues = viewerRenderStore.getItemByPath(selected);
+    if (!endIsListItem(selected)) {
+      viewerValues['name'] = getPathEnd(selected);
+    }
+    const initialValues = getInitialValues(curSettings);
+    const lastValues = { ...initialValues, ...viewerValues };
+    return lastValues;
   }
 
   return (

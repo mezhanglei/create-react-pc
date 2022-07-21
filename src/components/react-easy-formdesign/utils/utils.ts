@@ -29,7 +29,7 @@ export const endIsListItem = (path: string) => {
   }
 }
 
-// 更改当前的path
+// 更改path的末尾项
 export const changeSelected = (path: string, name: string) => {
   if (name && path) {
     const parent = getParent(path);

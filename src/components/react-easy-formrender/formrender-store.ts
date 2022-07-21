@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
@@ -45,6 +45,15 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     const properties = this.getProperties();
     if (properties) {
       let newProperties = setItemByPath(properties, path, data);
+      this.setProperties(newProperties);
+    }
+  }
+
+  // 更新键
+  updateNameByPath = (path: string, newName?: string) => {
+    const properties = this.getProperties();
+    if (properties) {
+      let newProperties = updateName(properties, path, newName);
       this.setProperties(newProperties);
     }
   }

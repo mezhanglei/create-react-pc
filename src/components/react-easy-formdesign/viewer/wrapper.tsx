@@ -21,7 +21,7 @@ function Wrapper(props: WrapperProps, ref: any) {
   } = props;
 
   const { name, path, field } = restProps;
-  const { formRenderStore, schema, selected } = useContext(FormRenderContext);
+  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, path);
   const isSelected = currentPath ? currentPath === selected : false;
@@ -34,12 +34,12 @@ function Wrapper(props: WrapperProps, ref: any) {
       // 非数组项才生成id
       newId = defaultGetId(name);
     }
-    const newField = formRenderStore?.getItemByPath(currentPath);
-    formRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, path);
+    const newField = viewerRenderStore?.getItemByPath(currentPath);
+    viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, path);
   }
 
   const deleteItem = () => {
-    formRenderStore?.delItemByPath(currentPath);
+    viewerRenderStore?.delItemByPath(currentPath);
     setEdit({ selected: undefined });
   }
 

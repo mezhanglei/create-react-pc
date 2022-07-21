@@ -1,6 +1,6 @@
 import { FormOptions } from "../form-options-context";
-import { formatPath, pathToArr } from "@/utils/object";
-export { formatPath, pathToArr };
+import { formatPath, pathToArr, deepGet, deepSet } from "@/utils/object";
+export { formatPath, pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {

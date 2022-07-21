@@ -14,7 +14,7 @@ const prefixCls = 'easy-form-design-viewer';
 
 function DesignViewer(props: DesignViewerProps, ref: any) {
 
-  const { formRenderStore, schema } = useContext(FormRenderContext);
+  const { viewerRenderStore, schema, selected, settingsForm } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
 
   const {
@@ -23,10 +23,16 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     ...restProps
   } = props;
 
-  const cls = classnames(prefixCls, className)
+  const cls = classnames(prefixCls, className);
 
   const onSchemaChange: RenderFormProps['onSchemaChange'] = (newSchema) => {
     setEdit({ schema: newSchema });
+  }
+
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ path, value }) => {
+    if (!selected || selected === '#' || !settingsForm) return;
+    settingsForm.setInitialValues('initialValue', value);
+    viewerRenderStore?.updateItemByPath(path, { initialValue: value });
   }
 
   const viewerClick = () => {
@@ -35,10 +41,11 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style} {...restProps} onClick={viewerClick}>
-      <RenderForm store={formRenderStore} schema={schema}
+      <RenderForm store={viewerRenderStore} schema={schema}
         customList={DndList}
         customInner={Wrapper}
         onSchemaChange={onSchemaChange}
+        onFieldsChange={onFieldsChange}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { arraySwap } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
-import { formatPath, getCurrentPath, pathToArr } from "../../react-easy-formcore";
+import { formatPath, getCurrentPath, pathToArr, deepSet } from "../../react-easy-formcore";
 
 export const pathToArray = (pathStr?: string) => pathStr ? pathToArr(pathStr) : [];
 // 根据路径更新数据
@@ -29,13 +29,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
       }
     } else {
       const lastData = temp[end];
-      const { name, ...rest } = data;
-      if (name) {
-        delete temp[end];
-        temp[name] = { ...lastData, ...rest };
-      } else {
-        temp[end] = { ...lastData, ...data };
-      }
+      temp[end] = { ...lastData, ...data };
     }
   }
   return properties;
@@ -109,25 +103,16 @@ export const getKeyValueByIndex = (properties: SchemaData['properties'], index: 
   };
 };
 
-interface DataListType extends FormFieldProps {
-  propertiesType?: 'object' | 'array';
-  properties?: DataListType[];
-}
-
 // 将树中的选项转化为列表中的选项
-export const treeItemToListItem = (name: string, field: FormFieldProps): DataListType => {
-  const childs = field?.properties;
-  const isList = childs instanceof Array;
+export const treeItemToListItem = (name: string, field: FormFieldProps) => {
   return {
     name: name,
-    ...field,
-    propertiesType: isList ? 'array' : 'object',
-    properties: childs && treeToArr(childs)
+    ...field
   };
 };
 
-// 将树对象转化为
-export const treeToArr = (properties: SchemaData['properties']) => {
+// 转化为有序数组列表
+export const toList = (properties: SchemaData['properties']) => {
   const temp = [];
   if (typeof properties === 'object') {
     for (let key in properties) {
@@ -141,8 +126,8 @@ export const treeToArr = (properties: SchemaData['properties']) => {
   return temp;
 };
 
-// 将嵌套数组还原成嵌套树对象
-const arrayToTree = (dataList: DataListType[], isList?: boolean) => {
+// 从有序列表中还原源数据
+const restoreFromList = (dataList: FormFieldProps[], isList?: boolean) => {
   const temp = isList ? [] : {};
   if (typeof dataList === 'object') {
     for (let key in dataList) {
@@ -153,23 +138,49 @@ const arrayToTree = (dataList: DataListType[], isList?: boolean) => {
       if (typeof formatName === 'string') {
         temp[formatName] = current;
         const properties = current?.properties;
-        const childIsList = current?.propertiesType === 'array';
         if (properties) {
-          temp[formatName].properties = arrayToTree(properties, childIsList)
+          temp[formatName].properties = properties;
         }
-        delete current['propertiesType']
       }
     }
     return temp;
   }
 };
 
+// 更新指定路径的name
+export const updateName = (properties: SchemaData['properties'], pathStr: string, newName?: string) => {
+  if (typeof newName !== 'string' || !pathStr) return properties;
+  const pathArr = pathToArray(pathStr);
+  const end = pathArr.pop();
+  if (end === formatPath(newName)) return properties;
+  const parentPath = pathArr?.join('.');
+  const parent = getItemByPath(properties, parentPath);
+  const childProperties = parentPath ? parent?.properties : parent;
+  const childList = toList(childProperties);
+  childList?.map((item) => {
+    if (item?.name) {
+      const formatName = formatPath(item?.name);
+      if (formatName === end) {
+        item.name = newName;
+      }
+    }
+  });
+  const isList = childProperties instanceof Array;
+  const result = restoreFromList(childList, isList);
+  if (parentPath) {
+    parent.properties = result;
+    return properties;
+  } else {
+    return result;
+  }
+}
+
 // 添加新元素(有副作用，会改变传入的data数据)
 export interface AddItem { name: string, field: FormFieldProps };
 export const addItemByIndex = (properties: SchemaData['properties'], data: AddItem | AddItem[], index?: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
-  const childList = treeToArr(childProperties);
+  const childList = toList(childProperties);
   const dataList = data instanceof Array ? data : (data ? [data] : []);
   const fromList = dataList?.map?.((item) => treeItemToListItem(item?.name, item?.field));
   if (typeof index === 'number') {
@@ -178,7 +189,7 @@ export const addItemByIndex = (properties: SchemaData['properties'], data: AddIt
     childList?.push(...fromList);
   }
   const isList = childProperties instanceof Array;
-  const result = arrayToTree(childList, isList);
+  const result = restoreFromList(childList, isList);
   if (parentPath) {
     parent.properties = result;
     return properties;
@@ -200,11 +211,11 @@ export const swapSameLevel = (properties: SchemaData['properties'], from: { pare
     let parent = getItemByPath(properties, fromParentPath);
     const childProperties = fromParentPath ? parent?.properties : parent;
     // 转成列表以便排序
-    const childList = treeToArr(childProperties);
+    const childList = toList(childProperties);
     toIndex = typeof toIndex === 'number' ? toIndex : childList?.length;
     const swapList = arraySwap(childList, fromIndex, toIndex);
     const isList = childProperties instanceof Array;
-    const result = arrayToTree(swapList, isList);
+    const result = restoreFromList(swapList, isList);
     if (fromParentPath) {
       parent.properties = result;
       return properties;
@@ -226,7 +237,7 @@ export const swapDiffLevel = (properties: SchemaData['properties'], from: { pare
   const toParentPath = to?.parentPath;
   const toIndex = to?.index;
   const toParentPathArr = pathToArray(toParentPath);
-  if (typeof fromPath !== 'string') return;
+  if (typeof fromPath !== 'string') return properties;
   // 先计算内部变动，再计算外部变动
   if (fromParentPathArr?.length > toParentPathArr?.length || !toParentPathArr?.length) {
     setItemByPath(properties, fromPath, undefined);
@@ -238,3 +249,33 @@ export const swapDiffLevel = (properties: SchemaData['properties'], from: { pare
     return result;
   }
 };
+
+// 提取properties中的默认值
+export const getInitialValues = (properties: SchemaData['properties']) => {
+  let initialValues = {};
+  // 遍历处理对象树中的非properties字段
+  const deepHandle = (formField: FormFieldProps, parent: string) => {
+    for (const propsKey in formField) {
+      const value = formField[propsKey];
+      if (propsKey !== 'properties') {
+        if (propsKey === 'initialValue' && value !== undefined) {
+          initialValues = deepSet(initialValues, parent, value);
+        }
+      } else {
+        for (const childKey in value) {
+          const name = value instanceof Array ? `[${childKey}]` : childKey;
+          const path = getCurrentPath(name, parent) as string;
+          const childField = value[childKey];
+          deepHandle(childField, path);
+        }
+      }
+    }
+  };
+
+  for (const key in properties) {
+    const formField = properties[key];
+    const name = properties instanceof Array ? `[${key}]` : key;
+    deepHandle(formField, name);
+  }
+  return initialValues;
+}

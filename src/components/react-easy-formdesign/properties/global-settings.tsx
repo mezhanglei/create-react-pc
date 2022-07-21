@@ -14,7 +14,7 @@ function GlobalSettings(props: GlobalSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { formRenderStore } = useContext(FormRenderContext);
+  const { viewerRenderStore } = useContext(FormRenderContext);
   const formRender = useFormRenderStore();
 
   const cls = classnames(prefixCls, className)
