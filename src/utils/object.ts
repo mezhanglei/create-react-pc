@@ -46,7 +46,7 @@ export function pathToArr(path: string) {
 }
 
 // 处理将路径中的数组项转换成普通字符串
-export function formatPath(str: string) {
+export function formatName(str: string) {
   return str?.replace(/\[/g, '')?.replace(/\]/g, '');
 }
 
@@ -56,7 +56,7 @@ export function deepGet(obj: object | undefined, keys: string | string[]): any {
     (!Array.isArray(keys)
       ? pathToArr(keys)
       : keys
-    ).reduce((o, k) => (o)?.[formatPath(k)], obj)
+    ).reduce((o, k) => (o)?.[formatName(k)], obj)
   );
 }
 
@@ -74,12 +74,12 @@ export function deepSet(obj: any, path: string | string[], value: any) {
     const next = parts[i + 1];
     // 下个字段是否为数组项
     const nextIsListItem = listItems?.some((item) => {
-      const listItem = formatPath(item);
+      const listItem = formatName(item);
       return listItem === next;
     });
     // 当前字段是否为数组项
     const isListItem = listItems?.some((item) => {
-      const listItem = formatPath(item);
+      const listItem = formatName(item);
       return listItem === p;
     });
 

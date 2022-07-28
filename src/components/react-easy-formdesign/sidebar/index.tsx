@@ -41,9 +41,9 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const { settings, ...field } = item;
     // 生成新控件
     const addItem = { name: newId, field: field };
-    viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
     const newPath = getCurrentPath(newId, parentPath);
-    setEdit({ selected: newPath, selectedType: name });
+    viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
+    setEdit({ selected: newPath, selectedKey: name });
   }
 
   return (

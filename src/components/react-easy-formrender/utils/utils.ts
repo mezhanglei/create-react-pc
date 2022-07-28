@@ -1,6 +1,6 @@
 import { arraySwap } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
-import { formatPath, getCurrentPath, pathToArr, deepSet } from "../../react-easy-formcore";
+import { formatName, getCurrentPath, pathToArr, deepSet } from "../../react-easy-formcore";
 
 export const pathToArray = (pathStr?: string) => pathStr ? pathToArr(pathStr) : [];
 // 根据路径更新数据
@@ -10,7 +10,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const name = formatPath(item);
+    const name = formatName(item);
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -42,7 +42,7 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const name = formatPath(item);
+    const name = formatName(item);
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -79,7 +79,7 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
     return temp;
   }
   pathArr.forEach((item, index) => {
-    const name = formatPath(item);
+    const name = formatName(item);
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -134,12 +134,12 @@ const restoreFromList = (dataList: FormFieldProps[], isList?: boolean) => {
       const current = dataList[key];
       const name = current?.name;
       delete current['name'];
-      const formatName = typeof name === 'string' && formatPath(name);
-      if (typeof formatName === 'string') {
-        temp[formatName] = current;
+      const format = typeof name === 'string' && formatName(name);
+      if (typeof format === 'string') {
+        temp[format] = current;
         const properties = current?.properties;
         if (properties) {
-          temp[formatName].properties = properties;
+          temp[format].properties = properties;
         }
       }
     }
@@ -152,15 +152,15 @@ export const updateName = (properties: SchemaData['properties'], pathStr: string
   if (typeof newName !== 'string' || !pathStr) return properties;
   const pathArr = pathToArray(pathStr);
   const end = pathArr.pop();
-  if (end === formatPath(newName)) return properties;
+  if (end === formatName(newName)) return properties;
   const parentPath = pathArr?.join('.');
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
   childList?.map((item) => {
     if (item?.name) {
-      const formatName = formatPath(item?.name);
-      if (formatName === end) {
+      const format = formatName(item?.name);
+      if (format === end) {
         item.name = newName;
       }
     }

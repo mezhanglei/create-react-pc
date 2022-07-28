@@ -14,6 +14,6 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     ...restProps
   } = props;
 
-  const cls = classnames('iconfont icon-biaodankongjianshanchu', className)
+  const cls = classnames('iconfont icon-delete', className)
   return <i className={cls} {...restProps} />
 }

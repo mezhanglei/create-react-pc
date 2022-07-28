@@ -1,6 +1,6 @@
 import { FormOptions } from "../form-options-context";
-import { formatPath, pathToArr, deepGet, deepSet } from "@/utils/object";
-export { formatPath, pathToArr, deepGet, deepSet };
+import { formatName, pathToArr, deepGet, deepSet } from "@/utils/object";
+export { formatName, pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
@@ -10,7 +10,7 @@ export function isExitPrefix(prefix: string, path: string | string[]) {
     return false;
   }
   return prefixParts?.every((str, index) => {
-    const item = formatPath(parts[index]);
+    const item = formatName(parts[index]);
     return str === item;
   });
 }

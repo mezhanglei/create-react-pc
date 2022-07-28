@@ -14,8 +14,8 @@ export interface FormItemProps extends FormOptions {
   suffix?: React.ReactNode | any; // 右边节点
   footer?: React.ReactNode | any; // 底部节点
   valueProp?: string | ((type: any) => string);
-  valueGetter?: string | ((...args: any[]) => any);
-  valueSetter?: string | ((value: any) => any);
+  valueGetter?: ((...args: any[]) => any);
+  valueSetter?: ((value: any) => any);
   rules?: FormRule[];
   path?: string;
   index?: number;

@@ -24,7 +24,7 @@ function Provider(props: ProviderProps) {
     formData: {}, // 表单的值
     globalFormProps: {}, // 表单的全局属性
     selected: undefined, // 当前选中的路径
-    selectedType: undefined, // 当前选中的控件类型
+    selectedKey: undefined, // 当前选中的控件类型
     settingsForm: null, // 当前选择控件的属性的渲染表单
     operateIndex: undefined, // 记录栈中当前操作的序号
     operateHistory: [] // 缓存的操作记录栈

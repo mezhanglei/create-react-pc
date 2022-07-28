@@ -6,11 +6,11 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "2076383",
-      "name": "表单控件 删除",
-      "font_class": "biaodankongjianshanchu",
-      "unicode": "e8c1",
-      "unicode_decimal": 59585
+      "icon_id": "4114038",
+      "name": "delete",
+      "font_class": "delete",
+      "unicode": "e688",
+      "unicode_decimal": 59016
     },
     {
       "icon_id": "3655957",

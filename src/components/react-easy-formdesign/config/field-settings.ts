@@ -1,5 +1,5 @@
-// 组件公共配置项
-export const commonSettings = {
+// 表单域配置项
+export const fieldSettings = {
   label: {
     label: '标签名称',
     widget: 'Input'
@@ -54,14 +54,6 @@ export const commonSettings = {
   },
   footer: {
     label: '描述',
-    widget: 'Input'
-  }
-}
-
-// 字段名的配置项
-export const nameSettings = {
-  name: {
-    label: '字段名',
     widget: 'Input'
   }
 }

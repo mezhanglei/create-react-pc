@@ -1,5 +1,5 @@
 import { Input, InputNumber, Checkbox, DatePicker, Mentions, Radio, Rate, Select, Slider, Switch, TimePicker } from 'antd';
-import { SliderNumber } from './slider-number';
+import { SliderNumber } from './components/slider-number';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const AntdBaseWidgets = {

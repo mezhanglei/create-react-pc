@@ -31,12 +31,16 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ path, value }) => {
     if (!selected || selected === '#' || !settingsForm) return;
-    settingsForm.setInitialValues('initialValue', value);
-    viewerRenderStore?.updateItemByPath(path, { initialValue: value });
+    updateViewerValue(path, value);
   }
 
   const viewerClick = () => {
     setEdit({ selected: "#" });
+  }
+
+  const updateViewerValue = (path: string, value: unknown) => {
+    settingsForm.setInitialValues('initialValue', value);
+    viewerRenderStore?.updateItemByPath(path, { initialValue: value });
   }
 
   return (

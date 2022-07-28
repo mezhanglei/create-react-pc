@@ -40,7 +40,7 @@ module.exports = {
   publicPath: isDev ? '/' : './',
   manifestPathArr: glob.sync(path.join(dllOutputPath, '*.json')),
   babelrcPath: path.join(appRoot, './.babelrc'),
-  eslintrcPath: path.join(appRoot, "./.eslintrc.{js,ts}"),
+  eslintrcPath: path.join(appRoot, "./.eslintrc.js"),
   stylelintrcPath: path.join(appRoot, "./.stylelintrc.js"),
   assetsPath: '../',
   checkStylePath: ["src/**/*.{css,sass,scss,less}"],

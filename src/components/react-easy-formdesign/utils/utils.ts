@@ -54,6 +54,6 @@ export const getSelectedIndex = (path: string, properties?: SchemaData['properti
   const end = pathArr?.pop();
   const parent = getItemByPath(properties, parentPath);
   const keys = Object.keys(parent || {});
-  const index = end ? keys?.lastIndexOf(end) : -1;
+  const index = end ? keys?.indexOf(end) : -1;
   return index;
 }
