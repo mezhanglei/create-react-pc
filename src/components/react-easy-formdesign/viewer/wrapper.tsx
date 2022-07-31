@@ -21,9 +21,9 @@ function Wrapper(props: WrapperProps, ref: any) {
   } = props;
 
   const { name, path, field } = restProps;
-  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
+  const { viewerRenderStore, schema, selected, selectedKey } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
-  const currentPath = getCurrentPath(name, path);
+  const currentPath = getCurrentPath(name, path) as string;
   const isSelected = currentPath ? currentPath === selected : false;
   const nextIndex = (field?.index as number) + 1;
   const copyItem = () => {
@@ -32,7 +32,7 @@ function Wrapper(props: WrapperProps, ref: any) {
       newId = `[${nextIndex}]`;
     } else {
       // 非数组项才生成id
-      newId = defaultGetId(name);
+      newId = defaultGetId(selectedKey);
     }
     const newField = viewerRenderStore?.getItemByPath(currentPath);
     viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, path);

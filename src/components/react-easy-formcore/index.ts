@@ -7,3 +7,4 @@ export * from './use-form-store';
 export * from './form-store-context';
 export * from './form-options-context';
 export * from './utils/utils';
+export * from './validator';

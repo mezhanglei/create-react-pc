@@ -1,16 +1,8 @@
-
-import { asyncSequentialExe } from '@/utils/common';
 import { isExitPrefix } from './utils/utils';
 import { deepClone, deepGet, deepSet } from '@/utils/object';
-import { validatorsMap } from './rules-validator';
+import Validator, { FormRule } from './validator';
 
 export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
-
-export type FormValidatorCallBack = (message?: string) => void;
-
-export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => boolean | undefined | Promise<boolean>;
-
-export type FormRule = { required?: boolean, message?: string; validator?: FormValidator }
 
 export type FormErrors<T = any> = { [key in keyof T]?: T[key] }
 
@@ -35,11 +27,13 @@ export class FormStore<T extends Object = any> {
   private formErrors: FormErrors = {}
 
   private fieldProps: FormFieldsProps = {};
+  private validator: Validator;
 
   public constructor(values?: Partial<T>) {
     this.initialValues = values
     this.fieldProps = {}
     this.formErrors = {}
+    this.validator = new Validator();
     this.values = deepClone(values)
     this.getFieldValue = this.getFieldValue.bind(this)
     this.setFieldValue = this.setFieldValue.bind(this)
@@ -78,6 +72,7 @@ export class FormStore<T extends Object = any> {
       const newField = { ...lastField, ...field };
       this.fieldProps[path] = newField;
     }
+    this.validator.add(path, field?.['rules']);
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
@@ -199,46 +194,11 @@ export class FormStore<T extends Object = any> {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
-      const rules = fieldProps?.['rules'];
-
-      // 表单校验处理规则
-      const handleRule = async (rule: FormRule) => {
-        // 默认消息
-        const defaultMessage = rule?.message || true;
-        // 参与校验的字段
-        const entries = Object.entries(rule)?.filter(([key]) => key !== 'message');
-
-        for (let [ruleKey, ruleValue] of entries) {
-          // 自定义校验
-          if (ruleKey === 'validator') {
-            let message;
-            const flag = await (ruleValue as FormValidator)?.(value, (msg?: string) => {
-              // callback方式校验
-              if (msg) {
-                message = msg;
-              }
-            });
-
-            // 校验结果
-            if (message) {
-              return message;
-            } else if (flag) {
-              return defaultMessage;
-            }
-            // 其他字段的校验，返回true表示报错
-          } else if (validatorsMap[ruleKey]?.(ruleValue, value)) {
-            return defaultMessage;
-          }
-        }
+      const message = await this.validator.start(path, value);
+      if (message) {
+        this.setFieldError(path, message);
       }
-
-      // 按rules的索引顺序执行，有结果则终止执行
-      const messageList = await asyncSequentialExe(rules?.map((rule: FormRule) => () => handleRule(rule)), (msg: string) => msg);
-      const currentError = messageList?.[0];
-      if (currentError) {
-        this.setFieldError(path, currentError);
-      }
-      return currentError;
+      return message;
     }
   }
 

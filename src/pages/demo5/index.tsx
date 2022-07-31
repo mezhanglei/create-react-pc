@@ -28,7 +28,7 @@ export default function Demo5(props) {
     col: { span: 6 },
     properties: {
       name1: {
-        label: "只读展示",
+        // label: "只读展示",
         widget: 'Input',
         required: true,
         readOnly: true,

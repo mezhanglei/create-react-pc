@@ -1,11 +1,11 @@
 import React, { cloneElement, CSSProperties, useContext } from 'react'
-import { FormRule } from './form-store';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
 import { Col, Row } from 'react-flexbox-grid';
 import { getColProps, getCurrentPath } from './utils/utils';
 import { deepGet } from '@/utils/object';
+import { FormRule } from './validator';
 
 export interface FormListProps extends FormOptions {
   label?: string;
