@@ -2,8 +2,10 @@ import React, { CSSProperties, useContext } from 'react';
 import classnames from 'classnames';
 import './list-item.less';
 import { FormOptions, FormOptionsContext } from './form-options-context';
-import { Col, Row } from 'react-flexbox-grid';
+import { Col } from 'react-flexbox-grid';
 import { getColProps } from './utils/utils';
+import { Control } from './control';
+import { Label } from './label';
 
 export interface ListItemProps extends FormOptions {
   label?: any;
@@ -22,13 +24,7 @@ export const classes_item = {
   inner: 'field-inner',
   inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
-  required: `${prefixCls}--required`,
-
-  header: `${prefixCls}__header`,
-  container: `${prefixCls}__container`,
-  control: `${prefixCls}__control`,
-  suffix: `${prefixCls}__suffix`,
-  footer: `${prefixCls}__footer`
+  required: `${prefixCls}--required`
 }
 
 export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
@@ -74,29 +70,17 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
 
   const colProps = getColProps({ inline: inline, col });
 
-  const InnerContent = (
-    <>
-      {label !== undefined && (
-        <div className={classes_item.header} style={headerStyle}>
-          {colon ? <>{label}:</> : label}
-        </div>
-      )}
-      <div className={classes_item.container}>
-        <Row className={classes_item.control}>
-          {children}
-          {footer !== undefined && <div className={classes_item.footer}>{footer}</div>}
-        </Row>
-        {suffix !== undefined && <div className={classes_item.suffix}>{suffix}</div>}
-      </div>
-    </>
-  )
-
   const Inner = customInner || 'div';
   const innerProps = { field: fieldProps };
   return (
     <Col ref={ref} className={cls} style={style} {...colProps} {...restProps}>
       <Inner className={innerCls} {...(customInner ? innerProps : {})}>
-        {InnerContent}
+        <Label colon={colon} style={headerStyle}>
+          {label}
+        </Label>
+        <Control compact={compact} footer={footer} suffix={suffix}>
+          {children}
+        </Control>
       </Inner>
     </Col>
   );

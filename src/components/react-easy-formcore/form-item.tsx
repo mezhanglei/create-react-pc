@@ -6,8 +6,10 @@ import { FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
 import { deepGet, isEqual } from '@/utils/object';
-import { Col, Row } from 'react-flexbox-grid';
+import { Col } from 'react-flexbox-grid';
 import { FormRule } from './validator';
+import { Control } from './control';
+import { Label } from './label';
 
 export interface FormItemProps extends FormOptions {
   label?: string;
@@ -35,14 +37,7 @@ export const classes = {
   inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
-  error: `${prefixCls}--error`,
-
-  header: `${prefixCls}__header`,
-  container: `${prefixCls}__container`,
-  control: `${prefixCls}__control`,
-  message: `${prefixCls}__message`,
-  suffix: `${prefixCls}__suffix`,
-  footer: `${prefixCls}__footer`
+  error: `${prefixCls}--error`
 };
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
@@ -158,7 +153,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   }, [currentPath]);
 
   const childValue = (value: any) => {
-    if(typeof valueSetter === 'function') {
+    if (typeof valueSetter === 'function') {
       return valueSetter(value);
     } else {
       return value;
@@ -238,29 +233,17 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const colProps = getColProps({ inline: inline, col });
 
-  const InnerContent = (
-    <>
-      {label !== undefined && (
-        <div className={classes.header} style={headerStyle}>
-          {colon ? <>{label}:</> : label}
-        </div>
-      )}
-      <div className={classes.container}>
-        <Row className={classes.control}>
-          {childs}
-          {footer !== undefined && <div className={classes.footer}>{footer}</div>}
-        </Row>
-        {suffix !== undefined && <div className={classes.suffix}>{suffix}</div>}
-        <div className={classes.message}>{error}</div>
-      </div>
-    </>
-  )
   const Inner = customInner || 'div';
   const innerProps = { name, path: path, field: fieldProps };
   return (
     <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
       <Inner className={innerCls} {...(customInner ? innerProps : {})}>
-        {InnerContent}
+        <Label colon={colon} style={headerStyle}>
+          {label}
+        </Label>
+        <Control compact={compact} error={error} footer={footer} suffix={suffix}>
+          {childs}
+        </Control>
       </Inner>
     </Col>
   );

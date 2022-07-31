@@ -9,56 +9,15 @@
     }
   }
 
-  .field-inner--horizontal>&__header {
+  .field-inner--horizontal>.item-label__header {
     text-align: right;
     margin-top: 5px;
     margin-right: 8px;
   }
 
-  &__header {
-    font-size: 14px;
-    width: 120px;
+  .item__control.row {
     word-break: break-all;
     word-wrap: break-word;
-
-    &::before {
-      display: none;
-      content: "*";
-      color: red;
-    }
-  }
-
-  &--required &__header::before {
-    display: inline;
-    content: "*";
-    color: red;
-  }
-
-  &__container {
-    position: relative;
-    flex: 1;
-    display: flex;
-  }
-
-  &__control.row {
-    margin-left: 0px;
-    margin-right: 0px;
-    min-height: 32px;
-    align-items: center;
-    word-break: break-all;
-    word-wrap: break-word;
-    flex: 1;
-  }
-
-  &__suffix {
-    margin-left: 10px;
-    font-size: 14px;
-    margin-top: 3px;
-  }
-
-  &__footer {
-    width: 100%;
-    margin-top: 8px;
   }
 
   &--compact {

@@ -1,11 +1,11 @@
-.table-cell {
-
-  &__wrapper {
+.item-control {
+  &__container {
     position: relative;
     display: flex;
+    flex: 1;
   }
 
-  &__control {
+  &__control.row {
     margin-left: 0px;
     margin-right: 0px;
     min-height: 32px;
@@ -21,10 +21,30 @@
     color: red;
   }
 
-  &-error {
+  &__suffix {
+    margin-left: 10px;
+    font-size: 14px;
+    margin-top: 3px;
+  }
+
+  &__footer {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  &--error &__control {
+
     .ant-input,
+    .ant-select .ant-select-selector,
     .ant-input-number,
-    .ant-select .ant-select-selector {
+    .ant-checkbox,
+    .ant-picker,
+    .ant-mentions,
+    .ant-radio,
+    .ant-rate,
+    .ant-slider,
+    .ant-switch,
+    .ant-upload {
       border-color: #ff4d4f;
 
       &:hover {
@@ -34,5 +54,9 @@
         outline: 0;
       }
     }
+  }
+
+  &--compact &__message {
+    display: none;
   }
 }

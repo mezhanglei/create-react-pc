@@ -2,10 +2,12 @@ import React, { cloneElement, CSSProperties, useContext } from 'react'
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
-import { Col, Row } from 'react-flexbox-grid';
+import { Col } from 'react-flexbox-grid';
 import { getColProps, getCurrentPath } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
+import { Control } from './control';
+import { Label } from './label';
 
 export interface FormListProps extends FormOptions {
   label?: string;
@@ -29,14 +31,7 @@ export const classes_list = {
   inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
-  error: `${prefixCls}--error`,
-
-  header: `${prefixCls}__header`,
-  container: `${prefixCls}__container`,
-  control: `${prefixCls}__control`,
-  message: `${prefixCls}__message`,
-  suffix: `${prefixCls}__suffix`,
-  footer: `${prefixCls}__footer`
+  error: `${prefixCls}--error`
 };
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
@@ -141,29 +136,17 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   const colProps = getColProps({ inline: inline, col });
 
-  const InnerContent = (
-    <>
-      {label !== undefined && (
-        <div className={classes_list.header} style={headerStyle}>
-          {colon ? <>{label}:</> : label}
-        </div>
-      )}
-      <div className={classes_list.container}>
-        <Row className={classes_list.control}>
-          {childs}
-          {footer !== undefined && <div className={classes_list.footer}>{footer}</div>}
-        </Row>
-        {suffix !== undefined && <div className={classes_list.suffix}>{suffix}</div>}
-      </div>
-    </>
-  )
-
   const Inner = customInner || 'div';
   const innerProps = { name, path: path, field: fieldProps };
   return (
     <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
       <Inner className={innerCls} {...(customInner ? innerProps : {})}>
-        {InnerContent}
+        <Label colon={colon} style={headerStyle}>
+          {label}
+        </Label>
+        <Control compact={compact} footer={footer} suffix={suffix}>
+          {childs}
+        </Control>
       </Inner>
     </Col>
   );

@@ -1,0 +1,21 @@
+.item-label {
+
+  &__header {
+    font-size: 14px;
+    width: 120px;
+    word-break: break-all;
+    word-wrap: break-word;
+
+    &::before {
+      display: none;
+      content: "*";
+      color: red;
+    }
+  }
+
+  &--required &__header::before {
+    display: inline;
+    content: "*";
+    color: red;
+  }
+}

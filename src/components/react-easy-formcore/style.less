@@ -9,6 +9,7 @@
 .rh-form-list {
   margin: 8px 0;
   min-height: 32px;
+
   .field-inner {
     &--horizontal {
       display: flex;
@@ -16,89 +17,18 @@
     }
   }
 
-  .field-inner--horizontal>&__header {
+  .field-inner--horizontal>.item-label__header {
     text-align: right;
     margin-top: 5px;
     margin-right: 8px;
   }
 
-  &__header {
-    font-size: 14px;
-    width: 120px;
-    word-break: break-all;
-    word-wrap: break-word;
-
-    &::before {
-      display: none;
-      content: "*";
-      color: red;
-    }
-  }
-
-  &--required &__header::before {
-    display: inline;
-    content: "*";
-    color: red;
-  }
-
-  &__container {
-    position: relative;
-    flex: 1;
-    display: flex;
-  }
-
-  &__control.row {
-    margin-left: 0px;
-    margin-right: 0px;
-    min-height: 32px;
-    align-items: center;
-    flex: 1;
-  }
-
-  &__message {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    font-size: 12px;
-    color: red;
-  }
-
-  &__suffix {
-    margin-left: 10px;
-    font-size: 14px;
-    margin-top: 3px;
-  }
-
-  &__footer {
-    width: 100%;
-    margin-top: 8px;
-  }
-
   // 当在列表中为相邻元素时，因为Col标签带有padding，所以footer也添加padding对齐
-  &+&__footer {
+  &+.item-control__footer {
     padding-left: 8px;
-  }
-
-  &--error &__container &__control {
-    .ant-input,
-    .ant-input-number,
-    .ant-select .ant-select-selector {
-      border-color: #ff4d4f;
-
-      &:hover {
-        border-color: #ff7875;
-        box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
-        border-right-width: 1px !important;
-        outline: 0;
-      }
-    }
   }
 
   &--compact {
     margin-bottom: 0;
-  }
-
-  &--compact &__message {
-    display: none;
   }
 }

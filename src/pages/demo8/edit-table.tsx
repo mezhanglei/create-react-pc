@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Select, InputNumber } from 'antd';
-import { deepClone } from '@/utils/object';
 import { DataSource } from '.';
 import "./edit-table.less";
-import ItemWrapper from './item-wrapper';
-import { useValidator } from '@/components/react-easy-formcore';
+import { FormRule, useValidator, Control } from '@/components/react-easy-formcore';
 import { ColumnType } from 'antd/lib/table';
 import useEditTable from '@/hooks/use-edit-table';
+import Validator from '@/components/react-easy-formcore/validator';
 
 const { Option } = Select;
 
@@ -22,9 +21,13 @@ export interface EditTableProps {
 }
 
 interface EditableCellProps extends ColumnType<DataSource> {
+  rules: FormRule[];
+  validator: Validator;
   title: React.ReactNode;
   editable?: boolean;
   record?: DataSource;
+  rowIndex: number;
+  dataIndex: string;
 }
 
 export default ({ value, loading, onChange }: EditTableProps) => {
@@ -36,18 +39,14 @@ export default ({ value, loading, onChange }: EditTableProps) => {
     addRow
   } = useEditTable<DataSource>(value);
 
-  const getCellPath = (rowIndex: number, colKey: string) => {
-    return rowIndex + colKey;
-  }
-
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: '20%',
+      rules: [{ required: true, message: '不能为空' }],
       render: (text: any, rowData: DataSource, rowIndex: number) => {
-        // const path = getCellPath(rowIndex, rowData?.key);
         return (
           <Input
             style={{ width: '100%' }}
@@ -120,13 +119,16 @@ export default ({ value, loading, onChange }: EditTableProps) => {
         );
       },
     },
-  ]?.map((col) => {
+  ]?.map((col, index) => {
     return {
       ...col,
       onCell: (record: DataSource) => ({
         record,
         dataIndex: col.dataIndex,
-        title: col.title
+        rowIndex: index,
+        rules: col?.rules,
+        title: col.title,
+        validator: validator,
       })
     };
   })
@@ -152,17 +154,44 @@ const EditableCell: React.FC<EditableCellProps> = ({
   title,
   children,
   dataIndex,
+  rowIndex,
   record,
+  validator,
+  rules,
   ...restProps
 }) => {
-console.log(record, 444)
   let childNode = children;
+
+  const getCellPath = (rowIndex: number, colKey: string) => {
+    return rowIndex + colKey;
+  }
+
+  const [error, setError] = useState<string>();
+
+  useEffect(() => {
+    const path = getCellPath(rowIndex, dataIndex);
+    if (!validator || !path) return;
+    validator.add(path, rules)
+    return () => {
+      validator.add(path)
+    }
+  }, []);
+
+  useEffect(() => {
+    const path = getCellPath(rowIndex, dataIndex);
+    if (!path) return;
+    const getError = async () => {
+      const message = await validator.start(path, record?.[dataIndex])
+      setError(message);
+    }
+    getError();
+  }, [rowIndex, dataIndex, record])
 
   return (
     <td {...restProps}>
-      <ItemWrapper error="111">
+      <Control error={error}>
         {childNode}
-      </ItemWrapper>
+      </Control>
     </td>
   );
 };

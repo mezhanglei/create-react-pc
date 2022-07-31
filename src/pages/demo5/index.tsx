@@ -24,11 +24,11 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    layout: 'vertical',
+    // layout: 'vertical',
     col: { span: 6 },
     properties: {
       name1: {
-        // label: "只读展示",
+        label: "只读展示",
         widget: 'Input',
         required: true,
         readOnly: true,
@@ -96,7 +96,7 @@ export default function Demo5(props) {
         }]
       },
       name4: {
-        label: '对象嵌套',
+        // label: '对象嵌套',
         required: true,
         properties: {
           first: {
@@ -283,8 +283,8 @@ export default function Demo5(props) {
   return (
     <div>
       <RenderForm store={store} schema={schema} watch={watch}
-        customList={customList}
-        customInner={wrapper}
+        // customList={customList}
+        // customInner={wrapper}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

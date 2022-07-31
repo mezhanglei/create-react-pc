@@ -6,26 +6,24 @@ import { deepClone } from '@/utils/object';
 
 const list = [
   {
-    key: 1,
+    key: "1",
     name: 'John Brown',
     age: 1,
     tags: '1',
   },
   {
-    key: 2,
+    key: "2",
     name: 'John Brown',
     age: 1,
     tags: '1',
   },
   {
-    key: 3,
+    key: "3",
     name: 'John Brown',
     age: 1,
     tags: '1',
   },
 ];
-
-const Empty = <div className={styles.error}>必填</div>;
 
 export interface DataSource {
   key: string;
@@ -39,27 +37,7 @@ export default () => {
 
   const handelSubmite = () => {
     const newData = deepClone(data);
-    if (checkError(newData)) return;
     console.log(newData, '提交成功');
-  };
-
-  const checkError = (newData: DataSource[]) => {
-    let falg = false;
-
-    const check = (mode: string, item: DataSource) => {
-      item[mode] = true;
-      falg = true;
-    };
-    newData?.forEach?.(item => {
-      const { name, age, tags } = item;
-      if (!name) check('nameError', item);
-      if (!age) check('ageError', item);
-      if (!tags) check('tagsError', item);
-    });
-
-    if (falg) setData(newData); //有错误，回填数据显示错误
-
-    return falg;
   };
 
   const fetchTableData = () => {
