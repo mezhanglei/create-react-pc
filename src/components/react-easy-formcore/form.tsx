@@ -6,7 +6,6 @@ import { FormStore } from './form-store'
 import { FormStoreContext, FormValuesContext } from './form-store-context'
 import { FormOptions, FormOptionsContext } from './form-options-context'
 import { FormList } from './form-list';
-import { Row } from 'react-flexbox-grid';
 
 // 缓存数组类型的组件的路径
 export interface FormProps<S = FormStore> extends FormOptions {
@@ -23,7 +22,7 @@ export interface FormProps<S = FormStore> extends FormOptions {
 export function Form(props: FormProps) {
   const { className = '', style, children, store, initialValues, onSubmit, onReset, onMount, ...options } = props
 
-  const classNames = 'rh-form ' + className
+  const classNames = 'easy-form ' + className
 
   useEffect(() => {
     onMount && onMount();
@@ -34,9 +33,7 @@ export function Form(props: FormProps) {
       <FormStoreContext.Provider value={store}>
         <FormValuesContext.Provider value={initialValues}>
           <FormOptionsContext.Provider value={options}>
-            <Row className='form-wrapper'>
-              {children}
-            </Row>
+            {children}
           </FormOptionsContext.Provider>
         </FormValuesContext.Provider>
       </FormStoreContext.Provider>

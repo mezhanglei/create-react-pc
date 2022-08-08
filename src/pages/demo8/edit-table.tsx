@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Select, InputNumber } from 'antd';
-import { DataSource } from '.';
 import "./edit-table.less";
-import { FormRule, useValidator, Control } from '@/components/react-easy-formcore';
+// import { FormRule, useValidator, Control } from '@/components/react-easy-formcore';
 import { ColumnType } from 'antd/lib/table';
-import useEditTable from '@/hooks/use-edit-table';
-import Validator from '@/components/react-easy-formcore/validator';
+import useEditTable from './use-edit-table';
+// import Validator from '@/components/react-easy-formcore/validator';
 
 const { Option } = Select;
 
@@ -14,24 +13,21 @@ const Eum = [
   { label: '苹果', value: 2 },
 ];
 
+export interface DataSource {
+  key: string;
+  name?: string;
+  age?: number;
+  tags?: string;
+}
+
 export interface EditTableProps {
   value: DataSource[];
   onChange: (data: DataSource[]) => void;
   loading?: boolean;
 }
 
-interface EditableCellProps extends ColumnType<DataSource> {
-  rules: FormRule[];
-  validator: Validator;
-  title: React.ReactNode;
-  editable?: boolean;
-  record?: DataSource;
-  rowIndex: number;
-  dataIndex: string;
-}
-
 export default ({ value, loading, onChange }: EditTableProps) => {
-  const validator = useValidator();
+  // const validator = useValidator();
   const {
     dataSource,
     updateTable,
@@ -45,7 +41,7 @@ export default ({ value, loading, onChange }: EditTableProps) => {
       dataIndex: 'name',
       key: 'name',
       width: '20%',
-      rules: [{ required: true, message: '不能为空' }],
+      // rules: [{ required: true, message: '不能为空' }],
       render: (text: any, rowData: DataSource, rowIndex: number) => {
         return (
           <Input
@@ -128,7 +124,7 @@ export default ({ value, loading, onChange }: EditTableProps) => {
         rowIndex: index,
         rules: col?.rules,
         title: col.title,
-        validator: validator,
+        // validator: validator,
       })
     };
   })
@@ -145,53 +141,68 @@ export default ({ value, loading, onChange }: EditTableProps) => {
   }
 
   return (
-    <Table columns={columns} rowKey='key' components={{ body: { cell: EditableCell } }} dataSource={dataSource} loading={loading} footer={footer} />
+    <Table
+      columns={columns}
+      rowKey='key'
+      // components={{ body: { cell: EditableCell } }}
+      dataSource={dataSource}
+      loading={loading}
+      footer={footer} />
   );
 };
 
-// 可编辑控件
-const EditableCell: React.FC<EditableCellProps> = ({
-  title,
-  children,
-  dataIndex,
-  rowIndex,
-  record,
-  validator,
-  rules,
-  ...restProps
-}) => {
-  let childNode = children;
+// interface EditableCellProps extends ColumnType<DataSource> {
+//   // rules: FormRule[];
+//   // validator: Validator;
+//   title: React.ReactNode;
+//   record?: DataSource;
+//   rowIndex: number;
+//   dataIndex: string;
+// }
 
-  const getCellPath = (rowIndex: number, colKey: string) => {
-    return rowIndex + colKey;
-  }
+// // 带校验信息的可编辑控件
+// const EditableCell: React.FC<EditableCellProps> = ({
+//   title,
+//   children,
+//   dataIndex,
+//   rowIndex,
+//   record,
+//   // validator,
+//   // rules,
+//   ...restProps
+// }) => {
+//   let childNode = children;
 
-  const [error, setError] = useState<string>();
+//   const getCellPath = (rowIndex: number, colKey: string) => {
+//     return rowIndex + colKey;
+//   }
 
-  useEffect(() => {
-    const path = getCellPath(rowIndex, dataIndex);
-    if (!validator || !path) return;
-    validator.add(path, rules)
-    return () => {
-      validator.add(path)
-    }
-  }, []);
+//   const [error, setError] = useState<string>();
 
-  useEffect(() => {
-    const path = getCellPath(rowIndex, dataIndex);
-    if (!path) return;
-    const getError = async () => {
-      const message = await validator.start(path, record?.[dataIndex])
-      setError(message);
-    }
-    getError();
-  }, [rowIndex, dataIndex, record])
+//   useEffect(() => {
+//     const path = getCellPath(rowIndex, dataIndex);
+//     if (!validator || !path) return;
+//     validator.add(path, rules)
+//     return () => {
+//       validator.add(path)
+//     }
+//   }, []);
 
-  return (
-    <td {...restProps}>
-      <Control error={error}>
-        {childNode}
-      </Control>
-    </td>
-  );
-};
+//   useEffect(() => {
+//     const path = getCellPath(rowIndex, dataIndex);
+//     if (!path) return;
+//     const getError = async () => {
+//       const message = await validator.start(path, record?.[dataIndex])
+//       setError(message);
+//     }
+//     getError();
+//   }, [rowIndex, dataIndex, record])
+
+//   return (
+//     <td {...restProps}>
+//       <Control error={error}>
+//         {childNode}
+//       </Control>
+//     </td>
+//   );
+// };

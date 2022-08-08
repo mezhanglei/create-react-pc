@@ -1,6 +1,5 @@
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
-import { Row } from 'react-flexbox-grid';
 import './control.less';
 
 export interface ControlProps {
@@ -36,10 +35,10 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
 
   return (
     <div ref={ref} className={cls} style={style} {...restProps}>
-      <Row className={`${prefix}__control`}>
+      <div className={`${prefix}__content`}>
         {children}
         {footer !== undefined && <div className={`${prefix}__footer`}>{footer}</div>}
-      </Row>
+      </div>
       {suffix !== undefined && <div className={`${prefix}__suffix`}>{suffix}</div>}
       <div className={`${prefix}__message`}>{error}</div>
     </div>

@@ -47,7 +47,7 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
       baseSettings = {
         name: {
           label: '字段名',
-          widget: 'Input'
+          type: 'Input'
         },
         ...baseSettings
       };

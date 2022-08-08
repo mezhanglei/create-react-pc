@@ -1,10 +1,9 @@
 import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import { FormRenderContext } from '@/components/react-easy-formdesign/design-context';
-import { CustomListProps } from '@/components/react-easy-formrender';
 import React, { useContext } from 'react';
 import './index.less';
 
-export interface DndListProps extends CustomListProps {
+export interface DndListProps {
   children: any;
 }
 

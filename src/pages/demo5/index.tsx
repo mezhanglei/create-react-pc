@@ -24,149 +24,169 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    // layout: 'vertical',
-    col: { span: 6 },
+    layout: 'vertical',
+    // inline: true,
+    inside: {
+      type: 'row'
+    },
     properties: {
       name1: {
         label: "只读展示",
-        widget: 'Input',
         required: true,
         readOnly: true,
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
+        // outside: { type: 'col', props: { span: 6 } },
         hidden: '{{$formvalues.name5 == true}}',
-        widgetProps: {}
+        type: 'Input',
+        props: {}
       },
       name2: {
         label: "输入框",
-        widget: 'Input',
         required: true,
+        // outside: { type: 'col', props: { span: 6 } },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
         hidden: '{{$formvalues.name5 == true}}',
-        widgetProps: {}
+        type: 'Input',
+        props: {}
       },
       name3: {
         label: "数组",
         required: true,
+        // outside: { type: 'col', props: { span: 6 } },
+        // inside: { type: 'row' },
         footer: {
           type: 'add',
-          addItem: {
-            widget: 'Select',
-            required: true,
-            rules: [{ required: true, message: 'name3[0]空了' }],
-            suffix: { type: 'delete' },
-            widgetProps: {
-              labelInValue: true,
-              style: { width: '100%' },
-              children: [
-                { widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } },
-                { widget: 'Select.Option', widgetProps: { key: 2, value: '2', children: '选项2' } }
-              ]
+          props: {
+            item: {
+              required: true,
+              rules: [{ required: true, message: 'name3[0]空了' }],
+              // outside: { type: 'col', props: { span: 6 } },
+              suffix: { type: 'delete' },
+              type: 'Select',
+              props: {
+                labelInValue: true,
+                style: { width: '100%' },
+                children: [
+                  { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
+                  { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
+                ]
+              }
             }
           }
         },
         properties: [{
-          widget: 'Select',
           required: true,
           suffix: { type: 'delete' },
+          // outside: { type: 'col', props: { span: 6 } },
           rules: [{ required: true, message: 'name3[0]空了' }],
           initialValue: { label: '选项1', value: '1', key: '1' },
-          widgetProps: {
+          type: 'Select',
+          props: {
             labelInValue: true,
             style: { width: '100%' },
             children: [
-              { widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } },
-              { widget: 'Select.Option', widgetProps: { key: 2, value: '2', children: '选项2' } }
+              { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
+              { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
             ]
           }
         }, {
-          widget: 'Select',
           required: true,
           suffix: { type: 'delete' },
+          // outside: { type: 'col', props: { span: 6 } },
           rules: [{ required: true, message: 'name3[1]空了' }],
-          widgetProps: {
+          type: 'Select',
+          props: {
             labelInValue: true,
             style: { width: '100%' },
             children: [
-              { widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } },
-              { widget: 'Select.Option', widgetProps: { key: 2, value: '2', children: '选项2' } }
+              { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
+              { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
             ]
           }
         }]
       },
       name4: {
-        // label: '对象嵌套',
+        label: '对象嵌套',
         required: true,
+        // outside: { type: 'col', props: { span: 6 } },
+        // inside: { type: 'row' },
         properties: {
           first: {
             label: '对象嵌套1',
             rules: [{ required: true, message: 'name1空了' }],
-            widget: 'Select',
-            widgetProps: {
+            // outside: { type: 'col', props: { span: 6 } },
+            type: 'Select',
+            props: {
               style: { width: '100%' },
-              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+              children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } }]
             }
           },
           second: {
             label: '对象嵌套2',
             rules: [{ required: true, message: 'name2空了' }],
-            widget: 'Select',
-            widgetProps: {
+            // outside: { type: 'col', props: { span: 6 } },
+            type: 'Select',
+            props: {
               style: { width: '100%' },
-              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+              children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } }]
             }
           },
           first1: {
             label: '对象嵌套3',
+            // outside: { type: 'col', props: { span: 6 } },
             rules: [{ required: true, message: 'name3空了' }],
-            widget: 'Select',
-            widgetProps: {
+            type: 'Select',
+            props: {
               style: { width: '100%' },
-              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+              children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } }]
             }
           },
           second1: {
             label: '对象嵌套4',
+            // outside: { type: 'col', props: { span: 6 } },
             rules: [{ required: true, message: 'name4空了' }],
-            widget: 'Select',
-            widgetProps: {
+            type: 'Select',
+            props: {
               style: { width: '100%' },
-              children: [{ widget: 'Select.Option', widgetProps: { key: 1, value: '1', children: '选项1' } }]
+              children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } }]
             }
           }
         }
       },
       "col": {
         label: '整体布局',
-        widget: 'Select',
         initialValue: { span: 12 },
         valueSetter: "{{(value)=> (value && value['span'])}}",
         valueGetter: "{{(value) => ({span: value})}}",
-        widgetProps: {
+        // outside: { type: 'col', props: { span: 6 } },
+        type: 'Select',
+        props: {
           style: { width: '100%' },
           children: [
-            { widget: 'Select.Option', widgetProps: { key: 1, value: 12, children: '一行一列' } },
-            { widget: 'Select.Option', widgetProps: { key: 2, value: 6, children: '一行二列' } },
-            { widget: 'Select.Option', widgetProps: { key: 3, value: 4, children: '一行三列' } }
+            { type: 'Select.Option', props: { key: 1, value: 12, children: '一行一列' } },
+            { type: 'Select.Option', props: { key: 2, value: 6, children: '一行二列' } },
+            { type: 'Select.Option', props: { key: 3, value: 4, children: '一行三列' } }
           ]
         }
       },
       name5: {
         label: 'name5',
-        widget: 'Checkbox',
         required: true,
         valueProp: 'checked',
         initialValue: true,
         rules: [{ required: true, message: 'name5空了' }],
-        widgetProps: {
+        // outside: { type: 'col', props: { span: 6 } },
+        type: 'Checkbox',
+        props: {
           style: { width: '100%' },
           children: '多选框'
         }
       },
       name6: {
         label: 'Upload',
-        widget: 'Upload'
+        type: 'Upload'
       },
     }
   })
@@ -204,8 +224,7 @@ export default function Demo5(props) {
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
-  const customList: RenderFormProps['customList'] = ({ children, parent }) => {
-    const { path, field } = parent || {};
+  const renderList: RenderFormProps['renderList'] = ({ children, path, field }) => {
     if (field?.properties) {
       const isList = field?.properties instanceof Array;
       // 允许拖出的条件
@@ -251,7 +270,7 @@ export default function Demo5(props) {
           {children}
         </DndSortable>
       )
-    } else if (!parent) {
+    } else if (!path) {
       return (
         <DndSortable
           onUpdate={onItemSwap}
@@ -272,7 +291,7 @@ export default function Demo5(props) {
     }
   }
 
-  const wrapper: RenderFormProps['customInner'] = ({ children, ...restProps }) => {
+  const renderItem: RenderFormProps['renderItem'] = ({ children, ...restProps }) => {
     return (
       <Wrapper {...restProps}>
         {children}
@@ -281,10 +300,10 @@ export default function Demo5(props) {
   };
 
   return (
-    <div>
+    <div style={{padding: '0 8px'}}>
       <RenderForm store={store} schema={schema} watch={watch}
-        // customList={customList}
-        // customInner={wrapper}
+        // renderList={renderList}
+        // renderItem={renderItem}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

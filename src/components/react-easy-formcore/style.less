@@ -1,31 +1,33 @@
-.form-wrapper.row {
-  margin-left: 0;
-  margin-right: 0;
-  align-content: flex-start;
-  height: 100%;
-}
-
-.rh-form-field,
-.rh-form-list {
-  margin: 8px 0;
+.field-item,
+.field-list {
+  padding: 8px 0px;
   min-height: 32px;
+  width: 100%;
 
-  .field-inner {
-    &--horizontal {
-      display: flex;
-      align-items: flex-start;
+  &--horizontal {
+    display: flex;
+    align-items: flex-start;
+
+    &>.item-label__header {
+      text-align: right;
+      margin-top: 5px;
+      margin-right: 8px;
     }
   }
 
-  .field-inner--horizontal>.item-label__header {
-    text-align: right;
-    margin-top: 5px;
-    margin-right: 8px;
+  &--horizontal&--inline {
+    display: inline-flex;
+    width: auto;
   }
 
-  // 当在列表中为相邻元素时，因为Col标签带有padding，所以footer也添加padding对齐
-  &+.item-control__footer {
-    padding-left: 8px;
+  &--vertical {
+    display: block;
+  }
+
+  &--vertical&--inline {
+    display: inline-block;
+    vertical-align: top;
+    width: auto;
   }
 
   &--compact {

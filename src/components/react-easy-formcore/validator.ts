@@ -32,7 +32,7 @@ export default class Validator {
     // 表单校验处理规则
     const handleRule = async (rule: FormRule) => {
       // 默认消息
-      const defaultMessage = rule?.message || true;
+      const defaultMessage = rule?.message;
       // 参与校验的字段
       const entries = Object.entries(rule)?.filter(([key]) => key !== 'message');
 
@@ -40,7 +40,7 @@ export default class Validator {
         // 自定义校验
         if (ruleKey === 'validator') {
           let message;
-          const flag = await (ruleValue as FormValidator)?.(value, (msg?: string) => {
+          const result = await (ruleValue as FormValidator)?.(value, (msg?: string) => {
             // callback方式校验
             if (msg) {
               message = msg;
@@ -50,8 +50,8 @@ export default class Validator {
           // 校验结果
           if (message) {
             return message;
-          } else if (flag) {
-            return defaultMessage;
+          } else if (result) {
+            return result === true ? defaultMessage : result;
           }
           // 其他字段的校验，返回true表示报错
         } else if (validatorsMap[ruleKey]?.(ruleValue, value)) {

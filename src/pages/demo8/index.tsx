@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import EditTable from './edit-table';
+import EditTable, { DataSource } from './edit-table';
 import styles from './index.module.less';
 import { deepClone } from '@/utils/object';
 
@@ -25,12 +25,6 @@ const list = [
   },
 ];
 
-export interface DataSource {
-  key: string;
-  name?: string;
-  age?: number;
-  tags?: string;
-}
 export default () => {
   const [data, setData] = useState<DataSource[]>([]);
   const [loading, setLoading] = useState(false);

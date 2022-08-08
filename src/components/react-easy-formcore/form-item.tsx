@@ -1,12 +1,11 @@
 import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react';
 import { FormStoreContext, FormValuesContext } from './form-store-context';
 import { FormOptions, FormOptionsContext } from './form-options-context';
-import { getValuePropName, getValueFromEvent, getColProps, getCurrentPath } from './utils/utils';
+import { getValuePropName, getValueFromEvent, getCurrentPath } from './utils/utils';
 import { FormStore } from './form-store';
 import classnames from 'classnames';
 import { AopFactory } from '@/utils/function-aop';
 import { deepGet, isEqual } from '@/utils/object';
-import { Col } from 'react-flexbox-grid';
 import { FormRule } from './validator';
 import { Control } from './control';
 import { Label } from './label';
@@ -27,13 +26,11 @@ export interface FormItemProps extends FormOptions {
   children?: React.ReactNode;
   style?: CSSProperties;
   errorClassName?: string;
-  customInner?: any
 }
 
-const prefixCls = 'rh-form-field';
-export const classes = {
+const prefixCls = 'field-item';
+const classes = {
   field: prefixCls,
-  inner: 'field-inner',
   inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
@@ -44,8 +41,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   const store = useContext<FormStore>(FormStoreContext)
   const initialValues = useContext(FormValuesContext)
   const options = useContext(FormOptionsContext)
-  const finalProps = { ...options, ...props };
-  const { children, ...fieldProps } = finalProps;
+  const mergeProps = { ...options, ...props };
+  const { children, ...fieldProps } = mergeProps;
   const {
     label,
     name,
@@ -59,8 +56,6 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     style,
     layout = "horizontal",
     inline,
-    customInner,
-    col,
     colon,
     compact,
     required,
@@ -215,14 +210,13 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const cls = classnames(
     classes.field,
+    layout ? `${classes.field}--${layout}` : '',
     compact ? classes.compact : '',
     required ? classes.required : '',
     error ? classes.error : '',
     inline ? classes.inline : '',
     className ? className : ''
   );
-
-  const innerCls = classnames(classes.inner, `${classes.inner}--${layout}`);
 
   const headerStyle = {
     marginRight: gutter,
@@ -231,21 +225,15 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     ...labelStyle
   };
 
-  const colProps = getColProps({ inline: inline, col });
-
-  const Inner = customInner || 'div';
-  const innerProps = { name, path: path, field: fieldProps };
   return (
-    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
-      <Inner className={innerCls} {...(customInner ? innerProps : {})}>
-        <Label colon={colon} style={headerStyle}>
-          {label}
-        </Label>
-        <Control compact={compact} error={error} footer={footer} suffix={suffix}>
-          {childs}
-        </Control>
-      </Inner>
-    </Col>
+    <div ref={ref} className={cls} style={style}>
+      <Label colon={colon} required={required} style={headerStyle}>
+        {label}
+      </Label>
+      <Control compact={compact} error={error} footer={footer} suffix={suffix}>
+        {childs}
+      </Control>
+    </div>
   );
 });
 

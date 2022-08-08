@@ -1,9 +1,8 @@
-import React, { cloneElement, CSSProperties, useContext } from 'react'
+import React, { cloneElement, CSSProperties, useContext } from 'react';
 import classnames from 'classnames';
 import { FormOptions, FormOptionsContext } from './form-options-context';
 import { FormValuesContext } from './form-store-context';
-import { Col } from 'react-flexbox-grid';
-import { getColProps, getCurrentPath } from './utils/utils';
+import { getCurrentPath } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
 import { Control } from './control';
@@ -21,13 +20,11 @@ export interface FormListProps extends FormOptions {
   className?: string;
   style?: CSSProperties;
   children?: React.ReactNode;
-  customInner?: any;
 }
 
-const prefixCls = 'rh-form-list';
-export const classes_list = {
-  list: prefixCls,
-  inner: 'field-inner',
+const prefixCls = 'field-list';
+const classes = {
+  field: prefixCls,
   inline: `${prefixCls}--inline`,
   compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
@@ -37,8 +34,8 @@ export const classes_list = {
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const options = useContext(FormOptionsContext);
   const initialValues = useContext(FormValuesContext);
-  const finalProps = { ...options, ...props };
-  const { children, ...fieldProps } = finalProps;
+  const mergeProps = { ...options, ...props };
+  const { children, ...fieldProps } = mergeProps;
   const {
     name,
     rules,
@@ -49,9 +46,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     className,
     style,
     layout = "horizontal",
-    customInner,
     inline,
-    col,
     colon,
     compact,
     required,
@@ -118,14 +113,13 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const childs = getChildren(children);
 
   const cls = classnames(
-    classes_list.list,
-    compact ? classes_list.compact : '',
-    required ? classes_list.required : '',
-    inline ? classes_list.inline : '',
+    classes.field,
+    layout ? `${classes.field}--${layout}` : '',
+    compact ? classes.compact : '',
+    required ? classes.required : '',
+    inline ? classes.inline : '',
     className ? className : '',
   );
-
-  const innerCls = classnames(classes_list.inner, `${classes_list.inner}--${layout}`);
 
   const headerStyle = {
     marginRight: gutter,
@@ -134,21 +128,15 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     ...labelStyle
   };
 
-  const colProps = getColProps({ inline: inline, col });
-
-  const Inner = customInner || 'div';
-  const innerProps = { name, path: path, field: fieldProps };
   return (
-    <Col ref={ref} className={cls} style={style} {...colProps} {...restField}>
-      <Inner className={innerCls} {...(customInner ? innerProps : {})}>
-        <Label colon={colon} style={headerStyle}>
-          {label}
-        </Label>
-        <Control compact={compact} footer={footer} suffix={suffix}>
-          {childs}
-        </Control>
-      </Inner>
-    </Col>
+    <div ref={ref} className={cls} style={style}>
+      <Label colon={colon} required={required} style={headerStyle}>
+        {label}
+      </Label>
+      <Control compact={compact} footer={footer} suffix={suffix}>
+        {childs}
+      </Control>
+    </div>
   );
 });
 

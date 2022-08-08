@@ -46,8 +46,6 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   return (
     <div ref={ref} className={cls} style={style} {...restProps} onClick={viewerClick}>
       <RenderForm store={viewerRenderStore} schema={schema}
-        customList={DndList}
-        customInner={Wrapper}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
       />

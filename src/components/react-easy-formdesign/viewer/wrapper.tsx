@@ -3,10 +3,10 @@ import { FormEditContext, FormRenderContext } from '@/components/react-easy-form
 import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
-import { GenerateParams } from '../form-render';
+import { FormItemInfo } from '../form-render';
 import './wrapper.less';
 
-export interface WrapperProps extends GenerateParams {
+export interface WrapperProps extends FormItemInfo {
   children: any;
   style?: CSSProperties;
   className?: string;

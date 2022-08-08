@@ -2,7 +2,7 @@ import { Input, InputNumber, Checkbox, DatePicker, Mentions, Radio, Rate, Select
 import { SliderNumber } from './components/slider-number';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
-export const AntdBaseWidgets = {
+export const AntdBaseControls = {
   "Input": Input, // 输入控件
   "Input.TextArea": Input.TextArea, // 输入文本域
   "Input.Password": Input.Password, // 输入密码组件

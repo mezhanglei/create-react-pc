@@ -3,13 +3,16 @@
     position: relative;
     display: flex;
     flex: 1;
+    margin-right: 8px;
   }
 
-  &__control.row {
+  &__content {
     margin-left: 0px;
     margin-right: 0px;
     min-height: 32px;
     align-items: center;
+    display: flex;
+    flex-wrap: wrap;
     flex: 1;
   }
 
@@ -32,7 +35,7 @@
     margin-top: 8px;
   }
 
-  &--error &__control {
+  &--error &__content {
 
     .ant-input,
     .ant-select .ant-select-selector,
@@ -59,4 +62,9 @@
   &--compact &__message {
     display: none;
   }
+}
+
+.custom-item .item-control__content {
+  word-break: break-all;
+  word-wrap: break-word;
 }

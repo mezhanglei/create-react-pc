@@ -1,4 +1,3 @@
-import { FormOptions } from "../form-options-context";
 import { formatName, pathToArr, deepGet, deepSet } from "@/utils/object";
 export { formatName, pathToArr, deepGet, deepSet };
 
@@ -28,26 +27,6 @@ export function getValueFromEvent(...args: any[]) {
 
 // 判断字符是否是数组中的选项
 export const isListItem = (item: string) => (/\[(\d+)\]/gi.test(item));
-
-// 列宽
-export const getColProps = (option: FormOptions) => {
-  const { inline, col } = option;
-  const { xs, sm, md, lg, span, ...restProps } = col || {};
-  const maxspan = 12;
-  // 计算layout带来的影响
-  const getValue = (inline?: boolean, value?: number) => {
-    if (!inline) {
-      return value ?? (span || maxspan);
-    }
-  }
-  return {
-    xs: getValue(inline, xs),
-    sm: getValue(inline, sm),
-    md: getValue(inline, md),
-    lg: getValue(inline, lg),
-    ...restProps
-  }
-}
 
 // 拼接当前项的path
 export const getCurrentPath = (name?: string, parent?: string) => {

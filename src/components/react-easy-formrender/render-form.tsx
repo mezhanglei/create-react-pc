@@ -8,35 +8,21 @@ export default function RenderForm(props: RenderFormProps) {
   const {
     store,
     schema = {},
-    watch,
-    widgets,
-    Fields,
-    children,
-    onSchemaChange,
-    customList,
-    customInner,
     ...restProps
   } = props;
 
-  const { properties, ...schemaRest } = schema;
-  const rest = { ...restProps, ...schemaRest };
+  const { properties, ...restSchema } = schema || {};
+  const mergeProps = { ...restProps, ...schema };
 
   const onPropertiesChange: RenderFormChildrenProps['onPropertiesChange'] = (newValue) => {
-    const newSchema = { ...schemaRest };
+    const newSchema = { ...schema };
     newSchema['properties'] = newValue;
-    onSchemaChange && onSchemaChange(newSchema);
+    mergeProps?.onSchemaChange && mergeProps?.onSchemaChange(newSchema);
   }
 
   return (
-    <Form store={store} {...rest}>
-      <RenderFormChildren
-        customInner={customInner}
-        customList={customList}
-        onPropertiesChange={onPropertiesChange}
-        properties={properties}
-        watch={watch}
-        widgets={widgets}
-        Fields={Fields} />
+    <Form store={store} {...restSchema}>
+      <RenderFormChildren {...mergeProps} onPropertiesChange={onPropertiesChange} />
     </Form>
   );
 }
