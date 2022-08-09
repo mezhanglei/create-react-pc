@@ -175,7 +175,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 组件生成实例
-  const createInstance = (target: Array<SchemaComponent> | SchemaComponent | any, typeMap?: any, extra?: unknown): any => {
+  const createInstance = (target: Array<SchemaComponent> | SchemaComponent | any, typeMap?: any, extra?: any): any => {
     if (target instanceof Array) {
       return target?.map((item) => {
         return createInstance(item, typeMap);

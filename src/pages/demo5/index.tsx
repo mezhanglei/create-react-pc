@@ -24,7 +24,7 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    layout: 'vertical',
+    // layout: 'vertical',
     // inline: true,
     inside: {
       type: 'row'
@@ -37,7 +37,7 @@ export default function Demo5(props) {
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
         // outside: { type: 'col', props: { span: 6 } },
-        hidden: '{{$formvalues.name5 == true}}',
+        hidden: '{{$formvalues.name6 == true}}',
         type: 'Input',
         props: {}
       },
@@ -47,7 +47,7 @@ export default function Demo5(props) {
         // outside: { type: 'col', props: { span: 6 } },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
-        hidden: '{{$formvalues.name5 == true}}',
+        hidden: '{{$formvalues.name6 == true}}',
         type: 'Input',
         props: {}
       },
@@ -114,9 +114,8 @@ export default function Demo5(props) {
         // inside: { type: 'row' },
         properties: {
           first: {
-            label: '对象嵌套1',
+            // label: '对象嵌套1',
             rules: [{ required: true, message: 'name1空了' }],
-            // outside: { type: 'col', props: { span: 6 } },
             type: 'Select',
             props: {
               style: { width: '100%' },
@@ -124,9 +123,8 @@ export default function Demo5(props) {
             }
           },
           second: {
-            label: '对象嵌套2',
+            // label: '对象嵌套2',
             rules: [{ required: true, message: 'name2空了' }],
-            // outside: { type: 'col', props: { span: 6 } },
             type: 'Select',
             props: {
               style: { width: '100%' },
@@ -134,8 +132,7 @@ export default function Demo5(props) {
             }
           },
           first1: {
-            label: '对象嵌套3',
-            // outside: { type: 'col', props: { span: 6 } },
+            // label: '对象嵌套3',
             rules: [{ required: true, message: 'name3空了' }],
             type: 'Select',
             props: {
@@ -144,8 +141,7 @@ export default function Demo5(props) {
             }
           },
           second1: {
-            label: '对象嵌套4',
-            // outside: { type: 'col', props: { span: 6 } },
+            // label: '对象嵌套4',
             rules: [{ required: true, message: 'name4空了' }],
             type: 'Select',
             props: {
@@ -155,7 +151,7 @@ export default function Demo5(props) {
           }
         }
       },
-      "col": {
+      name5: {
         label: '整体布局',
         initialValue: { span: 12 },
         valueSetter: "{{(value)=> (value && value['span'])}}",
@@ -171,12 +167,12 @@ export default function Demo5(props) {
           ]
         }
       },
-      name5: {
-        label: 'name5',
+      name6: {
+        label: 'name6',
         required: true,
         valueProp: 'checked',
         initialValue: true,
-        rules: [{ required: true, message: 'name5空了' }],
+        rules: [{ required: true, message: 'name6空了' }],
         // outside: { type: 'col', props: { span: 6 } },
         type: 'Checkbox',
         props: {
