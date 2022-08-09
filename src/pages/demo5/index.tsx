@@ -180,7 +180,7 @@ export default function Demo5(props) {
           children: '多选框'
         }
       },
-      name6: {
+      name7: {
         label: 'Upload',
         type: 'Upload'
       },
