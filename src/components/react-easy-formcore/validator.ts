@@ -10,7 +10,7 @@ export type FormRule = {
   validator?: FormValidator
 }
 export type FormValidatorCallBack = (message?: string) => void;
-export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => boolean | undefined | Promise<boolean>;
+export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => any | Promise<any>;
 
 /*Validator类*/
 export default class Validator {
@@ -27,7 +27,11 @@ export default class Validator {
     }
   }
 
-  async start(path: string, value: any) {
+  async start(path: string, value: any, disabled?: boolean) {
+    if (disabled) {
+      delete this.rulesMap[path];
+      return;
+    };
     const rules = this.rulesMap[path];
     // 表单校验处理规则
     const handleRule = async (rule: FormRule) => {
