@@ -183,7 +183,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     } else {
       const Child = componentParse(target, typeMap);
       const { children, ...restProps } = target?.props || {};
-      if (typeof Child === 'function' || typeof Child?.render === 'function') {
+      if (typeof Child === 'function' || typeof Child?.render === 'function' || typeof Child?.type?.render === 'function') {
         return (
           <Child {...extra} {...restProps}>
             {children ? createInstance(children, typeMap) : null}
@@ -247,7 +247,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 只读显示
     const readOnlyChild = createInstance(readOnlyRender, undefined, instanceParams) ?? createInstance({ type: readOnlyItem }, controls, fieldChildProps);
     const fieldChild = readOnly === true ? readOnlyChild : formItemChild;
-    const fieldChilds = renderChildrenList(generateChild, { name, path: path, field: field });
+    const currentPath = getCurrentPath(name, path);
+    const fieldChilds = renderChildrenList(generateChild, { name, path: currentPath, field: field });
     const child = typeof properties === 'object' ? fieldChilds : fieldChild;
     const result = (
       FormField ?
@@ -271,7 +272,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       if (newField) {
         newField['index'] = index;
       }
-      const childProps = { name: name, field: newField, path: currentPath };
+      const childProps = { name: name, field: newField, path: path };
       if (newField?.hidden === true) {
         return;
       }

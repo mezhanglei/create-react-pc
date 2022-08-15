@@ -31,7 +31,7 @@ export const fieldSettings = {
       ]
     }
   },
-  labelWidth: {
+  labelWidth: { 
     label: '标签宽度',
     type: 'SliderNumber',
     initialValue: 120,

@@ -4,15 +4,15 @@ import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { FormItemInfo } from '../form-render';
-import './wrapper.less';
+import './render-item.less';
 
-export interface WrapperProps extends FormItemInfo {
+export interface RenderItemProps extends FormItemInfo {
   children: any;
   style?: CSSProperties;
   className?: string;
 }
 
-function Wrapper(props: WrapperProps, ref: any) {
+function RenderItem(props: RenderItemProps, ref: any) {
   const {
     children,
     style,
@@ -25,9 +25,9 @@ function Wrapper(props: WrapperProps, ref: any) {
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, path) as string;
   const isSelected = currentPath ? currentPath === selected : false;
-  const nextIndex = (field?.index as number) + 1;
   const copyItem = () => {
     let newId;
+    const nextIndex = (field?.index as number) + 1;
     if (endIsListItem(currentPath)) {
       newId = `[${nextIndex}]`;
     } else {
@@ -71,4 +71,4 @@ function Wrapper(props: WrapperProps, ref: any) {
   );
 };
 
-export default React.forwardRef(Wrapper);
+export default React.forwardRef(RenderItem);

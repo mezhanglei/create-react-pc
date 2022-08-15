@@ -5,7 +5,7 @@
   width: 100%;
 
   &--horizontal {
-    display: flex;
+    display: inline-flex;
     align-items: flex-start;
 
     &>.item-label__header {
@@ -16,16 +16,14 @@
   }
 
   &--horizontal&--inline {
-    display: inline-flex;
     width: auto;
   }
 
   &--vertical {
-    display: block;
+    display: inline-block;
   }
 
   &--vertical&--inline {
-    display: inline-block;
     vertical-align: top;
     width: auto;
   }

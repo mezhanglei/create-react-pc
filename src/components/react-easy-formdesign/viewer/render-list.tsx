@@ -1,15 +1,15 @@
 import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import { FormRenderContext } from '@/components/react-easy-formdesign/design-context';
 import React, { useContext } from 'react';
+import { GeneratePrams } from '../form-render';
 import './index.less';
 
-export interface DndListProps {
+export interface RenderListProps extends GeneratePrams {
   children: any;
 }
 
-function DndList(props: DndListProps, ref: any) {
-  const { children, parent } = props;
-  const { path, field } = parent || {};
+function RenderList(props: RenderListProps, ref: any) {
+  const { children, path, field } = props;
 
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
 
@@ -81,7 +81,7 @@ function DndList(props: DndListProps, ref: any) {
         {children}
       </DndSortable>
     )
-  } else if (!parent) {
+  } else if (!path) {
     return (
       <DndSortable
         onUpdate={onItemSwap}
@@ -102,4 +102,4 @@ function DndList(props: DndListProps, ref: any) {
   }
 };
 
-export default React.forwardRef(DndList);
+export default React.forwardRef(RenderList);

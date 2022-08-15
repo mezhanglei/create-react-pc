@@ -10,8 +10,7 @@ export default function RenderForm(props: RenderFormProps) {
     schema = {},
     ...restProps
   } = props;
-
-  const { properties, ...restSchema } = schema || {};
+  
   const mergeProps = { ...restProps, ...schema };
 
   const onPropertiesChange: RenderFormChildrenProps['onPropertiesChange'] = (newValue) => {
@@ -21,7 +20,7 @@ export default function RenderForm(props: RenderFormProps) {
   }
 
   return (
-    <Form store={store} {...restSchema}>
+    <Form store={store} {...mergeProps}>
       <RenderFormChildren {...mergeProps} onPropertiesChange={onPropertiesChange} />
     </Form>
   );

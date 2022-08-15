@@ -2,9 +2,9 @@ import React, { useContext, CSSProperties } from 'react'
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import Wrapper from './wrapper';
+import RenderItem from './render-item';
 import './index.less';
-import DndList from './dnd-list';
+import RenderList from './render-list';
 
 export interface DesignViewerProps {
   className?: string
@@ -48,6 +48,8 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       <RenderForm store={viewerRenderStore} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
+        renderItem={RenderItem}
+        renderList={RenderList}
       />
     </div>
   );

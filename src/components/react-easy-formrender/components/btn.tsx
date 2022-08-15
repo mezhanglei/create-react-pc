@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import './btn.less';
 import { FormFieldProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
+import { getCurrentPath } from '../../react-easy-formcore';
 
 export interface DeleteBtnProps extends GeneratePrams {
   onClick?: () => void;
@@ -14,13 +15,15 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
   const {
     className,
     path,
+    name,
     store,
     ...restProps
   } = props;
 
+  const currentPath = getCurrentPath(name, path);
   const deleteItem = () => {
-    path && store?.setFieldValue(path, undefined, true);
-    path && store?.delItemByPath(path);
+    currentPath && store?.setFieldValue(currentPath, undefined, true);
+    currentPath && store?.delItemByPath(currentPath);
   }
 
   const cls = classnames('iconfont icon-delete', className)
@@ -45,6 +48,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     children,
     ...restProps
   } = props;
+  const currentPath = getCurrentPath(name, path);
 
   const addNewItem = () => {
     const properties = field?.properties;
@@ -54,13 +58,13 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
       const len = properties?.length || 0;
       const newIndex = len;
       if (newField) {
-        store?.addItemByIndex({ name: `[${newIndex}]`, field: newField }, newIndex, path)
+        store?.addItemByIndex({ name: `[${newIndex}]`, field: newField }, newIndex, currentPath)
       }
     } else if (typeof properties === 'object') {
       const len = Object?.keys(properties)?.length || 0;
       const newIndex = len;
       if (newField?.name) {
-        store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, path);
+        store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, currentPath);
       }
     }
     props?.onClick && props?.onClick();
