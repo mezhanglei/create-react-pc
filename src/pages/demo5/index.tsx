@@ -24,11 +24,11 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    layout: 'vertical',
+    // layout: 'vertical',
     // inline: true,
-    inside: {
-      type: 'row'
-    },
+    // inside: {
+    //   type: 'row'
+    // },
     properties: {
       name1: {
         label: "只读展示",
@@ -36,7 +36,7 @@ export default function Demo5(props) {
         readOnly: true,
         readOnlyRender: "只读展示组件",
         initialValue: 1111,
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         hidden: '{{$formvalues.name6 == true}}',
         type: 'Input',
         props: {}
@@ -44,7 +44,7 @@ export default function Demo5(props) {
       name2: {
         label: "输入框",
         required: true,
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         rules: [{ required: true, message: 'name1空了' }],
         initialValue: 1,
         hidden: '{{$formvalues.name6 == true}}',
@@ -54,7 +54,7 @@ export default function Demo5(props) {
       name3: {
         label: "数组",
         required: true,
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         // inside: { type: 'row' },
         footer: {
           type: 'add',
@@ -92,7 +92,6 @@ export default function Demo5(props) {
         }, {
           required: true,
           suffix: { type: 'delete' },
-          // outside: { type: 'col', props: { span: 6 } },
           rules: [{ required: true, message: 'name3[1]空了' }],
           type: 'Select',
           props: {
@@ -108,7 +107,7 @@ export default function Demo5(props) {
       name4: {
         label: '对象嵌套',
         required: true,
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         properties: {
           first: {
             // label: '对象嵌套1',
@@ -153,7 +152,7 @@ export default function Demo5(props) {
         initialValue: { span: 12 },
         valueSetter: "{{(value)=> (value && value['span'])}}",
         valueGetter: "{{(value) => ({span: value})}}",
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         type: 'Select',
         props: {
           style: { width: '100%' },
@@ -170,7 +169,7 @@ export default function Demo5(props) {
         valueProp: 'checked',
         initialValue: true,
         rules: [{ required: true, message: 'name6空了' }],
-        outside: { type: 'col', props: { span: 6 } },
+        // outside: { type: 'col', props: { span: 6 } },
         type: 'Checkbox',
         props: {
           style: { width: '100%' },

@@ -68,13 +68,13 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
   }
 
   // 更新viewer组件
-  const updateViewer = (fieldProps: FieldProps) => {
-    const { name, ...rest } = fieldProps;
-    viewerRenderStore?.setInitialValues(selected, rest?.initialValue); // 更新控件的值
-    viewerRenderStore?.updateItemByPath(selected, rest); // 更新控件的属性
+  const updateViewer = (settingValues: FieldProps) => {
+    const { name, ...field } = settingValues;
+    viewerRenderStore?.setInitialValues(selected, field?.initialValue); // 更新控件的值
+    viewerRenderStore?.updateItemByPath(selected, field); // 更新控件的属性
   }
 
-  // 当前控件的缓存属性
+  // 获取控件的上一个值
   const getLastValues = (selected: string, curSettings: ELementProps['settings']) => {
     const viewerValues = viewerRenderStore.getItemByPath(selected);
     if (!endIsListItem(selected)) {
