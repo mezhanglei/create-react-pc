@@ -179,31 +179,26 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   };
 
   // 渲染子元素
-  const getChildren = (children: any) => {
+  const getChildren = (children: any): any => {
     return React.Children.map(children, (child: any) => {
       if (isFormField(child)) {
         return cloneElement(child, {
           path: currentPath
         });
       } else {
-        return bindNestedChildren(child);
+        const childs = child?.props?.children;
+        const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
+        const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
+        const childType = child?.type;
+        if (childs && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
+          return cloneElement(child, {
+            children: getChildren(childs)
+          });
+        } else {
+          return bindChild(child);
+        }
       }
     });
-  };
-
-  // 递归遍历子元素
-  const bindNestedChildren = (child: any): any => {
-    const childs = child?.props?.children;
-    const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
-    const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
-    const childType = child?.type;
-    if (childs !== undefined && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
-      return cloneElement(child, {
-        children: getChildren(childs)
-      });
-    } else {
-      return bindChild(child);
-    }
   };
 
   const childs = getChildren(children);

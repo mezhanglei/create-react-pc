@@ -62,13 +62,13 @@ export interface BaseRenderProps {
 
 // 带form容器的渲染组件props
 export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderProps {
-  onSchemaChange?: (newValue: SchemaData) => void;
+  onSchemaChange?: (newValue: SchemaData, oldValue?: SchemaData) => void;
   schema: SchemaData;
 };
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends BaseRenderProps {
-  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties']) => void;
+  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties'], index?: number) => void;
   properties?: SchemaData['properties']; // 控件数据源的数据
 };
 

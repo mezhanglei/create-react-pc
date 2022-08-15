@@ -72,31 +72,24 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   // 渲染子元素
   let index = 0;
-  const getChildren = (children: any) => {
+  const getChildren = (children: any): any => {
     return React.Children.map(children, (child: any) => {
       if (isFormField(child)) {
         return renderFormItem(child);
       } else {
-        return bindNestedChildren(child);
+        const childs = child?.props?.children;
+        if (childs && child !== undefined) {
+          return cloneElement(child, {
+            children: getChildren(childs)
+          });
+        } else {
+          return child;
+        }
       }
     });
   };
 
-  // 递归遍历子元素(遇到表单域停止)
-  const bindNestedChildren = (child: any): any => {
-    const childs = child?.props?.children;
-    if (child !== undefined && !isFormField(child)) {
-      return cloneElement(child, {
-        children: getChildren(childs)
-      });
-    } else if (isFormField(child)) {
-      return renderFormItem(child);
-    } else {
-      return child;
-    }
-  };
-
-  // 渲染表单域子元素
+  // 渲染子项
   const renderFormItem = (child: any) => {
     const currentIndex = index;
     index++;

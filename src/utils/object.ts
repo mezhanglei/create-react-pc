@@ -132,3 +132,15 @@ export const mergeObject = function (obj1: any, obj2: any) {
   }
   return clone;
 };
+
+// 合并新对象，新对象浅合并, 新的覆盖旧的
+export const shallowMerge = function (oldValue: any, newValue: any) {
+  if (!isObject(oldValue) || !isObject(oldValue)) {
+    return oldValue;
+  }
+  const result = { ...oldValue };
+  for (let key in newValue) {
+    result[key] = newValue[key];
+  }
+  return result;
+};
