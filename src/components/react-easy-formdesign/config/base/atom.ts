@@ -1,34 +1,30 @@
 // 表单原子控件
-export const atomElements = {
-  input: {
-    label: '输入框',
-    type: 'Input',
-    outside: {
-      type: 'col',
-      props: { span: 12 }
-    },
-    settings: {
-      type: {
-        label: "输入框类型",
-        type: "Select",
-        initialValue: "Input",
-        props: {
-          style: { width: '100%' },
-          children: [
-            { type: "Select.Option", props: { key: 'Input', value: "Input", children: "单行输入" } },
-            { type: "Select.Option", props: { key: 'Input.TextArea', value: "Input.TextArea", children: "多行输入" } },
-            { type: "Select.Option", props: { key: 'InputNumber', value: "InputNumber", children: "数字输入" } },
-            { type: "Select.Option", props: { key: 'Input.Password', value: "Input.Password", children: "密码输入" } }
-          ]
-        }
-      },
-      initialValue: {
-        label: '默认值',
-        type: 'Input'
+export const atomElements = [{
+  prefix: 'input',
+  label: '输入框',
+  type: 'Input',
+  outside: { type: 'col', props: { span: 12 } },
+  settings: {
+    type: {
+      label: "输入框类型",
+      type: "Select",
+      initialValue: "Input",
+      props: {
+        style: { width: '100%' },
+        children: [
+          { type: "Select.Option", props: { key: 'Input', value: "Input", children: "单行输入" } },
+          { type: "Select.Option", props: { key: 'Input.TextArea', value: "Input.TextArea", children: "多行输入" } },
+          { type: "Select.Option", props: { key: 'InputNumber', value: "InputNumber", children: "数字输入" } },
+          { type: "Select.Option", props: { key: 'Input.Password', value: "Input.Password", children: "密码输入" } }
+        ]
       }
+    },
+    initialValue: {
+      label: '默认值',
+      type: 'Input'
     }
   }
-}
+}]
 
 // import 'codemirror/lib/codemirror.css';
 // import CodeMirror from 'codemirror/lib/codemirror';

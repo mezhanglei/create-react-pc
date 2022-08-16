@@ -26,7 +26,12 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
 
-  const onChange = (name: string, item: ELementProps) => {
+  const onChange = (prefix: string, item: ELementProps) => {
+    handleControl(prefix, item);
+  }
+
+  // 处理基础控件
+  const handleControl = (prefix: string, item: ELementProps) => {
     let newId;
     if (endIsListItem(selected)) {
       // 当选中项为为空数组内部，则设置为空字符串
@@ -34,16 +39,15 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
       newId = `[${+end + 1}]`;
     } else {
       // 非数组项才生成id
-      newId = defaultGetId(name);
+      newId = defaultGetId(prefix);
     }
     const newIndex = getSelectedIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
-    const { settings, ...field } = item;
     // 生成新控件
-    const addItem = { name: newId, field: field };
+    const addItem = { name: newId, field: item };
     const newPath = getCurrentPath(newId, parentPath);
     viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
-    setEdit({ selected: newPath, selectedKey: name });
+    setEdit({ selected: newPath });
   }
 
   return (

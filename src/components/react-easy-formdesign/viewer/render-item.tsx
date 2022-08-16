@@ -21,7 +21,7 @@ function RenderItem(props: RenderItemProps, ref: any) {
   } = props;
 
   const { name, path, field } = restProps;
-  const { viewerRenderStore, schema, selected, selectedKey } = useContext(FormRenderContext);
+  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, path) as string;
   const isSelected = currentPath ? currentPath === selected : false;
@@ -32,7 +32,7 @@ function RenderItem(props: RenderItemProps, ref: any) {
       newId = `[${nextIndex}]`;
     } else {
       // 非数组项才生成id
-      newId = defaultGetId(selectedKey);
+      newId = defaultGetId(field?.prefix);
     }
     const newField = viewerRenderStore?.getItemByPath(currentPath);
     viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, path);

@@ -1,8 +1,7 @@
-export const exampleElements = {
-  something: {
-    label: '复杂结构样例',
-    properties: {
+export const exampleElements = [{
+  prefix: 'something',
+  label: '复杂结构样例',
+  properties: {
 
-    }
   }
-}
+}]

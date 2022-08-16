@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import { ELementProps, SideBarElement } from '../config';
+import { ELementProps } from '../config';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './sidebar-list.less';
@@ -10,7 +10,7 @@ export interface SideBarProps {
   style?: CSSProperties;
   title: string;
   group: string;
-  elements?: SideBarElement;
+  elements?: ELementProps[];
   onChange?: (name: string, item: ELementProps) => void;
 }
 const prefixCls = 'sidebar-list';
@@ -26,7 +26,7 @@ function SideBarList(props: SideBarProps, ref: any) {
 
   const cls = classnames(prefixCls, className)
 
-  const renderElements = (group: string, elements?: SideBarElement) => {
+  const renderElements = (group: string, elements?: ELementProps[]) => {
     return (
       <DndSortable
         className='elements-list'
@@ -38,8 +38,9 @@ function SideBarList(props: SideBarProps, ref: any) {
         }}
       >
         {
-          Object.entries(elements || {}).map(([name, field], index) => {
-            return <Tag key={index} data-id={name} onChange={() => onChange?.(name, field)}>{field.label}</Tag>
+          elements?.map((item, index) => {
+            const prefix = item?.prefix;
+            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item)}>{item.label}</Tag>
           })
         }
       </DndSortable>

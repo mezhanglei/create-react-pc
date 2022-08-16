@@ -24,7 +24,7 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    // layout: 'vertical',
+    layout: 'vertical',
     // inline: true,
     inside: {
       type: 'row'
@@ -55,7 +55,7 @@ export default function Demo5(props) {
         label: "数组",
         required: true,
         outside: { type: 'col', props: { span: 6 } },
-        category: 'container',
+        // category: 'container',
         footer: {
           type: 'add',
           props: {

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormFieldProps, generateChildFunc, getChildrenList, RenderFormChildrenProps, SchemaData, SchemaComponent, FormItemInfo } from './types';
+import { FormFieldProps, RenderFormChildrenProps, SchemaData, SchemaComponent, OverwriteFormFieldProps } from './types';
 import { defaultComponents } from './components';
 import { defaultFields } from './fields';
 import { FormOptionsContext, FormStoreContext, getCurrentPath } from '../react-easy-formcore';
@@ -160,8 +160,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 获取field的类型
-  const getFieldType = (params: FormItemInfo) => {
-    const { field } = params || {};
+  const getFieldType = (field: OverwriteFormFieldProps) => {
     // 容器不返回field
     if (field?.category == 'container') {
       return;
@@ -215,85 +214,104 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return target;
   }
 
-  // 生成表单控件
-  const generateChild: generateChildFunc = (params) => {
-    const { name, field, path } = params || {};
-    const { readOnly, readOnlyItem, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, ...restField } = field;
+  // 给目标内部添加inside
+  const withInside = (children: any, inside: any, props?: any) => {
+    const Inside = componentParse(inside, mergeComponents);
+    const RenderList = renderList as any;
+    const childsWithList = RenderList ? <RenderList data-type="fragment" {...props}>{children}</RenderList> : children;
+    const childsWithSide = Inside ? <Inside data-type="fragment" {...props} {...inside?.props}>{childsWithList}</Inside> : childsWithList;
+    return childsWithSide;
+  }
 
-    const fieldType = getFieldType(params);
+  // 给目标外面添加outside
+  const withOutside = (children: any, outside: any, props?: any) => {
+    const RenderItem = renderItem as any;
+    const Outside = componentParse(outside, mergeComponents);
+    const childWithItem = RenderItem ? <RenderItem data-type="fragment" {...props}>{children}</RenderItem> : children;
+    const childWithSide = Outside ? <Outside data-type="fragment" {...props} {...outside?.props}>{childWithItem}</Outside> : childWithItem;
+    return childWithSide;
+  }
+
+  // 生成子元素
+  const generateChild = (name: string, field: OverwriteFormFieldProps, parent?: string) => {
+    if (field?.hidden === true) {
+      return;
+    }
+    const { readOnly, readOnlyItem, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, ...restField } = field;
+    const fieldType = getFieldType(field);
     const FormField = fieldType && mergeFields?.[fieldType];
-    const instanceParams = { ...params, store };
-    const footerInstance = createInstance(footer, mergeComponents, instanceParams);
-    const suffixInstance = createInstance(suffix, mergeComponents, instanceParams);
     if (!field) return;
 
-    const formvalues = store?.getFieldValue();
+    const fieldParams = { name, field, path: parent } // 表单域参数
+    const instanceParams = { ...fieldParams, store }; // 组件实例的参数
+    const footerInstance = createInstance(footer, mergeComponents, instanceParams);
+    const suffixInstance = createInstance(suffix, mergeComponents, instanceParams);
+
+    // 表单域的传参
     const fieldProps = {
       key: name,
       name: name,
-      path: path,
+      path: parent,
       onValuesChange: valuesCallback,
       footer: footerInstance,
       suffix: suffixInstance,
       ...restField
     }
+    // 表单域子元素的传参
     const fieldChildProps = {
-      ...params,
+      ...instanceParams,
       ...props,
-      formvalues,
-      store
+      formvalues: store?.getFieldValue()
     };
-
-    // 表单控件
     const formItemChild = createInstance(typeRender, undefined, instanceParams) ?? createInstance({ type, props }, controls, fieldChildProps);
     // 只读显示
     const readOnlyChild = createInstance(readOnlyRender, undefined, instanceParams) ?? createInstance({ type: readOnlyItem }, controls, fieldChildProps);
+    // 表单控件
     const fieldChild = readOnly === true ? readOnlyChild : formItemChild;
-    const currentPath = getCurrentPath(name, path);
-    const fieldChilds = renderChildrenList(generateChild, { name, path: currentPath, field: field });
-    const child = typeof properties === 'object' ? fieldChilds : fieldChild;
+    // 容器传参
+    const containerProps = { key: name, ...fieldParams };
+    // 表单域的子元素
+    let fieldChildren;
+    if (typeof properties === 'object') {
+      const currentPath = getCurrentPath(name, parent);
+      const childs = Object.entries(properties)?.map(([key, formField], index) => {
+        const childName = properties instanceof Array ? `[${key}]` : key;
+        const childCurrentPath = getCurrentPath(childName, currentPath);
+        const childField = showCalcFieldProps(formField, childCurrentPath);
+        if (childField) {
+          childField['index'] = index;
+        }
+        return generateChild(childName, childField, currentPath);
+      });
+      fieldChildren = withInside(childs, field?.inside, containerProps)
+    } else {
+      fieldChildren = fieldChild
+    }
+
     const result = (
       FormField ?
         <FormField {...fieldProps}>
-          {child}
+          {fieldChildren}
         </FormField>
-        : child
+        : fieldChildren
     );
-    return result;
-  };
+    return withOutside(result, field?.outside, containerProps)
+  }
 
-  // 根据properties渲染子列表
-  const renderChildrenList: getChildrenList = (generate, parent) => {
-    const { path, field } = parent || {};
-    const childProperties = parent ? field?.properties : properties;
-    const childInside = parent ? field?.inside : inside;
-    const childs = Object.entries(childProperties || {})?.map(([name, formField], index) => {
-      name = childProperties instanceof Array ? `[${name}]` : name;
-      const currentPath = getCurrentPath(name, path);
-      const newField = showCalcFieldProps(formField, currentPath);
+  // 渲染children
+  const renderChildrenList = () => {
+    const childs = Object.entries(properties || {})?.map(([name, formField], index: number) => {
+      name = properties instanceof Array ? `[${name}]` : name;
+      const newField = showCalcFieldProps(formField, name);
       if (newField) {
         newField['index'] = index;
       }
-      const childProps = { name: name, field: newField, path: path };
-      if (newField?.hidden === true) {
-        return;
-      }
-      const child = generate(childProps);
-      const RenderItem = renderItem as any;
-      const Outside = componentParse(newField?.outside, mergeComponents);
-      const childWithItem = RenderItem ? <RenderItem key={name} data-type="fragment" {...childProps}>{child}</RenderItem> : child;
-      const childWithSide = Outside ? <Outside key={name} data-type="fragment" {...childProps} {...newField?.outside?.props}>{childWithItem}</Outside> : childWithItem;
-      return childWithSide;
-    });
-
-    const Inside = componentParse(childInside, mergeComponents);
-    const RenderList = renderList as any;
-    const childsWithList = RenderList ? <RenderList key={path} data-type="fragment" {...parent}>{childs}</RenderList> : childs;
-    const childsWithSide = Inside ? <Inside key={path} data-type="fragment" {...parent} {...childInside?.props}>{childsWithList}</Inside> : childsWithList;
-    return childsWithSide;
+      return generateChild(name, newField);
+    })
+    return withInside(childs, inside)
   }
 
-  return renderChildrenList(generateChild);
+  return renderChildrenList();
 }
 
 RenderFormChildren.displayName = 'Form.Children';

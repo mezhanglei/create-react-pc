@@ -3,13 +3,14 @@ import { FormRenderContext } from '@/components/react-easy-formdesign/design-con
 import React, { useContext } from 'react';
 import { GeneratePrams } from '../form-render';
 import './index.less';
+import RenderItem from './render-item';
 
 export interface RenderListProps extends GeneratePrams {
   children: any;
 }
 
 function RenderList(props: RenderListProps, ref: any) {
-  const { children, path, field } = props;
+  const { children, name, path, field } = props;
 
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
 
@@ -65,6 +66,7 @@ function RenderList(props: RenderListProps, ref: any) {
     }
 
     return (
+      // <RenderItem name={name} path={path} field={field}>
       <DndSortable
         onUpdate={onItemSwap}
         onAdd={onItemAdd}
@@ -80,6 +82,7 @@ function RenderList(props: RenderListProps, ref: any) {
       >
         {children}
       </DndSortable>
+      // </RenderItem>
     )
   } else if (!path) {
     return (

@@ -2,7 +2,7 @@ import React, { CSSProperties, useContext, useEffect, useState } from 'react'
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import { allElements, ELementProps } from '../config';
+import { ELementProps } from '../config';
 import { fieldSettings } from '../config/field-settings';
 import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
@@ -18,7 +18,7 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { viewerRenderStore, selected, selectedKey } = useContext(FormRenderContext);
+  const { viewerRenderStore, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const form = useFormRenderStore();
 
@@ -39,9 +39,16 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
 
   // 生成当前控件的settings
   const createSettings = (selected: string) => {
-    const selectedItem = allElements[selectedKey];
+    const selectedItem = viewerRenderStore.getItemByPath(selected);
     const itemSettings = selectedItem?.['settings'];
-    let baseSettings = { ...itemSettings, ...fieldSettings };
+    let baseSettings = { ...itemSettings };
+    // 只有表单域组件才可以添加表单域的属性
+    if (selectedItem?.category !== 'container') {
+      baseSettings = {
+        ...baseSettings,
+        ...fieldSettings
+      }
+    }
     // 非数组项添加字段名编辑控件
     if (!endIsListItem(selected)) {
       baseSettings = {
@@ -69,14 +76,14 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
 
   // 更新viewer组件
   const updateViewer = (settingValues: FieldProps) => {
-    const { name, ...field } = settingValues;
+    const { name, ...field } = settingValues || {};
     viewerRenderStore?.setInitialValues(selected, field?.initialValue); // 更新控件的值
     viewerRenderStore?.updateItemByPath(selected, field); // 更新控件的属性
   }
 
-  // 获取控件的上一个值
+  // 获取旧值
   const getLastValues = (selected: string, curSettings: ELementProps['settings']) => {
-    const viewerValues = viewerRenderStore.getItemByPath(selected);
+    const viewerValues = viewerRenderStore.getItemByPath(selected) || {};
     if (!endIsListItem(selected)) {
       viewerValues['name'] = getPathEnd(selected);
     }

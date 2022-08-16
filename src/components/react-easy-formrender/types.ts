@@ -22,7 +22,7 @@ export interface SchemaComponent {
 }
 
 export interface BaseFieldProps extends SchemaComponent {
-  category?: string; // 当前节点类型，为container时表示容器节点.
+  category?: string; // 当前节点类型，为container时表示容器节点.只显示容器不显示表单域
   inside?: SchemaComponent;
   outside?: SchemaComponent;
   readOnly?: boolean; // 只读模式
@@ -77,6 +77,3 @@ export type ValueOf<T> = T[keyof T];
 export interface FormItemInfo { name?: string, field: OverwriteFormFieldProps, path?: string };
 // 生成组件的传递的参数
 export interface GeneratePrams extends FormItemInfo { store?: FormRenderStore };
-// 返回列表
-export type getChildrenList = (generate: generateChildFunc, parent?: FormItemInfo) => any;
-export type generateChildFunc = (params: FormItemInfo) => JSX.Element | undefined;
