@@ -22,6 +22,7 @@ export interface SchemaComponent {
 }
 
 export interface BaseFieldProps extends SchemaComponent {
+  fieldType?: string; // 表单域的类型
   category?: string; // 当前节点类型，为container时表示容器节点.只显示容器不显示表单域
   inside?: SchemaComponent;
   outside?: SchemaComponent;

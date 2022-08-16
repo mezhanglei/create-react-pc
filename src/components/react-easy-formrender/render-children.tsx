@@ -161,6 +161,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 获取field的类型
   const getFieldType = (field: OverwriteFormFieldProps) => {
+    if (field?.fieldType) {
+      return field?.fieldType;
+    }
     // 容器不返回field
     if (field?.category == 'container') {
       return;
