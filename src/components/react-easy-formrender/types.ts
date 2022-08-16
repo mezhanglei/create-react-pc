@@ -22,7 +22,7 @@ export interface SchemaComponent {
 }
 
 export interface BaseFieldProps extends SchemaComponent {
-  category?: string; // 当前节点类型，为container时表示容器节点, 不会组成表单值。
+  category?: string; // 当前节点类型，为container时表示容器节点.
   inside?: SchemaComponent;
   outside?: SchemaComponent;
   readOnly?: boolean; // 只读模式
@@ -68,7 +68,7 @@ export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderP
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends BaseRenderProps {
-  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties'], index?: number) => void;
+  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties']) => void;
   properties?: SchemaData['properties']; // 控件数据源的数据
 };
 
