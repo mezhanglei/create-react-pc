@@ -296,7 +296,7 @@ export default function Demo5(props) {
     <div style={{ padding: '0 8px' }}>
       <RenderForm store={store} schema={schema} watch={watch}
         renderList={renderList}
-        renderItem={renderItem}
+        // renderItem={renderItem}
       />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

@@ -221,7 +221,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   };
 
   return (
-    <div ref={ref} className={cls} style={style}>
+    <div ref={ref} className={cls} style={style} {...restField}>
       <Label colon={colon} required={required} style={headerStyle}>
         {label}
       </Label>

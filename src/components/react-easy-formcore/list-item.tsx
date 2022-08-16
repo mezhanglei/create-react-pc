@@ -66,7 +66,7 @@ export const ListItem = React.forwardRef((props: ListItemProps, ref: any) => {
   }
 
   return (
-    <div ref={ref} className={cls} style={style}>
+    <div ref={ref} className={cls} style={style} {...restProps}>
       <Label colon={colon} required={required} style={headerStyle}>
         {label}
       </Label>

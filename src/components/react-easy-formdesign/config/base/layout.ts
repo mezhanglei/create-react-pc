@@ -1,17 +1,15 @@
 export const layoutElements = [{
-  prefix: 'layout',
+  prefix: 'object',
   label: '对象容器',
   inside: { type: 'row' },
-  // category: 'container',
   properties: {
   },
   settings: {
   }
 }, {
-  prefix: 'layout',
+  prefix: 'list',
   label: '数组容器',
   inside: { type: 'row' },
-  // category: 'container',
   properties: [
   ],
   settings: {
