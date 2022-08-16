@@ -1,7 +1,7 @@
 import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import { FormRenderContext } from '@/components/react-easy-formdesign/design-context';
 import React, { useContext } from 'react';
-import { GeneratePrams } from '../form-render';
+import { GeneratePrams, getCurrentPath } from '../form-render';
 import './index.less';
 import RenderItem from './render-item';
 
@@ -11,7 +11,7 @@ export interface RenderListProps extends GeneratePrams {
 
 function RenderList(props: RenderListProps, ref: any) {
   const { children, name, path, field } = props;
-
+  const currentPath = getCurrentPath(name, path);
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
@@ -73,7 +73,7 @@ function RenderList(props: RenderListProps, ref: any) {
         data-type="fragment"
         className='viewer-dnd-group'
         options={{
-          groupPath: path,
+          groupPath: currentPath,
           childDrag: true,
           childOut: outCondition,
           allowDrop: dropCondition,
@@ -84,7 +84,7 @@ function RenderList(props: RenderListProps, ref: any) {
       </DndSortable>
       // </RenderItem>
     )
-  } else if (!path) {
+  } else if (!currentPath) {
     return (
       <DndSortable
         onUpdate={onItemSwap}

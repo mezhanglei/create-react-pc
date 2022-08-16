@@ -216,7 +216,8 @@ export default function Demo5(props) {
     store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
-  const renderList: RenderFormProps['renderList'] = ({ children, path, field }) => {
+  const renderList: RenderFormProps['renderList'] = ({ children, name, path, field }) => {
+    const currentPath = getCurrentPath(name, path);
     if (field?.properties) {
       const isList = field?.properties instanceof Array;
       // 允许拖出的条件
@@ -252,7 +253,7 @@ export default function Demo5(props) {
           className='dnd-box'
           style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
           options={{
-            groupPath: path,
+            groupPath: currentPath,
             childDrag: true,
             childOut: outCondition,
             allowDrop: dropCondition,
@@ -262,7 +263,7 @@ export default function Demo5(props) {
           {children}
         </DndSortable>
       )
-    } else if (!path) {
+    } else if (!currentPath) {
       return (
         <DndSortable
           onUpdate={onItemSwap}
@@ -292,7 +293,7 @@ export default function Demo5(props) {
   };
 
   return (
-    <div style={{padding: '0 8px'}}>
+    <div style={{ padding: '0 8px' }}>
       <RenderForm store={store} schema={schema} watch={watch}
         renderList={renderList}
         renderItem={renderItem}
