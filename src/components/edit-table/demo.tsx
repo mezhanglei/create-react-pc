@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Input, InputNumber } from 'antd'
-import BEditTable, { useEditTable } from './index'
-import { Control } from './control'
+import BEditTable, { Control, useEditTable } from './index'
 
 // 测试可编辑表格demo
 export default (props) => {
@@ -63,8 +62,8 @@ export default (props) => {
       dataIndex: 'name',
       key: 'name',
       width: '20%',
-      // 渲染可编辑项, 如果不想要编辑框，则return空就会显示默认的render选项。
-      renderEdit: (text: any, rowData: any) => {
+      // 渲染可编辑项, 如果不想要编辑框，则return其他值
+      render: (text: any, rowData: any) => {
         return (
           <Control
             rules={[
@@ -91,8 +90,8 @@ export default (props) => {
       dataIndex: 'age',
       key: 'age',
       width: '20%',
-      // 渲染可编辑项, 如果不想要编辑框，则return空就会显示默认的render选项。
-      renderEdit: (text: any, rowData: any) => {
+      // 渲染可编辑项, 如果不想要编辑框，则return其他值
+      render: (text: any, rowData: any) => {
         return (
           <Control rules={[{ required: true, message: '不能为空' }]}>
             <Input
@@ -114,7 +113,7 @@ export default (props) => {
       key: 'tags',
       dataIndex: 'tags',
       width: '10%',
-      renderEdit: (text: any, rowData: any) => {
+      render: (text: any, rowData: any) => {
         return (
           <InputNumber
             style={{ width: '100%' }}
@@ -174,10 +173,10 @@ export default (props) => {
         loading={loading}
         footer={footer}
         scroll={{ y: 400 }}
-        // pagination={{
-        //   onChange: handlePageChange,
-        //   onShowSizeChange: handleShowSizeChange,
-        // }}
+      // pagination={{
+      //   onChange: handlePageChange,
+      //   onShowSizeChange: handleShowSizeChange,
+      // }}
       />
       <div style={{ textAlign: 'center' }}>
         <Button type="primary" onClick={() => handelSubmite()}>

@@ -6,3 +6,4 @@ export * from './use-edit-table'
  * 3.提供的自定义hook可以用来触发控件的校验
  */
 export default BEditable
+export * from './control'

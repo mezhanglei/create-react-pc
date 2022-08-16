@@ -26,7 +26,7 @@ export default (props: EditTableProps<any>) => {
         title: col.title,
         validator: validator,
         cellError: cellError,
-        renderEdit: col?.renderEdit,
+        render: col?.render,
       }),
     }
   })
@@ -38,7 +38,7 @@ export default (props: EditTableProps<any>) => {
 export type EditableColumnsType<T> = ColumnType<T> & Omit<EditableCellProps<T>, 'record' | 'dataIndex'>
 // 可编辑表格的格的prop
 interface EditableCellProps<T> extends ColumnType<T>, EditableHook {
-  renderEdit?: (value: any, rowData: T) => JSX.Element // 渲染可编辑项, 如果想去掉，则return空就会显示默认的render选项。
+  render?: (value: any, rowData: T) => JSX.Element // 渲染可编辑项, 如果想去掉，则return空就会显示默认的render选项。
   record: T
   title: any
   dataIndex?: string
@@ -52,12 +52,11 @@ const EditableCell: React.FC<EditableCellProps<any>> = ({
   record,
   validator,
   cellError,
-  renderEdit,
+  render,
   ...restProps
 }) => {
   const rowKey = record?.key
-  const childNode = children
-  let editChildren = renderEdit?.(dataIndex && record?.[dataIndex], record)
+  let editChildren = render?.(dataIndex && record?.[dataIndex], record)
 
   useEffect(() => {
     // 如果没有可编辑项则去掉校验规则
@@ -76,7 +75,7 @@ const EditableCell: React.FC<EditableCellProps<any>> = ({
         validator: validator,
         error: cellError?.(rowKey, dataIndex),
       })
-      : undefined
+      : editChildren
 
-  return <td {...restProps}>{editChildren ? cloneChild : childNode}</td>
+  return <td {...restProps}>{cloneChild}</td>
 }
