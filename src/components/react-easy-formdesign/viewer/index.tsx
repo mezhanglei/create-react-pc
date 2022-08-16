@@ -2,7 +2,7 @@ import React, { useContext, CSSProperties } from 'react'
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import RenderItem from './render-item';
+import ItemWrapper from './item-wrapper';
 import './index.less';
 import RenderList from './render-list';
 
@@ -48,7 +48,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       <RenderForm store={viewerRenderStore} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
-        renderItem={RenderItem}
+        renderItem={ItemWrapper}
         renderList={RenderList}
       />
     </div>

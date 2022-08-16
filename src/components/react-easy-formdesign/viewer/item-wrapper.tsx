@@ -4,7 +4,7 @@ import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { FormItemInfo } from '../form-render';
-import './render-item.less';
+import './item-wrapper.less';
 
 export interface RenderItemProps extends FormItemInfo {
   children: any;
@@ -12,7 +12,7 @@ export interface RenderItemProps extends FormItemInfo {
   className?: string;
 }
 
-function RenderItem(props: RenderItemProps, ref: any) {
+function ItemWrapper(props: RenderItemProps, ref: any) {
   const {
     children,
     style,
@@ -71,4 +71,4 @@ function RenderItem(props: RenderItemProps, ref: any) {
   );
 };
 
-export default React.forwardRef(RenderItem);
+export default React.forwardRef(ItemWrapper);

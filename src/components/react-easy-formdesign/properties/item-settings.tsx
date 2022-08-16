@@ -7,6 +7,7 @@ import { fieldSettings } from '../config/field-settings';
 import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { FieldProps } from '@/components/react-easy-formcore';
+import { getContainerSettings } from '../config/container-settings';
 
 export interface ItemSettingsProps {
   className?: string
@@ -42,6 +43,13 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
     const selectedItem = viewerRenderStore.getItemByPath(selected);
     const itemSettings = selectedItem?.['settings'];
     let baseSettings = { ...itemSettings };
+    // 当有outside属性时则添加对应的配置
+    if (selectedItem?.outside?.type) {
+      baseSettings = {
+        ...baseSettings,
+        outside: getContainerSettings(selectedItem?.outside?.type)
+      }
+    }
     // 只有表单域组件才可以添加表单域的属性
     if (selectedItem?.category !== 'container') {
       baseSettings = {

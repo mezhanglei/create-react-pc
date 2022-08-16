@@ -1,7 +1,7 @@
-// 容器的配置项(暂未使用)
-export const containerSettings = {
-  outside: {
-    label: '栅格布局',
+// 容器类型和对应的属性设置
+const containerMap = {
+  col: {
+    label: '栅格列',
     type: 'Select',
     initialValue: { type: 'col', props: { span: 12 } },
     valueSetter: "{{(value)=> (value && value['props']['span'])}}",
@@ -14,5 +14,10 @@ export const containerSettings = {
         { type: 'Select.Option', props: { key: 3, value: 4, children: '一行三列' } }
       ]
     }
-  },
+  }
+}
+
+// 根据容器组件的类型返回对应容器的配置项
+export const getContainerSettings = (container: 'row' | 'col' | string) => {
+  return container && containerMap[container]
 }

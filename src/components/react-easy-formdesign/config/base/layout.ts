@@ -4,17 +4,8 @@ export const layoutElements = [{
   inside: { type: 'row' },
   // category: 'container',
   properties: {
-    outside1: {
-      outside: { type: 'col', props: { span: 6 } }
-    },
-    // outside2: {
-    //   outside: { type: 'col', props: { span: 6 } }
-    // }
   },
   settings: {
-    category: {
-
-    }
   }
 }, {
   prefix: 'layout',
@@ -22,16 +13,7 @@ export const layoutElements = [{
   inside: { type: 'row' },
   // category: 'container',
   properties: [
-    // {
-    //   outside: { type: 'col', props: { span: 6 } }
-    // },
-    // {
-    //   outside: { type: 'col', props: { span: 6 } }
-    // }
   ],
   settings: {
-    category: {
-
-    }
   }
 }]
