@@ -194,7 +194,8 @@ export class FormStore<T extends Object = any> {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
-      const message = await this.validator.start(path, value);
+      const disabled = !fieldProps; // 校验的时候如果没有该元素则删除校验规则
+      const message = await this.validator.start(path, value, disabled);
       if (message) {
         this.setFieldError(path, message);
       }
