@@ -41,7 +41,7 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     if (children) {
       addRules?.(record?.key, dataIndex, rules)
     }
-  }, [])
+  }, [JSON.stringify(rules)])
 
   // 添加校验规则
   const addRules = (rowKey?: string, dataIndex?: string, rules?: FormRule[]) => {

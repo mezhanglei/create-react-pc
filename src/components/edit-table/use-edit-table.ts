@@ -32,23 +32,25 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   const tableConfigRef = useRef<TableConfig>(initialConfig)
 
   const getRowIndex = (rowKey: string) => {
-    const rowIndex = dataSource?.findIndex((item) => item?.key === rowKey)
+    const rowIndex = dataSourceRef.current?.findIndex((item) => item?.key === rowKey)
     return rowIndex > -1 ? rowIndex : undefined
   }
 
   // 设置dataSource
-  const setDataSource = (value: T[] = []) => {
-    dataSourceRef.current = value
-    setData(value)
-    setTableConfig({ total: value?.length })
+  const setDataSource = (value: any) => {
+    const oldValue = dataSourceRef.current
+    const newValue = typeof value === 'function' ? value?.(oldValue) : value;
+    dataSourceRef.current = newValue
+    setData(newValue)
+    setTableConfig((last: any) => ({ ...last, total: newValue?.length }))
   }
 
   // 更新表格的一些信息
-  const setTableConfig = (value: Partial<TableConfig>) => {
-    const oldValue = { ...tableConfigRef.current }
-    const newValue = { ...oldValue, ...value }
-    setConfig(newValue)
+  const setTableConfig = (value: any) => {
+    const oldValue = tableConfigRef.current
+    const newValue = typeof value === 'function' ? value?.(oldValue) : value;
     tableConfigRef.current = newValue
+    setConfig(newValue)
   }
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
 
   // 更新table数据
   const updateTable = (data: any, rowKey: string, dataIndex: string) => {
-    const newData = deepClone(dataSource)
+    const newData = deepClone(dataSourceRef.current)
     const rowIndex = getRowIndex(rowKey)
     if (typeof rowIndex == 'number') {
       newData[rowIndex][dataIndex] = data
@@ -69,7 +71,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   // 删除一行
   const deleteRow = (rowKey: string) => {
     const rowIndex = getRowIndex(rowKey)
-    const newData = deepClone(dataSource)
+    const newData = deepClone(dataSourceRef.current)
     if (typeof rowIndex === 'number') {
       newData.splice(rowIndex, 1)
     }
@@ -79,7 +81,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
 
   // 增加一行
   const addRow = (rowData?: T) => {
-    const newData = deepClone(dataSource)
+    const newData = deepClone(dataSourceRef.current)
     const item = { key: getNanoid(), ...rowData } as T
     newData.push(item)
     setDataSource(newData)
@@ -135,12 +137,12 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
 
   // 页码或pageSize改变的回调，参数是改变后的页码及每页条数
   const handlePageChange = (page: number, pageSize: number) => {
-    setTableConfig({ page, pageSize })
+    setTableConfig((last: any) => ({ ...last, page, pageSize }))
   }
 
   // 表格显示数量变更回调函数（注意同一时间会触发页码变更）
   const handleShowSizeChange = (pageSize: number) => {
-    setTableConfig({ pageSize })
+    setTableConfig((last: any) => ({ ...last, pageSize }))
   }
 
   return {

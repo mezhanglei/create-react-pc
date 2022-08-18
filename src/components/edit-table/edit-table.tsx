@@ -6,7 +6,7 @@ import { Table } from 'antd'
 
 export interface EditableHook {
   validator?: Validator
-  cellError?: (rowKey: string, dataIndex: string) => any
+  cellError?: (rowKey: string, dataIndex?: string) => any
 }
 
 // 表格的props
@@ -75,7 +75,7 @@ const EditableCell: React.FC<EditableCellProps<any>> = ({
         validator: validator,
         error: cellError?.(rowKey, dataIndex),
       })
-      : editChildren
+      : editChildren || children
 
   return <td {...restProps}>{cloneChild}</td>
 }
