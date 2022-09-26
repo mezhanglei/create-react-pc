@@ -1,7 +1,7 @@
-import RenderForm, { FormContainer } from './render-form';
+import RenderForm from './render-form';
 import RenderFormChildren from './render-children';
 export default RenderForm;
-export { RenderFormChildren, FormContainer };
+export { RenderFormChildren };
 export * from './types';
 export * from './fields';
 export * from './components';

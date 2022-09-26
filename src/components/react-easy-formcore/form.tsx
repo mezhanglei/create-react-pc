@@ -1,14 +1,14 @@
-import './style.less'
-
 import React, { CSSProperties, useEffect } from 'react'
 import { FormItem } from './form-item'
 import { FormStore } from './form-store'
 import { FormStoreContext, FormValuesContext } from './form-store-context'
-import { FormOptions, FormOptionsContext } from './form-options-context'
+import { FormOptionsContext } from './form-options-context'
 import { FormList } from './form-list';
+import { ItemCoreProps } from './item-core'
+import { ItemProps } from './components/item'
 
 // 缓存数组类型的组件的路径
-export interface FormProps<S = FormStore> extends FormOptions {
+export type FormProps<S = FormStore, T = ItemProps>  = T & ItemCoreProps & {
   className?: string;
   store?: S;
   style?: CSSProperties;
@@ -31,11 +31,11 @@ export function Form(props: FormProps) {
   return (
     <form className={classNames} style={style} onSubmit={onSubmit} onReset={onReset}>
       <FormStoreContext.Provider value={store}>
-        <FormValuesContext.Provider value={initialValues}>
-          <FormOptionsContext.Provider value={options}>
+        <FormOptionsContext.Provider value={options}>
+          <FormValuesContext.Provider value={initialValues}>
             {children}
-          </FormOptionsContext.Provider>
-        </FormValuesContext.Provider>
+          </FormValuesContext.Provider>
+        </FormOptionsContext.Provider>
       </FormStoreContext.Provider>
     </form>
   )

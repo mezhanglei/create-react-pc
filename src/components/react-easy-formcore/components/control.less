@@ -13,6 +13,10 @@
     display: flex;
     flex-wrap: wrap;
     flex: 1;
+    &--text {
+      word-break: break-all;
+      word-wrap: break-word;
+    }
   }
 
   &__message {
@@ -61,9 +65,4 @@
   &--compact &__message {
     display: none;
   }
-}
-
-.custom-item .item-control__content {
-  word-break: break-all;
-  word-wrap: break-word;
 }

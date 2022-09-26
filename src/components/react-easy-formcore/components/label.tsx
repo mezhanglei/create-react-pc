@@ -2,12 +2,17 @@ import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import './label.less';
 
-export interface LabelProps {
+export interface LabelBaseProps {
+  colon?: boolean;
+  required?: boolean;
+  labelWidth?: number;
+  labelAlign?: CSSProperties['textAlign'],
+  gutter?: number;
+}
+export interface LabelProps extends LabelBaseProps {
   children: any;
   style?: CSSProperties;
   className?: string;
-  colon?: boolean;
-  required?: boolean;
 }
 
 export const Label = React.forwardRef((props: LabelProps, ref: any) => {
@@ -17,6 +22,9 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
     className,
     colon,
     required,
+    gutter,
+    labelWidth,
+    labelAlign,
     ...restProps
   } = props;
 
@@ -28,9 +36,16 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
     className ? className : ''
   );
 
+  const mergeStyle = {
+    marginRight: gutter,
+    width: labelWidth,
+    textAlign: labelAlign,
+    ...style
+  }
+
   return (
     children !== undefined ? (
-      <div ref={ref} className={cls} style={style} {...restProps}>
+      <div ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon ? <>{children}:</> : children}
       </div>
     ) : null

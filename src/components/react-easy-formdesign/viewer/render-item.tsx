@@ -4,15 +4,15 @@ import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { FormItemInfo } from '../form-render';
-import './item-wrapper.less';
+import './render-item.less';
 
 export interface RenderItemProps extends FormItemInfo {
-  children: any;
+  children?: any;
   style?: CSSProperties;
   className?: string;
 }
 
-function ItemWrapper(props: RenderItemProps, ref: any) {
+function RenderItem(props: RenderItemProps, ref: any) {
   const {
     children,
     style,
@@ -20,10 +20,10 @@ function ItemWrapper(props: RenderItemProps, ref: any) {
     ...restProps
   } = props;
 
-  const { name, path, field } = restProps;
+  const { name, parent, field } = restProps;
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
-  const currentPath = getCurrentPath(name, path) as string;
+  const currentPath = getCurrentPath(name, parent) as string;
   const isSelected = currentPath ? currentPath === selected : false;
   const copyItem = () => {
     let newId;
@@ -35,7 +35,7 @@ function ItemWrapper(props: RenderItemProps, ref: any) {
       newId = defaultGetId(field?.prefix);
     }
     const newField = viewerRenderStore?.getItemByPath(currentPath);
-    viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, path);
+    viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, parent);
   }
 
   const deleteItem = () => {
@@ -71,4 +71,4 @@ function ItemWrapper(props: RenderItemProps, ref: any) {
   );
 };
 
-export default React.forwardRef(ItemWrapper);
+export default React.forwardRef(RenderItem);

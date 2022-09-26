@@ -30,10 +30,10 @@ export const endIsListItem = (path: string) => {
 }
 
 // 更改path的末尾项
-export const changeSelected = (path: string, name: string) => {
-  if (name && path) {
-    const parent = getParent(path);
-    const newPath = getCurrentPath(name, parent);
+export const changeSelected = (oldPath: string, newName: string) => {
+  if (newName && oldPath) {
+    const parent = getParent(oldPath);
+    const newPath = getCurrentPath(newName, parent);
     return newPath;
   }
 }

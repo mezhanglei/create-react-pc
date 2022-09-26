@@ -1,13 +1,13 @@
 // export default demo5;
 // import { Button } from 'antd';
 import React, { useState } from 'react';
-import RenderForm, { RenderFormProps, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
+import RenderForm, { GeneratePrams, RenderFormProps, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
 import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import './index.less'
-import Wrapper from './wrapper';
 import { getCurrentPath } from '@/components/react-easy-formcore';
 import Button from '@/components/button';
+
 
 export default function Demo5(props) {
 
@@ -55,7 +55,6 @@ export default function Demo5(props) {
         label: "数组",
         required: true,
         outside: { type: 'col', props: { span: 6 } },
-        // category: 'container',
         footer: {
           type: 'add',
           props: {
@@ -184,13 +183,26 @@ export default function Demo5(props) {
   })
 
   const store = useFormRenderStore();
-  const [activePath, setActivePath] = useState<string>();
 
   const onSubmit = async (e) => {
     e?.preventDefault?.();
     const result = await store.validate();
     console.log(result, '表单结果');
   };
+
+  return (
+    <div style={{ padding: '0 8px' }}>
+      <RenderForm store={store} schema={schema} watch={watch} components={{ dnd: renderDnd }} />
+      <div style={{ marginLeft: '120px' }}>
+        <Button onClick={onSubmit}>submit</Button>
+      </div>
+    </div>
+  );
+}
+
+const renderDnd = (props: GeneratePrams) => {
+  const { children, name, parent, field, store } = props;
+  const currentPath = getCurrentPath(name, parent);
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -201,7 +213,7 @@ export default function Demo5(props) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    store?.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -213,94 +225,71 @@ export default function Demo5(props) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    store.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    store?.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
-  const renderList: RenderFormProps['renderList'] = ({ children, name, path, field }) => {
-    const currentPath = getCurrentPath(name, path);
-    if (field?.properties) {
-      const isList = field?.properties instanceof Array;
-      // 允许拖出的条件
-      const outCondition: DndCondition = (params, options) => {
-        if (isList) {
-          const { from, to } = params;
-          if (from?.groupPath === to?.groupPath) {
-            return true;
-          } else {
-            return false;
-          }
+  if (field?.properties) {
+    const isList = field?.properties instanceof Array;
+    // 允许拖出的条件
+    const outCondition: DndCondition = (params, options) => {
+      if (isList) {
+        const { from, to } = params;
+        if (from?.groupPath === to?.groupPath) {
+          return true;
+        } else {
+          return false;
         }
-        return true;
       }
-      // 允许拖进的条件
-      const dropCondition: DndCondition = (params, options) => {
-        if (isList) {
-          const { from } = params;
-          if (from?.groupPath === 'sidebar') {
-            return true;
-          } else {
-            return false;
-          }
-        }
-        return true;
-      }
-
-      return (
-        <DndSortable
-          onUpdate={onItemSwap}
-          onAdd={onItemAdd}
-          data-type="fragment"
-          className='dnd-box'
-          style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
-          options={{
-            groupPath: currentPath,
-            childDrag: true,
-            childOut: outCondition,
-            allowDrop: dropCondition,
-            allowSort: true
-          }}
-        >
-          {children}
-        </DndSortable>
-      )
-    } else if (!currentPath) {
-      return (
-        <DndSortable
-          onUpdate={onItemSwap}
-          onAdd={onItemAdd}
-          data-type="fragment"
-          className='dnd-box'
-          options={{
-            childDrag: true,
-            allowDrop: true,
-            allowSort: true
-          }}
-        >
-          {children}
-        </DndSortable>
-      )
-    } else {
-      return children;
+      return true;
     }
-  }
+    // 允许拖进的条件
+    const dropCondition: DndCondition = (params, options) => {
+      if (isList) {
+        const { from } = params;
+        if (from?.groupPath === 'sidebar') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
 
-  const renderItem: RenderFormProps['renderItem'] = ({ children, ...restProps }) => {
     return (
-      <Wrapper {...restProps}>
+      <DndSortable
+        onUpdate={onItemSwap}
+        onAdd={onItemAdd}
+        data-type="fragment"
+        className='dnd-box'
+        style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
+        options={{
+          groupPath: currentPath,
+          childDrag: true,
+          childOut: outCondition,
+          allowDrop: dropCondition,
+          allowSort: true
+        }}
+      >
         {children}
-      </Wrapper>
-    );
-  };
-
-  return (
-    <div style={{ padding: '0 8px' }}>
-      <RenderForm store={store} schema={schema} watch={watch}
-        renderList={renderList}
-        // renderItem={renderItem}
-      />
-      <div style={{ marginLeft: '120px' }}>
-        <Button onClick={onSubmit}>submit</Button>
-      </div>
-    </div>
-  );
+      </DndSortable>
+    )
+  } else if (!currentPath) {
+    return (
+      <DndSortable
+        onUpdate={onItemSwap}
+        onAdd={onItemAdd}
+        data-type="fragment"
+        className='dnd-box'
+        options={{
+          childDrag: true,
+          allowDrop: true,
+          allowSort: true
+        }}
+      >
+        {children}
+      </DndSortable>
+    )
+  } else {
+    return children;
+  }
 }

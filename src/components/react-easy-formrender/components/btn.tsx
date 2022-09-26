@@ -13,14 +13,15 @@ export interface DeleteBtnProps extends GeneratePrams {
 export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
 
   const {
-    className,
-    path,
     name,
+    field,
+    parent,
     store,
+    className,
     ...restProps
   } = props;
 
-  const currentPath = getCurrentPath(name, path);
+  const currentPath = getCurrentPath(name, parent);
   const deleteItem = () => {
     currentPath && store?.setFieldValue(currentPath, undefined, true);
     currentPath && store?.delItemByPath(currentPath);
@@ -39,16 +40,16 @@ export interface AddBtnProps extends GeneratePrams {
 export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
   const {
-    className,
     name,
-    path,
     field,
+    parent,
     store,
     item,
+    className,
     children,
     ...restProps
   } = props;
-  const currentPath = getCurrentPath(name, path);
+  const currentPath = getCurrentPath(name, parent);
 
   const addNewItem = () => {
     const properties = field?.properties;

@@ -37,6 +37,10 @@ export interface GridRowProps extends RowProps, GeneratePrams {
 // row组件
 export const GridRow = React.forwardRef((props: GridRowProps, ref: any) => {
   const {
+    name,
+    field,
+    parent,
+    store,
     children,
     className,
     ...rest
@@ -55,9 +59,12 @@ export interface GridColProps extends FromColProps, GeneratePrams {
 // col组件
 export const GridCol = React.forwardRef((props: GridColProps, ref: any) => {
   const {
-    children,
+    name,
     field,
+    parent,
+    store,
     className,
+    children,
     ...rest
   } = props;
   const calcProps = getColProps(rest, field?.inline);

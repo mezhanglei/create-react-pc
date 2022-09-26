@@ -59,11 +59,12 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
 
   // 更新table数据
   const updateTable = (data: any, rowKey: string, dataIndex: string) => {
-    const newData = deepClone(dataSourceRef.current)
+    const newData = dataSourceRef.current
     const rowIndex = getRowIndex(rowKey)
     if (typeof rowIndex == 'number') {
       newData[rowIndex][dataIndex] = data
     }
+    console.log(newData === dataSourceRef.current)
     setDataSource(newData)
     return newData
   }

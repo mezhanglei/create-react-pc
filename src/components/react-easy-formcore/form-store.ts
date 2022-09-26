@@ -110,7 +110,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public async setFieldValue(path: string | Partial<T>, value?: any, noError?: boolean) {
+  public setFieldValue(path: string | Partial<T>, value?: any, noError?: boolean) {
     if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = deepClone(this.values);
@@ -125,15 +125,15 @@ export class FormStore<T extends Object = any> {
       const rules = fieldProps?.[path]?.['rules'];
       if (rules?.length && !noError) {
         // 校验规则
-        await this.validate(path);
+        this.validate(path);
       }
     } else if (typeof path === 'object') {
-      await Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
+      Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
     }
   }
 
   // 设置表单值(覆盖更新)
-  public async setFieldsValue(values?: Partial<T>) {
+  public setFieldsValue(values?: Partial<T>) {
     this.lastValues = deepClone(this.values);
     this.values = values;
     this.notifyFormItem();
@@ -168,7 +168,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 设置error信息(覆盖更新)
-  private async setFieldsError(erros: FormErrors<T>) {
+  private setFieldsError(erros: FormErrors<T>) {
     this.formErrors = deepClone(erros);
     this.notifyError();
   }

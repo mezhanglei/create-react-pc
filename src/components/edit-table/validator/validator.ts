@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { asyncSequentialExe } from '../utils/utils'
 import { validatorsMap } from './validate-rules'
 export type FormRule = {
   required?: boolean

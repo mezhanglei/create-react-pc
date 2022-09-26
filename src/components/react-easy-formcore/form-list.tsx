@@ -1,135 +1,55 @@
-import React, { cloneElement, CSSProperties, useContext } from 'react';
-import classnames from 'classnames';
-import { FormOptions, FormOptionsContext } from './form-options-context';
-import { FormValuesContext } from './form-store-context';
+import React, { CSSProperties, useContext } from 'react';
+import { FormOptionsContext } from './form-options-context';
 import { getCurrentPath } from './utils/utils';
-import { deepGet } from '@/utils/object';
-import { FormRule } from './validator';
-import { Control } from './control';
-import { Label } from './label';
+import { useFormError } from './use-form';
+import { Item, ItemProps } from './components/item';
+import { ListCore, ListCoreProps } from './list-core';
+import { FormStore } from './form-store';
+import { FormStoreContext } from './form-store-context';
 
-export interface FormListProps extends FormOptions {
-  label?: string;
-  name?: string;
-  suffix?: React.ReactNode | any; // 右边节点
-  footer?: React.ReactNode | any; // 底部节点
-  rules?: FormRule[];
-  path?: string;
-  index?: number;
-  initialValue?: any[];
+export type FormListProps<T = ItemProps> = T & ListCoreProps & {
   className?: string;
-  style?: CSSProperties;
   children?: React.ReactNode;
+  style?: CSSProperties;
+  component?: any;
 }
 
-const prefixCls = 'field-list';
-const classes = {
-  field: prefixCls,
-  inline: `${prefixCls}--inline`,
-  compact: `${prefixCls}--compact`,
-  required: `${prefixCls}--required`,
-  error: `${prefixCls}--error`
-};
-
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
+  const store = useContext<FormStore>(FormStoreContext)
   const options = useContext(FormOptionsContext);
-  const initialValues = useContext(FormValuesContext);
   const mergeProps = { ...options, ...props };
   const { children, ...fieldProps } = mergeProps;
   const {
     name,
     rules,
-    path,
-    label,
-    suffix,
-    footer,
-    className,
-    style,
-    layout = "horizontal",
-    inline,
-    colon,
-    compact,
-    required,
-    labelWidth,
-    labelAlign,
-    labelStyle,
-    gutter,
+    parent,
+    initialValue,
+    /** 忽略传递的props */
+    valueProp,
+    valueGetter,
+    valueSetter,
+    errorClassName,
     onFieldsChange,
     onValuesChange,
-    initialValue,
-    ...restField
+    component = Item,
+    ...rest
   } = fieldProps;
 
-  const currentPath = getCurrentPath(name, path);
-  const initialListValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
-
-  // 是否为表单控件
-  const isFormField = (child: any) => {
-    const displayName = child?.type?.displayName;
-    const formFields = ['Form.Item', 'Form.List'];
-    return formFields?.includes(displayName);
-  };
-
-  // 渲染子元素
-  let index = 0;
-  const getChildren = (children: any): any => {
-    return React.Children.map(children, (child: any) => {
-      if (isFormField(child)) {
-        return renderFormItem(child);
-      } else {
-        const childs = child?.props?.children;
-        if (childs && child !== undefined) {
-          return cloneElement(child, {
-            children: getChildren(childs)
-          });
-        } else {
-          return child;
-        }
-      }
-    });
-  };
-
-  // 渲染子项
-  const renderFormItem = (child: any) => {
-    const currentIndex = index;
-    index++;
-    const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule) => !!rule);
-    const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
-    return child && cloneElement(child, {
-      path: currentPath,
-      name: `[${currentIndex}]`,
-      rules: childRules,
-      initialValue: childValue
-    });
-  };
-
-  const childs = getChildren(children);
-
-  const cls = classnames(
-    classes.field,
-    layout ? `${classes.field}--${layout}` : '',
-    compact ? classes.compact : '',
-    required ? classes.required : '',
-    inline ? classes.inline : '',
-    className ? className : '',
-  );
-
-  const headerStyle = {
-    marginRight: gutter,
-    width: labelWidth,
-    textAlign: labelAlign,
-    ...labelStyle
-  };
+  const currentPath = getCurrentPath(name, parent);
+  const [error] = useFormError(store, currentPath);
+  const FieldComponent = component
 
   return (
-    <div ref={ref} className={cls} style={style} {...restField}>
-      <Label colon={colon} required={required} style={headerStyle}>
-        {label}
-      </Label>
-      <Control compact={compact} footer={footer} suffix={suffix}>
-        {childs}
-      </Control>
-    </div>
+    <FieldComponent {...rest} ref={ref} error={error}>
+      <ListCore
+        name={name}
+        parent={parent}
+        rules={rules}
+        initialValue={initialValue}
+      >
+        {children}
+      </ListCore>
+    </FieldComponent>
   );
 });
 

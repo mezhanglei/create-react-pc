@@ -50,7 +50,7 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
         outside: getContainerSettings(selectedItem?.outside?.type)
       }
     }
-    // 只有表单域组件才可以添加表单域的属性
+    // TODO：只有表单域组件才可以添加表单域的属性
     if (selectedItem?.category !== 'container') {
       baseSettings = {
         ...baseSettings,

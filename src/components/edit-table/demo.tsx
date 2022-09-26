@@ -95,8 +95,8 @@ export default (props) => {
         return (
           <Control rules={[{ required: true, message: '不能为空' }]}>
             <Input
-              style={{ width: '100%' }}
               value={text}
+              style={{ width: '100%' }}
               onBlur={(e) => {
                 validateCell(rowData?.key, 'age')
               }}

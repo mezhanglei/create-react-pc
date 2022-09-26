@@ -1,8 +1,8 @@
 import React, { useContext, CSSProperties } from 'react'
 import classnames from 'classnames';
-import RenderForm, { RenderFormProps } from '../form-render';
+import RenderForm, { getCurrentPath, RenderFormProps } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import ItemWrapper from './item-wrapper';
+import RenderItem from './render-item';
 import './index.less';
 import RenderList from './render-list';
 
@@ -29,8 +29,9 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     setEdit({ schema: newSchema });
   }
 
-  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ path, value }) => {
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
     if (!selected || selected === '#' || !settingsForm) return;
+    const path = getCurrentPath(name, parent)
     updateViewerValue(path, value);
   }
 
@@ -38,7 +39,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     setEdit({ selected: "#" });
   }
 
-  const updateViewerValue = (path: string, value: unknown) => {
+  const updateViewerValue = (path: string | undefined, value: unknown) => {
     settingsForm.setInitialValues('initialValue', value);
     viewerRenderStore?.updateItemByPath(path, { initialValue: value });
   }
@@ -48,7 +49,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       <RenderForm store={viewerRenderStore} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
-        renderItem={ItemWrapper}
+        renderItem={RenderItem}
         renderList={RenderList}
       />
     </div>

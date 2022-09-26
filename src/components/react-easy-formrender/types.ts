@@ -14,16 +14,13 @@ interface Extension {
 // 组件描述基本属性
 export interface SchemaComponent {
   type?: string;
-  props?: {
-    [key: string]: any;
-    children?: any | Array<SchemaComponent>
-  };
+  props?: any;
+  children?: any | Array<SchemaComponent>;
   hidden?: string | boolean;
 }
 
 export interface BaseFieldProps extends SchemaComponent {
-  fieldType?: string; // 表单域的类型
-  category?: string; // 当前节点类型，为container时表示容器节点.只显示容器不显示表单域
+  fieldComponent?: SchemaComponent; // 表单域中的容器组件
   inside?: SchemaComponent;
   outside?: SchemaComponent;
   readOnly?: boolean; // 只读模式
@@ -56,9 +53,9 @@ export interface BaseRenderProps {
   inside?: SchemaComponent;
   Fields?: typeof defaultFields;
   // 自定义渲染列表
-  renderList?: React.ComponentType<GeneratePrams & { children: any }>;
+  renderList?: React.ComponentType<GeneratePrams>;
   // 自定义渲染子元素
-  renderItem?: React.ComponentType<GeneratePrams & { children: any }>;
+  renderItem?: React.ComponentType<GeneratePrams>;
 }
 
 // 带form容器的渲染组件props
@@ -75,6 +72,6 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // 表单节点信息
-export interface FormItemInfo { name?: string, field: OverwriteFormFieldProps, path?: string };
+export interface FormItemInfo { name?: string, field: OverwriteFormFieldProps, parent?: string };
 // 生成组件的传递的参数
-export interface GeneratePrams extends FormItemInfo { store?: FormRenderStore };
+export interface GeneratePrams extends FormItemInfo { store?: FormRenderStore, children?: any };
