@@ -3,7 +3,6 @@ import { FormRenderContext } from '@/components/react-easy-formdesign/design-con
 import React, { useContext } from 'react';
 import { GeneratePrams, getCurrentPath } from '../form-render';
 import './index.less';
-// import RenderItem from './render-item';
 
 export interface RenderListProps extends GeneratePrams {
   children?: any;
@@ -66,25 +65,23 @@ function RenderList(props: RenderListProps, ref: any) {
     }
 
     return (
-      // <RenderItem name={name} parent={parent} field={field}>
-        <DndSortable
-          onUpdate={onItemSwap}
-          onAdd={onItemAdd}
-          data-type="fragment"
-          className='viewer-dnd-group'
-          options={{
-            groupPath: currentPath,
-            childDrag: true,
-            childOut: outCondition,
-            allowDrop: dropCondition,
-            allowSort: true
-          }}
-        >
-          {children}
-        </DndSortable>
-      // </RenderItem>
+      <DndSortable
+        onUpdate={onItemSwap}
+        onAdd={onItemAdd}
+        data-type="fragment"
+        className='viewer-dnd-group'
+        options={{
+          groupPath: currentPath,
+          childDrag: true,
+          childOut: outCondition,
+          allowDrop: dropCondition,
+          allowSort: true
+        }}
+      >
+        {children}
+      </DndSortable>
     )
-  } else if (!currentPath) {
+  } else if (!parent) {
     return (
       <DndSortable
         onUpdate={onItemSwap}

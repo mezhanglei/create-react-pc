@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { FormItemProps, FormProps } from "../react-easy-formcore";
 import { defaultFields } from "./fields";
 import { FormRenderStore } from "./formrender-store";
@@ -19,13 +20,15 @@ export interface SchemaComponent {
   hidden?: string | boolean;
 }
 
+// 表单上的组件联合类型：包括SchemaComponent，组件声明
+export type FieldUnionType = SchemaComponent | Array<SchemaComponent> | React.ComponentType<any> | Function
+
 export interface BaseFieldProps extends SchemaComponent {
-  fieldComponent?: SchemaComponent; // 表单域中的容器组件
-  inside?: SchemaComponent;
-  outside?: SchemaComponent;
+  fieldComponent?: FieldUnionType; // 表单域中的容器组件
+  inside?: FieldUnionType;
+  outside?: FieldUnionType;
   readOnly?: boolean; // 只读模式
-  readOnlyItem?: string; // 只读模式下的组件，和readOnlyRender只能生效一个，readOnlyRender优先级最高
-  readOnlyRender?: any; // 只读模式下的组件，和readOnlyItem只能生效一个，readOnlyRender优先级最高
+  readOnlyRender?: FieldUnionType | ReactNode; // 只读模式下的组件
   typeRender?: any; // 表单控件自定义渲染
 }
 
@@ -50,7 +53,7 @@ export interface BaseRenderProps {
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   controls?: any;
   components?: any;
-  inside?: SchemaComponent;
+  inside?: FieldUnionType;
   Fields?: typeof defaultFields;
   // 自定义渲染列表
   renderList?: React.ComponentType<GeneratePrams>;
@@ -71,7 +74,5 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 };
 
 export type ValueOf<T> = T[keyof T];
-// 表单节点信息
-export interface FormItemInfo { name?: string, field: OverwriteFormFieldProps, parent?: string };
-// 生成组件的传递的参数
-export interface GeneratePrams extends FormItemInfo { store?: FormRenderStore, children?: any };
+// 组件公共的参数
+export interface GeneratePrams { name?: string, field?: OverwriteFormFieldProps, parent?: string, store?: FormRenderStore, children?: any };

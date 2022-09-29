@@ -41,8 +41,8 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
   // 生成当前控件的settings
   const createSettings = (selected: string) => {
     const selectedItem = viewerRenderStore.getItemByPath(selected);
-    const itemSettings = selectedItem?.['settings'];
-    let baseSettings = { ...itemSettings };
+    const originSettings = selectedItem?.['settings'];
+    let baseSettings = { ...originSettings };
     // 当有outside属性时则添加对应的配置
     if (selectedItem?.outside?.type) {
       baseSettings = {

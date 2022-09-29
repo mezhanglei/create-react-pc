@@ -1,7 +1,11 @@
-import { deepClone } from '@/utils/object'
+import { getArrMap } from '@/utils/array'
 import { nanoid } from 'nanoid'
-import { useEffect, useRef, useState } from 'react'
-import { useValidator } from './validator/validator'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import Validator from '../react-easy-formcore/validator'
+
+export function useValidator() {
+  return useMemo(() => new Validator(), [])
+}
 
 // 根据key, dataIndex拼接cell的唯一路径
 export const getCellPath = (rowKey?: string, colKey?: string) => {
@@ -25,16 +29,11 @@ export interface TableConfig {
 export function useEditTable<T extends { key?: string }>(initialValue: T[], initialConfig = { page: 1, pageSize: 20 }) {
   const [dataSource, setData] = useState<T[]>([])
   const dataSourceRef = useRef<T[]>([])
-  const [errorMap, setErrorMap] = useState<{ [key: string]: string }>({})
+  const dataSourceMapRef = useRef<{ [key: string]: T }>({})
   const validator = useValidator()
   // 当前表格的一些状态
   const [tableConfig, setConfig] = useState<TableConfig>(initialConfig)
   const tableConfigRef = useRef<TableConfig>(initialConfig)
-
-  const getRowIndex = (rowKey: string) => {
-    const rowIndex = dataSourceRef.current?.findIndex((item) => item?.key === rowKey)
-    return rowIndex > -1 ? rowIndex : undefined
-  }
 
   // 设置dataSource
   const setDataSource = (value: any) => {
@@ -42,6 +41,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
     const newValue = typeof value === 'function' ? value?.(oldValue) : value;
     dataSourceRef.current = newValue
     setData(newValue)
+    dataSourceMapRef.current = getArrMap(newValue, 'key')
     setTableConfig((last: any) => ({ ...last, total: newValue?.length }))
   }
 
@@ -58,23 +58,33 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   }, [])
 
   // 更新table数据
-  const updateTable = (data: any, rowKey: string, dataIndex: string) => {
+  const updateTable = (data: any, rowKey: string, dataIndex?: string) => {
     const newData = dataSourceRef.current
-    const rowIndex = getRowIndex(rowKey)
-    if (typeof rowIndex == 'number') {
-      newData[rowIndex][dataIndex] = data
+    for (let i = 0; i < newData?.length; i++) {
+      const item = newData[i]
+      if (item?.key == rowKey) {
+        if (dataIndex) {
+          newData[i][dataIndex] = data
+          break;
+        } else {
+          newData[i] = data
+          break;
+        }
+      }
     }
-    console.log(newData === dataSourceRef.current)
     setDataSource(newData)
     return newData
   }
 
   // 删除一行
   const deleteRow = (rowKey: string) => {
-    const rowIndex = getRowIndex(rowKey)
-    const newData = deepClone(dataSourceRef.current)
-    if (typeof rowIndex === 'number') {
-      newData.splice(rowIndex, 1)
+    const newData = [...dataSourceRef.current]
+    for (let i = 0; i < newData?.length; i++) {
+      const item = newData[i]
+      if (item?.key === rowKey) {
+        newData?.splice(i, 1)
+        break
+      }
     }
     setDataSource(newData)
     return newData
@@ -82,7 +92,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
 
   // 增加一行
   const addRow = (rowData?: T) => {
-    const newData = deepClone(dataSourceRef.current)
+    const newData = [...dataSourceRef.current]
     const item = { key: getNanoid(), ...rowData } as T
     newData.push(item)
     setDataSource(newData)
@@ -93,18 +103,10 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   const validateCell = async (rowKey: string, dataIndex: string) => {
     const path = getCellPath(rowKey, dataIndex)
     if (!path) return
-    const record = dataSourceRef.current?.find?.((item) => item?.key === rowKey)
-    const isDisabled = !record
-    const message = await validator?.start?.(path, record?.[dataIndex], isDisabled)
-    setErrorMap((last) => {
-      const oldErrorMap = { ...last }
-      if (!message) {
-        delete oldErrorMap[path]
-      } else {
-        oldErrorMap[path] = message
-      }
-      return oldErrorMap
-    })
+    setDataSource([...dataSourceRef.current])
+    const record = dataSourceMapRef.current[rowKey]
+    const isRemoved = !record
+    const message = await validator?.start?.(path, record?.[dataIndex], isRemoved)
     return message
   }
 
@@ -129,13 +131,6 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
     }
   }
 
-  // 单元格的错误
-  const cellError = (rowKey?: string, dataIndex?: string) => {
-    const path = getCellPath(rowKey, dataIndex)
-    if (!path) return
-    return errorMap?.[path]
-  }
-
   // 页码或pageSize改变的回调，参数是改变后的页码及每页条数
   const handlePageChange = (page: number, pageSize: number) => {
     setTableConfig((last: any) => ({ ...last, page, pageSize }))
@@ -146,10 +141,15 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
     setTableConfig((last: any) => ({ ...last, pageSize }))
   }
 
+  // 获取当前实时数据
+  const getCurrent = () => {
+    return dataSourceRef.current
+  }
+
   return {
     dataSource,
     validator,
-    cellError,
+    getCurrent,
     setDataSource,
     validateCell,
     validate,

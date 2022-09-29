@@ -42,6 +42,10 @@ export default class Validator {
     }
   }
 
+  getRulesMap() {
+    return this.rulesMap
+  }
+
   getError(path?: string) {
     if (path) {
       return this.errorsMap[path]

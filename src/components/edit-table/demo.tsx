@@ -6,7 +6,6 @@ import BEditTable, { Control, useEditTable } from './index'
 export default (props) => {
   const [loading, setLoading] = useState(false)
   const {
-    cellError,
     validator,
     validateCell,
     validate,
@@ -53,7 +52,7 @@ export default (props) => {
   // 自定义校验
   const nameValidator = async (value: any, rowData: any, dataIndex: string) => {
     console.log(`当前行列：${rowData?.key},${dataIndex},值：${value}`)
-    return
+    return '错误信息提示'
   }
 
   const columns = [
@@ -166,7 +165,6 @@ export default (props) => {
   return (
     <>
       <BEditTable
-        cellError={cellError}
         validator={validator}
         dataSource={dataSource}
         columns={columns}

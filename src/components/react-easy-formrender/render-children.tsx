@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormFieldProps, RenderFormChildrenProps, SchemaData, SchemaComponent, OverwriteFormFieldProps } from './types';
+import { FormFieldProps, RenderFormChildrenProps, SchemaData, OverwriteFormFieldProps, GeneratePrams, FieldUnionType, SchemaComponent } from './types';
 import { defaultComponents } from './components';
 import { defaultFields } from './fields';
 import { FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
 import { FormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import './iconfont/iconfont.css';
-
-// 是否为class组件
-export const isElementClass = (target: any) => {
-  return target.prototype instanceof React.Component;
-}
+import { isReactComponent, isValidElement } from '@/utils/ReactIs';
 
 // 不带Form容器的组件
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -169,48 +165,50 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return fieldType && mergeFields?.[fieldType]
   }
 
-  // 组件生成实例
-  const createInstance = (target: Array<SchemaComponent> | SchemaComponent | any, typeMap?: any, extra?: any, finalChildren?: any): any => {
+  // 根据传递参数生成实例
+  const createInstance = (target?: any, typeMap?: any, extra?: any, finalChildren?: any): any => {
     if (target instanceof Array) {
       return target?.map((item) => {
         return createInstance(item, typeMap, extra, finalChildren);
       });
     } else {
       const Child = componentParse(target, typeMap);
-      const { children, ...restProps } = target?.props || {};
-      if (typeof Child === 'function' || typeof Child?.render === 'function' || typeof Child?.type?.render === 'function') {
+      // 声明组件
+      if (Child) {
+        const { children, ...restProps } = (target as SchemaComponent)?.props || {};
         return (
           <Child {...extra} {...restProps}>
             {children ? createInstance(children, typeMap, extra, finalChildren) : finalChildren}
           </Child>
         );
       } else {
-        return Child;
+        return isValidElement(target) ? target : null
       }
     }
   }
 
-  // 从参数中获取组件
-  const componentParse = <T,>(target: SchemaComponent | any, typeMap: T) => {
-    const hidden = calcExpression(target?.hidden);
-    if (hidden === true) {
-      return;
+  // 从参数中获取声明组件
+  const componentParse = <T,>(target: FieldUnionType | undefined, typeMap: T) => {
+    // 是否为类或函数组件声明
+    if (isReactComponent(target)) {
+      return target
     }
-    // 注册组件
-    const register = typeMap && target?.type && typeMap[target?.type];
-    if (register) {
-      return register
-    }
-    // 不符合要求返回空
+    // 是否为已注册的组件声明
     if (typeof target === 'object') {
-      return;
+      const targetInfo = target as SchemaComponent
+      const hidden = calcExpression(targetInfo?.hidden);
+      if (hidden === true) {
+        return;
+      }
+      const register = typeMap && targetInfo?.type && typeMap[targetInfo?.type];
+      if (register) {
+        return register
+      }
     }
-    // 其他值
-    return target;
   }
 
   // 给目标内部添加inside
-  const withInside = (children: any, inside?: SchemaComponent, commonProps?: any) => {
+  const withInside = (children: any, inside?: FieldUnionType, commonProps?: any) => {
     const RenderList = renderList as any;
     const childsWithList = RenderList ? <RenderList data-type="fragment" {...commonProps}>{children}</RenderList> : children;
     const childsWithSide = inside ? createInstance(inside, mergeComponents, commonProps, childsWithList) : childsWithList;
@@ -218,7 +216,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 给目标外面添加outside
-  const withOutside = (children: any, outside?: SchemaComponent, commonProps?: any) => {
+  const withOutside = (children: any, outside?: FieldUnionType, commonProps?: any) => {
     const RenderItem = renderItem as any;
     const childWithItem = RenderItem ? <RenderItem data-type="fragment" {...commonProps}>{children}</RenderItem> : children;
     const childWithSide = outside ? createInstance(outside, mergeComponents, commonProps, childWithItem) : childWithItem;
@@ -230,11 +228,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (field?.hidden === true) {
       return;
     }
-    const { readOnly, readOnlyItem, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
+    const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
     const FormField = getField(field);
     if (!field) return;
 
-    const commonParams = { name, field, parent: parent, store }; // 公共参数
+    const commonParams = { name, field, parent, store }; // 公共参数
     const footerInstance = createInstance(footer, mergeComponents, commonParams);
     const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
     const fieldComponentParse = componentParse(fieldComponent, mergeComponents);
@@ -249,16 +247,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       component: fieldComponentParse,
       ...restField
     }
-    // 表单域子元素的传参
-    const fieldChildProps = {
-      ...commonParams,
-      ...props,
-      formvalues: store?.getFieldValue()
-    };
     // 表单域子元素
-    const formItemChild = createInstance(typeRender, undefined, commonParams) ?? createInstance({ type, props }, controls, fieldChildProps);
+    const formItemChild = createInstance(typeRender || { type, props }, controls, commonParams)
     // 只读显示
-    const readOnlyChild = createInstance(readOnlyRender, undefined, commonParams) ?? createInstance({ type: readOnlyItem }, controls, fieldChildProps);
+    const readOnlyChild = createInstance(readOnlyRender, controls, commonParams)
     // 表单控件
     const fieldChild = readOnly === true ? readOnlyChild : formItemChild;
     // 容器传参
@@ -266,17 +258,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // children
     let fieldChildren;
     if (typeof properties === 'object') {
-      const currentPath = getCurrentPath(name, parent);
-      const childs = Object.entries(properties)?.map(([key, formField], index) => {
-        const childName = properties instanceof Array ? `[${key}]` : key;
-        const childCurrentPath = getCurrentPath(childName, currentPath);
-        const childField = showCalcFieldProps(formField, childCurrentPath);
-        if (childField) {
-          childField['index'] = index;
-        }
-        return generateChild(childName, childField, currentPath);
-      });
-      fieldChildren = withInside(childs, inside, containerProps)
+      fieldChildren = renderChildrenList(properties, commonParams)
     } else {
       fieldChildren = fieldChild
     }
@@ -292,19 +274,22 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 渲染children
-  const renderChildrenList = () => {
-    const childs = Object.entries(properties || {})?.map(([name, formField], index: number) => {
-      name = properties instanceof Array ? `[${name}]` : name;
-      const newField = showCalcFieldProps(formField, name);
-      if (newField) {
-        newField['index'] = index;
+  const renderChildrenList = (properties: FormFieldProps['properties'], commonParams: GeneratePrams): any => {
+    const { name, parent } = commonParams;
+    const currentPath = getCurrentPath(name, parent);
+    const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
+      const childName = properties instanceof Array ? `[${key}]` : key;
+      const childPath = getCurrentPath(childName, currentPath)
+      const childField = showCalcFieldProps(formField, childPath);
+      if (childField) {
+        childField['index'] = index;
       }
-      return generateChild(name, newField);
+      return generateChild(childName, childField, currentPath);
     })
-    return withInside(childs, inside, { store })
+    return withInside(childs, inside, commonParams)
   }
 
-  return renderChildrenList();
+  return renderChildrenList(properties, { store });
 }
 
 RenderFormChildren.displayName = 'Form.Children';

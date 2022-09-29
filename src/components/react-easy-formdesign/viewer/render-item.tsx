@@ -3,10 +3,10 @@ import { FormEditContext, FormRenderContext } from '@/components/react-easy-form
 import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
-import { FormItemInfo } from '../form-render';
+import { GeneratePrams } from '../form-render';
 import './render-item.less';
 
-export interface RenderItemProps extends FormItemInfo {
+export interface RenderItemProps extends GeneratePrams {
   children?: any;
   style?: CSSProperties;
   className?: string;
