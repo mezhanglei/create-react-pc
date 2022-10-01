@@ -14,7 +14,7 @@ export default function RenderForm(props: RenderFormProps) {
 
   const { properties, ...restSchema } = schema;
   const mergeProps = { ...restProps, ...restSchema };
-  const { Fields,
+  const {
     controls,
     components,
     watch,

@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, SchemaData, OverwriteFormFieldProps, GeneratePrams, FieldUnionType, SchemaComponent } from './types';
 import { defaultComponents } from './components';
-import { defaultFields } from './fields';
-import { FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
+import { Form, FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
 import { FormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import './iconfont/iconfont.css';
@@ -18,7 +17,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const [properties, setProperties] = useState<SchemaData['properties']>({});
 
   const {
-    Fields,
     controls,
     components,
     watch,
@@ -29,14 +27,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   } = props;
 
   const propertiesProps = props?.properties;
-  const mergeFields = { ...defaultFields, ...Fields };
   const mergeComponents = { ...defaultComponents, ...components };
 
   const {
     onValuesChange
   } = options;
 
-  const valuesCallback = (params: ItemCoreProps['onValuesChange']) => {
+  const valuesCallback: ItemCoreProps['onValuesChange'] = (params) => {
     onValuesChange && onValuesChange(params)
     handleFieldProps();
   }
@@ -155,16 +152,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }
 
-  // 获取field容器
-  const getField = (field: OverwriteFormFieldProps) => {
-    let fieldType
-    if (field?.properties instanceof Array) {
-      fieldType = 'Form.List';
-    }
-    fieldType = 'Form.Item';
-    return fieldType && mergeFields?.[fieldType]
-  }
-
   // 根据传递参数生成实例
   const createInstance = (target?: any, typeMap?: any, extra?: any, finalChildren?: any): any => {
     if (target instanceof Array) {
@@ -229,7 +216,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       return;
     }
     const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
-    const FormField = getField(field);
     if (!field) return;
 
     const commonParams = { name, field, parent, store }; // 公共参数
@@ -247,6 +233,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       component: fieldComponentParse,
       ...restField
     }
+    // 表单域组件
+    const FormField = properties instanceof Array ? Form.List : Form.Item;
     // 表单域子元素
     const formItemChild = createInstance(typeRender || { type, props }, controls, commonParams)
     // 只读显示

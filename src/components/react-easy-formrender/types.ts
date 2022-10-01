@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { FormItemProps, FormProps } from "../react-easy-formcore";
-import { defaultFields } from "./fields";
 import { FormRenderStore } from "./formrender-store";
 
 // 从原接口中提取属性，然后用新的替换它们
@@ -12,7 +11,7 @@ interface Extension {
   valueSetter?: string | ((value: any) => any);
 }
 
-// 组件描述基本属性
+// 组件JSON描述
 export interface SchemaComponent {
   type?: string;
   props?: any;
@@ -24,9 +23,9 @@ export interface SchemaComponent {
 export type FieldUnionType = SchemaComponent | Array<SchemaComponent> | React.ComponentType<any> | Function
 
 export interface BaseFieldProps extends SchemaComponent {
-  fieldComponent?: FieldUnionType; // 表单域中的容器组件
-  inside?: FieldUnionType;
-  outside?: FieldUnionType;
+  fieldComponent?: FieldUnionType; // 表单域组件
+  inside?: FieldUnionType; // 表单域组件内层嵌套组件
+  outside?: FieldUnionType; // 表单域组件外层嵌套组件
   readOnly?: boolean; // 只读模式
   readOnlyRender?: FieldUnionType | ReactNode; // 只读模式下的组件
   typeRender?: any; // 表单控件自定义渲染
@@ -54,7 +53,6 @@ export interface BaseRenderProps {
   controls?: any;
   components?: any;
   inside?: FieldUnionType;
-  Fields?: typeof defaultFields;
   // 自定义渲染列表
   renderList?: React.ComponentType<GeneratePrams>;
   // 自定义渲染子元素

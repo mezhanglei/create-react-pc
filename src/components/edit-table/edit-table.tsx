@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ColumnType, TableProps } from 'antd/lib/table'
 import Validator from '../react-easy-formcore/validator'
 import { Table } from 'antd'
@@ -12,10 +12,12 @@ export interface EditTableProps<T> extends TableProps<T>, EditableHook {
   columns: EditableColumnsType<T>[]
 }
 
+export const TableControlContext = React.createContext<any>({})
+
 export default (props: EditTableProps<any>) => {
   const { columns, onChange, validator, ...rest } = props
 
-  const newColumns = columns?.map((col) => {
+  const newColumns = useMemo(() => columns?.map((col) => {
     return {
       ...col,
       onCell: (record: unknown) => ({
@@ -23,10 +25,9 @@ export default (props: EditTableProps<any>) => {
         dataIndex: col.dataIndex,
         title: col.title,
         validator: validator,
-        render: col?.render,
       }),
     }
-  })
+  }), [columns])
 
   return <Table columns={newColumns} rowKey="key" components={{ body: { cell: EditableCell } }} {...rest} />
 }
@@ -35,7 +36,6 @@ export default (props: EditTableProps<any>) => {
 export type EditableColumnsType<T> = ColumnType<T> & Omit<EditableCellProps<T>, 'record' | 'dataIndex'>
 // 可编辑表格的格的prop
 interface EditableCellProps<T> extends ColumnType<T>, EditableHook {
-  render?: (value: any, rowData: T) => JSX.Element // 渲染可编辑项, 如果想去掉，则return空就会显示默认的render选项。
   record: T
   title: any
   dataIndex?: string
@@ -48,19 +48,18 @@ const EditableCell: React.FC<EditableCellProps<any>> = ({
   dataIndex,
   record,
   validator,
-  render,
   ...restProps
 }) => {
-  let editChildren = render?.(dataIndex && record?.[dataIndex] || undefined, record)
-  const displayName = editChildren?.type?.displayName
-  const cloneChild =
-    displayName === 'Control' && editChildren
-      ? React.cloneElement(editChildren, {
-        dataIndex: dataIndex,
-        record: record,
-        validator: validator,
-      })
-      : editChildren || children
 
-  return <td {...restProps}>{cloneChild}</td>
+  const result = (
+    <TableControlContext.Provider value={{
+      dataIndex: dataIndex,
+      key: record?.key,
+      validator: validator,
+    }}>
+      {children}
+    </TableControlContext.Provider>
+  )
+
+  return <td {...restProps}>{result}</td>
 }

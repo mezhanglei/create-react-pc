@@ -34,7 +34,7 @@ function RenderList(props: RenderListProps, ref: any) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    // viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
   }
 
   if (field?.properties) {

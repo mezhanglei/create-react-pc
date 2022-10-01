@@ -1,20 +1,21 @@
 import classnames from 'classnames'
-import React, { CSSProperties, useEffect } from 'react'
+import React, { CSSProperties, useContext, useEffect } from 'react'
 import './control.less'
 import { getCellPath } from './use-edit-table'
 import Validator, { FormRule } from '../react-easy-formcore/validator'
+import { TableControlContext } from './edit-table'
 
 // 编辑所传的参数
 export interface ControlEditable {
   validator?: Validator
-  rules?: FormRule[]
-  record?: any
+  key?: string
   dataIndex?: string
 }
 export interface ControlProps extends ControlEditable {
   children: any
   style?: CSSProperties
   className?: string
+  rules?: FormRule[]
   compact?: boolean
   suffix?: React.ReactNode | any // 右边节点
   footer?: React.ReactNode | any // 底部节点
@@ -28,20 +29,19 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     compact,
     footer,
     suffix,
-    validator,
-    record,
-    dataIndex,
     rules,
     ...restProps
   } = props
 
+  const { validator, key, dataIndex } = useContext(TableControlContext)
+
   useEffect(() => {
-    addRules?.(record?.key, dataIndex, rules)
-  }, [record?.key, rules])
+    addRules?.(key, dataIndex, rules)
+  }, [key, rules])
 
   useEffect(() => {
     return () => {
-      addRules?.(record?.key, dataIndex)
+      addRules?.(key, dataIndex)
     }
   }, [])
 
@@ -52,7 +52,7 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     validator?.add?.(path, rules)
   }
 
-  const path = getCellPath(record?.key, dataIndex)
+  const path = getCellPath(key, dataIndex)
   const error = validator?.getError(path)
 
   const prefix = 'item-control'

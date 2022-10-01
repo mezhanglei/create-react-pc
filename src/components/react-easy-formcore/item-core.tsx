@@ -144,7 +144,7 @@ export const ItemCore = (props: ItemCoreProps) => {
         const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
         const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
         const childType = child?.type;
-        if (childs && (dataType === 'fragment' || typeof childType === 'string' || typeof childType === 'symbol') && !dataName) {
+        if (childs && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
           return cloneElement(child, {
             children: getChildren(childs)
           });

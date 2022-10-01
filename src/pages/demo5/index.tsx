@@ -175,10 +175,10 @@ export default function Demo5(props) {
           children: '多选框'
         }
       },
-    //   name7: {
-    //     label: 'Upload',
-    //     type: 'Upload'
-    //   },
+      name7: {
+        label: 'Upload',
+        type: 'Upload'
+      },
     }
   })
 
