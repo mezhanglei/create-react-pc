@@ -198,7 +198,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const withInside = (children: any, inside?: FieldUnionType, commonProps?: any) => {
     const RenderList = renderList as any;
     const childsWithList = RenderList ? <RenderList data-type="fragment" {...commonProps}>{children}</RenderList> : children;
-    const childsWithSide = inside ? createInstance(inside, mergeComponents, commonProps, childsWithList) : childsWithList;
+    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, "data-type": "fragment" }, childsWithList) : childsWithList;
     return childsWithSide;
   }
 
@@ -206,7 +206,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const withOutside = (children: any, outside?: FieldUnionType, commonProps?: any) => {
     const RenderItem = renderItem as any;
     const childWithItem = RenderItem ? <RenderItem data-type="fragment" {...commonProps}>{children}</RenderItem> : children;
-    const childWithSide = outside ? createInstance(outside, mergeComponents, commonProps, childWithItem) : childWithItem;
+    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, "data-type": "fragment" }, childWithItem) : childWithItem;
     return childWithSide;
   }
 

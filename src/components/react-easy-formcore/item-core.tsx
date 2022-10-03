@@ -2,9 +2,8 @@ import { AopFactory } from '@/utils/function-aop';
 import { isEqual } from '@/utils/object';
 import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useState } from 'react';
-import { FormOptionsContext } from './form-options-context';
 import { FormStore } from './form-store';
-import { FormStoreContext, FormValuesContext } from './form-store-context';
+import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
 import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName } from './utils/utils';
 import { FormRule } from './validator';
 

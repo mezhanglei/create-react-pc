@@ -1,4 +1,3 @@
-import { concatMap, find, firstValueFrom, from, Observable } from "rxjs";
 import { validatorsMap } from "./validate-rules";
 export type FormRule = {
   required?: boolean;
@@ -15,7 +14,6 @@ export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => an
 /*Validator类*/
 export default class Validator {
   rulesMap: { [path: string]: FormRule[] };
-  rules$Map: { [path: string]: Observable<FormRule> };
   errorsMap: { [path: string]: string | undefined };
   constructor() {
     this.getError = this.getError.bind(this)
@@ -24,7 +22,6 @@ export default class Validator {
     this.start = this.start.bind(this)
     this.add = this.add.bind(this)
     this.rulesMap = {};
-    this.rules$Map = {};
     this.errorsMap = {};
   }
 
@@ -33,12 +30,8 @@ export default class Validator {
       if (this.rulesMap[path]) {
         delete this.rulesMap[path];
       }
-      if (this.rules$Map[path]) {
-        delete this.rules$Map[path]
-      }
     } else {
       this.rulesMap[path] = rules;
-      this.rules$Map[path] = from(rules)
     }
   }
 
@@ -72,12 +65,14 @@ export default class Validator {
       this.setError(path)
       return;
     };
-    const rules$ = this.rules$Map[path];
-    if (rules$) {
-      const source$ = rules$.pipe(concatMap((rule) => handleRule(rule, value)), find((message) => message && typeof message === 'string'))
-      const message = await firstValueFrom(source$)
-      this.setError(path, message)
-      return message
+    const rules = this.rulesMap[path];
+    for (let i = 0; i < rules?.length; i++) {
+      const rule = rules?.[i]
+      const message = await handleRule(rule, value)
+      if (message) {
+        this.setError(path, message)
+        return message
+      }
     }
   }
 }

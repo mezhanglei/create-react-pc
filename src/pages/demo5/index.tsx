@@ -192,7 +192,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm store={store} schema={schema} watch={watch} components={{ dnd: renderDnd }} />
+      <RenderForm store={store} schema={schema} watch={watch} />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>
       </div>

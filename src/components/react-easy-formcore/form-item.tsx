@@ -1,6 +1,5 @@
 import React, { useContext, CSSProperties } from 'react';
-import { FormStoreContext } from './form-store-context';
-import { FormOptionsContext } from './form-options-context';
+import { FormStoreContext, FormOptionsContext } from './form-context';
 import { getCurrentPath } from './utils/utils';
 import { FormStore } from './form-store';
 import { useFormError } from './use-form';

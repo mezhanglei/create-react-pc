@@ -1,8 +1,7 @@
 import React, { CSSProperties, useEffect } from 'react'
 import { FormItem } from './form-item'
 import { FormStore } from './form-store'
-import { FormStoreContext, FormValuesContext } from './form-store-context'
-import { FormOptionsContext } from './form-options-context'
+import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context'
 import { FormList } from './form-list';
 import { ItemCoreProps } from './item-core'
 import { ItemProps } from './components/item'

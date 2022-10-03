@@ -1,11 +1,10 @@
 import React, { CSSProperties, useContext } from 'react';
-import { FormOptionsContext } from './form-options-context';
 import { getCurrentPath } from './utils/utils';
 import { useFormError } from './use-form';
 import { Item, ItemProps } from './components/item';
 import { ListCore, ListCoreProps } from './list-core';
 import { FormStore } from './form-store';
-import { FormStoreContext } from './form-store-context';
+import { FormStoreContext, FormOptionsContext } from './form-context';
 
 export type FormListProps<T = ItemProps> = T & ListCoreProps & {
   className?: string;

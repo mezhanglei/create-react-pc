@@ -1,6 +1,5 @@
 import React, { cloneElement, useContext } from 'react';
-import { FormOptionsContext } from './form-options-context';
-import { FormValuesContext } from './form-store-context';
+import { FormValuesContext, FormOptionsContext } from './form-context';
 import { getCurrentPath } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
