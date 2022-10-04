@@ -25,7 +25,7 @@ export const ListCore = (props: ListCoreProps) => {
   } = fieldProps;
 
   const currentPath = getCurrentPath(name, parent);
-  const initialListValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
+  const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
 
   // 是否为表单控件
   const isFormField = (child: any) => {
@@ -57,7 +57,7 @@ export const ListCore = (props: ListCoreProps) => {
   const renderFormItem = (child: any) => {
     const currentIndex = index;
     index++;
-    const childRules = (rules || [])?.concat(child?.props?.rules)?.filter((rule: FormRule) => !!rule);
+    const childRules = (rules || [])?.concat(child?.props?.rules);
     const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
     return child && cloneElement(child, {
       parent: currentPath,

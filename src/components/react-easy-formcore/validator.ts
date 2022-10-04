@@ -78,7 +78,8 @@ export default class Validator {
 }
 
 // 处理单条规则
-const handleRule = async (rule: FormRule, value: any) => {
+const handleRule = async (rule: FormRule | undefined, value: any) => {
+  if (!rule) return
   // 默认消息
   const defaultMessage = rule?.message;
   // 参与校验的字段

@@ -10,7 +10,8 @@ export type FormItemProps<T = ItemProps> = T & ItemCoreProps & {
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
-  component?: any
+  component?: any;
+  readOnly?: boolean;
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
@@ -31,6 +32,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     initialValue,
     rules,
     component = Item,
+    readOnly,
     ...rest
   } = fieldProps;
 
@@ -40,21 +42,26 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   return (
     <FieldComponent {...rest} ref={ref} error={error}>
-      <ItemCore
-        name={name}
-        parent={parent}
-        index={index}
-        valueProp={valueProp}
-        valueGetter={valueGetter}
-        valueSetter={valueSetter}
-        rules={rules}
-        initialValue={initialValue}
-        errorClassName={errorClassName}
-        onFieldsChange={onFieldsChange}
-        onValuesChange={onValuesChange}
-      >
-        {children}
-      </ItemCore>
+      {
+        readOnly ?
+          children
+          :
+          <ItemCore
+            name={name}
+            parent={parent}
+            index={index}
+            valueProp={valueProp}
+            valueGetter={valueGetter}
+            valueSetter={valueSetter}
+            rules={rules}
+            initialValue={initialValue}
+            errorClassName={errorClassName}
+            onFieldsChange={onFieldsChange}
+            onValuesChange={onValuesChange}
+          >
+            {children}
+          </ItemCore>
+      }
     </FieldComponent>
   );
 });

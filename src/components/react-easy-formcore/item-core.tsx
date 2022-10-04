@@ -41,7 +41,7 @@ export const ItemCore = (props: ItemCoreProps) => {
   } = fieldProps;
 
   const currentPath = getCurrentPath(name, parent);
-  const initialItemValue = initialValue ?? (currentPath && deepGet(initialValues, currentPath));
+  const initialItemValue = initialValue ?? deepGet(initialValues, currentPath);
   const storeValue = currentPath && store?.getFieldValue(currentPath);
   const [value, setValue] = useState(storeValue);
 

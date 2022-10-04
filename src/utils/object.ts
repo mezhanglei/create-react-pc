@@ -51,7 +51,8 @@ export function formatName(str: string) {
 }
 
 // 根据路径获取目标对象中的值
-export function deepGet(obj: object | undefined, keys: string | string[]): any {
+export function deepGet(obj: object | undefined, keys?: string | string[]): any {
+  if(!keys?.length) return
   return (
     (!Array.isArray(keys)
       ? pathToArr(keys)

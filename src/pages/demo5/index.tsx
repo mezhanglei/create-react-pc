@@ -24,7 +24,7 @@ export default function Demo5(props) {
   }
 
   const [schema, setSchema] = useState({
-    layout: 'vertical',
+    // layout: 'vertical',
     // inline: true,
     inside: {
       type: 'row'

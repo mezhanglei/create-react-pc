@@ -1,3 +1,4 @@
+import { isEmpty } from '@/utils/type';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import './control.less';
@@ -41,9 +42,9 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     <div ref={ref} className={cls} style={style} {...restProps}>
       <div className={classnames(`${prefix}__content`, isText && `${prefix}__content--text`)}>
         {children}
-        {footer !== undefined && <div className={`${prefix}__footer`}>{footer}</div>}
+        {!isEmpty(footer) && <div className={`${prefix}__footer`}>{footer}</div>}
       </div>
-      {suffix !== undefined && <div className={`${prefix}__suffix`}>{suffix}</div>}
+      {!isEmpty(suffix) && <div className={`${prefix}__suffix`}>{suffix}</div>}
       <div className={`${prefix}__message`}>{error}</div>
     </div>
   );

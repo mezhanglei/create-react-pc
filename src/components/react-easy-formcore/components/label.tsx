@@ -6,7 +6,8 @@ export interface LabelBaseProps {
   colon?: boolean;
   required?: boolean;
   labelWidth?: number;
-  labelAlign?: CSSProperties['textAlign'],
+  labelAlign?: CSSProperties['textAlign'];
+  labelStyle?: CSSProperties;
   gutter?: number;
 }
 export interface LabelProps extends LabelBaseProps {
