@@ -1,18 +1,19 @@
-import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import { FormRenderContext } from '@/components/react-easy-formdesign/design-context';
 import React, { useContext } from 'react';
-import { GeneratePrams, getCurrentPath } from '../form-render';
+import { GeneratePrams } from '../form-render';
 import { SideBarGroupPath } from '../sidebar';
 import './index.less';
+import * as Configs from '../config'
+import { defaultGetId } from '../utils/utils';
 
 export interface RootDndProps extends GeneratePrams {
   children?: any;
 }
 
 function RootDnd(props: RootDndProps, ref: any) {
-  const { children, name, parent, field } = props;
-  const currentPath = getCurrentPath(name, parent);
-  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
+  const { children, parent } = props;
+  const { viewerRenderStore } = useContext(FormRenderContext);
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -32,73 +33,27 @@ function RootDnd(props: RootDndProps, ref: any) {
     // 拖拽区域信息
     const dragGroupPath = from.groupPath;
     const dragIndex = from?.index;
+    const fromParts = dragGroupPath?.split('.')
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
+    const parentData = viewerRenderStore.getItemByPath(dropGroupPath)
+    const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
-    if (from?.groupPath === SideBarGroupPath) {
-      // 拖拽项
-      // let dragItem = getItem(soundData, `${from?.index}`);
-      // dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
-      // // 放置项
-      // const dropGroupPath = to.groupPath;
-      // const dropIndex = to?.index;
-      // const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
-      // this.setState({
-      //   data: newData
-      // });
-      viewerRenderStore.addItemByIndex()
+    if (fromParts?.[0] === SideBarGroupPath) {
+      const elementsKey = fromParts?.[1]
+      const elements = elementsKey && Configs[elementsKey]
+      const field = elements[dragIndex]
+      const name = dropGroupIsList ? `[${dropIndex}]` : defaultGetId(field?.prefix);
+      const addItem = { name, field }
+      viewerRenderStore?.addItemByIndex(addItem, dropIndex, dropGroupPath);
       // 容器内部拖拽
     } else {
       viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
     }
   }
 
-  if (field?.properties) {
-    const isList = field?.properties instanceof Array;
-    // 允许拖出的条件
-    const outCondition: DndCondition = (params, options) => {
-      if (isList) {
-        const { from, to } = params;
-        if (from?.groupPath === to?.groupPath) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-    // 允许拖进的条件
-    const dropCondition: DndCondition = (params, options) => {
-      if (isList) {
-        const { from } = params;
-        if (from?.groupPath === 'sidebar') {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    return (
-      <DndSortable
-        onUpdate={onItemSwap}
-        onAdd={onItemAdd}
-        data-type="ignore"
-        className='viewer-dnd-group'
-        options={{
-          groupPath: currentPath,
-          childDrag: true,
-          childOut: outCondition,
-          allowDrop: dropCondition,
-          allowSort: true
-        }}
-      >
-        {children}
-      </DndSortable>
-    )
-  } else if (!parent) {
+  if (!parent) {
     return (
       <DndSortable
         onUpdate={onItemSwap}
@@ -114,9 +69,8 @@ function RootDnd(props: RootDndProps, ref: any) {
         {children}
       </DndSortable>
     )
-  } else {
-    return children;
   }
+  return children
 };
 
-export default React.forwardRef(RenderList);
+export default React.forwardRef(RootDnd);

@@ -4,7 +4,7 @@ import RenderForm, { BaseRenderProps, getCurrentPath, RenderFormProps } from '..
 import { FormEditContext, FormRenderContext } from '../design-context';
 import FormItemWrapper from './form-item-wrapper';
 import './index.less';
-import RenderList from './render-list';
+import RootDnd from './root-dnd';
 
 export interface DesignViewerProps {
   className?: string
@@ -54,7 +54,10 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   }
 
   const renderList: BaseRenderProps['renderList']  = (props) => {
-
+    if(!props?.parent) {
+      return <RootDnd {...props} />
+    }
+    return props?.children
   }
 
   return (
@@ -63,7 +66,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
         renderItem={renderItem}
-        renderList={RenderList}
+        renderList={renderList}
       />
     </div>
   );
