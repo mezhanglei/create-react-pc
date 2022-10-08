@@ -44,22 +44,6 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     viewerRenderStore?.updateItemByPath(path, { initialValue: value });
   }
 
-  const renderItem: BaseRenderProps['renderItem'] = (props) => {
-    const { field } = props;
-    // 针对控件组件统一添加
-    if(!field?.properties) {
-      return <FormItemWrapper {...props} />
-    }
-    return props?.children
-  }
-
-  const renderList: BaseRenderProps['renderList']  = (props) => {
-    if(!props?.parent) {
-      return <RootDnd {...props} />
-    }
-    return props?.children
-  }
-
   return (
     <div ref={ref} className={cls} style={style} {...restProps} onClick={viewerClick}>
       <RenderForm store={viewerRenderStore} schema={schema}
@@ -71,6 +55,22 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     </div>
   );
 };
+
+const renderItem: BaseRenderProps['renderItem'] = (props) => {
+  const { field } = props;
+  // 针对控件组件统一添加
+  if (!field?.properties) {
+    return <FormItemWrapper {...props} />
+  }
+  return props?.children
+}
+
+const renderList: BaseRenderProps['renderList'] = (props) => {
+  if (!props?.parent) {
+    return <RootDnd {...props} />
+  }
+  return props?.children
+}
 
 DesignViewer.displayName = 'design-viewer';
 export default React.forwardRef(DesignViewer);
