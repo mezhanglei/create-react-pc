@@ -15,6 +15,7 @@ export interface DesignComponentsProps {
 }
 
 const prefixCls = 'easy-form-design-sidebar';
+export const SideBarGroupPath = 'sidebar'
 function DesignComponents(props: DesignComponentsProps, ref: any) {
   const {
     style,
@@ -54,11 +55,11 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     <div ref={ref} className={cls} style={style}>
       <Tabs className='sidebar-tabs' defaultActiveKey="1">
         <Tabs.TabPane tab="基础组件" key="1">
-          <SidebarList title="基础控件" group="sidebar" elements={atomElements} onChange={onChange} />
-          <SidebarList title="布局组件" group="sidebar" elements={layoutElements} onChange={onChange} />
+          <SidebarList title="基础控件" group="sidebar.atomElements" elements={atomElements} onChange={onChange} />
+          <SidebarList title="布局组件" group="sidebar.layoutElements" elements={layoutElements} onChange={onChange} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="复杂组件" key="2">
-          <SidebarList title="复杂示例" group="sidebar" elements={exampleElements} onChange={onChange} />
+          <SidebarList title="复杂示例" group="sidebar.exampleElements" elements={exampleElements} onChange={onChange} />
         </Tabs.TabPane>
       </Tabs>
     </div>

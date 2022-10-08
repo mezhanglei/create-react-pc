@@ -11,7 +11,7 @@ export type FormItemProps<T = ItemProps> = T & ItemCoreProps & {
   children?: React.ReactNode;
   style?: CSSProperties;
   component?: any;
-  readOnly?: boolean;
+  ignore?: boolean;
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
@@ -32,7 +32,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     initialValue,
     rules,
     component = Item,
-    readOnly,
+    ignore,
     ...rest
   } = fieldProps;
 
@@ -43,7 +43,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
   return (
     <FieldComponent {...rest} ref={ref} error={error}>
       {
-        readOnly ?
+        ignore ?
           children
           :
           <ItemCore

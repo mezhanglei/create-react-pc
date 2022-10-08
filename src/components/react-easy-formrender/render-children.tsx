@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormFieldProps, RenderFormChildrenProps, SchemaData, OverwriteFormFieldProps, GeneratePrams, FieldUnionType, SchemaComponent } from './types';
+import { FormFieldProps, RenderFormChildrenProps, SchemaData, GeneratePrams, FieldUnionType, SchemaComponent } from './types';
 import { defaultComponents } from './components';
 import { Form, FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
 import { FormRenderStore } from './formrender-store';
@@ -197,21 +197,21 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 给目标内部添加inside
   const withInside = (children: any, inside?: FieldUnionType, commonProps?: any) => {
     const RenderList = renderList as any;
-    const childsWithList = RenderList ? <RenderList data-type="fragment" {...commonProps}>{children}</RenderList> : children;
-    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, "data-type": "fragment" }, childsWithList) : childsWithList;
+    const childsWithList = RenderList ? <RenderList data-type="ignore" {...commonProps}>{children}</RenderList> : children;
+    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, "data-type": "ignore" }, childsWithList) : childsWithList;
     return childsWithSide;
   }
 
   // 给目标外面添加outside
   const withOutside = (children: any, outside?: FieldUnionType, commonProps?: any) => {
     const RenderItem = renderItem as any;
-    const childWithItem = RenderItem ? <RenderItem data-type="fragment" {...commonProps}>{children}</RenderItem> : children;
-    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, "data-type": "fragment" }, childWithItem) : childWithItem;
+    const childWithItem = RenderItem ? <RenderItem data-type="ignore" {...commonProps}>{children}</RenderItem> : children;
+    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, "data-type": "ignore" }, childWithItem) : childWithItem;
     return childWithSide;
   }
 
   // 生成子元素
-  const generateChild = (name: string, field: OverwriteFormFieldProps, parent?: string) => {
+  const generateChild = (name: string, field: FormFieldProps, parent?: string) => {
     if (field?.hidden === true) {
       return;
     }
@@ -226,12 +226,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const fieldProps = {
       key: name,
       name: name,
-      parent: parent,
       onValuesChange: valuesCallback,
       footer: footerInstance,
       suffix: suffixInstance,
       component: fieldComponentParse,
-      readOnly,
+      ignore: readOnly,
       ...restField
     }
     // 表单域组件

@@ -1,8 +1,8 @@
 import React, { useContext, CSSProperties } from 'react'
 import classnames from 'classnames';
-import RenderForm, { getCurrentPath, RenderFormProps } from '../form-render';
+import RenderForm, { BaseRenderProps, getCurrentPath, RenderFormProps } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import RenderItem from './render-item';
+import FormItemWrapper from './form-item-wrapper';
 import './index.less';
 import RenderList from './render-list';
 
@@ -44,12 +44,25 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     viewerRenderStore?.updateItemByPath(path, { initialValue: value });
   }
 
+  const renderItem: BaseRenderProps['renderItem'] = (props) => {
+    const { field } = props;
+    // 针对控件组件统一添加
+    if(!field?.properties) {
+      return <FormItemWrapper {...props} />
+    }
+    return props?.children
+  }
+
+  const renderList: BaseRenderProps['renderList']  = (props) => {
+
+  }
+
   return (
     <div ref={ref} className={cls} style={style} {...restProps} onClick={viewerClick}>
       <RenderForm store={viewerRenderStore} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
-        renderItem={RenderItem}
+        renderItem={renderItem}
         renderList={RenderList}
       />
     </div>

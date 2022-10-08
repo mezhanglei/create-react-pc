@@ -128,7 +128,8 @@ export const ItemCore = (props: ItemCoreProps) => {
   const isFormNode = (child: any) => {
     const displayName = child?.type?.displayName;
     const formFields = ['Form.Item', 'Form.List','ListCore', 'ItemCore'];
-    return formFields?.includes(displayName)
+    const dataName = child?.props?.['data-name']; // 忽略当前节点
+    return formFields?.includes(displayName) && dataName !== 'ignore'
   };
 
   // 渲染子元素
@@ -143,7 +144,7 @@ export const ItemCore = (props: ItemCoreProps) => {
         const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
         const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
         const childType = child?.type;
-        if (childs && (dataType === 'fragment' || typeof childType === 'string') && !dataName) {
+        if (childs && (dataType === 'ignore' || typeof childType === 'string') && !dataName) {
           return cloneElement(child, {
             children: getChildren(childs)
           });

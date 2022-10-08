@@ -259,7 +259,7 @@ const renderDnd = (props: GeneratePrams) => {
       <DndSortable
         onUpdate={onItemSwap}
         onAdd={onItemAdd}
-        data-type="fragment"
+        data-type="ignore"
         className='dnd-box'
         style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
         options={{
@@ -278,7 +278,7 @@ const renderDnd = (props: GeneratePrams) => {
       <DndSortable
         onUpdate={onItemSwap}
         onAdd={onItemAdd}
-        data-type="fragment"
+        data-type="ignore"
         className='dnd-box'
         options={{
           childDrag: true,

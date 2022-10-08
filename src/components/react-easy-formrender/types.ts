@@ -7,8 +7,8 @@ type Overwrite<T, U> = Omit<T, keyof U> & U;
 
 // 扩展的interface
 interface Extension {
-  valueGetter?: string | ((...args: any[]) => any);
-  valueSetter?: string | ((value: any) => any);
+  valueGetter?: string | ((...args: any[]) => any) | any;
+  valueSetter?: string | ((value: any) => any) | any;
 }
 
 // 组件JSON描述
@@ -23,6 +23,7 @@ export interface SchemaComponent {
 export type FieldUnionType = SchemaComponent | Array<SchemaComponent> | React.ComponentType<any> | Function
 
 export interface BaseFieldProps extends SchemaComponent {
+  ignore?: boolean; // 忽略当前节点不会作为表单值
   fieldComponent?: FieldUnionType; // 表单域组件
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
   outside?: FieldUnionType; // 表单域组件外层嵌套组件
@@ -34,11 +35,6 @@ export interface BaseFieldProps extends SchemaComponent {
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends Overwrite<FormItemProps, Extension>, BaseFieldProps {
   properties?: { [name: string]: FormFieldProps } | FormFieldProps[]; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
-}
-
-// 计算结束的表单域类型
-export interface OverwriteFormFieldProps extends FormItemProps, BaseFieldProps {
-  properties?: { [name: string]: OverwriteFormFieldProps } | OverwriteFormFieldProps[];
 }
 
 // schema
@@ -54,9 +50,9 @@ export interface BaseRenderProps {
   components?: any;
   inside?: FieldUnionType;
   // 自定义渲染列表
-  renderList?: React.ComponentType<GeneratePrams>;
+  renderList?: React.ComponentType<GeneratePrams<any>>;
   // 自定义渲染子元素
-  renderItem?: React.ComponentType<GeneratePrams>;
+  renderItem?: React.ComponentType<GeneratePrams<any>>;
 }
 
 // 带form容器的渲染组件props
@@ -73,4 +69,4 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
-export interface GeneratePrams { name?: string, field?: OverwriteFormFieldProps, parent?: string, store?: FormRenderStore, children?: any };
+export interface GeneratePrams<T = FormFieldProps> { name?: string, field?: T, parent?: string, store?: FormRenderStore, children?: any };

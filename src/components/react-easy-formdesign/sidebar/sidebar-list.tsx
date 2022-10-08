@@ -11,7 +11,7 @@ export interface SideBarProps {
   title: string;
   group: string;
   elements?: ELementProps[];
-  onChange?: (name: string, item: ELementProps) => void;
+  onChange?: (name: string, item: ELementProps, group?: string) => void;
 }
 const prefixCls = 'sidebar-list';
 function SideBarList(props: SideBarProps, ref: any) {
@@ -40,7 +40,7 @@ function SideBarList(props: SideBarProps, ref: any) {
         {
           elements?.map((item, index) => {
             const prefix = item?.prefix;
-            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item)}>{item.label}</Tag>
+            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item, group)}>{item.label}</Tag>
           })
         }
       </DndSortable>

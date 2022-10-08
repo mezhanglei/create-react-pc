@@ -3,8 +3,8 @@ import { SchemaData } from '@/components/react-easy-formrender';
 import { getItemByPath, pathToArray } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
 
-export const defaultGetId = (name: string) => {
-  return `${name}_${nanoid(6)}`;
+export const defaultGetId = (name?: string) => {
+  return name ? `${name}_${nanoid(6)}` : '';
 };
 
 // 根据路径返回父元素路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)

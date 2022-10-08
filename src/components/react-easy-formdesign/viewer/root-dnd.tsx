@@ -2,13 +2,14 @@ import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-
 import { FormRenderContext } from '@/components/react-easy-formdesign/design-context';
 import React, { useContext } from 'react';
 import { GeneratePrams, getCurrentPath } from '../form-render';
+import { SideBarGroupPath } from '../sidebar';
 import './index.less';
 
-export interface RenderListProps extends GeneratePrams {
+export interface RootDndProps extends GeneratePrams {
   children?: any;
 }
 
-function RenderList(props: RenderListProps, ref: any) {
+function RootDnd(props: RootDndProps, ref: any) {
   const { children, name, parent, field } = props;
   const currentPath = getCurrentPath(name, parent);
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
@@ -34,7 +35,23 @@ function RenderList(props: RenderListProps, ref: any) {
     // 拖放区域的信息
     const dropGroupPath = to?.groupPath;
     const dropIndex = to?.index;
-    // viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    // 从侧边栏插入进来
+    if (from?.groupPath === SideBarGroupPath) {
+      // 拖拽项
+      // let dragItem = getItem(soundData, `${from?.index}`);
+      // dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
+      // // 放置项
+      // const dropGroupPath = to.groupPath;
+      // const dropIndex = to?.index;
+      // const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
+      // this.setState({
+      //   data: newData
+      // });
+      viewerRenderStore.addItemByIndex()
+      // 容器内部拖拽
+    } else {
+      viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
+    }
   }
 
   if (field?.properties) {

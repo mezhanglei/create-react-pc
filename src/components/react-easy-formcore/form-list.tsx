@@ -11,7 +11,7 @@ export type FormListProps<T = ItemProps> = T & ListCoreProps & {
   children?: React.ReactNode;
   style?: CSSProperties;
   component?: any;
-  readOnly?: boolean;
+  ignore?: boolean;
 }
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
@@ -32,7 +32,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     onFieldsChange,
     onValuesChange,
     component = Item,
-    readOnly,
+    ignore,
     ...rest
   } = fieldProps;
 
@@ -43,7 +43,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   return (
     <FieldComponent {...rest} ref={ref} error={error}>
       {
-        readOnly ?
+        ignore ?
           children
           :
           <ListCore

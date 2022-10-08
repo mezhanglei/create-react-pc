@@ -3,24 +3,27 @@ import { FormEditContext, FormRenderContext } from '@/components/react-easy-form
 import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
+import { ELementProps } from '../config';
 import { GeneratePrams } from '../form-render';
-import './render-item.less';
+import './form-item-wrapper.less';
 
-export interface RenderItemProps extends GeneratePrams {
+export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
   children?: any;
   style?: CSSProperties;
   className?: string;
 }
 
-function RenderItem(props: RenderItemProps, ref: any) {
+function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const {
     children,
     style,
     className,
+    name,
+    parent,
+    field,
     ...restProps
   } = props;
 
-  const { name, parent, field } = restProps;
   const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
@@ -71,4 +74,4 @@ function RenderItem(props: RenderItemProps, ref: any) {
   );
 };
 
-export default React.forwardRef(RenderItem);
+export default React.forwardRef(FormItemWrapper);
