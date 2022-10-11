@@ -9,29 +9,32 @@ export interface SideBarProps {
   className?: string;
   style?: CSSProperties;
   title: string;
-  group: string;
+  elementsKey: string;
   elements?: ELementProps[];
-  onChange?: (name: string, item: ELementProps, group?: string) => void;
+  tabKey: string;
+  onChange?: (name: string, item: ELementProps, elementsKey?: string, tabKey?: string) => void;
 }
+export const SideBarGroup = 'sidebar'
 const prefixCls = 'sidebar-list';
 function SideBarList(props: SideBarProps, ref: any) {
   const {
     style,
     className,
     title,
-    group,
+    elementsKey,
     elements,
+    tabKey,
     onChange
   } = props;
 
   const cls = classnames(prefixCls, className)
 
-  const renderElements = (group: string, elements?: ELementProps[]) => {
+  const renderElements = () => {
     return (
       <DndSortable
         className='elements-list'
+        collection={{ type: SideBarGroup, tabKey: tabKey, elementsKey: elementsKey }}
         options={{
-          groupPath: group,
           childDrag: true,
           allowDrop: false,
           allowSort: false
@@ -40,7 +43,7 @@ function SideBarList(props: SideBarProps, ref: any) {
         {
           elements?.map((item, index) => {
             const prefix = item?.prefix;
-            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item, group)}>{item.label}</Tag>
+            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item, elementsKey, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>
@@ -51,7 +54,7 @@ function SideBarList(props: SideBarProps, ref: any) {
     <div ref={ref} className={cls} style={style}>
       <div>
         <div>{title}</div>
-        {renderElements(group, elements)}
+        {renderElements()}
       </div>
     </div>
   );

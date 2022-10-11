@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import RenderForm, { GeneratePrams, RenderFormProps, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
-import DndSortable, { DndCondition, DndProps } from '@/components/react-dragger-sort';
 import './index.less'
 import { getCurrentPath } from '@/components/react-easy-formcore';
 import Button from '@/components/button';
@@ -198,98 +197,4 @@ export default function Demo5(props) {
       </div>
     </div>
   );
-}
-
-const renderDnd = (props: GeneratePrams) => {
-  const { children, name, parent, field, store } = props;
-  const currentPath = getCurrentPath(name, parent);
-
-  const onItemSwap: DndProps['onUpdate'] = (params) => {
-    const { from, to } = params;
-    console.log(params, '同域拖放');
-    // 拖拽区域信息
-    const dragGroupPath = from.groupPath;
-    const dragIndex = from?.index;
-    // 拖放区域的信息
-    const dropGroupPath = to?.groupPath;
-    const dropIndex = to?.index;
-    store?.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
-  }
-
-  const onItemAdd: DndProps['onUpdate'] = (params) => {
-    const { from, to } = params;
-    console.log(params, '跨域拖放');
-    // 拖拽区域信息
-    const dragGroupPath = from.groupPath;
-    const dragIndex = from?.index;
-    // 拖放区域的信息
-    const dropGroupPath = to?.groupPath;
-    const dropIndex = to?.index;
-    store?.swapItemByPath({ index: dragIndex, parentPath: dragGroupPath }, { index: dropIndex, parentPath: dropGroupPath });
-  }
-
-  if (field?.properties) {
-    const isList = field?.properties instanceof Array;
-    // 允许拖出的条件
-    const outCondition: DndCondition = (params, options) => {
-      if (isList) {
-        const { from, to } = params;
-        if (from?.groupPath === to?.groupPath) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-    // 允许拖进的条件
-    const dropCondition: DndCondition = (params, options) => {
-      if (isList) {
-        const { from } = params;
-        if (from?.groupPath === 'sidebar') {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    return (
-      <DndSortable
-        onUpdate={onItemSwap}
-        onAdd={onItemAdd}
-        data-type="ignore"
-        className='dnd-box'
-        style={{ padding: '10px', minHeight: '50px', background: '#f5f5f5' }}
-        options={{
-          groupPath: currentPath,
-          childDrag: true,
-          childOut: outCondition,
-          allowDrop: dropCondition,
-          allowSort: true
-        }}
-      >
-        {children}
-      </DndSortable>
-    )
-  } else if (!currentPath) {
-    return (
-      <DndSortable
-        onUpdate={onItemSwap}
-        onAdd={onItemAdd}
-        data-type="ignore"
-        className='dnd-box'
-        options={{
-          childDrag: true,
-          allowDrop: true,
-          allowSort: true
-        }}
-      >
-        {children}
-      </DndSortable>
-    )
-  } else {
-    return children;
-  }
 }

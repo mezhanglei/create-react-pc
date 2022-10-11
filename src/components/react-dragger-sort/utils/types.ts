@@ -9,19 +9,17 @@ export enum DropEffect {
   Link = 'link' // 目标打开拖动元素（拖动元素必须是链接并有URL）
 }
 
-// 拖拽区域信息
-export interface DndSortable {
-  groupPath?: string; // group位置路径，'.' 分割
-  groupNode: HTMLElement; // 所在列表的dom
-  props: DndBaseProps; // 所在区域的props
+// 拖放所在区域的信息
+export interface SortableGroup extends DndBaseProps {
+  node: HTMLElement
 }
 
 // 可排序项
-export interface SortableItem extends DndSortable {
-  item: HTMLElement & { animated?: boolean }; // 拖拽元素
-  index: number; // 位置序号
-  draggableIndex?: number; // 位置序号(排除不可拖拽的元素)
-  path: string; // 位置路径，'.' 分割
+export interface SortableItem {
+  node?: HTMLElement & { animated?: boolean }; // 拖拽元素
+  id?: string | number; // data-id设置的属性
+  index?: number; // 位置序号
+  group?: SortableGroup; // 拖放所在区域的信息
 }
 
 // 拖拽项
@@ -29,23 +27,11 @@ export interface DragItem extends SortableItem {
   clone?: HTMLElement; // 拖拽元素的克隆体
 }
 
-// 拖放项
-export interface DropItem extends DndSortable {
-  item?: HTMLElement & { animated?: boolean }; // 拖放over的目标
-  index?: number; // 放置位置序号
-  draggableIndex?: number; // 放置位置序号(排除不可拖拽的元素)
-  path?: string; // 位置路径，'.' 分割
-}
-
-// 拖拽源信息
-export interface DragParams {
+// 拖拽触发的函数的参数
+export interface DndParams {
   e: EventType;
   from: DragItem;
-}
-
-// 拖拽触发的函数的参数
-export interface DndParams extends DragParams {
-  to?: DropItem
+  to?: SortableItem;
 }
 
 // 拖拽触发的函数
@@ -62,9 +48,9 @@ export interface DndBaseProps {
   onUpdate?: DndHandle; // 当前容器排序触发的函数
   onHover?: (over: HTMLElement) => void; // 被hover的子元素触发的事件
   onUnHover?: (over: HTMLElement) => void; // 元素失去hover状态时触发的事件
+  collection?: any; // 收集额外信息字段
   // 拖拽相关的配置
   options: {
-    groupPath?: string; // 拖拽容器的路径
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
     allowDrop: boolean | DndCondition; // 是否允许拖放新元素

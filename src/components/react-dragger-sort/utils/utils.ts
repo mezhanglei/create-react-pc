@@ -1,39 +1,27 @@
 import { matches } from "@/utils/dom";
 import { DndParams, DndProps, DragItem } from "./types";
 
-// 判断字符是否是数组中的选项
-export const isListItem = (item: string) => (/\[(\d+)\]/gi.test(item));
-
-// 拼接当前项的path
-export const getCurrentPath = (name: string, parent?: string) => {
-  if (isListItem(name)) {
-    return parent ? `${parent}${name}` : name;
-  } else {
-    return parent ? `${parent}.${name}` : name;
-  }
-};
-
 export const isChildDrag = (item: DragItem, options: DndProps['options']) => {
   const childDrag = options?.childDrag;
-  const dragNode = item?.item;
+  const dragNode = item?.node;
   if (typeof childDrag == 'boolean') {
     return childDrag;
   } if (typeof childDrag === 'function') {
     return childDrag(item, options);
   } else if (childDrag instanceof Array) {
-    return childDrag?.some((item) => typeof item === 'string' ? matches(dragNode, item) : dragNode === item);
+    return childDrag?.some((child) => typeof child === 'string' ? matches(dragNode, child) : dragNode === child);
   }
 }
 
 export const isChildOut = (params: DndParams, options: DndProps['options']) => {
   const childOut = options?.childOut;
-  const dragNode = params?.from?.item;
+  const dragNode = params?.from?.node;
   if (typeof childOut == 'boolean') {
     return childOut;
   } if (typeof childOut === 'function') {
     return childOut(params, options);
   } else if (childOut instanceof Array) {
-    return childOut?.some((item) => typeof item === 'string' ? matches(dragNode, item) : dragNode === item);
+    return childOut?.some((child) => typeof child === 'string' ? matches(dragNode, child) : dragNode === child);
   }
 }
 

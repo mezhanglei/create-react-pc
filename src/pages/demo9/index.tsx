@@ -65,7 +65,8 @@ class Demo9 extends Component {
     const cloneData = deepClone(data);
     const dragIndex = from?.index;
     const dropIndex = to?.index;
-    const parentPath = from?.groupPath;
+    const fromCollection = from?.group?.collection;
+    const parentPath = fromCollection?.path;
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
     const swapResult = arraySwap(childs, Number(dragIndex), Number(dropIndex));
@@ -84,13 +85,15 @@ class Demo9 extends Component {
     console.log(params, '跨区域');
     const { data } = this.state;
     const cloneData = deepClone(data);
+    const fromCollection = from?.group?.collection;
+    const toCollection = to?.group?.collection;
     // 容器外面添加进来
-    if (from?.groupPath === 'components') {
+    if (fromCollection?.type === 'components') {
       // 拖拽项
       let dragItem = getItem(soundData, `${from?.index}`);
       dragItem = dragItem?.name === 'Containers' ? { children: [], ...dragItem } : dragItem;
       // 放置项
-      const dropGroupPath = to.groupPath;
+      const dropGroupPath = toCollection?.path;
       const dropIndex = to?.index;
       const newData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
       this.setState({
@@ -99,12 +102,12 @@ class Demo9 extends Component {
       // 容器内部拖拽
     } else {
       // 拖拽区域信息
-      const dragGroupPath = from.groupPath;
+      const dragGroupPath = fromCollection?.path;
+      const dragGroupData = getItem(cloneData, dragGroupPath)
       const dragIndex = from?.index;
-      const dragPath = from?.path;
-      const dragItem = getItem(cloneData, dragPath);
+      const dragItem = dragIndex && dragGroupData?.[dragIndex];
       // 拖放区域的信息
-      const dropGroupPath = to.groupPath;
+      const dropGroupPath = toCollection?.path;
       const dropIndex = to?.index;
       const dragIndexPathArr = indexToArray(dragGroupPath);
       const dropIndexPathArr = indexToArray(dropGroupPath);
@@ -143,7 +146,6 @@ class Demo9 extends Component {
             <div key={uniqueId()}>
               <DndSortable
                 options={{
-                  groupPath: path,
                   childDrag: true,
                   allowDrop: true,
                   allowSort: true
@@ -152,6 +154,7 @@ class Demo9 extends Component {
                   minHeight: 100,
                   margin: 10,
                 }}
+                collection={{ path: path }}
                 onUpdate={this.onUpdate}
                 onAdd={this.onAdd}
               >
@@ -169,8 +172,8 @@ class Demo9 extends Component {
       <>
         <h2>组件列表</h2>
         <DndSortable
+          collection={{ type: "components" }}
           options={{
-            groupPath: 'components',
             childDrag: true,
             allowDrop: false,
             allowSort: false

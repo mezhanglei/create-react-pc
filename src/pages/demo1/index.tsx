@@ -42,7 +42,9 @@ const Demo1: React.FC<any> = (props) => {
     console.log(params, '同区域');
     const dragIndex = from?.index;
     let dropIndex = to?.index;
-    const parentPath = from?.groupPath;
+    const fromGroup = from?.group;
+    const fromCollection = fromGroup?.collection;
+    const parentPath = fromCollection?.path;
     const cloneData = deepClone(data);
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
@@ -64,23 +66,27 @@ const Demo1: React.FC<any> = (props) => {
     console.log(params, '跨区域');
     const cloneData = deepClone(data);
     // 拖拽区域信息
-    const dragGroupPath = from.groupPath;
+    const dragGroup = from.group;
+    // 拖拽区域的额外传值
+    const dragCollection = dragGroup?.collection;
     const dragIndex = from?.index;
-    const dragPath = from?.path;
+    const dragPath = dragCollection?.path ? `${dragCollection?.path}.${dragIndex}` : `${dragIndex}`;
     const dragItem = getItem(cloneData, dragPath);
     // 拖放区域的信息
-    const dropGroupPath = to.groupPath;
+    const dropGroup = to?.group;
+    // 额外传值
+    const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    const dragIndexPathArr = indexToArray(dragGroupPath);
-    const dropIndexPathArr = indexToArray(dropGroupPath);
+    const dragIndexPathArr = indexToArray(dragCollection?.path);
+    const dropIndexPathArr = indexToArray(dropCollection?.path);
     // 先计算内部的变动，再计算外部的变动
     if (dragIndexPathArr?.length > dropIndexPathArr?.length || !dropIndexPathArr?.length) {
-      const removeData = removeDragItem(cloneData, dragIndex, dragGroupPath);
-      const addAfterData = addDragItem(removeData, dragItem, dropIndex, dropGroupPath);
+      const removeData = removeDragItem(cloneData, dragIndex, dragCollection?.path);
+      const addAfterData = addDragItem(removeData, dragItem, dropIndex, dropCollection?.path);
       setData(addAfterData);
     } else {
-      const addAfterData = addDragItem(cloneData, dragItem, dropIndex, dropGroupPath);
-      const newData = removeDragItem(addAfterData, dragIndex, dragGroupPath);
+      const addAfterData = addDragItem(cloneData, dragItem, dropIndex, dropCollection?.path);
+      const newData = removeDragItem(addAfterData, dragIndex, dragCollection?.path);
       setData(newData);
     }
   };
@@ -93,11 +99,11 @@ const Demo1: React.FC<any> = (props) => {
           <div key={index}>
             <DndSortable
               options={{
-                groupPath: path,
                 childDrag: true,
                 allowDrop: true,
                 allowSort: true
               }}
+              collection={{ path: path }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
               onUpdate={onUpdate}
               onAdd={onAdd}

@@ -15,7 +15,6 @@ export interface DesignComponentsProps {
 }
 
 const prefixCls = 'easy-form-design-sidebar';
-export const SideBarGroupPath = 'sidebar'
 function DesignComponents(props: DesignComponentsProps, ref: any) {
   const {
     style,
@@ -51,16 +50,38 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     setEdit({ selected: newPath });
   }
 
+  const TabsData = [{
+    key: 'base',
+    tab: '基础组件',
+    data: [
+      { title: '基础控件', elementsKey: 'atomElements', elements: atomElements },
+      { title: '布局组件', elementsKey: 'layoutElements', elements: layoutElements }
+    ]
+  }, {
+    key: 'example',
+    tab: '表单模板',
+    data: [
+      { title: '示例', elementsKey: 'exampleElements', elements: exampleElements },
+    ]
+  }]
+
   return (
     <div ref={ref} className={cls} style={style}>
-      <Tabs className='sidebar-tabs' defaultActiveKey="1">
-        <Tabs.TabPane tab="基础组件" key="1">
-          <SidebarList title="基础控件" group="sidebar.atomElements" elements={atomElements} onChange={onChange} />
-          <SidebarList title="布局组件" group="sidebar.layoutElements" elements={layoutElements} onChange={onChange} />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="复杂组件" key="2">
-          <SidebarList title="复杂示例" group="sidebar.exampleElements" elements={exampleElements} onChange={onChange} />
-        </Tabs.TabPane>
+      <Tabs className='sidebar-tabs'>
+        {
+          TabsData?.map((item) => {
+            const { data, ...rest } = item;
+            return (
+              <Tabs.TabPane {...rest}>
+                {
+                  data?.map((sub, subIndex) => {
+                    return <SidebarList {...sub} tabKey={rest?.key} key={subIndex} onChange={onChange} />
+                  })
+                }
+              </Tabs.TabPane>
+            )
+          })
+        }
       </Tabs>
     </div>
   );

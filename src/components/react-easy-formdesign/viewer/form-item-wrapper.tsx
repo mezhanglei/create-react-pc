@@ -12,7 +12,12 @@ export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
   style?: CSSProperties;
   className?: string;
 }
-
+/**
+ * 给表单中的控件外围添加选中框
+ * @param props 
+ * @param ref 
+ * @returns 
+ */
 function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const {
     children,

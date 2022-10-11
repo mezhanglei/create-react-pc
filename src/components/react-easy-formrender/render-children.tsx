@@ -153,10 +153,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 根据传递参数生成实例
-  const createInstance = (target?: any, typeMap?: any, extra?: any, finalChildren?: any): any => {
+  const createInstance = (target?: any, typeMap?: any, commonProps?: any, finalChildren?: any): any => {
     if (target instanceof Array) {
       return target?.map((item) => {
-        return createInstance(item, typeMap, extra, finalChildren);
+        return createInstance(item, typeMap, commonProps, finalChildren);
       });
     } else {
       const Child = componentParse(target, typeMap);
@@ -164,8 +164,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       if (Child) {
         const { children, ...restProps } = (target as SchemaComponent)?.props || {};
         return (
-          <Child {...extra} {...restProps}>
-            {children ? createInstance(children, typeMap, extra, finalChildren) : finalChildren}
+          <Child {...commonProps} {...restProps}>
+            {children ? createInstance(children, typeMap, commonProps, finalChildren) : finalChildren}
           </Child>
         );
       } else {
@@ -194,19 +194,20 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }
 
+  const ignoreTag = { "data-type": "ignore" }
   // 给目标内部添加inside
   const withInside = (children: any, inside?: FieldUnionType, commonProps?: any) => {
     const RenderList = renderList as any;
-    const childsWithList = RenderList ? <RenderList data-type="ignore" {...commonProps}>{children}</RenderList> : children;
-    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, "data-type": "ignore" }, childsWithList) : childsWithList;
+    const childsWithList = RenderList ? <RenderList {...ignoreTag} {...commonProps}>{children}</RenderList> : children;
+    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, ...ignoreTag }, childsWithList) : childsWithList;
     return childsWithSide;
   }
 
   // 给目标外面添加outside
   const withOutside = (children: any, outside?: FieldUnionType, commonProps?: any) => {
     const RenderItem = renderItem as any;
-    const childWithItem = RenderItem ? <RenderItem data-type="ignore" {...commonProps}>{children}</RenderItem> : children;
-    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, "data-type": "ignore" }, childWithItem) : childWithItem;
+    const childWithItem = RenderItem ? <RenderItem {...ignoreTag} {...commonProps}>{children}</RenderItem> : children;
+    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, ...ignoreTag }, childWithItem) : childWithItem;
     return childWithSide;
   }
 
@@ -262,7 +263,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 渲染children
-  const renderChildrenList = (properties: FormFieldProps['properties'], inside: FieldUnionType | undefined,commonParams: GeneratePrams): any => {
+  const renderChildrenList = (properties: FormFieldProps['properties'], inside: FieldUnionType | undefined, commonParams: GeneratePrams): any => {
     const { name, parent } = commonParams;
     const currentPath = getCurrentPath(name, parent);
     const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
