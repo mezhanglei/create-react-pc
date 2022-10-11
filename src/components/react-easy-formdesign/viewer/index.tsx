@@ -49,12 +49,21 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       <RenderForm store={viewerRenderStore} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
-        renderItem={FormItemWrapper}
+        renderItem={renderItem}
         renderList={FormDnd}
       />
     </div>
   );
 };
+
+const renderItem: BaseRenderProps['renderItem'] = (props) => {
+  const { field } = props;
+  // 针对控件组件统一添加
+  if (!field?.properties) {
+    return <FormItemWrapper {...props} />
+  }
+  return props?.children
+}
 
 DesignViewer.displayName = 'design-viewer';
 export default React.forwardRef(DesignViewer);

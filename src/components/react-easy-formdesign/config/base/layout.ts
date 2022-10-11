@@ -17,18 +17,18 @@ export const layoutElements = [{
 }, {
   prefix: 'table',
   label: '表格',
-  inside: { type: 'row' },
+  // inside: { type: 'row' },
   properties: [
     {
       prefix: 'row',
       properties: {
         col1: {
           type: 'Input',
-          outside: { type: 'col', props: { span: 6 } }
+          // outside: { type: 'col', props: { span: 6 } }
         },
         col2: {
           type: 'Input',
-          outside: { type: 'col', props: { span: 6 } }
+          // outside: { type: 'col', props: { span: 6 } }
         }
       }
     }

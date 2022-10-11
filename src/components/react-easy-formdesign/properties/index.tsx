@@ -2,8 +2,7 @@ import React, { cloneElement, useCallback, useContext, useState, CSSProperties, 
 import classnames from 'classnames';
 import { Tabs } from 'antd';
 import { FormRenderContext } from '../design-context';
-import ItemSettings from './item-settings';
-import GlobalSettings from './global-settings';
+import FormItemSettings from './form-item-settings';
 import './index.less';
 
 export interface DesignPropertiesProps {
@@ -17,17 +16,27 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
     className
   } = props;
 
+  const TabsData = [{
+    key: 'com',
+    tab: '属性配置',
+    component: FormItemSettings
+  }]
+
   const cls = classnames(prefixCls, className)
 
   return (
     <div ref={ref} className={cls} style={style}>
       <Tabs className='properties-tabs' defaultActiveKey="1">
-        <Tabs.TabPane tab="组件配置" key="1">
-          <ItemSettings />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="表单配置" key="2">
-          <GlobalSettings />
-        </Tabs.TabPane>
+        {
+          TabsData?.map((item) => {
+            const { component: TabChildren, ...rest } = item
+            return (
+              <Tabs.TabPane {...rest}>
+                <TabChildren />
+              </Tabs.TabPane>
+            )
+          })
+        }
       </Tabs>
     </div>
   )

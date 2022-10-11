@@ -27,14 +27,9 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   const onChange = (prefix: string, item: ELementProps) => {
-    handleControl(prefix, item);
-  }
-
-  // 处理基础控件
-  const handleControl = (prefix: string, item: ELementProps) => {
     let newId;
+    // 如果选中为数组项，则在其后面添加
     if (endIsListItem(selected)) {
-      // 当选中项为为空数组内部，则设置为空字符串
       const end = pathToArray(selected)?.pop() as string || '-1';
       newId = `[${+end + 1}]`;
     } else {

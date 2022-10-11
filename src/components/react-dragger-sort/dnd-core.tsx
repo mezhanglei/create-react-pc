@@ -402,6 +402,7 @@ export default function BuildDndSortable() {
           // 执行动画
           animateInstance();
         } else {
+          // 在当前域内空白处时
           this.setDropEndChild(params)
         }
       }

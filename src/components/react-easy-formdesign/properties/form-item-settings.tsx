@@ -3,18 +3,17 @@ import classnames from 'classnames';
 import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { ELementProps } from '../config';
-import { fieldSettings } from '../config/field-settings';
+import { defaultFieldSettings } from '../config/field-settings';
 import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { FieldProps } from '@/components/react-easy-formcore';
-import { getContainerSettings } from '../config/container-settings';
 
-export interface ItemSettingsProps {
+export interface FormItemSettingsProps {
   className?: string
   style?: CSSProperties
 }
 const prefixCls = 'item-settings';
-function ItemSettings(props: ItemSettingsProps, ref: any) {
+function FormItemSettings(props: FormItemSettingsProps, ref: any) {
   const {
     style,
     className
@@ -43,29 +42,22 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
     const selectedItem = viewerRenderStore.getItemByPath(selected);
     const originSettings = selectedItem?.['settings'];
     let baseSettings = { ...originSettings };
-    // 当有outside属性时则添加对应的配置
-    if (selectedItem?.outside?.type) {
+    // 默认表单域显示组件的属性
+    if (!selectedItem?.fieldComponent) {
       baseSettings = {
         ...baseSettings,
-        outside: getContainerSettings(selectedItem?.outside?.type)
+        ...defaultFieldSettings
       }
-    }
-    // TODO：只有表单域组件才可以添加表单域的属性
-    if (selectedItem?.category !== 'container') {
-      baseSettings = {
-        ...baseSettings,
-        ...fieldSettings
+      // 非数组项添加字段名编辑控件
+      if (!endIsListItem(selected)) {
+        baseSettings = {
+          name: {
+            label: '字段名',
+            type: 'Input'
+          },
+          ...baseSettings
+        };
       }
-    }
-    // 非数组项添加字段名编辑控件
-    if (!endIsListItem(selected)) {
-      baseSettings = {
-        name: {
-          label: '字段名',
-          type: 'Input'
-        },
-        ...baseSettings
-      };
     }
     return baseSettings;
   }
@@ -107,5 +99,5 @@ function ItemSettings(props: ItemSettingsProps, ref: any) {
   );
 };
 
-ItemSettings.displayName = 'item-settings';
-export default React.forwardRef(ItemSettings);
+FormItemSettings.displayName = 'form-item-settings';
+export default React.forwardRef(FormItemSettings);

@@ -26,7 +26,7 @@ export function getValueFromEvent(...args: any[]) {
 }
 
 // 判断字符是否是数组中的选项
-export const isListItem = (item: string) => (/\[(\d+)\]/gi.test(item));
+export const isListItem = (item?: string) => item !== undefined && (/\[(\d+)\]/gi.test(item));
 
 // 拼接当前项的path
 export const getCurrentPath = (name?: string, parent?: string) => {

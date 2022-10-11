@@ -19,6 +19,8 @@ export interface FormDndProps extends GeneratePrams {
  */
 function FormDnd(props: FormDndProps, ref: any) {
   const { children, parent, name, field } = props;
+  // 是否为根节点
+  const isRoot = !parent && !name && !field
   const { viewerRenderStore } = useContext(FormRenderContext);
 
   const onItemSwap: DndProps['onUpdate'] = (params) => {
@@ -65,7 +67,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     }
   }
 
-  if (!parent) {
+  if (isRoot) {
     return (
       <DndSortable
         onUpdate={onItemSwap}

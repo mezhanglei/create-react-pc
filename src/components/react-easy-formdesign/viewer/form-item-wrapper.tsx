@@ -1,6 +1,6 @@
-import { getCurrentPath } from '@/components/react-easy-formcore';
+import { getCurrentPath, isListItem } from '@/components/react-easy-formcore';
 import { FormEditContext, FormRenderContext } from '@/components/react-easy-formdesign/design-context';
-import { defaultGetId, endIsListItem } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { ELementProps } from '../config';
@@ -33,15 +33,10 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
   const isSelected = currentPath ? currentPath === selected : false;
+  
   const copyItem = () => {
-    let newId;
     const nextIndex = (field?.index as number) + 1;
-    if (endIsListItem(currentPath)) {
-      newId = `[${nextIndex}]`;
-    } else {
-      // 非数组项才生成id
-      newId = defaultGetId(field?.prefix);
-    }
+    const newId = isListItem(name) ? `[${nextIndex}]` : defaultGetId(field?.prefix)
     const newField = viewerRenderStore?.getItemByPath(currentPath);
     viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, parent);
   }
