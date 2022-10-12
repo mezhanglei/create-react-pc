@@ -1,5 +1,5 @@
-// 默认的表单域组件配置项
-export const defaultFieldSettings = {
+// 默认的表单域显示组件的属性
+export default {
   label: {
     label: '标签名称',
     type: 'Input'

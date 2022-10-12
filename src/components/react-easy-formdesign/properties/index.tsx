@@ -17,7 +17,7 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
   } = props;
 
   const TabsData = [{
-    key: 'com',
+    key: 'component',
     tab: '属性配置',
     component: FormItemSettings
   }]
@@ -26,7 +26,7 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <Tabs className='properties-tabs' defaultActiveKey="1">
+      <Tabs className='properties-tabs'>
         {
           TabsData?.map((item) => {
             const { component: TabChildren, ...rest } = item

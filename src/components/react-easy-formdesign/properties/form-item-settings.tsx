@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { ELementProps } from '../config';
-import { defaultFieldSettings } from '../config/field-settings';
 import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { FieldProps } from '@/components/react-easy-formcore';
@@ -13,6 +12,8 @@ export interface FormItemSettingsProps {
   style?: CSSProperties
 }
 const prefixCls = 'item-settings';
+
+// 表单当前节点的属性设置
 function FormItemSettings(props: FormItemSettingsProps, ref: any) {
   const {
     style,
@@ -37,27 +38,20 @@ function FormItemSettings(props: FormItemSettingsProps, ref: any) {
     updateViewer(lastValues);
   }, [selected]);
 
-  // 生成当前控件的settings
+  // 生成当前节点的settings
   const createSettings = (selected: string) => {
     const selectedItem = viewerRenderStore.getItemByPath(selected);
     const originSettings = selectedItem?.['settings'];
     let baseSettings = { ...originSettings };
-    // 默认表单域显示组件的属性
-    if (!selectedItem?.fieldComponent) {
+    // TODO：是否所有的表单节点都设置此属性
+    if (!endIsListItem(selected)) {
       baseSettings = {
-        ...baseSettings,
-        ...defaultFieldSettings
-      }
-      // 非数组项添加字段名编辑控件
-      if (!endIsListItem(selected)) {
-        baseSettings = {
-          name: {
-            label: '字段名',
-            type: 'Input'
-          },
-          ...baseSettings
-        };
-      }
+        name: {
+          label: '字段名',
+          type: 'Input'
+        },
+        ...baseSettings
+      };
     }
     return baseSettings;
   }
@@ -81,7 +75,7 @@ function FormItemSettings(props: FormItemSettingsProps, ref: any) {
     viewerRenderStore?.updateItemByPath(selected, field); // 更新控件的属性
   }
 
-  // 获取旧值
+  // 获取当前节点的上一次设置的值
   const getLastValues = (selected: string, curSettings: ELementProps['settings']) => {
     const viewerValues = viewerRenderStore.getItemByPath(selected) || {};
     if (!endIsListItem(selected)) {

@@ -1,3 +1,4 @@
+import defaultFieldSettings from '../settings/default-field'
 export const layoutElements = [{
   prefix: 'object',
   label: '对象容器',
@@ -5,6 +6,7 @@ export const layoutElements = [{
   properties: {
   },
   settings: {
+    ...defaultFieldSettings
   }
 }, {
   prefix: 'list',
@@ -13,6 +15,7 @@ export const layoutElements = [{
   properties: [
   ],
   settings: {
+    ...defaultFieldSettings
   }
 }, {
   prefix: 'table',
@@ -23,10 +26,12 @@ export const layoutElements = [{
       prefix: 'row',
       properties: {
         col1: {
+          prefix: 'col1',
           type: 'Input',
           // outside: { type: 'col', props: { span: 6 } }
         },
         col2: {
+          prefix: 'col2',
           type: 'Input',
           // outside: { type: 'col', props: { span: 6 } }
         }

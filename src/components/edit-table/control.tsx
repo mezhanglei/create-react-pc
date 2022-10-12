@@ -36,10 +36,6 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
   const { validator, key, dataIndex } = useContext(TableControlContext)
 
   useEffect(() => {
-    addRules?.(key, dataIndex, rules)
-  }, [key, rules])
-
-  useEffect(() => {
     return () => {
       addRules?.(key, dataIndex)
     }
@@ -51,6 +47,8 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     if (!path || !validator) return
     validator?.add?.(path, rules)
   }
+
+  addRules?.(key, dataIndex, rules)
 
   const path = getCellPath(key, dataIndex)
   const error = validator?.getError(path)

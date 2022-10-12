@@ -6,6 +6,7 @@ import './index.less';
 import * as Configs from '../config'
 import { defaultGetId } from '../utils/utils';
 import { SideBarGroup } from '../sidebar/sidebar-list';
+import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 
 export interface FormDndProps extends GeneratePrams {
   children?: any;
@@ -57,7 +58,8 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 从侧边栏插入进来
     if (dragCollection?.type === SideBarGroup) {
       const elements = Configs[dragCollection?.elementsKey]
-      const field = elements[dragIndex]
+      const item = elements[dragIndex]
+      const field = { ...item, ...getInitialValues(item?.settings) }
       const name = dropGroupIsList ? `[${dropIndex}]` : defaultGetId(field?.prefix);
       const addItem = { name, field }
       viewerRenderStore?.addItemByIndex(addItem, dropIndex, dropCollection?.path);

@@ -29,6 +29,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     setEdit({ schema: newSchema });
   }
 
+  // 表单属性更改时回填属性初始值设置
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
     if (!selected || selected === '#' || !settingsForm) return;
     const path = getCurrentPath(name, parent)
@@ -39,6 +40,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     setEdit({ selected: "#" });
   }
 
+  // 回填属性表单和编辑器的initialValue
   const updateViewerValue = (path: string | undefined, value: unknown) => {
     settingsForm.setInitialValues('initialValue', value);
     viewerRenderStore?.updateItemByPath(path, { initialValue: value });

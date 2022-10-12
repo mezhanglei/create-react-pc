@@ -6,7 +6,7 @@ import { atomElements, ELementProps, exampleElements, layoutElements } from '../
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { defaultGetId, getParent, getSelectedIndex, endIsListItem } from '../utils/utils';
 import SidebarList from './sidebar-list';
-import { pathToArray } from '@/components/react-easy-formrender/utils/utils';
+import { getInitialValues, pathToArray } from '@/components/react-easy-formrender/utils/utils';
 import { getCurrentPath } from '@/components/react-easy-formcore';
 
 export interface DesignComponentsProps {
@@ -39,7 +39,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const newIndex = getSelectedIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
     // 生成新控件
-    const addItem = { name: newId, field: item };
+    const field = { ...item, ...getInitialValues(item?.settings) }
+    const addItem = { name: newId, field: field };
     const newPath = getCurrentPath(newId, parentPath);
     viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
     setEdit({ selected: newPath });
