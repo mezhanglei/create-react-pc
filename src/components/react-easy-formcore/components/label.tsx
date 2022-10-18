@@ -46,9 +46,9 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
 
   return (
     children !== undefined ? (
-      <div ref={ref} className={cls} style={mergeStyle} {...restProps}>
+      <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon ? <>{children}:</> : children}
-      </div>
+      </label>
     ) : null
   );
 });

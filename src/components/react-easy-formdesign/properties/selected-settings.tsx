@@ -7,14 +7,14 @@ import { changeSelected, getPathEnd, endIsListItem } from '../utils/utils';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { FieldProps } from '@/components/react-easy-formcore';
 
-export interface FormItemSettingsProps {
+export interface SelectedSettingsProps {
   className?: string
   style?: CSSProperties
 }
 const prefixCls = 'item-settings';
 
-// 表单当前节点的属性设置
-function FormItemSettings(props: FormItemSettingsProps, ref: any) {
+// 选中节点的属性设置
+function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const {
     style,
     className
@@ -93,5 +93,5 @@ function FormItemSettings(props: FormItemSettingsProps, ref: any) {
   );
 };
 
-FormItemSettings.displayName = 'form-item-settings';
-export default React.forwardRef(FormItemSettings);
+SelectedSettings.displayName = 'selected-settings';
+export default React.forwardRef(SelectedSettings);

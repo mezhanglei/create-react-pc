@@ -33,12 +33,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     onValuesChange
   } = options;
 
-  const valuesCallback: ItemCoreProps['onValuesChange'] = (params) => {
-    onValuesChange && onValuesChange(params)
+  const valuesCallback: ItemCoreProps['onValuesChange'] = (...args) => {
+    onValuesChange && onValuesChange(...args)
     handleFieldProps();
   }
 
-  // 订阅更新properties的函数,j将传值更新到state里面
+  // 订阅更新properties的函数,将传值更新到state里面
   useEffect(() => {
     if (!store) return
     // 订阅目标控件

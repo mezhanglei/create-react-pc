@@ -17,8 +17,8 @@ export interface ItemCoreProps {
   rules?: FormRule[];
   initialValue?: any;
   errorClassName?: string;
-  onFieldsChange?: (obj: { parent: string, name?: string, value: any }) => void;
-  onValuesChange?: (obj: { parent?: string, name?: string, value: any }) => void;
+  onFieldsChange?: (obj: { parent: string, name?: string, value: any }, values?: unknown) => void;
+  onValuesChange?: (obj: { parent?: string, name?: string, value: any }, values?: unknown) => void;
   children?: any
 }
 
@@ -56,7 +56,7 @@ export const ItemCore = (props: ItemCoreProps) => {
         // 设置值
         store.setFieldValue(currentPath, value);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ parent: parent, name: name, value: value });
+        onFieldsChange && onFieldsChange({ parent: parent, name: name, value: value }, store?.getFieldValue());
       }
     },
     [currentPath, store, valueGetter, onFieldsChange]
@@ -78,7 +78,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!isEqual(newValue, oldValue)) {
-        onValuesChange && onValuesChange({ parent: parent, name: name, value: newValue })
+        onValuesChange && onValuesChange({ parent: parent, name: name, value: newValue }, store?.getFieldValue())
       }
     });
     return () => {
