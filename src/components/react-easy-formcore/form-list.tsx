@@ -42,19 +42,14 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   return (
     <FieldComponent {...rest} ref={ref} error={error}>
-      {
-        ignore ?
-          children
-          :
-          <ListCore
-            name={name}
-            parent={parent}
-            rules={rules}
-            initialValue={initialValue}
-          >
-            {children}
-          </ListCore>
-      }
+      <ListCore
+        name={ignore ? undefined : name}
+        parent={parent}
+        rules={rules}
+        initialValue={initialValue}
+      >
+        {children}
+      </ListCore>
     </FieldComponent>
   );
 });

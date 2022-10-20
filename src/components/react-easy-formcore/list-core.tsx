@@ -1,13 +1,13 @@
 import React, { cloneElement, useContext } from 'react';
 import { FormValuesContext, FormOptionsContext } from './form-context';
-import { getCurrentPath } from './utils/utils';
+import { getCurrentPath, isFormNode } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
 
 export interface ListCoreProps {
   name?: string;
-  rules?: FormRule[];
   parent?: string;
+  rules?: FormRule[];
   initialValue?: any[];
   children?: any;
 }
@@ -27,23 +27,17 @@ export const ListCore = (props: ListCoreProps) => {
   const currentPath = getCurrentPath(name, parent);
   const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
 
-  // 是否为表单控件
-  const isFormField = (child: any) => {
-    const displayName = child?.type?.displayName;
-    const formFields = ['Form.Item', 'Form.List','ListCore', 'ItemCore'];
-    const dataName = child?.props?.['data-name']; // 忽略当前节点
-    return formFields?.includes(displayName) && dataName !== 'ignore';
-  };
-
   // 渲染子元素
   let index = 0;
   const getChildren = (children: any): any => {
     return React.Children.map(children, (child: any) => {
-      if (isFormField(child)) {
+      if (isFormNode(child)) {
         return renderFormItem(child);
       } else {
         const childs = child?.props?.children;
-        if (childs && child !== undefined) {
+        const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
+        const childType = child?.type;
+        if (childs && (dataType === 'ignore' || typeof childType === 'string')) {
           return cloneElement(child, {
             children: getChildren(childs)
           });

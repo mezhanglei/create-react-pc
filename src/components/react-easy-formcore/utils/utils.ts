@@ -30,10 +30,18 @@ export const isListItem = (item?: string) => item !== undefined && (/\[(\d+)\]/g
 
 // 拼接当前项的path
 export const getCurrentPath = (name?: string, parent?: string) => {
-  if (name === undefined) return name;
+  if (!name) return name;
   if (isListItem(name)) {
     return parent ? `${parent}${name}` : name;
   } else {
     return parent ? `${parent}.${name}` : name;
   }
+};
+
+// 是否为表单节点
+export const isFormNode = (child: any) => {
+  const displayName = child?.type?.displayName;
+  const formFields = ['Form.Item', 'Form.List', 'ListCore', 'ItemCore'];
+  const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
+  return formFields?.includes(displayName) && dataType !== 'ignore'
 };

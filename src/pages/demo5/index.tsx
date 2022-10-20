@@ -106,6 +106,7 @@ export default function Demo5(props) {
         label: '对象嵌套',
         required: true,
         outside: { type: 'col', props: { span: 6 } },
+        ignore: true,
         properties: {
           first: {
             // label: '对象嵌套1',

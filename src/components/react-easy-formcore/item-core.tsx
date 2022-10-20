@@ -1,10 +1,9 @@
-import { AopFactory } from '@/utils/function-aop';
 import { isEqual } from '@/utils/object';
 import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useState } from 'react';
 import { FormStore } from './form-store';
 import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
-import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName } from './utils/utils';
+import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode } from './utils/utils';
 import { FormRule } from './validator';
 
 export interface ItemCoreProps {
@@ -62,8 +61,6 @@ export const ItemCore = (props: ItemCoreProps) => {
     [currentPath, store, valueGetter, onFieldsChange]
   );
 
-  const aopOnchange = new AopFactory(onChange);
-
   // 回填storeValue
   useEffect(() => {
     if (!isEqual(storeValue, value)) {
@@ -110,26 +107,18 @@ export const ItemCore = (props: ItemCoreProps) => {
   }
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (currentPath && isValidElement(child)) {
+    if (name && isValidElement(child)) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
-      const { onChange, className } = childProps || {};
-      // 对onChange方法进行aop包装，在后面添加子元素自身的onChange事件
-      const aopAfterFn = aopOnchange.addAfter(onChange);
+      const { className } = childProps || {};
+      // onChange
+      const childOnChange = childProps?.onChange || onChange
       const valueResult = childValue(value);
-      const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult, onChange: aopAfterFn }
+      const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult, onChange: childOnChange }
       return cloneElement(child, newChildProps)
     } else {
       return child;
     }
-  };
-
-  // 是否为表单节点
-  const isFormNode = (child: any) => {
-    const displayName = child?.type?.displayName;
-    const formFields = ['Form.Item', 'Form.List','ListCore', 'ItemCore'];
-    const dataName = child?.props?.['data-name']; // 忽略当前节点
-    return formFields?.includes(displayName) && dataName !== 'ignore'
   };
 
   // 渲染子元素

@@ -42,26 +42,21 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   return (
     <FieldComponent {...rest} ref={ref} error={error}>
-      {
-        ignore ?
-          children
-          :
-          <ItemCore
-            name={name}
-            parent={parent}
-            index={index}
-            valueProp={valueProp}
-            valueGetter={valueGetter}
-            valueSetter={valueSetter}
-            rules={rules}
-            initialValue={initialValue}
-            errorClassName={errorClassName}
-            onFieldsChange={onFieldsChange}
-            onValuesChange={onValuesChange}
-          >
-            {children}
-          </ItemCore>
-      }
+      <ItemCore
+        name={ignore ? undefined : name}
+        parent={parent}
+        index={index}
+        valueProp={valueProp}
+        valueGetter={valueGetter}
+        valueSetter={valueSetter}
+        rules={rules}
+        initialValue={initialValue}
+        errorClassName={errorClassName}
+        onFieldsChange={onFieldsChange}
+        onValuesChange={onValuesChange}
+      >
+        {children}
+      </ItemCore>
     </FieldComponent>
   );
 });
