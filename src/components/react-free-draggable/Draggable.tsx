@@ -5,7 +5,7 @@ import { DraggableProps, EventHandler, DragTypes, DragData, BoundsInterface, Dra
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
-import { mergeObject } from '@/utils/object';
+import { deepMergeObject } from '@/utils/object';
 import ReactDOM from 'react-dom';
 
 /**
@@ -61,7 +61,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     if (typeof initX !== 'number' || typeof initY !== 'number') return;
     const translateX = typeof newX === 'number' ? (newX - initX) : undefined;
     const translateY = typeof newY === 'number' ? (newY - initY) : undefined;
-    const newDragData = mergeObject(oldDragData, {
+    const newDragData = deepMergeObject(oldDragData, {
       x: newX,
       y: newY,
       translateX,
@@ -253,7 +253,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       <DraggableEvent
         ref={forwardedRef}
         {...DraggableEventProps}
-        style={mergeObject({ ...children.props.style, ...style }, {
+        style={deepMergeObject({ ...children.props.style, ...style }, {
           transform: !isSVG && getTranslation(currentPosition, positionOffset, 'px')
         })}
         showLayer={false}

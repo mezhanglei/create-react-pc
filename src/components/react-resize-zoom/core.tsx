@@ -3,7 +3,7 @@ import { isMobile } from "./utils/verify";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "./utils/dom";
 import { EventType, EventHandler, ResizeDirection, DragResizeProps, DragResizeState, ResizeDirectionCode, LastStyle, ResizeDragTypes, NowStyle } from "./type";
 import ReactDOM from 'react-dom';
-import { mergeObject } from '@/utils/object';
+import { deepMergeObject } from '@/utils/object';
 import { getWindow } from '@/utils/dom';
 
 // Simple abstraction for dragging events names.
@@ -51,7 +51,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
 
   // 非拖拽元素设置宽高
   setStyle = (oldStyle: NowStyle, newWidth?: number, newHeight?: number) => {
-    const newStyle = mergeObject(oldStyle, {
+    const newStyle = deepMergeObject(oldStyle, {
       width: newWidth,
       height: newHeight
     })
@@ -333,7 +333,7 @@ class DragResize extends React.Component<DragResizeProps, DragResizeState> {
     return React.cloneElement(React.Children.only(children), {
       className: className ?? children.props?.className,
       ref: forwardedRef,
-      style: mergeObject({ ...children.props.style, ...style }, nowStyle),
+      style: deepMergeObject({ ...children.props.style, ...style }, nowStyle),
       ...childProps
     });
   }

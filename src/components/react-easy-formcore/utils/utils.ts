@@ -1,4 +1,5 @@
 import { formatName, pathToArr, deepGet, deepSet } from "@/utils/object";
+import { isEmpty } from "@/utils/type";
 export { formatName, pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
@@ -30,7 +31,7 @@ export const isListItem = (item?: string) => item !== undefined && (/\[(\d+)\]/g
 
 // 拼接当前项的path
 export const getCurrentPath = (name?: string, parent?: string) => {
-  if (!name) return name;
+  if (isEmpty(name)) return;
   if (isListItem(name)) {
     return parent ? `${parent}${name}` : name;
   } else {

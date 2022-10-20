@@ -92,19 +92,22 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const handleFieldProps = () => {
     const fieldPropsMap = {};
     // 遍历处理对象树中的非properties字段
-    const deepHandle = (formField: FormFieldProps, parent: string) => {
+    const deepHandle = (formField: FormFieldProps, path: string) => {
       for (const propsKey in formField) {
-        const value = formField[propsKey];
         if (propsKey !== 'properties') {
-          const path = getCurrentPath(propsKey, parent) as string;
-          const result = calcExpression(value);
-          fieldPropsMap[path] = result;
+          const propsValue = formField[propsKey];
+          const propsPath = getCurrentPath(propsKey, path) as string;
+          const result = calcExpression(propsValue);
+          fieldPropsMap[propsPath] = result;
         } else {
-          for (const childKey in value) {
-            const name = value instanceof Array ? `[${childKey}]` : childKey;
-            const path = getCurrentPath(name, parent) as string;
-            const childField = value[childKey];
-            deepHandle(childField, path);
+          const children = formField[propsKey];
+          for (const childKey in children) {
+            const childField = children[childKey];
+            const childName = children instanceof Array ? `[${childKey}]` : childKey;
+            if (childName) {
+              const childPath = getCurrentPath(childName, path) as string;
+              deepHandle(childField, childPath);
+            }
           }
         }
       }
@@ -113,7 +116,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     for (const key in properties) {
       const formField = properties[key];
       const name = properties instanceof Array ? `[${key}]` : key;
-      deepHandle(formField, name);
+      if(name) {
+        deepHandle(formField, name);
+      }
     }
     setFieldPropsMap(fieldPropsMap);
   }
@@ -123,8 +128,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {
-          const currentPath = getCurrentPath(propsKey, path) as string;
-          return [propsKey, fieldPropsMap[currentPath] ?? field[propsKey]];
+          const currentPath = propsKey ? `${path}.${propsKey}` : undefined
+          const propsValue = (currentPath && fieldPropsMap[currentPath]) ?? field[propsKey]
+          return [propsKey, propsValue];
         }
       )
     );
@@ -268,12 +274,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const currentPath = getCurrentPath(name, parent);
     const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
       const childName = properties instanceof Array ? `[${key}]` : key;
-      const childPath = getCurrentPath(childName, currentPath)
-      const childField = showCalcFieldProps(formField, childPath);
-      if (childField) {
-        childField['index'] = index;
+      if (childName) {
+        const childPath = getCurrentPath(childName, currentPath)
+        const childField = showCalcFieldProps(formField, childPath);
+        if (childField) {
+          childField['index'] = index;
+        }
+        return generateChild(childName, childField, currentPath);
       }
-      return generateChild(childName, childField, currentPath);
     })
     return withInside(childs, inside, commonParams)
   }

@@ -59,13 +59,13 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
       const len = properties?.length || 0;
       const newIndex = len;
       if (newField) {
-        store?.addItemByIndex({ name: `[${newIndex}]`, field: newField }, newIndex, currentPath)
+        currentPath && store?.addItemByIndex({ name: `[${newIndex}]`, field: newField }, newIndex, currentPath)
       }
     } else if (typeof properties === 'object') {
       const len = Object?.keys(properties)?.length || 0;
       const newIndex = len;
       if (newField?.name) {
-        store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, currentPath);
+        currentPath && store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, currentPath);
       }
     }
     props?.onClick && props?.onClick();
