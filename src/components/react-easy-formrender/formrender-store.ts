@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { mergeProperties, getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
@@ -24,10 +24,10 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     return deepClone(this.properties);
   }
 
-  // 设置properties(后面覆盖前面已有的)
+  // 设置properties
   setProperties(data?: SchemaData['properties']) {
     this.lastProperties = this.properties;
-    this.properties = mergeProperties(this.properties, data)
+    this.properties = deepClone(data || {});
     this.notifyProperties();
   }
 

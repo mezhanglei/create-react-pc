@@ -5,6 +5,7 @@ import { FormStore } from './form-store';
 import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
 import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode } from './utils/utils';
 import { FormRule } from './validator';
+import { AopFactory } from '@/utils/function-aop';
 
 export interface ItemCoreProps {
   name?: string;
@@ -61,6 +62,8 @@ export const ItemCore = (props: ItemCoreProps) => {
     [currentPath, store, valueGetter, onFieldsChange]
   );
 
+  const aopOnchange = new AopFactory(onChange);
+
   // 回填storeValue
   useEffect(() => {
     if (!isEqual(storeValue, value)) {
@@ -112,7 +115,7 @@ export const ItemCore = (props: ItemCoreProps) => {
       const childProps = child?.props as any;
       const { className } = childProps || {};
       // onChange
-      const childOnChange = childProps?.onChange || onChange
+      const childOnChange = aopOnchange.addAfter(childProps?.onChange)
       const valueResult = childValue(value);
       const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult, onChange: childOnChange }
       return cloneElement(child, newChildProps)
