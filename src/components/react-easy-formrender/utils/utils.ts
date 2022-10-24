@@ -285,16 +285,3 @@ export const getInitialValues = (properties: SchemaData['properties']) => {
   }
   return initialValues;
 }
-
-// 深度合并两个
-export const mergeProperties = function (obj1: SchemaData['properties'], obj2: SchemaData['properties']) {
-  let cloneObj1 = deepClone(obj1)
-  for (let key in obj2) {
-    if (cloneObj1) {
-      cloneObj1[key] = obj2[key]
-    } else {
-      cloneObj1 = obj2
-    }
-  }
-  return cloneObj1;
-};
