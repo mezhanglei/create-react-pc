@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
@@ -59,10 +59,10 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 插入值，默认末尾
-  addItemByIndex = (data: AddItem | AddItem[], index?: number, parentPath?: string) => {
+  addItemByIndex = (data: AddItem | AddItem[], index?: number, parent?: string) => {
     const properties = this.getProperties();
     if (properties) {
-      let newProperties = addItemByIndex(properties, data, index, parentPath);
+      let newProperties = addItemByIndex(properties, data, index, parent);
       this.setProperties(newProperties);
     }
   }
@@ -85,11 +85,11 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 从from到to更换位置
-  swapItemByPath = (from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
+  swapItemByPath = (from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
     const properties = this.getProperties();
     if (properties) {
       let newProperties;
-      if (from?.parentPath === to?.parentPath) {
+      if (from?.parent === to?.parent) {
         newProperties = swapSameLevel(properties, from, to);
       } else {
         newProperties = swapDiffLevel(properties, from, to);
@@ -117,15 +117,22 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   addAfterByPath = (data: AddItem | AddItem[], path: string) => {
     const properties = this.getProperties();
     if (properties) {
-      const index = 0;
-      const parentPath = '';
-      let newProperties = addItemByIndex(properties, data, index, parentPath);
+      const nextIndex = getPathEndIndex(path, properties) + 1;
+      const parent = getParent(path);
+      let newProperties = addItemByIndex(properties, data, nextIndex, parent);
       this.setProperties(newProperties);
     }
   }
 
   // 在目标路径前面插入数据
   addBeforeByPath = (data: AddItem | AddItem[], path: string) => {
-
+    const properties = this.getProperties();
+    if (properties) {
+      const endIndex = getPathEndIndex(path, properties);
+      const beforeIndex = endIndex > 0 ? endIndex - 1 : 0;
+      const parent = getParent(path);
+      let newProperties = addItemByIndex(properties, data, beforeIndex, parent);
+      this.setProperties(newProperties);
+    }
   }
 }

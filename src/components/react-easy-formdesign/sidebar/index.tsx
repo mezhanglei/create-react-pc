@@ -4,9 +4,9 @@ import { Tabs } from 'antd';
 import './index.less';
 import { atomElements, ELementProps, exampleElements, layoutElements } from '../config';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import { defaultGetId, getParent, getSelectedIndex, endIsListItem } from '../utils/utils';
+import { defaultGetId } from '../utils/utils';
 import SidebarList from './sidebar-list';
-import { getInitialValues, pathToArray } from '@/components/react-easy-formrender/utils/utils';
+import { endIsListItem, getInitialValues, getParent, getPathEnd, getPathEndIndex } from '@/components/react-easy-formrender/utils/utils';
 import { getCurrentPath } from '@/components/react-easy-formcore';
 
 export interface DesignComponentsProps {
@@ -30,13 +30,13 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     let newId;
     // 如果选中为数组项，则在其后面添加
     if (endIsListItem(selected)) {
-      const end = pathToArray(selected)?.pop() as string || '-1';
+      const end = getPathEnd(selected) || '-1';
       newId = `[${+end + 1}]`;
     } else {
       // 非数组项才生成id
       newId = defaultGetId(prefix);
     }
-    const newIndex = getSelectedIndex(selected, schema?.properties) + 1; // 插入位置序号
+    const newIndex = getPathEndIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
     // 生成新控件
     const field = { ...item, ...getInitialValues(item?.settings) }

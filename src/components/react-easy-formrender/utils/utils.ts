@@ -1,12 +1,65 @@
 import { arraySwap } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
-import { formatName, getCurrentPath, pathToArr, deepSet } from "../../react-easy-formcore";
-import { deepClone } from "@/utils/object";
+import { formatName, getCurrentPath, pathToArr, deepSet, isListItem } from "../../react-easy-formcore";
+import { isEmpty } from "@/utils/type";
 
-export const pathToArray = (pathStr?: string) => pathStr ? pathToArr(pathStr) : [];
+// 拼接当前项的path
+export const joinPath = (name?: string, parent?: string) => {
+  if (isEmpty(name) || typeof name !== 'string') return parent;
+  if (isListItem(name)) {
+    return parent ? `${parent}${name}` : name;
+  } else {
+    return parent ? `${parent}.${name}` : name;
+  }
+};
+
+// 获取末尾节点
+export const getPathEnd = (path: string) => {
+  const pathArr = pathToArr(path)
+  const end = pathArr?.pop()
+  return end;
+}
+
+// 根据路径返回父元素路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
+export const getParent = (path: string) => {
+  const end = getPathEnd(path);
+  if (typeof end === 'string' && path) {
+    const endReg = new RegExp(`\\[\\d+\\]$|\\.${end}$|${end}$`)
+    return path.replace(endReg, '')
+  }
+}
+
+// 路径末尾项是否为数组项
+export const endIsListItem = (path: string) => {
+  if (typeof path === 'string') {
+    const endReg = new RegExp('\\[\\d+\\]$');
+    return endReg.test(path)
+  }
+}
+
+// 更改path的末尾项
+export const changePathEnd = (oldPath: string, endName: string) => {
+  if (endName && oldPath) {
+    const parent = getParent(oldPath);
+    const newPath = joinPath(endName, parent);
+    return newPath;
+  }
+}
+
+// 根据路径返回在父元素中的当前位置, 没有则返回-1;
+export const getPathEndIndex = (path: string, properties?: SchemaData['properties']) => {
+  const parentPath = getParent(path);
+  const end = getPathEnd(path);
+  const parent = getItemByPath(properties, parentPath);
+  const childProperties = parentPath ? parent?.properties : properties;
+  const keys = Object.keys(childProperties || {});
+  const index = end ? keys?.indexOf(end) : -1;
+  return index;
+}
+
 // 根据路径更新数据
 export const updateItemByPath = (properties: SchemaData['properties'], pathStr: string, data?: Partial<FormFieldProps>) => {
-  const pathArr = pathToArray(pathStr);
+  const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
   let temp: any = properties;
@@ -38,7 +91,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
 
 // 设置指定路径的值
 export const setItemByPath = (properties: SchemaData['properties'], pathStr: string, data?: Partial<FormFieldProps>) => {
-  const pathArr = pathToArray(pathStr);
+  const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
   let temp: any = properties;
@@ -74,7 +127,7 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
 
 // 根据path获取指定路径的项
 export const getItemByPath = (properties: SchemaData['properties'], pathStr?: string) => {
-  const pathArr = pathToArray(pathStr);
+  const pathArr = pathToArr(pathStr);
   let temp: any = properties;
   if (pathArr.length === 0) {
     return temp;
@@ -151,7 +204,7 @@ const restoreFromList = (dataList: FormFieldProps[], isList?: boolean) => {
 // 更新指定路径的name
 export const updateName = (properties: SchemaData['properties'], pathStr: string, newName?: string) => {
   if (typeof newName !== 'string' || !pathStr) return properties;
-  const pathArr = pathToArray(pathStr);
+  const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   if (end === formatName(newName)) return properties;
   const parentPath = pathArr?.join('.');
@@ -200,12 +253,12 @@ export const addItemByIndex = (properties: SchemaData['properties'], data: AddIt
 };
 
 // 同级调换位置
-export const swapSameLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
+export const swapSameLevel = (properties: SchemaData['properties'], from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
   // 拖拽源
-  const fromParentPath = from?.parentPath;
+  const fromParentPath = from?.parent;
   const fromIndex = from?.index;
   // 拖放源
-  const toParentPath = to?.parentPath;
+  const toParentPath = to?.parent;
   let toIndex = to?.index;
   // 同域排序
   if (fromParentPath === toParentPath) {
@@ -227,17 +280,17 @@ export const swapSameLevel = (properties: SchemaData['properties'], from: { pare
 };
 
 // 跨级调换位置
-export const swapDiffLevel = (properties: SchemaData['properties'], from: { parentPath?: string, index: number }, to: { parentPath?: string, index?: number }) => {
+export const swapDiffLevel = (properties: SchemaData['properties'], from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
   // 拖拽源
-  const fromParentPath = from?.parentPath;
+  const fromParentPath = from?.parent;
   const fromIndex = from?.index;
-  const fromParentPathArr = pathToArray(fromParentPath);
+  const fromParentPathArr = pathToArr(fromParentPath);
   const fromTreeItem = getKeyValueByIndex(properties, fromIndex, fromParentPath);
   const fromPath = getCurrentPath(fromTreeItem?.name, fromParentPath);
   // 拖放源
-  const toParentPath = to?.parentPath;
+  const toParentPath = to?.parent;
   const toIndex = to?.index;
-  const toParentPathArr = pathToArray(toParentPath);
+  const toParentPathArr = pathToArr(toParentPath);
   if (typeof fromPath !== 'string') return properties;
   // 先计算内部变动，再计算外部变动
   if (fromParentPathArr?.length > toParentPathArr?.length || !toParentPathArr?.length) {
@@ -252,7 +305,8 @@ export const swapDiffLevel = (properties: SchemaData['properties'], from: { pare
 };
 
 // 提取properties中的默认值
-export const getInitialValues = (properties: SchemaData['properties']) => {
+export const getInitialValues = (properties?: SchemaData['properties']) => {
+  if (typeof properties !== 'object') return
   let initialValues = {};
   // 遍历处理对象树中的非properties字段
   const deepHandle = (formField: FormFieldProps, path: string) => {

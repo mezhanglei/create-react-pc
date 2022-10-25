@@ -1,71 +1,48 @@
-import { isListItem } from '@/components/react-easy-formcore';
-import { SchemaData } from '@/components/react-easy-formrender';
-import { getItemByPath, pathToArray } from '@/components/react-easy-formrender/utils/utils';
-import { isEmpty } from '@/utils/type';
+import { FieldProps } from '@/components/react-easy-formcore';
+import { FormRenderStore } from '@/components/react-easy-formrender';
+import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
-
-// 拼接当前项的path
-export const joinPath = (name?: string, parent?: string) => {
-  if (isEmpty(name)) return parent;
-  if (isListItem(name)) {
-    return parent ? `${parent}${name}` : name;
-  } else {
-    return parent ? `${parent}.${name}` : name;
-  }
-};
+import { ELementProps } from '../config';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
 };
 
-// 根据路径返回父元素路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
-export const getParent = (path: string) => {
-  const pathArr = pathToArray(path);
-  const end = pathArr?.pop();
-  if (pathArr?.length && typeof end === 'string') {
-    const index = path?.lastIndexOf(end);
-    const parentPath = path.substring(0, index);
-    return parentPath?.replace(/\[$/g, '')?.replace(/\.$/g, '');
+// 获取节点的值和属性
+export const getSelectedValues = (store: FormRenderStore, selected: string, initialForm?: ELementProps['settings']) => {
+  const oldValues = store.getItemByPath(selected) || {};
+  if (!endIsListItem(selected)) {
+    oldValues['name'] = getPathEnd(selected);
+  }
+  const initialValues = getInitialValues(initialForm);
+  const lastValues = { ...initialValues, ...oldValues };
+  return lastValues;
+}
+
+// 更新节点的值和属性
+export const updateSelectedValues = (store: FormRenderStore, selected: string, settingValues: FieldProps) => {
+  if (!selected) return;
+  const { name, ...field } = settingValues || {};
+ // 更新控件的值
+  store?.setInitialValues(selected, field?.initialValue);
+   // 更新控件的属性
+  store?.updateItemByPath(selected, field);
+  // 更新控件的字段名
+  if(name) {
+    store?.updateNameByPath(selected, name);
   }
 }
 
-// 路径末尾项是否为数组项
-export const endIsListItem = (path: string) => {
-  const pathArr = pathToArray(path);
-  const end = pathArr?.pop();
-  if (typeof end === 'string') {
-    const listItem = `[${end}]`;
-    const index = path?.lastIndexOf(listItem);
-    return index === path?.length - listItem?.length;
+// 覆盖设置节点的值和属性
+export const setSelectedValues = (store: FormRenderStore, selected: string, settingValues: FieldProps) => {
+  if (!selected) return;
+  const { name, ...field } = settingValues || {};
+ // 更新控件的值
+  store?.setInitialValues(selected, field?.initialValue);
+   // 覆盖设置控件的属性
+  store?.setItemByPath(selected, field);
+  // 更新控件的字段名
+  if(name) {
+    store?.updateNameByPath(selected, name);
   }
-}
-
-// 更改path的末尾项
-export const changeSelected = (oldPath: string, newName: string) => {
-  if (newName && oldPath) {
-    const parent = getParent(oldPath);
-    const newPath = joinPath(newName, parent);
-    return newPath;
-  }
-}
-
-// 获取末尾节点
-export const getPathEnd = (path: string) => {
-  let parent = getParent(path);
-  parent = parent?.replace('[', '\\[')?.replace(']', '\\]');
-  const reg = parent ? new RegExp(`${parent}(\\S*)`) : new RegExp(`(\\S*)`);
-  const end = path.match(reg)?.[1];
-  return end?.replace(/^\./, '');
-}
-
-// 根据路径返回在父元素中的当前位置, 没有则返回-1;
-export const getSelectedIndex = (path: string, properties?: SchemaData['properties']) => {
-  const parentPath = getParent(path);
-  const pathArr = pathToArray(path);
-  const end = pathArr?.pop();
-  const parent = getItemByPath(properties, parentPath);
-  const childProperties = parentPath ? parent?.properties : properties;
-  const keys = Object.keys(childProperties || {});
-  const index = end ? keys?.indexOf(end) : -1;
-  return index;
 }

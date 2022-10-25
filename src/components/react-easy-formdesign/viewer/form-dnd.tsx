@@ -37,7 +37,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragCollection?.path }, { index: dropIndex, parentPath: dropCollection?.path });
+    viewerRenderStore.swapItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -65,7 +65,7 @@ function FormDnd(props: FormDndProps, ref: any) {
       viewerRenderStore?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
-      viewerRenderStore.swapItemByPath({ index: dragIndex, parentPath: dragCollection?.path }, { index: dropIndex, parentPath: dropCollection?.path });
+      viewerRenderStore.swapItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 

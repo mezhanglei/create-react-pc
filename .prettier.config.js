@@ -27,7 +27,7 @@ module.exports = {
 	// // 不需要自动在文件开头插入 @prettier
 	// insertPragma: false,
 	// // 使用默认的折行标准
-	// proseWrap: "preserve",
+	proseWrap: "preserve",
 	// // 根据显示样式决定 html 要不要折行
 	// htmlWhitespaceSensitivity: "css",
 	// // 换行符使用 lf
