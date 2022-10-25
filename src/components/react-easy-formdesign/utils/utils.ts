@@ -1,7 +1,18 @@
-import { getCurrentPath } from '@/components/react-easy-formcore';
+import { isListItem } from '@/components/react-easy-formcore';
 import { SchemaData } from '@/components/react-easy-formrender';
 import { getItemByPath, pathToArray } from '@/components/react-easy-formrender/utils/utils';
+import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
+
+// 拼接当前项的path
+export const joinPath = (name?: string, parent?: string) => {
+  if (isEmpty(name)) return parent;
+  if (isListItem(name)) {
+    return parent ? `${parent}${name}` : name;
+  } else {
+    return parent ? `${parent}.${name}` : name;
+  }
+};
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
@@ -33,7 +44,7 @@ export const endIsListItem = (path: string) => {
 export const changeSelected = (oldPath: string, newName: string) => {
   if (newName && oldPath) {
     const parent = getParent(oldPath);
-    const newPath = getCurrentPath(newName, parent);
+    const newPath = joinPath(newName, parent);
     return newPath;
   }
 }

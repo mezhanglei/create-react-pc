@@ -112,4 +112,20 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
       onChange && onChange(this.properties, this.lastProperties);
     })
   }
+
+  // 在目标路径后面插入数据
+  addAfterByPath = (data: AddItem | AddItem[], path: string) => {
+    const properties = this.getProperties();
+    if (properties) {
+      const index = 0;
+      const parentPath = '';
+      let newProperties = addItemByIndex(properties, data, index, parentPath);
+      this.setProperties(newProperties);
+    }
+  }
+
+  // 在目标路径前面插入数据
+  addBeforeByPath = (data: AddItem | AddItem[], path: string) => {
+
+  }
 }
