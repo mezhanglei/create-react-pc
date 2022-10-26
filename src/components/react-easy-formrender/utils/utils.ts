@@ -13,14 +13,14 @@ export const joinPath = (name?: string, parent?: string) => {
   }
 };
 
-// 获取末尾节点
+// 获取末尾节点字符串
 export const getPathEnd = (path: string) => {
   const pathArr = pathToArr(path)
   const end = pathArr?.pop()
   return end;
 }
 
-// 根据路径返回父元素路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
+// 根据路径返回父路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
 export const getParent = (path: string) => {
   const end = getPathEnd(path);
   if (typeof end === 'string' && path) {
@@ -157,8 +157,8 @@ export const getKeyValueByIndex = (properties: SchemaData['properties'], index: 
   };
 };
 
-// 将树中的选项转化为列表中的选项
-export const treeItemToListItem = (name: string, field: FormFieldProps) => {
+// 合并信息
+export const mergeField = (name: string, field: FormFieldProps) => {
   return {
     name: name,
     ...field
@@ -173,7 +173,7 @@ export const toList = (properties: SchemaData['properties']) => {
       const field = properties[key];
       const isList = properties instanceof Array;
       const name = isList ? `[${key}]` : key;
-      const item = treeItemToListItem(name, field);
+      const item = mergeField(name, field);
       temp.push(item);
     }
   }
@@ -181,7 +181,7 @@ export const toList = (properties: SchemaData['properties']) => {
 };
 
 // 从有序列表中还原源数据
-const restoreFromList = (dataList: FormFieldProps[], isList?: boolean) => {
+const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
   const temp = isList ? [] : {};
   if (typeof dataList === 'object') {
     for (let key in dataList) {
@@ -220,7 +220,7 @@ export const updateName = (properties: SchemaData['properties'], pathStr: string
     }
   });
   const isList = childProperties instanceof Array;
-  const result = restoreFromList(childList, isList);
+  const result = parseList(childList, isList);
   if (parentPath) {
     parent.properties = result;
     return properties;
@@ -236,14 +236,14 @@ export const addItemByIndex = (properties: SchemaData['properties'], data: AddIt
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
   const dataList = data instanceof Array ? data : (data ? [data] : []);
-  const fromList = dataList?.map?.((item) => treeItemToListItem(item?.name, item?.field));
+  const fromList = dataList?.map?.((item) => mergeField(item?.name, item?.field));
   if (typeof index === 'number') {
     childList?.splice(index, 0, ...fromList);
   } else {
     childList?.push(...fromList);
   }
   const isList = childProperties instanceof Array;
-  const result = restoreFromList(childList, isList);
+  const result = parseList(childList, isList);
   if (parentPath) {
     parent.properties = result;
     return properties;
@@ -269,7 +269,7 @@ export const moveSameLevel = (properties: SchemaData['properties'], from: { pare
     toIndex = typeof toIndex === 'number' ? toIndex : childList?.length;
     const moveList = arrayMove(childList, fromIndex, toIndex);
     const isList = childProperties instanceof Array;
-    const result = restoreFromList(moveList, isList);
+    const result = parseList(moveList, isList);
     if (fromParentPath) {
       parent.properties = result;
       return properties;
