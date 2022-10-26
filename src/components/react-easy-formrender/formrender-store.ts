@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, swapSameLevel, swapDiffLevel, addItemByIndex, AddItem, updateName, getPathEndIndex, getParent } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, AddItem, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
@@ -85,14 +85,14 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 从from到to更换位置
-  swapItemByPath = (from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
+  moveItemByPath = (from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
     const properties = this.getProperties();
     if (properties) {
       let newProperties;
       if (from?.parent === to?.parent) {
-        newProperties = swapSameLevel(properties, from, to);
+        newProperties = moveSameLevel(properties, from, to);
       } else {
-        newProperties = swapDiffLevel(properties, from, to);
+        newProperties = moveDiffLevel(properties, from, to);
       }
       this.setProperties(newProperties);
     }

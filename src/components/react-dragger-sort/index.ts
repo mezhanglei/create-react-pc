@@ -1,7 +1,7 @@
 import BuildDndSortable from './dnd-core';
-import { arraySwap } from '@/utils/array';
+import { arrayMove } from '@/utils/array';
 
 const DndSortable = BuildDndSortable();
 export default DndSortable;
-export { BuildDndSortable, arraySwap };
+export { BuildDndSortable, arrayMove };
 export * from './utils/types';

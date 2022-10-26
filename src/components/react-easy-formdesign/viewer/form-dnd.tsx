@@ -24,7 +24,7 @@ function FormDnd(props: FormDndProps, ref: any) {
   const isRoot = !parent && !name && !field
   const { viewerRenderStore } = useContext(FormRenderContext);
 
-  const onItemSwap: DndProps['onUpdate'] = (params) => {
+  const onItemMove: DndProps['onUpdate'] = (params) => {
     const { from, to } = params;
     console.log(params, '同域拖放');
     // 拖拽区域信息
@@ -37,7 +37,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    viewerRenderStore.swapItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    viewerRenderStore.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -65,14 +65,14 @@ function FormDnd(props: FormDndProps, ref: any) {
       viewerRenderStore?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
-      viewerRenderStore.swapItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      viewerRenderStore.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 
   if (isRoot) {
     return (
       <DndSortable
-        onUpdate={onItemSwap}
+        onUpdate={onItemMove}
         onAdd={onItemAdd}
         data-type="ignore"
         className='viewer-dnd-root'
@@ -117,7 +117,7 @@ function FormDnd(props: FormDndProps, ref: any) {
   // const currentPath = getCurrentPath(name, parent);
   // return (
   //   <DndSortable
-  //     onUpdate={onItemSwap}
+  //     onUpdate={onItemMove}
   //     onAdd={onItemAdd}
   //     data-type="ignore"
   //     className='viewer-dnd-group'

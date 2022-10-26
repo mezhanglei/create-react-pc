@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Rate, Input, DatePicker, Tag } from 'antd';
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-import DndSortable, { arraySwap, DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { arrayMove, DndProps } from '@/components/react-dragger-sort';
 import { addDragItem, getItem, indexToArray, removeDragItem, uniqueId } from './utils';
 import { deepClone } from '@/utils/object';
 
@@ -69,13 +69,13 @@ class Demo9 extends Component {
     const parentPath = fromCollection?.path;
     const parent = getItem(cloneData, parentPath);
     const childs = parentPath ? parent.children : cloneData;
-    const swapResult = arraySwap(childs, Number(dragIndex), Number(dropIndex));
+    const moveResult = arrayMove(childs, Number(dragIndex), Number(dropIndex));
     let newData;
     if (parentPath) {
-      parent.children = swapResult;
+      parent.children = moveResult;
       newData = cloneData;
     } else {
-      newData = swapResult;
+      newData = moveResult;
     }
     this.setState({ data: newData });
   }
