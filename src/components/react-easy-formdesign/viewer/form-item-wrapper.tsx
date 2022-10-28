@@ -29,7 +29,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     ...restProps
   } = props;
 
-  const { viewerRenderStore, schema, selected } = useContext(FormRenderContext);
+  const { designer, schema, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
   const isSelected = currentPath ? currentPath === selected : false;
@@ -37,12 +37,12 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newId = isListItem(name) ? `[${nextIndex}]` : defaultGetId(field?.prefix)
-    const newField = viewerRenderStore?.getItemByPath(currentPath);
-    viewerRenderStore?.addItemByIndex({ name: newId, field: newField }, nextIndex, parent);
+    const newField = designer?.getItemByPath(currentPath);
+    designer?.addItemByIndex({ name: newId, field: newField }, nextIndex, parent);
   }
 
   const deleteItem = () => {
-    viewerRenderStore?.delItemByPath(currentPath);
+    designer?.delItemByPath(currentPath);
     setEdit({ selected: undefined });
   }
 

@@ -15,7 +15,7 @@ export interface ProviderProps {
 
 function Provider(props: ProviderProps) {
 
-  const viewerRenderStore = useFormRenderStore();
+  const designer = useFormRenderStore();
 
   const [state, setEdit] = useSet({
     isNewVersion: true, // 用schema字段，还是用propsSchema字段，这是一个问题
@@ -34,7 +34,7 @@ function Provider(props: ProviderProps) {
   } = props;
 
   const params = {
-    viewerRenderStore,
+    designer,
     ...state
   }
 

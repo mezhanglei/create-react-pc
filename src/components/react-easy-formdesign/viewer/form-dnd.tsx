@@ -22,7 +22,7 @@ function FormDnd(props: FormDndProps, ref: any) {
   const { children, parent, name, field } = props;
   // 是否为根节点
   const isRoot = !parent && !name && !field
-  const { viewerRenderStore } = useContext(FormRenderContext);
+  const { designer } = useContext(FormRenderContext);
 
   const onItemMove: DndProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -37,7 +37,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    viewerRenderStore.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    designer.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -53,7 +53,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    const parentData = viewerRenderStore.getItemByPath(dropCollection?.path)
+    const parentData = designer.getItemByPath(dropCollection?.path)
     const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
     if (dragCollection?.type === SideBarGroup) {
@@ -62,10 +62,10 @@ function FormDnd(props: FormDndProps, ref: any) {
       const field = { ...item, ...getInitialValues(item?.settings) }
       const name = dropGroupIsList ? `[${dropIndex}]` : defaultGetId(field?.prefix);
       const addItem = { name, field }
-      viewerRenderStore?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
+      designer?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
-      viewerRenderStore.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      designer.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 

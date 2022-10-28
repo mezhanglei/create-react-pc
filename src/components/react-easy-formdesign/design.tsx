@@ -2,7 +2,7 @@ import React, { CSSProperties, forwardRef } from 'react';
 import Provider from './provider';
 import Sidebar from './sidebar';
 import Viewer from './viewer';
-import Properties from './properties';
+import Settings from './settings';
 import classnames from 'classnames';
 import { Col, Row } from 'react-flexbox-grid';
 import './design.less';
@@ -26,7 +26,7 @@ const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
       <Provider {...props}>
         <Col className={classes_design.sidebar} xs={12} sm={12} md={2} lg={2}><Sidebar /></Col>
         <Col className={classes_design.viewer} xs={12} sm={12} md={8} lg={8}><Viewer /></Col>
-        <Col className={classes_design.properties} xs={12} sm={12} md={2} lg={2}><Properties /></Col>
+        <Col className={classes_design.properties} xs={12} sm={12} md={2} lg={2}><Settings /></Col>
       </Provider>
     </Row>
   );
@@ -35,6 +35,6 @@ const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
 Generator.Provider = Provider;
 Generator.Sidebar = Sidebar;
 Generator.Viewer = Viewer;
-Generator.Properties = Properties;
+Generator.Settings = Settings;
 
 export default forwardRef(Generator);

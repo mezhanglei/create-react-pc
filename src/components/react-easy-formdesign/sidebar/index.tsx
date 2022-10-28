@@ -21,9 +21,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { viewerRenderStore, selected, schema } = useContext(FormRenderContext);
-  const setEdit = useContext(FormEditContext);
-
+  const { designer, selected, schema } = useContext(FormRenderContext);
   const cls = classnames(prefixCls, className);
 
   const onChange = (prefix: string, item: ELementProps) => {
@@ -41,9 +39,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     // 生成新控件
     const field = { ...item, ...getInitialValues(item?.settings) }
     const addItem = { name: newId, field: field };
-    const newPath = getCurrentPath(newId, parentPath);
-    viewerRenderStore?.addItemByIndex(addItem, newIndex, parentPath);
-    setEdit({ selected: newPath });
+    designer?.addItemByIndex(addItem, newIndex, parentPath);
   }
 
   const TabsData = [{

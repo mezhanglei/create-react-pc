@@ -37,6 +37,13 @@ export const endIsListItem = (path: string) => {
   }
 }
 
+// 判断字符串是否为路径的尾部
+export const isPathEnd = (path: string, name: string) => {
+  if (path && name) {
+    return new RegExp(`\\[\\d+\\]$|\\.${name}$|${name}$`).test(path)
+  }
+}
+
 // 更改path的末尾项
 export const changePathEnd = (oldPath: string, endName: string) => {
   if (endName && oldPath) {
@@ -203,20 +210,14 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
 
 // 更新指定路径的name
 export const updateName = (properties: SchemaData['properties'], pathStr: string, newName?: string) => {
-  if (typeof newName !== 'string' || !pathStr) return properties;
-  const pathArr = pathToArr(pathStr);
-  const end = pathArr.pop();
-  if (end === formatName(newName)) return properties;
-  const parentPath = pathArr?.join('.');
+  if (typeof newName !== 'string' || !pathStr || isPathEnd(pathStr, newName)) return properties;
+  const parentPath = getParent(pathStr);
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
-  childList?.map((item) => {
-    if (item?.name) {
-      const format = formatName(item?.name);
-      if (format === end) {
-        item.name = newName;
-      }
+  childList?.map((item, index) => {
+    if (index === childList?.length - 1 && item?.name) {
+      item.name = newName;
     }
   });
   const isList = childProperties instanceof Array;
@@ -262,8 +263,8 @@ export const moveSameLevel = (properties: SchemaData['properties'], from: { pare
   let toIndex = to?.index;
   // 同域排序
   if (fromParentPath === toParentPath) {
-    let parent = getItemByPath(properties, fromParentPath);
-    const childProperties = fromParentPath ? parent?.properties : parent;
+    let fromParent = getItemByPath(properties, fromParentPath);
+    const childProperties = fromParentPath ? fromParent?.properties : fromParent;
     // 转成列表以便排序
     const childList = toList(childProperties);
     toIndex = typeof toIndex === 'number' ? toIndex : childList?.length;
@@ -271,7 +272,7 @@ export const moveSameLevel = (properties: SchemaData['properties'], from: { pare
     const isList = childProperties instanceof Array;
     const result = parseList(moveList, isList);
     if (fromParentPath) {
-      parent.properties = result;
+      fromParent.properties = result;
       return properties;
     } else {
       return result;

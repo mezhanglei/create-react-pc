@@ -49,10 +49,10 @@ export interface BaseRenderProps {
   controls?: any;
   components?: any;
   inside?: FieldUnionType;
-  // 自定义渲染列表
-  renderList?: React.ComponentType<GeneratePrams<any>>;
+  // 自定义渲染列表组件
+  renderList?: (params: GeneratePrams<any>) => any;
   // 自定义渲染子元素
-  renderItem?: React.ComponentType<GeneratePrams<any>>;
+  renderItem?: (params: GeneratePrams<any>) => any;
 }
 
 // 带form容器的渲染组件props

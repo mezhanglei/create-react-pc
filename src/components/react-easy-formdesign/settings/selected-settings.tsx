@@ -2,8 +2,8 @@ import React, { CSSProperties, useContext, useEffect, useState } from 'react'
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
-import { updateSelectedValues, getSelectedValues } from '../utils/utils';
-import { changePathEnd, endIsListItem } from '@/components/react-easy-formrender/utils/utils';
+import { updateSelectedValues, getSelectedValues, isNoSelected, getSelectedSettings } from '../utils/utils';
+import { changePathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -17,7 +17,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { viewerRenderStore, selected } = useContext(FormRenderContext);
+  const { designer, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const form = useFormRenderStore();
 
@@ -26,38 +26,21 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   useEffect(() => {
-    if (!selected || selected === '#') return;
-    const newSettings = createSettings(selected);
-    const lastValues = getSelectedValues(viewerRenderStore, selected, newSettings);
+    // 根据selected回填数据
+    if (isNoSelected(selected)) return;
+    const curSettings = getSelectedSettings(designer, selected);
+    const lastValues = getSelectedValues(designer, selected, curSettings);
     form?.reset(lastValues);
-    setSettingSchema({ properties: newSettings });
+    setSettingSchema({ properties: curSettings });
+    updateSelectedValues(designer, selected, lastValues);
     setEdit({ settingsForm: form });
-    updateSelectedValues(viewerRenderStore, selected, lastValues);
   }, [selected]);
 
-  // 生成当前节点的settings
-  const createSettings = (selected: string) => {
-    const selectedItem = viewerRenderStore.getItemByPath(selected);
-    const originSettings = selectedItem?.['settings'];
-    let baseSettings = { ...originSettings };
-    // TODO：是否所有的表单节点都设置此属性
-    if (!endIsListItem(selected)) {
-      baseSettings = {
-        name: {
-          label: '字段名',
-          type: 'Input'
-        },
-        ...baseSettings
-      };
-    }
-    return baseSettings;
-  }
-
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
-    if (!selected) return;
+    if (isNoSelected(selected)) return;
     const settingsValues = form.getFieldValue();
-    updateSelectedValues(viewerRenderStore, selected, settingsValues);
-    // 如果更改字段名
+    updateSelectedValues(designer, selected, settingsValues);
+    // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
       const newSelected = changePathEnd(selected, name);

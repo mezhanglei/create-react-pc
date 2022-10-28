@@ -14,7 +14,7 @@ const prefixCls = 'easy-form-design-viewer';
 
 function DesignViewer(props: DesignViewerProps, ref: any) {
 
-  const { viewerRenderStore, schema, selected, settingsForm } = useContext(FormRenderContext);
+  const { designer, schema, selected, settingsForm } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
 
   const {
@@ -31,41 +31,43 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
 
   // 表单属性更改时回填属性初始值设置
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
-    if (!selected || selected === '#' || !settingsForm) return;
     const path = getCurrentPath(name, parent)
-    updateViewerValue(path, value);
-  }
-
-  const viewerClick = () => {
-    setEdit({ selected: "#" });
-  }
-
-  // 回填属性表单和编辑器的initialValue
-  const updateViewerValue = (path: string | undefined, value: unknown) => {
+    // 回填setting表单的intialValue值
     settingsForm.setInitialValues('initialValue', value);
-    viewerRenderStore?.updateItemByPath(path, { initialValue: value });
+    // 回填designer的initialValue值
+    designer?.updateItemByPath(path, { initialValue: value });
+  }
+
+  const renderItem: BaseRenderProps['renderItem'] = (params) => {
+    const { field } = params;
+    // 针对控件组件统一添加
+    if (!field?.properties) {
+      return <FormItemWrapper {...params} />
+    }
+    return params?.children
+  }
+
+  const renderList: BaseRenderProps['renderList'] = (params) => {
+    return <FormDnd {...params} />
   }
 
   return (
-    <div ref={ref} className={cls} style={style} {...restProps} onClick={viewerClick}>
-      <RenderForm store={viewerRenderStore} schema={schema}
+    <div ref={ref}
+      className={cls}
+      style={style}
+      {...restProps}
+      onClick={() => {
+        setEdit({ selected: "#" })
+      }}>
+      <RenderForm store={designer} schema={schema}
         onSchemaChange={onSchemaChange}
         onFieldsChange={onFieldsChange}
         renderItem={renderItem}
-        renderList={FormDnd}
+        renderList={renderList}
       />
     </div>
   );
 };
-
-const renderItem: BaseRenderProps['renderItem'] = (props) => {
-  const { field } = props;
-  // 针对控件组件统一添加
-  if (!field?.properties) {
-    return <FormItemWrapper {...props} />
-  }
-  return props?.children
-}
 
 DesignViewer.displayName = 'design-viewer';
 export default React.forwardRef(DesignViewer);

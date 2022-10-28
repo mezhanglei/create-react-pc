@@ -21,7 +21,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
 
   // 获取当前组件的properties
   public getProperties() {
-    return deepClone(this.properties);
+    return this.properties;
   }
 
   // 设置properties
