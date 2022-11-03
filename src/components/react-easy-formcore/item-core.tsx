@@ -6,9 +6,10 @@ import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-
 import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode } from './utils/utils';
 import { FormRule } from './validator';
 import { AopFactory } from '@/utils/function-aop';
+import { isEmpty } from '@/utils/type';
 
 export interface ItemCoreProps {
-  name?: string;
+  name?: string | number;
   parent?: string;
   index?: number;
   valueProp?: string | ((type: any) => string);
@@ -110,7 +111,7 @@ export const ItemCore = (props: ItemCoreProps) => {
   }
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (name && isValidElement(child)) {
+    if (!isEmpty(name) && isValidElement(child)) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { className } = childProps || {};

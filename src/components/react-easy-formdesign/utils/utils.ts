@@ -53,7 +53,7 @@ export const setSelectedValues = (designer: FormRenderStore, selected: string, s
 }
 
 // 根据路径获取节点的配置表单
-export const getSelectedSettings = (designer: FormRenderStore, selected: string) => {
+export const getSelectedSettings = (designer: FormRenderStore, selected: string, ) => {
   const selectedItem = designer.getItemByPath(selected);
   const originSettings = selectedItem?.['settings'];
   let baseSettings = { ...originSettings };

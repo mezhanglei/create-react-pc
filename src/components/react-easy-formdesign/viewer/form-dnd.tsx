@@ -60,8 +60,7 @@ function FormDnd(props: FormDndProps, ref: any) {
       const elements = Configs[dragCollection?.elementsKey]
       const item = elements[dragIndex]
       const field = { ...item, ...getInitialValues(item?.settings) }
-      const name = dropGroupIsList ? `[${dropIndex}]` : defaultGetId(field?.prefix);
-      const addItem = { name, field }
+      const addItem = dropGroupIsList ? field : { name: defaultGetId(field?.prefix), ...field };
       designer?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {

@@ -53,20 +53,9 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
   const addNewItem = () => {
     const properties = field?.properties;
-    const addItem = item;
-    const newField = addItem && { ...addItem };
-    if (properties instanceof Array) {
-      const len = properties?.length || 0;
-      const newIndex = len;
-      if (newField) {
-        currentPath && store?.addItemByIndex({ name: `[${newIndex}]`, field: newField }, newIndex, currentPath)
-      }
-    } else if (typeof properties === 'object') {
-      const len = Object?.keys(properties)?.length || 0;
-      const newIndex = len;
-      if (newField?.name) {
-        currentPath && store?.addItemByIndex({ name: newField?.name, field: newField }, newIndex, currentPath);
-      }
+    const nextIndex = typeof properties === 'object' && Object?.keys(properties)?.length || 0;
+    if (item) {
+      currentPath && store?.addItemByIndex(item, nextIndex, currentPath);
     }
     props?.onClick && props?.onClick();
   }

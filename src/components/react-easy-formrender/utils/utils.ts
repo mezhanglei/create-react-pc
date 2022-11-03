@@ -1,19 +1,9 @@
 import { arrayMove } from "@/utils/array";
 import { FormFieldProps, SchemaData } from "../types";
-import { formatName, getCurrentPath, pathToArr, deepSet, isListItem } from "../../react-easy-formcore";
+import { getCurrentPath, pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 
-// 拼接当前项的path
-export const joinPath = (name?: string, parent?: string) => {
-  if (isEmpty(name) || typeof name !== 'string') return parent;
-  if (isListItem(name)) {
-    return parent ? `${parent}${name}` : name;
-  } else {
-    return parent ? `${parent}.${name}` : name;
-  }
-};
-
-// 获取末尾节点字符串
+// 获取路径的末尾节点字符串(不带中括号)
 export const getPathEnd = (path: string) => {
   const pathArr = pathToArr(path)
   const end = pathArr?.pop()
@@ -39,14 +29,14 @@ export const endIsListItem = (path: string) => {
 
 // 判断字符串是否为路径的尾部
 export const isPathEnd = (path: string, name: string) => {
-  if (path && name) {
+  if (path && !isEmpty(name)) {
     return new RegExp(`\\[\\d+\\]$|\\.${name}$|${name}$`).test(path)
   }
 }
 
 // 更改path的末尾项
-export const changePathEnd = (oldPath: string, endName: string) => {
-  if (endName && oldPath) {
+export const changePathEnd = (oldPath: string, endName: string | number) => {
+  if (!isEmpty(endName) && oldPath) {
     const parent = getParent(oldPath);
     const newPath = joinPath(endName, parent);
     return newPath;
@@ -71,7 +61,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const name = formatName(item);
+    const name = item;
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -103,7 +93,7 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
   const pathLen = pathArr?.length;
   let temp: any = properties;
   pathArr.forEach((item, index) => {
-    const name = formatName(item);
+    const name = item;
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -140,7 +130,7 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
     return temp;
   }
   pathArr.forEach((item, index) => {
-    const name = formatName(item);
+    const name = item;
     if (index === 0) {
       temp = temp[name];
     } else {
@@ -151,37 +141,30 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
 };
 
 // 根据index获取键值对
-export const getKeyValueByIndex = (properties: SchemaData['properties'], index: number, parentPath?: string) => {
+export const getItemByIndex = (properties: SchemaData['properties'], index: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childKeys = Object.keys(childProperties);
   const key = childKeys[index];
   const isList = childProperties instanceof Array;
-  const name = isList ? `[${key}]` : key;
   return {
-    name: name,
-    field: childProperties[key]
-  };
-};
-
-// 合并信息
-export const mergeField = (name: string, field: FormFieldProps) => {
-  return {
-    name: name,
-    ...field
+    name: isList ? index : key,
+    ...childProperties[key]
   };
 };
 
 // 转化为有序数组列表
 export const toList = (properties: SchemaData['properties']) => {
   const temp = [];
+  const isList = properties instanceof Array;
   if (typeof properties === 'object') {
     for (let key in properties) {
       const field = properties[key];
-      const isList = properties instanceof Array;
-      const name = isList ? `[${key}]` : key;
-      const item = mergeField(name, field);
-      temp.push(item);
+      if (isList) {
+        temp.push(field);
+      } else {
+        temp.push({ name: key, ...field });
+      }
     }
   }
   return temp;
@@ -192,15 +175,16 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
   const temp = isList ? [] : {};
   if (typeof dataList === 'object') {
     for (let key in dataList) {
-      const current = dataList[key];
-      const name = current?.name;
-      delete current['name'];
-      const format = typeof name === 'string' && formatName(name);
-      if (typeof format === 'string') {
-        temp[format] = current;
-        const properties = current?.properties;
-        if (properties) {
-          temp[format].properties = properties;
+      const field = dataList[key];
+      const name = field?.name;
+      delete field['name'];
+      if (isList) {
+        // 还原成数组
+        temp[key] = field;
+      } else {
+        // 还原成对象
+        if (typeof name === 'string') {
+          temp[name] = field;
         }
       }
     }
@@ -216,7 +200,7 @@ export const updateName = (properties: SchemaData['properties'], pathStr: string
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
   childList?.map((item, index) => {
-    if (index === childList?.length - 1 && item?.name) {
+    if (index === childList?.length - 1) {
       item.name = newName;
     }
   });
@@ -231,13 +215,12 @@ export const updateName = (properties: SchemaData['properties'], pathStr: string
 }
 
 // 添加新元素(有副作用，会改变传入的data数据)
-export interface AddItem { name: string, field: FormFieldProps };
-export const addItemByIndex = (properties: SchemaData['properties'], data: AddItem | AddItem[], index?: number, parentPath?: string) => {
+export const addItemByIndex = (properties: SchemaData['properties'], data: FormFieldProps | FormFieldProps[], index?: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
-  const dataList = data instanceof Array ? data : (data ? [data] : []);
-  const fromList = dataList?.map?.((item) => mergeField(item?.name, item?.field));
+  const dataList = data instanceof Array ? data : (data ? [data] : [])
+  const fromList = dataList;
   if (typeof index === 'number') {
     childList?.splice(index, 0, ...fromList);
   } else {
@@ -286,8 +269,8 @@ export const moveDiffLevel = (properties: SchemaData['properties'], from: { pare
   const fromParentPath = from?.parent;
   const fromIndex = from?.index;
   const fromParentPathArr = pathToArr(fromParentPath);
-  const fromTreeItem = getKeyValueByIndex(properties, fromIndex, fromParentPath);
-  const fromPath = getCurrentPath(fromTreeItem?.name, fromParentPath);
+  const fromItem = getItemByIndex(properties, fromIndex, fromParentPath);
+  const fromPath = getCurrentPath(fromItem?.name, fromParentPath);
   // 拖放源
   const toParentPath = to?.parent;
   const toIndex = to?.index;
@@ -296,10 +279,10 @@ export const moveDiffLevel = (properties: SchemaData['properties'], from: { pare
   // 先计算内部变动，再计算外部变动
   if (fromParentPathArr?.length > toParentPathArr?.length || !toParentPathArr?.length) {
     setItemByPath(properties, fromPath, undefined);
-    const result = addItemByIndex(properties, fromTreeItem, toIndex, toParentPath);
+    const result = addItemByIndex(properties, fromItem, toIndex, toParentPath);
     return result;
   } else {
-    const result = addItemByIndex(properties, fromTreeItem, toIndex, toParentPath);
+    const result = addItemByIndex(properties, fromItem, toIndex, toParentPath);
     result && setItemByPath(result, fromPath, undefined);
     return result;
   }
@@ -321,8 +304,8 @@ export const getInitialValues = (properties?: SchemaData['properties']) => {
         const children = formField[propsKey]
         for (const childKey in children) {
           const childField = children[childKey];
-          const childName = children instanceof Array ? `[${childKey}]` : childKey;
-          if (childName) {
+          const childName = formatName(childKey, children instanceof Array);
+          if (typeof childName === 'number' || typeof childName === 'string') {
             const childPath = getCurrentPath(childName, path) as string;
             deepHandle(childField, childPath);
           }
@@ -333,9 +316,10 @@ export const getInitialValues = (properties?: SchemaData['properties']) => {
 
   for (const key in properties) {
     const formField = properties[key];
-    const name = properties instanceof Array ? `[${key}]` : key;
-    if (name) {
-      deepHandle(formField, name);
+    const childName = formatName(key, properties instanceof Array);
+    if (typeof childName === 'number' || typeof childName === 'string') {
+      const childPath = getCurrentPath(childName) as string;
+      deepHandle(formField, childPath);
     }
   }
   return initialValues;

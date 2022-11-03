@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, SchemaData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, AddItem, updateName, getPathEndIndex, getParent } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 export type Properties = SchemaData['properties'];
@@ -59,7 +59,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 插入值，默认末尾
-  addItemByIndex = (data: AddItem | AddItem[], index?: number, parent?: string) => {
+  addItemByIndex = (data: FormFieldProps | FormFieldProps[], index?: number, parent?: string) => {
     const properties = this.getProperties();
     if (properties) {
       let newProperties = addItemByIndex(properties, data, index, parent);
@@ -114,7 +114,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 在目标路径后面插入数据
-  addAfterByPath = (data: AddItem | AddItem[], path: string) => {
+  addAfterByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
     const properties = this.getProperties();
     if (properties) {
       const nextIndex = getPathEndIndex(path, properties) + 1;
@@ -125,7 +125,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 在目标路径前面插入数据
-  addBeforeByPath = (data: AddItem | AddItem[], path: string) => {
+  addBeforeByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
     const properties = this.getProperties();
     if (properties) {
       const endIndex = getPathEndIndex(path, properties);

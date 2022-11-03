@@ -1,4 +1,4 @@
-import { getCurrentPath, isListItem } from '@/components/react-easy-formcore';
+import { getCurrentPath, isListIndex } from '@/components/react-easy-formcore';
 import { FormEditContext, FormRenderContext } from '@/components/react-easy-formdesign/design-context';
 import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
@@ -33,12 +33,12 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
   const isSelected = currentPath ? currentPath === selected : false;
-  
+
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
-    const newId = isListItem(name) ? `[${nextIndex}]` : defaultGetId(field?.prefix)
     const newField = designer?.getItemByPath(currentPath);
-    designer?.addItemByIndex({ name: newId, field: newField }, nextIndex, parent);
+    const addItem = isListIndex(name) ? newField : { name: defaultGetId(field?.prefix), ...newField }
+    designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
   const deleteItem = () => {

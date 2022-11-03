@@ -5,7 +5,7 @@ import { FormRenderStore } from "./formrender-store";
 // 从原接口中提取属性，然后用新的替换它们
 type Overwrite<T, U> = Omit<T, keyof U> & U;
 
-// 扩展的interface
+// 更改类型
 interface Extension {
   valueGetter?: string | ((...args: any[]) => any) | any;
   valueSetter?: string | ((value: any) => any) | any;
@@ -32,14 +32,17 @@ export interface BaseFieldProps extends SchemaComponent {
   typeRender?: any; // 表单控件自定义渲染
 }
 
+// 表单属性对象
+export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps[]
+
 // 表单域(绑定表单字段)
 export interface FormFieldProps extends Overwrite<FormItemProps, Extension>, BaseFieldProps {
-  properties?: { [name: string]: FormFieldProps } | FormFieldProps[]; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
+  properties?: PropertiesData; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
 // schema
 export interface SchemaData extends FormProps<FormRenderStore> {
-  properties?: { [key: string]: FormFieldProps } | FormFieldProps[]
+  properties?: PropertiesData
 }
 
 export type WatchHandler = (newValue: any, oldValue: any) => void
@@ -69,4 +72,4 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
-export interface GeneratePrams<T = FormFieldProps> { name?: string, field?: T, parent?: string, store?: FormRenderStore, children?: any };
+export interface GeneratePrams<T = FormFieldProps> { name?: string | number, field?: T, parent?: string, store?: FormRenderStore, children?: any };

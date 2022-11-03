@@ -1,17 +1,16 @@
-import { formatName, pathToArr, deepGet, deepSet } from "@/utils/object";
+import { pathToArr, deepGet, deepSet } from "@/utils/object";
 import { isEmpty } from "@/utils/type";
-export { formatName, pathToArr, deepGet, deepSet };
+export { pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
 export function isExitPrefix(prefix: string, path: string | string[]) {
   const prefixParts = pathToArr(prefix);
-  const parts = !Array.isArray(path) ? pathToArr(path) : path;
+  const parts = pathToArr(path);
   if (prefixParts?.length > parts?.length || !prefixParts?.length || !parts?.length) {
     return false;
   }
-  return prefixParts?.every((str, index) => {
-    const item = formatName(parts[index]);
-    return str === item;
+  return prefixParts?.every((item, index) => {
+    return item == parts[index];
   });
 }
 
@@ -26,18 +25,38 @@ export function getValueFromEvent(...args: any[]) {
   return e && e.target ? (e.target.type === 'checkbox' ? e.target.checked : e.target.value) : e
 }
 
-// 判断字符是否是数组中的选项
-export const isListItem = (item?: string) => item !== undefined && (/\[(\d+)\]/gi.test(item));
+// 格式化name, 返回正确类型的键(对象的键或者索引序号)
+export function formatName(str?: string | number, isList?: boolean) {
+  if (typeof str !== 'string' && typeof str !== 'number') return
+  // 如果为数字就是数组索引，直接返回
+  if (typeof str === 'number') return str;
+  // 如果是带中括号的数字字符串则去掉中括号
+  const end = str?.replace(/\[/g, '')?.replace(/\]/g, '')
+  return isList ? +end : end;
+}
+
+// 是否携带中括号
+export const isWithBracket = (part?: any) => {
+  return typeof part === 'string' && (/\[(\d+)\]/gi.test(part))
+}
+
+// 是否为数组索引项
+export const isListIndex = (item?: any) => typeof item === 'number' && !isNaN(item);
 
 // 拼接当前项的path
-export const getCurrentPath = (name?: string, parent?: string) => {
-  if (isEmpty(name)) return;
-  if (isListItem(name)) {
-    return parent ? `${parent}${name}` : name;
+export function joinPath(name?: string | number, parent?: string) {
+  if (isEmpty(name)) return parent;
+  if (isListIndex(name) || isWithBracket(name)) {
+    const end = typeof name === 'number' ? `[${name}]` : name
+    return parent ? `${parent}${end}` : end;
   } else {
-    return parent ? `${parent}.${name}` : name;
+    return parent ? `${parent}.${name}` : `${name}`;
   }
 };
+
+export function getCurrentPath(name?: string | number, parent?: string) {
+  return isEmpty(name) ? undefined : joinPath(name, parent)
+}
 
 // 是否为表单节点
 export const isFormNode = (child: any) => {

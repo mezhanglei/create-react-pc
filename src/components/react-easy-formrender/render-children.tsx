@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, SchemaData, GeneratePrams, FieldUnionType, SchemaComponent } from './types';
 import { defaultComponents } from './components';
-import { Form, FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
+import { Form, formatName, FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
 import { FormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import './iconfont/iconfont.css';
@@ -103,8 +103,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           const children = formField[propsKey];
           for (const childKey in children) {
             const childField = children[childKey];
-            const childName = children instanceof Array ? `[${childKey}]` : childKey;
-            if (childName) {
+            const childName = formatName(childKey, children instanceof Array);
+            if (typeof childName === 'number' || typeof childName === 'string') {
               const childPath = getCurrentPath(childName, path) as string;
               deepHandle(childField, childPath);
             }
@@ -115,9 +115,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
     for (const key in properties) {
       const formField = properties[key];
-      const name = properties instanceof Array ? `[${key}]` : key;
-      if (name) {
-        deepHandle(formField, name);
+      const childName = formatName(key, properties instanceof Array);
+      if (typeof childName === 'number' || typeof childName === 'string') {
+        const childPath = getCurrentPath(childName) as string;
+        deepHandle(formField, childPath);
       }
     }
     setFieldPropsMap(fieldPropsMap);
@@ -216,7 +217,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成子元素
-  const generateChild = (name: string, field: FormFieldProps, parent?: string) => {
+  const generateChild = (name: string | number, field: FormFieldProps, parent?: string) => {
     if (field?.hidden === true) {
       return;
     }
@@ -271,8 +272,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const { name, parent } = commonParams;
     const currentPath = getCurrentPath(name, parent);
     const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
-      const childName = properties instanceof Array ? `[${key}]` : key;
-      if (childName) {
+      const childName = formatName(key, properties instanceof Array);
+      if (typeof childName === 'string' || typeof childName === 'number') {
         const childPath = getCurrentPath(childName, currentPath)
         const childField = showCalcFieldProps(formField, childPath);
         if (childField) {

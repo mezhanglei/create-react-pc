@@ -5,7 +5,7 @@ import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
 
 export interface ListCoreProps {
-  name?: string;
+  name?: string | number;
   parent?: string;
   rules?: FormRule[];
   initialValue?: any[];
@@ -56,7 +56,7 @@ export const ListCore = (props: ListCoreProps) => {
     const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
     return child && cloneElement(child, {
       parent: currentPath,
-      name: `[${currentIndex}]`,
+      name: currentIndex,
       rules: childRules,
       initialValue: childValue
     });

@@ -25,20 +25,13 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   const onChange = (prefix: string, item: ELementProps) => {
-    let newId;
-    // 如果选中为数组项，则在其后面添加
-    if (endIsListItem(selected)) {
-      const end = getPathEnd(selected) || '-1';
-      newId = `[${+end + 1}]`;
-    } else {
-      // 非数组项才生成id
-      newId = defaultGetId(prefix);
-    }
     const newIndex = getPathEndIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
     // 生成新控件
+    const isListItem = endIsListItem(selected);
     const field = { ...item, ...getInitialValues(item?.settings) }
-    const addItem = { name: newId, field: field };
+    // 非数组项需要生成id
+    const addItem = isListItem ? field : { name: defaultGetId(prefix), ...field };
     designer?.addItemByIndex(addItem, newIndex, parentPath);
   }
 
