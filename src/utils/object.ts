@@ -43,7 +43,7 @@ export function filterObject(obj: object | undefined | null, callback: (value: a
 // 接收路径字符串或数组字符串，返回数组字符串表示路径
 export function pathToArr(path?: string | string[]) {
   if (path instanceof Array) return path;
-  return typeof path === 'string' ? path.replace(/\]$/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : [];
+  return typeof path === 'string' && path ? path.replace(/\]$/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : [];
 }
 
 // 根据路径获取目标对象中的值

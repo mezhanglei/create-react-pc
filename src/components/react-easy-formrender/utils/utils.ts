@@ -30,7 +30,7 @@ export const endIsListItem = (path: string) => {
 // 判断字符串是否为路径的尾部
 export const isPathEnd = (path: string, name: string) => {
   if (path && !isEmpty(name)) {
-    return new RegExp(`\\[\\d+\\]$|\\.${name}$|${name}$`).test(path)
+    return path === name || new RegExp(`\\[\\d+\\]$|\\.${name}$|\\]${name}$`).test(path)
   }
 }
 
@@ -147,10 +147,11 @@ export const getItemByIndex = (properties: SchemaData['properties'], index: numb
   const childKeys = Object.keys(childProperties);
   const key = childKeys[index];
   const isList = childProperties instanceof Array;
-  return {
+  const field = childProperties[key]
+  return field ? {
     name: isList ? index : key,
-    ...childProperties[key]
-  };
+    ...field
+  } : undefined
 };
 
 // 转化为有序数组列表
@@ -196,11 +197,12 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
 export const updateName = (properties: SchemaData['properties'], pathStr: string, newName?: string) => {
   if (typeof newName !== 'string' || !pathStr || isPathEnd(pathStr, newName)) return properties;
   const parentPath = getParent(pathStr);
+  const end = getPathEnd(pathStr)
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
-  childList?.map((item, index) => {
-    if (index === childList?.length - 1) {
+  childList?.map((item) => {
+    if (item.name === end && end) {
       item.name = newName;
     }
   });

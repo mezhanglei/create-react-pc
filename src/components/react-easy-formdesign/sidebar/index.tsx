@@ -27,7 +27,6 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   const onChange = (prefix: string, item: ELementProps) => {
     const newIndex = getPathEndIndex(selected, schema?.properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
-    // 生成新控件
     const isListItem = endIsListItem(selected);
     const field = { ...item, ...getInitialValues(item?.settings) }
     // 非数组项需要生成id
