@@ -1,15 +1,14 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
-import { FormFieldProps, SchemaData } from "./types";
+import { FormFieldProps, PropertiesData } from "./types";
 import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
-export type Properties = SchemaData['properties'];
 
 // 管理formrender过程中的数据
 export class FormRenderStore<T extends Object = any> extends FormStore {
-  private properties: Properties;
-  private lastProperties: Properties | undefined;
+  private properties: PropertiesData;
+  private lastProperties: PropertiesData | undefined;
   private propertiesListeners: FormRenderListener[] = [];
   constructor(values?: Partial<T>) {
     super(values);
@@ -25,7 +24,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   }
 
   // 设置properties
-  setProperties(data?: SchemaData['properties']) {
+  setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
     this.properties = deepClone(data || {});
     this.notifyProperties();

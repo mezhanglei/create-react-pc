@@ -18,10 +18,10 @@ function Provider(props: ProviderProps) {
   const designer = useFormRenderStore();
 
   const [state, setEdit] = useSet({
-    isNewVersion: true, // 用schema字段，还是用propsSchema字段，这是一个问题
+    isNewVersion: true,
     preview: false, // preview = false 是编辑模式
-    schema: {}, // 表单的渲染数据
-    formData: {}, // 表单的值
+    properties: {}, // 表单的渲染数据
+    formValues: {}, // 表单的值
     globalFormProps: {}, // 表单的全局属性
     selected: undefined, // 当前选中的路径
     settingsForm: null, // 当前属性面板的渲染表单

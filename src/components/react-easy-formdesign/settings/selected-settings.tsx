@@ -21,7 +21,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const setEdit = useContext(FormEditContext);
   const form = useFormRenderStore();
 
-  const [settingSchema, setSettingSchema] = useState({});
+  const [settingProperties, setSettingProperties] = useState({});
 
   const cls = classnames(prefixCls, className);
 
@@ -31,7 +31,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     const curSettings = getSelectedSettings(designer, selected);
     const lastValues = getSelectedValues(designer, selected, curSettings);
     form?.reset(lastValues);
-    setSettingSchema({ properties: curSettings });
+    setSettingProperties(curSettings);
     updateSelectedValues(designer, selected, lastValues);
     setEdit({ settingsForm: form });
   }, [selected]);
@@ -50,7 +50,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <RenderForm store={form} schema={settingSchema} layout="vertical" onFieldsChange={onFieldsChange} />
+      <RenderForm store={form} properties={settingProperties} layout="vertical" onFieldsChange={onFieldsChange} />
     </div>
   );
 };

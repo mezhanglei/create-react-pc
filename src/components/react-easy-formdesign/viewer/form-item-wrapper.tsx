@@ -29,7 +29,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     ...restProps
   } = props;
 
-  const { designer, schema, selected } = useContext(FormRenderContext);
+  const { designer, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
   const isSelected = currentPath ? currentPath === selected : false;

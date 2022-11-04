@@ -14,7 +14,7 @@ const prefixCls = 'easy-form-design-viewer';
 
 function DesignViewer(props: DesignViewerProps, ref: any) {
 
-  const { designer, schema, selected, settingsForm } = useContext(FormRenderContext);
+  const { designer, properties, selected, settingsForm } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
 
   const {
@@ -25,8 +25,8 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
 
-  const onSchemaChange: RenderFormProps['onSchemaChange'] = (newSchema) => {
-    setEdit({ schema: newSchema });
+  const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
+    setEdit({ properties: newData });
   }
 
   // 表单属性更改时回填属性初始值设置
@@ -59,8 +59,10 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       onClick={() => {
         setEdit({ selected: "#" })
       }}>
-      <RenderForm store={designer} schema={schema}
-        onSchemaChange={onSchemaChange}
+      <RenderForm
+        store={designer}
+        properties={properties}
+        onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}
         renderItem={renderItem}
         renderList={renderList}

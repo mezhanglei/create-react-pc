@@ -1,5 +1,5 @@
 import React from 'react';
-import { RenderFormProps, SchemaData } from './types';
+import { RenderFormProps } from './types';
 import { Form } from '../react-easy-formcore';
 import RenderFormChildren from './render-children';
 
@@ -7,31 +7,29 @@ import RenderFormChildren from './render-children';
 export default function RenderForm(props: RenderFormProps) {
   const {
     store,
-    onSchemaChange,
-    schema = {},
-    ...restProps
-  } = props;
-
-  const { properties, ...restSchema } = schema;
-  const mergeProps = { ...restProps, ...restSchema };
-  const {
+    properties,
     controls,
     components,
     watch,
     renderItem,
     renderList,
-    inside, ...formProps } = mergeProps;
-
-  const onChange = (newValue: SchemaData['properties'], oldValue: SchemaData['properties']) => {
-    const oldSchema = { ...schema };
-    schema['properties'] = newValue;
-    oldSchema['properties'] = oldValue;
-    onSchemaChange && onSchemaChange(schema, oldSchema);
-  }
+    inside,
+    onPropertiesChange,
+    ...formProps
+  } = props;
 
   return (
     <Form store={store} {...formProps}>
-      <RenderFormChildren {...mergeProps} properties={properties} onPropertiesChange={onChange} />
+      <RenderFormChildren
+        properties={properties}
+        controls={controls}
+        components={components}
+        watch={watch}
+        renderItem={renderItem}
+        renderList={renderList}
+        inside={inside}
+        onPropertiesChange={onPropertiesChange}
+      />
     </Form>
   );
 }

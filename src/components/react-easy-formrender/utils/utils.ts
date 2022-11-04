@@ -1,5 +1,5 @@
 import { arrayMove } from "@/utils/array";
-import { FormFieldProps, SchemaData } from "../types";
+import { FormFieldProps, PropertiesData } from "../types";
 import { getCurrentPath, pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 
@@ -44,7 +44,7 @@ export const changePathEnd = (oldPath: string, endName: string | number) => {
 }
 
 // 根据路径返回在父元素中的当前位置, 没有则返回-1;
-export const getPathEndIndex = (path: string, properties?: SchemaData['properties']) => {
+export const getPathEndIndex = (path: string, properties?: PropertiesData) => {
   const parentPath = getParent(path);
   const end = getPathEnd(path);
   const parent = getItemByPath(properties, parentPath);
@@ -55,7 +55,7 @@ export const getPathEndIndex = (path: string, properties?: SchemaData['propertie
 }
 
 // 根据路径更新数据
-export const updateItemByPath = (properties: SchemaData['properties'], pathStr: string, data?: Partial<FormFieldProps>) => {
+export const updateItemByPath = (properties: PropertiesData, pathStr: string, data?: Partial<FormFieldProps>) => {
   const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
@@ -87,7 +87,7 @@ export const updateItemByPath = (properties: SchemaData['properties'], pathStr: 
 };
 
 // 设置指定路径的值
-export const setItemByPath = (properties: SchemaData['properties'], pathStr: string, data?: Partial<FormFieldProps>) => {
+export const setItemByPath = (properties: PropertiesData, pathStr: string, data?: Partial<FormFieldProps>) => {
   const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
@@ -123,7 +123,7 @@ export const setItemByPath = (properties: SchemaData['properties'], pathStr: str
 };
 
 // 根据path获取指定路径的项
-export const getItemByPath = (properties: SchemaData['properties'], pathStr?: string) => {
+export const getItemByPath = (properties: PropertiesData, pathStr?: string) => {
   const pathArr = pathToArr(pathStr);
   let temp: any = properties;
   if (pathArr.length === 0) {
@@ -141,7 +141,7 @@ export const getItemByPath = (properties: SchemaData['properties'], pathStr?: st
 };
 
 // 根据index获取键值对
-export const getItemByIndex = (properties: SchemaData['properties'], index: number, parentPath?: string) => {
+export const getItemByIndex = (properties: PropertiesData, index: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childKeys = Object.keys(childProperties);
@@ -155,7 +155,7 @@ export const getItemByIndex = (properties: SchemaData['properties'], index: numb
 };
 
 // 转化为有序数组列表
-export const toList = (properties: SchemaData['properties']) => {
+export const toList = (properties: PropertiesData) => {
   const temp = [];
   const isList = properties instanceof Array;
   if (typeof properties === 'object') {
@@ -194,7 +194,7 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
 };
 
 // 更新指定路径的name
-export const updateName = (properties: SchemaData['properties'], pathStr: string, newName?: string) => {
+export const updateName = (properties: PropertiesData, pathStr: string, newName?: string) => {
   if (typeof newName !== 'string' || !pathStr || isPathEnd(pathStr, newName)) return properties;
   const parentPath = getParent(pathStr);
   const end = getPathEnd(pathStr)
@@ -217,7 +217,7 @@ export const updateName = (properties: SchemaData['properties'], pathStr: string
 }
 
 // 添加新元素(有副作用，会改变传入的data数据)
-export const addItemByIndex = (properties: SchemaData['properties'], data: FormFieldProps | FormFieldProps[], index?: number, parentPath?: string) => {
+export const addItemByIndex = (properties: PropertiesData, data: FormFieldProps | FormFieldProps[], index?: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const childList = toList(childProperties);
@@ -239,7 +239,7 @@ export const addItemByIndex = (properties: SchemaData['properties'], data: FormF
 };
 
 // 同级调换位置
-export const moveSameLevel = (properties: SchemaData['properties'], from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
+export const moveSameLevel = (properties: PropertiesData, from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
   // 拖拽源
   const fromParentPath = from?.parent;
   const fromIndex = from?.index;
@@ -266,7 +266,7 @@ export const moveSameLevel = (properties: SchemaData['properties'], from: { pare
 };
 
 // 跨级调换位置
-export const moveDiffLevel = (properties: SchemaData['properties'], from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
+export const moveDiffLevel = (properties: PropertiesData, from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
   // 拖拽源
   const fromParentPath = from?.parent;
   const fromIndex = from?.index;
@@ -291,7 +291,7 @@ export const moveDiffLevel = (properties: SchemaData['properties'], from: { pare
 };
 
 // 提取properties中的默认值
-export const getInitialValues = (properties?: SchemaData['properties']) => {
+export const getInitialValues = (properties?: PropertiesData) => {
   if (typeof properties !== 'object') return
   let initialValues = {};
   // 遍历处理对象树中的非properties字段

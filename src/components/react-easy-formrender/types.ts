@@ -12,17 +12,17 @@ interface Extension {
 }
 
 // 组件JSON描述
-export interface SchemaComponent {
+export interface FormComponent {
   type?: string;
   props?: any;
-  children?: any | Array<SchemaComponent>;
+  children?: any | Array<FormComponent>;
   hidden?: string | boolean;
 }
 
-// 表单上的组件联合类型：包括SchemaComponent，组件声明
-export type FieldUnionType = SchemaComponent | Array<SchemaComponent> | React.ComponentType<any> | Function
+// 表单上的组件联合类型
+export type FieldUnionType = FormComponent | Array<FormComponent> | React.ComponentType<any> | Function
 
-export interface BaseFieldProps extends SchemaComponent {
+export interface BaseFieldProps extends FormComponent {
   ignore?: boolean; // 忽略当前节点不会作为表单值
   fieldComponent?: FieldUnionType; // 表单域组件
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
@@ -40,11 +40,6 @@ export interface FormFieldProps extends Overwrite<FormItemProps, Extension>, Bas
   properties?: PropertiesData; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
-// schema
-export interface SchemaData extends FormProps<FormRenderStore> {
-  properties?: PropertiesData
-}
-
 export type WatchHandler = (newValue: any, oldValue: any) => void
 
 export interface BaseRenderProps {
@@ -60,14 +55,14 @@ export interface BaseRenderProps {
 
 // 带form容器的渲染组件props
 export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderProps {
-  onSchemaChange?: (newValue: SchemaData, oldValue?: SchemaData) => void;
-  schema: SchemaData;
+  onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
+  properties?: PropertiesData; // 控件数据源的数据
 };
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends BaseRenderProps {
-  onPropertiesChange?: (newValue: SchemaData['properties'], oldValue?: SchemaData['properties']) => void;
-  properties?: SchemaData['properties']; // 控件数据源的数据
+  onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
+  properties?: PropertiesData; // 控件数据源的数据
 };
 
 export type ValueOf<T> = T[keyof T];

@@ -21,11 +21,11 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { designer, selected, schema } = useContext(FormRenderContext);
+  const { designer, selected, properties } = useContext(FormRenderContext);
   const cls = classnames(prefixCls, className);
 
   const onChange = (prefix: string, item: ELementProps) => {
-    const newIndex = getPathEndIndex(selected, schema?.properties) + 1; // 插入位置序号
+    const newIndex = getPathEndIndex(selected, properties) + 1; // 插入位置序号
     const parentPath = getParent(selected); // 插入的父元素路径
     const isListItem = endIsListItem(selected);
     const field = { ...item, ...getInitialValues(item?.settings) }
