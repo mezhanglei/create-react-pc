@@ -24,9 +24,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     renderItem,
     renderList,
     inside,
+    properties: propertiesProps
   } = props;
 
-  const propertiesProps = props?.properties;
   const mergeComponents = { ...defaultComponents, ...components };
 
   const {
@@ -56,7 +56,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 收集properties到store中
   useEffect(() => {
     if (store) {
-      store.setProperties(propertiesProps)
+      store.updateProperties(propertiesProps)
     }
   }, [propertiesProps]);
 

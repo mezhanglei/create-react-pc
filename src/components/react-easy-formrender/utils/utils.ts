@@ -123,7 +123,8 @@ export const setItemByPath = (properties: PropertiesData, pathStr: string, data?
 };
 
 // 根据path获取指定路径的项
-export const getItemByPath = (properties: PropertiesData, pathStr?: string) => {
+export const getItemByPath = (properties?: PropertiesData, pathStr?: string) => {
+  if (!properties) return
   const pathArr = pathToArr(pathStr);
   let temp: any = properties;
   if (pathArr.length === 0) {
@@ -325,4 +326,9 @@ export const getInitialValues = (properties?: PropertiesData) => {
     }
   }
   return initialValues;
+}
+
+// 合并
+export function mergeProperties(oldValue: any, newValue: any) {
+  return { ...oldValue, ...newValue }
 }

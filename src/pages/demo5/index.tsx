@@ -1,10 +1,9 @@
 // export default demo5;
 // import { Button } from 'antd';
 import React, { useState } from 'react';
-import RenderForm, { GeneratePrams, RenderFormProps, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
+import RenderForm, { useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
 // import {Form, useFormStore} from '@/components/react-easy-formcore';
 import './index.less'
-import { getCurrentPath } from '@/components/react-easy-formcore';
 import Button from '@/components/button';
 
 

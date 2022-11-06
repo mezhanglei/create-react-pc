@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { FormStore } from "../react-easy-formcore";
 import { FormFieldProps, PropertiesData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent, mergeProperties } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
@@ -16,6 +16,7 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
     this.lastProperties = undefined;
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
+    this.updateProperties = this.updateProperties.bind(this)
   }
 
   // 获取当前组件的properties
@@ -27,6 +28,13 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
     this.properties = deepClone(data || {});
+    this.notifyProperties();
+  }
+
+  // 更新properties
+  updateProperties(data?: PropertiesData) {
+    this.lastProperties = this.properties;
+    this.properties = mergeProperties(this.properties, data)
     this.notifyProperties();
   }
 
@@ -108,7 +116,8 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   // 同步表单渲染数据的变化
   private notifyProperties() {
     this.propertiesListeners.forEach((onChange) => {
-      onChange && onChange(this.properties, this.lastProperties);
+      const properties = this.getProperties()
+      onChange && onChange(properties, this.lastProperties);
     })
   }
 

@@ -26,7 +26,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
-    setEdit({ properties: newData });
+    // setEdit({ properties: newData });
   }
 
   // 表单属性更改时回填属性初始值设置
