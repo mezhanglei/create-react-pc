@@ -35,7 +35,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     // 回填setting表单的intialValue值
     settingsForm.setInitialValues('initialValue', value);
     // 回填designer的initialValue值
-    designer?.updateItemByPath(path, { initialValue: value });
+    designer?.store?.updateItemByPath(path, { initialValue: value });
   }
 
   const renderItem: BaseRenderProps['renderItem'] = (params) => {
@@ -60,7 +60,8 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
         setEdit({ selected: "#" })
       }}>
       <RenderForm
-        store={designer}
+        store={designer?.store}
+        form={designer?.form}
         properties={properties}
         onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}

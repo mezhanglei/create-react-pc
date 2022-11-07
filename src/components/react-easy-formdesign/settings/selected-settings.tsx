@@ -1,6 +1,6 @@
 import React, { CSSProperties, useContext, useEffect, useState } from 'react'
 import classnames from 'classnames';
-import RenderForm, { RenderFormProps, useFormRenderStore } from '../form-render';
+import RenderForm, { RenderFormProps, useFormStore } from '../form-render';
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { updateSelectedValues, getSelectedValues, isNoSelected, getSelectedSettings } from '../utils/utils';
 import { changePathEnd } from '@/components/react-easy-formrender/utils/utils';
@@ -19,7 +19,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   } = props;
   const { designer, selected } = useContext(FormRenderContext);
   const setEdit = useContext(FormEditContext);
-  const form = useFormRenderStore();
+  const form = useFormStore();
 
   const [settingProperties, setSettingProperties] = useState({});
 
@@ -50,7 +50,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <RenderForm store={form} properties={settingProperties} layout="vertical" onFieldsChange={onFieldsChange} />
+      <RenderForm form={form} properties={settingProperties} layout="vertical" onFieldsChange={onFieldsChange} />
     </div>
   );
 };

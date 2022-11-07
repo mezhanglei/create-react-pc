@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import { useFormRenderStore } from '../react-easy-formrender';
+import { useFormRenderStore, useFormStore } from '../react-easy-formrender';
 import { FormRenderContext, FormEditContext } from './design-context';
 import { useSet } from './use-hooks';
 
@@ -15,7 +15,8 @@ export interface ProviderProps {
 
 function Provider(props: ProviderProps) {
 
-  const designer = useFormRenderStore();
+  const designerStore = useFormRenderStore();
+  const designerForm = useFormStore();
 
   const [state, setEdit] = useSet({
     isNewVersion: true,
@@ -34,7 +35,10 @@ function Provider(props: ProviderProps) {
   } = props;
 
   const params = {
-    designer,
+    designer: {
+      store: designerStore,
+      form: designerForm
+    },
     ...state
   }
 

@@ -37,7 +37,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    designer.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    designer.store?.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onItemAdd: DndProps['onUpdate'] = (params) => {
@@ -53,7 +53,7 @@ function FormDnd(props: FormDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    const parentData = designer.getItemByPath(dropCollection?.path)
+    const parentData = designer.store?.getItemByPath(dropCollection?.path)
     const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
     if (dragCollection?.type === SideBarGroup) {
@@ -61,10 +61,10 @@ function FormDnd(props: FormDndProps, ref: any) {
       const item = elements[dragIndex]
       const field = { ...item, ...getInitialValues(item?.settings) }
       const addItem = dropGroupIsList ? field : { name: defaultGetId(field?.prefix), ...field };
-      designer?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
+      designer?.store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
-      designer.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      designer.store?.moveItemByPath({ index: dragIndex, parent: dragCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 

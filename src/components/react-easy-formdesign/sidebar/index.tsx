@@ -31,7 +31,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const field = { ...item, ...getInitialValues(item?.settings) }
     // 非数组项需要生成id
     const addItem = isListItem ? field : { name: defaultGetId(prefix), ...field };
-    designer?.addItemByIndex(addItem, newIndex, parentPath);
+    designer?.store?.addItemByIndex(addItem, newIndex, parentPath);
   }
 
   const TabsData = [{

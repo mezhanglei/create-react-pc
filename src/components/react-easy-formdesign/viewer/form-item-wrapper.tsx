@@ -36,13 +36,13 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
 
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
-    const newField = designer?.getItemByPath(currentPath);
+    const newField = designer?.store?.getItemByPath(currentPath);
     const addItem = isListIndex(name) ? newField : { name: defaultGetId(field?.prefix), ...newField }
-    designer?.addItemByIndex(addItem, nextIndex, parent);
+    designer?.store?.addItemByIndex(addItem, nextIndex, parent);
   }
 
   const deleteItem = () => {
-    designer?.delItemByPath(currentPath);
+    designer?.store?.delItemByPath(currentPath);
     setEdit({ selected: undefined });
   }
 

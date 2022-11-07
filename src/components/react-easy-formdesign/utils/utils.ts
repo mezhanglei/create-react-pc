@@ -1,4 +1,4 @@
-import { FieldProps } from '@/components/react-easy-formcore';
+import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
@@ -13,9 +13,14 @@ export const isNoSelected = (path?: string) => {
   if (!path || path === '#') return true;
 }
 
+export interface Designer {
+  store: FormRenderStore
+  form: FormStore
+}
+
 // 获取节点的值和属性
-export const getSelectedValues = (designer: FormRenderStore, selected: string, initialForm?: ELementProps['settings']) => {
-  const oldValues = designer.getItemByPath(selected) || {};
+export const getSelectedValues = ({ store, form }: Designer, selected: string, initialForm?: ELementProps['settings']) => {
+  const oldValues = store.getItemByPath(selected) || {};
   if (!endIsListItem(selected)) {
     oldValues['name'] = getPathEnd(selected);
   }
@@ -25,36 +30,36 @@ export const getSelectedValues = (designer: FormRenderStore, selected: string, i
 }
 
 // 更新节点的值和属性
-export const updateSelectedValues = (designer: FormRenderStore, selected: string, settingValues: FieldProps) => {
+export const updateSelectedValues = ({ store, form }: Designer, selected: string, settingValues: FieldProps) => {
   if (isNoSelected(selected)) return;
   const { name, ...field } = settingValues || {};
   // 更新控件的值
-  designer?.setInitialValues(selected, field?.initialValue);
+  form?.setInitialValues(selected, field?.initialValue);
   // 更新控件的属性
-  designer?.updateItemByPath(selected, field);
+  store?.updateItemByPath(selected, field);
   // 更新控件的字段名
   if (name) {
-    designer?.updateNameByPath(selected, name);
+    store?.updateNameByPath(selected, name);
   }
 }
 
 // 覆盖设置节点的值和属性
-export const setSelectedValues = (designer: FormRenderStore, selected: string, settingValues: FieldProps) => {
+export const setSelectedValues = ({ store, form }: Designer, selected: string, settingValues: FieldProps) => {
   if (isNoSelected(selected)) return;
   const { name, ...field } = settingValues || {};
   // 更新控件的值
-  designer?.setInitialValues(selected, field?.initialValue);
+  form?.setInitialValues(selected, field?.initialValue);
   // 覆盖设置控件的属性
-  designer?.setItemByPath(selected, field);
+  store?.setItemByPath(selected, field);
   // 更新控件的字段名
   if (name) {
-    designer?.updateNameByPath(selected, name);
+    store?.updateNameByPath(selected, name);
   }
 }
 
 // 根据路径获取节点的配置表单
-export const getSelectedSettings = (designer: FormRenderStore, selected: string, ) => {
-  const selectedItem = designer.getItemByPath(selected);
+export const getSelectedSettings = ({ store, form }: Designer, selected: string,) => {
+  const selectedItem = store.getItemByPath(selected);
   const originSettings = selectedItem?.['settings'];
   let baseSettings = { ...originSettings };
   // TODO：是否所有的表单节点都设置此属性
