@@ -17,13 +17,14 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     field,
     parent,
     store,
+    form,
     className,
     ...restProps
   } = props;
 
   const currentPath = getCurrentPath(name, parent);
   const deleteItem = () => {
-    currentPath && store?.setFieldValue(currentPath, undefined, true);
+    currentPath && form?.setFieldValue(currentPath, undefined, true);
     currentPath && store?.delItemByPath(currentPath);
   }
 
@@ -44,6 +45,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     field,
     parent,
     store,
+    form,
     item,
     className,
     children,

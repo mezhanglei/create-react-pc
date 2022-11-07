@@ -7,6 +7,7 @@ import RenderFormChildren from './render-children';
 export default function RenderForm(props: RenderFormProps) {
   const {
     store,
+    form,
     properties,
     controls,
     components,
@@ -19,8 +20,9 @@ export default function RenderForm(props: RenderFormProps) {
   } = props;
 
   return (
-    <Form store={store} {...formProps}>
+    <Form store={form} {...formProps}>
       <RenderFormChildren
+        store={store}
         properties={properties}
         controls={controls}
         components={components}

@@ -41,6 +41,7 @@ export const GridRow = React.forwardRef((props: GridRowProps, ref: any) => {
     field,
     parent,
     store,
+    form,
     children,
     className,
     ...rest
@@ -63,6 +64,7 @@ export const GridCol = React.forwardRef((props: GridColProps, ref: any) => {
     field,
     parent,
     store,
+    form,
     className,
     children,
     ...rest

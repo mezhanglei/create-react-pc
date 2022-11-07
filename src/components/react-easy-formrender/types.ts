@@ -1,15 +1,9 @@
 import { ReactNode } from "react";
-import { FormItemProps, FormProps } from "../react-easy-formcore";
+import { FormItemProps, FormProps, FormStore } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
 
 // 从原接口中提取属性，然后用新的替换它们
 type Overwrite<T, U> = Omit<T, keyof U> & U;
-
-// 更改类型
-interface Extension {
-  valueGetter?: string | ((...args: any[]) => any) | any;
-  valueSetter?: string | ((value: any) => any) | any;
-}
 
 // 组件JSON描述
 export interface FormComponent {
@@ -36,7 +30,10 @@ export interface BaseFieldProps extends FormComponent {
 export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps[]
 
 // 表单域(绑定表单字段)
-export interface FormFieldProps extends Overwrite<FormItemProps, Extension>, BaseFieldProps {
+export interface FormFieldProps extends Overwrite<FormItemProps, {
+  valueGetter?: string | ((...args: any[]) => any) | any;
+  valueSetter?: string | ((value: any) => any) | any;
+}>, BaseFieldProps {
   properties?: PropertiesData; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }
 
@@ -54,17 +51,19 @@ export interface BaseRenderProps {
 }
 
 // 带form容器的渲染组件props
-export interface RenderFormProps extends FormProps<FormRenderStore>, BaseRenderProps {
+export interface RenderFormProps extends Overwrite<FormProps, { store?: FormRenderStore }>, BaseRenderProps {
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
   properties?: PropertiesData; // 控件数据源的数据
+  form?: FormStore
 };
 
 // 不带form容器的渲染组件props
 export interface RenderFormChildrenProps extends BaseRenderProps {
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
   properties?: PropertiesData; // 控件数据源的数据
+  store?: FormRenderStore
 };
 
 export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
-export interface GeneratePrams<T = FormFieldProps> { name?: string | number, field?: T, parent?: string, store?: FormRenderStore, children?: any };
+export interface GeneratePrams<T = FormFieldProps> { name?: string | number; field?: T; parent?: string; store?: FormRenderStore; form: FormStore; children?: any };

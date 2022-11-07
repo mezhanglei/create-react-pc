@@ -1,4 +1,4 @@
-import RenderBaseForm, {RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
+import RenderFormDefault, {RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
 import React from 'react';
 import { AntdBaseControls } from './base-controls';
 
@@ -17,6 +17,6 @@ export interface FormRenderProps extends RenderFormProps {
 }
 export default function FormRender(props: FormRenderProps) {
   return (
-    <RenderBaseForm {...props} controls={{ ...AntdBaseControls, ...props?.controls }} />
+    <RenderFormDefault {...props} controls={{ ...AntdBaseControls, ...props?.controls }} />
   );
 }

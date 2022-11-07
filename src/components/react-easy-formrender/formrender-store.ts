@@ -1,22 +1,24 @@
 import { deepClone } from "@/utils/object";
-import { FormStore } from "../react-easy-formcore";
+import { useMemo } from "react";
 import { FormFieldProps, PropertiesData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent, mergeProperties } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
+export function useFormRenderStore() {
+  return useMemo(() => new FormRenderStore(), [])
+}
+
 // 管理formrender过程中的数据
-export class FormRenderStore<T extends Object = any> extends FormStore {
+export class FormRenderStore {
   private properties: PropertiesData;
   private lastProperties: PropertiesData | undefined;
   private propertiesListeners: FormRenderListener[] = [];
-  constructor(values?: Partial<T>) {
-    super(values);
+  constructor() {
     this.properties = {};
     this.lastProperties = undefined;
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
-    this.updateProperties = this.updateProperties.bind(this)
   }
 
   // 获取当前组件的properties
@@ -28,13 +30,6 @@ export class FormRenderStore<T extends Object = any> extends FormStore {
   setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
     this.properties = deepClone(data || {});
-    this.notifyProperties();
-  }
-
-  // 更新properties
-  updateProperties(data?: PropertiesData) {
-    this.lastProperties = this.properties;
-    this.properties = mergeProperties(this.properties, data)
     this.notifyProperties();
   }
 

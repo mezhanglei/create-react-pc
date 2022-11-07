@@ -327,8 +327,3 @@ export const getInitialValues = (properties?: PropertiesData) => {
   }
   return initialValues;
 }
-
-// 合并
-export function mergeProperties(oldValue: any, newValue: any) {
-  return { ...oldValue, ...newValue }
-}

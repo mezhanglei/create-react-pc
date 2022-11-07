@@ -1,8 +1,8 @@
 // export default demo5;
 // import { Button } from 'antd';
 import React, { useState } from 'react';
-import RenderForm, { useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
-// import {Form, useFormStore} from '@/components/react-easy-formcore';
+import RenderForm, { RenderFormChildren, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
+import { Form, useFormStore } from '@/components/react-easy-formcore';
 import './index.less'
 import Button from '@/components/button';
 
@@ -173,17 +173,53 @@ export default function Demo5(props) {
     },
   })
 
-  const store = useFormRenderStore();
+  const [properties1, setProperties1] = useState({
+    part1: {
+      label: "part1input",
+      required: true,
+      outside: { type: 'col', props: { span: 6 } },
+      rules: [{ required: true, message: 'name1空了' }],
+      initialValue: 1,
+      hidden: '{{$formvalues.name6 == true}}',
+      type: 'Input',
+      props: {}
+    },
+  })
+
+  const [properties2, setProperties2] = useState({
+    part2: {
+      label: "part2input",
+      required: true,
+      outside: { type: 'col', props: { span: 6 } },
+      rules: [{ required: true, message: 'name1空了' }],
+      initialValue: 1,
+      hidden: '{{$formvalues.name6 == true}}',
+      type: 'Input',
+      props: {}
+    },
+  })
+
+  const form = useFormStore();
 
   const onSubmit = async (e) => {
     e?.preventDefault?.();
-    const result = await store.validate();
+    const result = await form.validate();
     console.log(result, '表单结果');
   };
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm inside={{ type: 'row' }} store={store} properties={properties} watch={watch} />
+      <RenderForm inside={{ type: 'row' }} form={form} properties={properties} watch={watch} />
+      {/* <Form store={form}>
+        <div>
+          <p>part1</p>
+          <RenderFormChildren inside={{ type: 'row' }} properties={properties1} watch={watch} />
+        </div>
+        <div>
+          <p>part2</p>
+          <RenderFormChildren inside={{ type: 'row' }} properties={properties2} watch={watch} />
+        </div>
+      </Form> */}
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>
       </div>

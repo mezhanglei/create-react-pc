@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData } from './types';
 import { defaultComponents } from './components';
-import { Form, formatName, FormOptionsContext, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
-import { FormRenderStore } from './formrender-store';
+import { Form, formatName, FormOptionsContext, FormStore, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
+import { useFormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import './iconfont/iconfont.css';
 import { isReactComponent, isValidElement } from '@/utils/ReactIs';
@@ -10,9 +10,7 @@ import { isReactComponent, isValidElement } from '@/utils/ReactIs';
 // 不带Form容器的组件
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
-  const store = useContext<FormRenderStore | undefined>(FormStoreContext);
   const options = useContext(FormOptionsContext);
-
   const [fieldPropsMap, setFieldPropsMap] = useState<Partial<FormFieldProps>>({});
   const [properties, setProperties] = useState<PropertiesData>({});
 
@@ -24,8 +22,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     renderItem,
     renderList,
     inside,
-    properties: propertiesProps
+    properties: propertiesProps,
+    store
   } = props;
+
+  const form = useContext<FormStore>(FormStoreContext);
+  const formRenderStore = store || useFormRenderStore()
 
   const mergeComponents = { ...defaultComponents, ...components };
 
@@ -40,9 +42,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 订阅更新properties的函数,将传值更新到state里面
   useEffect(() => {
-    if (!store) return
+    if (!formRenderStore) return
     // 订阅目标控件
-    const uninstall = store.subscribeProperties((newValue, oldValue) => {
+    const uninstall = formRenderStore.subscribeProperties((newValue, oldValue) => {
       setProperties(newValue);
       if (!isEqual(newValue, oldValue)) {
         onPropertiesChange && onPropertiesChange(newValue, oldValue)
@@ -55,8 +57,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 收集properties到store中
   useEffect(() => {
-    if (store) {
-      store.updateProperties(propertiesProps)
+    if (formRenderStore) {
+      formRenderStore.setProperties(propertiesProps)
     }
   }, [propertiesProps]);
 
@@ -66,7 +68,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
     initWatch();
     return () => {
-      store?.unsubscribeFormGlobal();
+      form?.unsubscribeFormGlobal();
     }
   }, [properties]);
 
@@ -75,14 +77,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Object.entries(watch || {})?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
-        store?.subscribeFormGlobal(key, watcher)
+        form?.subscribeFormGlobal(key, watcher)
         // 对象形式
       } else if (typeof watcher === 'object') {
         if (typeof watcher.handler === 'function') {
-          store?.subscribeFormGlobal(key, watcher.handler);
+          form?.subscribeFormGlobal(key, watcher.handler);
         }
         if (watcher.immediate) {
-          watcher.handler(store?.getFieldValue(key), store?.getLastValue(key));
+          watcher.handler(form?.getFieldValue(key), form?.getLastValue(key));
         }
       }
     });
@@ -149,7 +151,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         const actionStr = "return " + target;
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function('store', actionStr);
-        const value = action(store);
+        const value = action(form);
         return value;
       } else {
         return value;
@@ -224,7 +226,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
     if (!field) return;
 
-    const commonParams = { name, field, parent, store }; // 公共参数
+    const commonParams = { name, field, parent, form: form, store: formRenderStore }; // 公共参数
     const footerInstance = createInstance(footer, mergeComponents, commonParams);
     const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
     const fieldComponentParse = componentParse(fieldComponent, mergeComponents);
@@ -285,7 +287,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return withInside(childs, inside, commonParams)
   }
 
-  return renderChildrenList(properties, inside, { store });
+  return renderChildrenList(properties, inside, { store: formRenderStore, form: form });
 }
 
 RenderFormChildren.displayName = 'Form.Children';
