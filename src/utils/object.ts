@@ -46,10 +46,19 @@ export function pathToArr(path?: string | string[]) {
   return typeof path === 'string' && path ? path.replace(/\]$/, '').split(/\.\[|\[\]|\]\[|\[|\]\.|\]|\./g) : [];
 }
 
-// 根据路径获取目标对象中的值
+// 根据路径获取目标对象中的单个值或多个值
 export function deepGet(obj: object | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
-  return pathToArr(keys)?.reduce?.((o, k) => (o)?.[k], obj)
+  if(keys instanceof Array) {
+    const result = {}
+    for(let key in keys) {
+      const item = keys[key]
+      result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
+    }
+    return result;
+  } else {
+    return pathToArr(keys)?.reduce?.((o, k) => (o)?.[k], obj)
+  }
 }
 
 // 给对象目标属性添加值, path：['a', 0] 等同于 'a[0]'

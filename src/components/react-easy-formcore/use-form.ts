@@ -31,3 +31,42 @@ export function useFormError(store: FormStore, path?: string) {
   }, [path, store]);
   return [error, setError];
 }
+
+// 获取表单值
+export function useFormValues(store: FormStore, path?: string | string[]) {
+  const initialValues = store.getFieldValue(path)
+  const [formValues, setFomValues] = useState(initialValues)
+
+  const subscribeList = (store: FormStore, path?: string | string[]) => {
+    if (!path) return;
+    const queue = []
+    if (path instanceof Array) {
+      for (let i = 0; i < path?.length; i++) {
+        const item = path[i]
+        queue?.push(store.subscribeFormGlobal(item, (newValue) => {
+          if (item) {
+            setFomValues((old: any) => ({ ...old, [item]: newValue }))
+          }
+        }))
+      }
+    } else if (typeof path == 'string') {
+      queue?.push(store.subscribeFormGlobal(path, (newValue) => {
+        setFomValues((old: any) => ({ ...old, [path]: newValue }))
+      }))
+    }
+    return queue;
+  }
+
+  // 订阅更新值的函数
+  useEffect(() => {
+    if (!path || !store) return
+    // 订阅目标控件
+    const uninstallList = subscribeList(store, path)
+
+    return () => {
+      uninstallList?.map((uninstall) => uninstall?.())
+    }
+  }, [path, store]);
+
+  return formValues;
+}
