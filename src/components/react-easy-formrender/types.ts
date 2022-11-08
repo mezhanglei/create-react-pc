@@ -43,6 +43,7 @@ export interface BaseRenderProps {
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   controls?: any;
   components?: any;
+  inside?: FieldUnionType;
   // 自定义渲染列表组件
   renderList?: (params: GeneratePrams<any>) => any;
   // 自定义渲染子元素

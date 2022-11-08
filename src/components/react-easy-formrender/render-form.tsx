@@ -14,6 +14,7 @@ export default function RenderForm(props: RenderFormProps) {
     watch,
     renderItem,
     renderList,
+    inside,
     onPropertiesChange,
     ...formProps
   } = props;
@@ -28,6 +29,7 @@ export default function RenderForm(props: RenderFormProps) {
         watch={watch}
         renderItem={renderItem}
         renderList={renderList}
+        inside={inside}
         onPropertiesChange={onPropertiesChange}
       />
     </Form>

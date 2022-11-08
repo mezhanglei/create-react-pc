@@ -209,7 +209,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm form={form} properties={properties} watch={watch} />
+      <RenderForm inside={{ type: 'row' }} form={form} properties={properties} watch={watch} />
       {/* <Form store={form}>
         <div>
           <p>part1</p>
