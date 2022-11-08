@@ -146,12 +146,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       const hiddenStr = value?.match(reg)?.[0];
       if (hiddenStr) {
         let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
-        target = target?.replace(/\$formvalues/g, 'store && store.getFieldValue()');
+        target = target?.replace(/\$formvalues/g, 'form && form.getFieldValue()');
+        target = target?.replace(/\$form/g, 'form');
         target = target?.replace(/\$store/g, 'store');
         const actionStr = "return " + target;
         // 函数最后一个参数为函数体，前面均为传入的变量名
-        const action = new Function('store', actionStr);
-        const value = action(form);
+        const action = new Function('form', 'store', actionStr);
+        const value = action(form, formRenderStore);
         return value;
       } else {
         return value;
@@ -204,18 +205,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   const ignoreTag = { "data-type": "ignore" }
-  // 给目标内部添加inside
-  const withInside = (children: any, inside?: FieldUnionType, commonProps?: any) => {
-    const childsWithList = renderList ? renderList?.({ ...commonProps, ...ignoreTag, children }) : children
-    const childsWithSide = inside ? createInstance(inside, mergeComponents, { ...commonProps, ...ignoreTag }, childsWithList) : childsWithList;
+  // 目标套上其他组件
+  const withSide = (children: any, side?: FieldUnionType, render?: (params: GeneratePrams<any>) => any, commonProps?: any) => {
+    const childs = render ? render?.({ ...commonProps, ...ignoreTag, children }) : children
+    const childsWithSide = side ? createInstance(side, mergeComponents, { ...commonProps, ...ignoreTag }, childs) : childs;
     return childsWithSide;
-  }
-
-  // 给目标外面添加outside
-  const withOutside = (children: any, outside?: FieldUnionType, commonProps?: any) => {
-    const childWithItem = renderItem ? renderItem?.({ ...commonProps, ...ignoreTag, children }) : children
-    const childWithSide = outside ? createInstance(outside, mergeComponents, { ...commonProps, ...ignoreTag }, childWithItem) : childWithItem;
-    return childWithSide;
   }
 
   // 生成子元素
@@ -266,7 +260,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         </FormField>
         : fieldChildren
     );
-    return withOutside(result, outside, containerProps)
+    return withSide(result, outside, renderItem, containerProps)
   }
 
   // 渲染children
@@ -284,7 +278,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         return generateChild(childName, childField, currentPath);
       }
     })
-    return withInside(childs, inside, commonParams)
+    return withSide(childs, inside, renderList, commonParams)
   }
 
   return renderChildrenList(properties, inside, { store: formRenderStore, form: form });
