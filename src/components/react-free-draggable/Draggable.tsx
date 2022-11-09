@@ -76,7 +76,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     return newDragData;
   }
 
-  // 仅仅当为受控组件，且非拖拽的组件，设置值
+  // 仅仅当为受控组件，且非正在拖拽的组件，位置变化时
   componentDidUpdate(prevProps: DraggableProps, prevState: DraggableState) {
     const xChanged = this.props.x !== undefined && this.props.x !== prevProps.x;
     const yChanged = this.props.y !== undefined && this.props.y !== prevProps.y;

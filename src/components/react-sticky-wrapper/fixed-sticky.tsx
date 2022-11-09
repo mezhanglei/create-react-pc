@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
-import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, css, getInsideRange, getRect } from '@/utils/dom';
+import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, css, getInsideRange, getRect, getWindow } from '@/utils/dom';
 import { isMobile } from '@/utils/verify';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
@@ -58,7 +58,8 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
   useEffect(() => {
     const root = getScrollRoot();
     const node = nodeRef.current;
-    const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || window) : root;
+    const win = getWindow()
+    const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || win) : root;
 
     const initData = {
       node,

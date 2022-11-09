@@ -58,11 +58,11 @@ export const setSelectedValues = ({ store, form }: Designer, selected: string, s
 }
 
 // 根据路径获取节点的配置表单
-export const getSelectedSettings = ({ store, form }: Designer, selected: string,) => {
+export const getSelectedSettings = ({ store, form }: Designer, selected: string, settingsForm?: ELementProps['settings']) => {
   const selectedItem = store.getItemByPath(selected);
   const originSettings = selectedItem?.['settings'];
-  let baseSettings = { ...originSettings };
-  // TODO：是否所有的表单节点都设置此属性
+  let baseSettings = { ...originSettings, ...settingsForm };
+  // 非列表节点设置字段名
   if (!endIsListItem(selected)) {
     baseSettings = {
       name: {

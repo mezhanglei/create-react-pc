@@ -1,4 +1,3 @@
-import defaultFieldSettings from '../settings/default-field'
 // 表单原子控件
 export const atomElements = [{
   prefix: 'input',
@@ -23,8 +22,7 @@ export const atomElements = [{
     initialValue: {
       label: '默认值',
       type: 'Input'
-    },
-    ...defaultFieldSettings
+    }
   }
 }]
 

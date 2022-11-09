@@ -1,5 +1,5 @@
 import { isDom, isEmpty, isNumber } from "@/utils/type";
-import { isContains, findElement } from "@/utils/dom";
+import { isContains, findElement, getWindow } from "@/utils/dom";
 
 // 添加选中类和样式
 export const addUserSelectStyles = (doc: any): any => {
@@ -28,7 +28,8 @@ export function removeUserSelectStyles(doc: any): void {
     } else {
       // Remove selection caused by scroll, unless it's a focused input
       // (we use doc.defaultView in case we're in an iframe)
-      const selection = (doc.defaultView || window).getSelection();
+      const win = getWindow()
+      const selection = win.getSelection();
       if (selection && selection.type !== 'Caret') {
         selection.removeAllRanges();
       }

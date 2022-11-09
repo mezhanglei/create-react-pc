@@ -1,3 +1,5 @@
+import { getWindow } from "@/utils/dom";
+
 export function isDom(ele: any) {
   if (typeof HTMLElement === 'object') {
     return ele instanceof HTMLElement;
@@ -51,8 +53,9 @@ export function getOffsetWH(el: HTMLElement): undefined | {
     return;
   }
   if ([document.documentElement, document.body].includes(el)) {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const win = getWindow(el)
+    const width = win.innerWidth;
+    const height = win.innerHeight;
     return { width, height };
   } else {
     const width = el.offsetWidth;

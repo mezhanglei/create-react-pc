@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
-import { addEvent, findElement, removeEvent, getScrollParent, getScroll, getRect, getInsideRange } from '@/utils/dom';
+import { addEvent, findElement, removeEvent, getScrollParent, getScroll, getRect, getInsideRange, getWindow } from '@/utils/dom';
 import { isMobile } from '@/utils/verify';
 import { getPrefixStyle } from "@/utils/cssPrefix";
 import classNames from 'classnames';
@@ -68,7 +68,8 @@ const ReactTransformSticky: React.FC<ReactTransformStickyProps> = (props) => {
 
     useEffect(() => {
         const root = getScrollRoot();
-        const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || window) : root;
+        const win = getWindow();
+        const addEventEle: any = [document.documentElement, document.body].includes(root) ? (document || win) : root;
         const scrollNodeList = findNodeList() as Array<{ node: HTMLElement, left: number, top: number }>;
         addEvent(addEventEle, dragEventFor.move, (e) => handleScroll(e, scrollNodeList, root));
         return () => {

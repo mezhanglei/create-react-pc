@@ -1,7 +1,7 @@
 import React, { ReactNode, CSSProperties } from 'react';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
-import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent } from "@/utils/dom";
+import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent, getWindow } from "@/utils/dom";
 import { isDom } from "@/utils/type";
 import { isMobile } from '@/utils/verify';
 
@@ -136,7 +136,8 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
     const scrollHeight = scrollableParent?.scrollHeight;
     if (forbidTrigger) return;
     // 滚动父节点绑定事件(文档根节点不能绑定事件)
-    const el: any = [document.documentElement, document.body].includes(scrollableParent) ? (document || window) : scrollableParent;
+    const win = getWindow()
+    const el: any = [document.documentElement, document.body].includes(scrollableParent) ? (document || win) : scrollableParent;
     this.event = el;
     if (el) {
       addEvent(el, 'scroll', this.onScrollListener);
