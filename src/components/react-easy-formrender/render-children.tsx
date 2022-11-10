@@ -163,13 +163,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 根据传递参数生成实例
-  const createInstance = (target?: any, typeMap?: any, commonProps?: any, finalChildren?: any): any => {
+  const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: any, finalChildren?: any): any => {
     if (target instanceof Array) {
       return target?.map((item) => {
         return createInstance(item, typeMap, commonProps, finalChildren);
       });
     } else {
-      const Child = componentParse(target, typeMap);
+      const Child = componentParse(target, typeMap) as React.ElementType;
       // 声明组件
       if (Child) {
         const { children, ...restProps } = (target as FormComponent)?.props || {};
@@ -185,7 +185,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 从参数中获取声明组件
-  const componentParse = <T,>(target: FieldUnionType | undefined, typeMap: T) => {
+  const componentParse = (target: FieldUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
     // 是否为类或函数组件声明
     if (isReactComponent(target)) {
       return target

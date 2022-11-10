@@ -4,7 +4,7 @@ import RenderForm, { BaseRenderProps, getCurrentPath, RenderFormProps } from '..
 import { FormEditContext, FormRenderContext } from '../design-context';
 import FormItemWrapper from './form-item-wrapper';
 import './index.less';
-import FormDnd from './form-dnd'
+import DesignerDnd from './designer-dnd';
 
 export interface DesignViewerProps {
   className?: string
@@ -38,19 +38,6 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
     designer?.store?.updateItemByPath(path, { initialValue: value });
   }
 
-  const renderItem: BaseRenderProps['renderItem'] = (params) => {
-    const { field } = params;
-    // 针对控件组件统一添加
-    if (!field?.properties) {
-      return <FormItemWrapper {...params} />
-    }
-    return params?.children
-  }
-
-  const renderList: BaseRenderProps['renderList'] = (params) => {
-    return <FormDnd {...params} />
-  }
-
   return (
     <div ref={ref}
       className={cls}
@@ -65,12 +52,21 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
         properties={properties}
         onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}
+        inside={DesignerDnd}
         renderItem={renderItem}
-        renderList={renderList}
       />
     </div>
   );
 };
+
+const renderItem: BaseRenderProps['renderItem'] = (params) => {
+  const { field } = params;
+  // 只针对单个表单域添加
+  if (!field?.properties) {
+    return <FormItemWrapper {...params} />
+  }
+  return params?.children
+}
 
 DesignViewer.displayName = 'design-viewer';
 export default React.forwardRef(DesignViewer);

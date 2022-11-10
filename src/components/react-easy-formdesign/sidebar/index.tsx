@@ -2,12 +2,12 @@ import React, { cloneElement, useCallback, useContext, useState, CSSProperties, 
 import classnames from 'classnames';
 import { Tabs } from 'antd';
 import './index.less';
-import { atomElements, ELementProps, exampleElements, layoutElements } from '../config';
 import { FormEditContext, FormRenderContext } from '../design-context';
 import { defaultGetId } from '../utils/utils';
 import SidebarList from './sidebar-list';
 import { endIsListItem, getInitialValues, getParent, getPathEnd, getPathEndIndex } from '@/components/react-easy-formrender/utils/utils';
-import { getCurrentPath } from '@/components/react-easy-formcore';
+import { ELementProps, TabsData } from './components';
+
 
 export interface DesignComponentsProps {
   className?: string
@@ -33,21 +33,6 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const addItem = isListItem ? field : { name: defaultGetId(prefix), ...field };
     designer?.store?.addItemByIndex(addItem, newIndex, parentPath);
   }
-
-  const TabsData = [{
-    key: 'base',
-    tab: '基础组件',
-    data: [
-      { title: '基础控件', elementsKey: 'atomElements', elements: atomElements },
-      { title: '布局组件', elementsKey: 'layoutElements', elements: layoutElements }
-    ]
-  }, {
-    key: 'example',
-    tab: '表单模板',
-    data: [
-      { title: '示例', elementsKey: 'exampleElements', elements: exampleElements },
-    ]
-  }]
 
   return (
     <div ref={ref} className={cls} style={style}>

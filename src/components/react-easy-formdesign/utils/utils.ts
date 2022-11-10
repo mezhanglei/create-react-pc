@@ -2,7 +2,7 @@ import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
-import { ELementProps } from '../config';
+import { ELementProps } from '../sidebar/components';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
@@ -60,7 +60,7 @@ export const setSelectedValues = ({ store, form }: Designer, selected: string, s
 // 根据路径获取节点的配置表单
 export const getSelectedSettings = ({ store, form }: Designer, selected: string, settingsForm?: ELementProps['settings']) => {
   const selectedItem = store.getItemByPath(selected);
-  const originSettings = selectedItem?.['settings'];
+  const originSettings = selectedItem?.['settings']; // 节点的setting初始设置
   let baseSettings = { ...originSettings, ...settingsForm };
   // 非列表节点设置字段名
   if (!endIsListItem(selected)) {

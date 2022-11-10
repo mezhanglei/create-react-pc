@@ -1,4 +1,4 @@
-export const layoutElements = [{
+const elements = [{
   prefix: 'object',
   label: '对象容器',
   inside: { type: 'row' },
@@ -24,13 +24,15 @@ export const layoutElements = [{
       properties: {
         col1: {
           prefix: 'col1',
-          type: 'Input',
-          // outside: { type: 'col', props: { span: 6 } }
+          properties: {
+
+          }
         },
         col2: {
           prefix: 'col2',
-          type: 'Input',
-          // outside: { type: 'col', props: { span: 6 } }
+          properties: {
+
+          }
         }
       }
     }
@@ -38,3 +40,5 @@ export const layoutElements = [{
   settings: {
   }
 }]
+
+export default ['layoutElements', elements]

@@ -1,5 +1,5 @@
 // 表单原子控件
-export const atomElements = [{
+const elements = [{
   prefix: 'input',
   label: '输入框',
   type: 'Input',
@@ -25,6 +25,8 @@ export const atomElements = [{
     }
   }
 }]
+
+export default ['atomElements', elements]
 
 // import 'codemirror/lib/codemirror.css';
 // import CodeMirror from 'codemirror/lib/codemirror';

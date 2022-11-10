@@ -3,8 +3,8 @@ import { FormEditContext, FormRenderContext } from '@/components/react-easy-form
 import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
-import { ELementProps } from '../config';
 import { GeneratePrams } from '../form-render';
+import { ELementProps } from '../sidebar/components';
 import './form-item-wrapper.less';
 
 export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
@@ -26,6 +26,8 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     name,
     parent,
     field,
+    store,
+    form,
     ...restProps
   } = props;
 
