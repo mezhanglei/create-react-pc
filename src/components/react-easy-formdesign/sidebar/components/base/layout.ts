@@ -1,44 +1,42 @@
-const elements = [{
-  prefix: 'object',
-  label: '对象容器',
-  inside: { type: 'row' },
-  properties: {
+const elements = {
+  object: {
+    label: '对象容器',
+    inside: { type: 'row' },
+    properties: {
+    },
+    settings: {
+    }
   },
-  settings: {
-  }
-}, {
-  prefix: 'list',
-  label: '数组容器',
-  inside: { type: 'row' },
-  properties: [
-  ],
-  settings: {
-  }
-}, {
-  prefix: 'table',
-  label: '表格',
-  // inside: { type: 'row' },
-  properties: [
-    {
-      prefix: 'row',
-      properties: {
-        col1: {
-          prefix: 'col1',
-          properties: {
+  list: {
+    label: '数组容器',
+    inside: { type: 'row' },
+    properties: [
+    ],
+    settings: {
+    }
+  },
+  table: {
+    label: '表格',
+    // inside: { type: 'row' },
+    properties: [
+      {
+        properties: {
+          col1: {
+            properties: {
 
-          }
-        },
-        col2: {
-          prefix: 'col2',
-          properties: {
+            }
+          },
+          col2: {
+            properties: {
 
+            }
           }
         }
       }
+    ],
+    settings: {
     }
-  ],
-  settings: {
   }
-}]
+}
 
 export default ['layoutElements', elements]

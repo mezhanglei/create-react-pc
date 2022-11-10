@@ -50,10 +50,11 @@ function DesignerDnd(props: DesignerDndProps) {
     const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
     if (fromCollection?.type === SideBarGroup) {
+      const prefix = from?.id as string;
       const elements = AllElements[fromCollection?.elementsKey]
-      const item = elements[fromIndex]
+      const item = elements[prefix]
       const field = { ...item, ...getInitialValues(item?.settings) }
-      const addItem = dropGroupIsList ? field : { name: defaultGetId(field?.prefix), ...field };
+      const addItem = dropGroupIsList ? field : { name: defaultGetId(prefix), ...field };
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {

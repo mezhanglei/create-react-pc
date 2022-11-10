@@ -10,7 +10,7 @@ export interface SideBarProps {
   style?: CSSProperties;
   title: string;
   elementsKey: string;
-  elements?: ELementProps[];
+  elements?: { [key: string]: ELementProps };
   tabKey: string;
   onChange?: (name: string, item: ELementProps, elementsKey?: string, tabKey?: string) => void;
 }
@@ -41,9 +41,8 @@ function SideBarList(props: SideBarProps, ref: any) {
         }}
       >
         {
-          elements?.map((item, index) => {
-            const prefix = item?.prefix;
-            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, item, elementsKey, tabKey)}>{item.label}</Tag>
+          Object.entries(elements || {})?.map(([prefix, item], index) => {
+            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, { ...item, prefix }, elementsKey, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>

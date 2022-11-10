@@ -30,7 +30,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const isListItem = endIsListItem(selected);
     const field = { ...item, ...getInitialValues(item?.settings) }
     // 非数组项需要生成id
-    const addItem = isListItem ? field : { name: defaultGetId(prefix), ...field };
+    const addItem = isListItem ? field : { ...field, name: defaultGetId(prefix) };
     designer?.store?.addItemByIndex(addItem, newIndex, parentPath);
   }
 
