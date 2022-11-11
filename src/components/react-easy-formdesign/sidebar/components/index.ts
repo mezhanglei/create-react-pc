@@ -27,3 +27,5 @@ export interface ELementProps extends FormFieldProps {
   settings?: FormFieldProps['properties']; // 属性配置项
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
+
+export type ElementsType = { [key: string]: ELementProps }

@@ -1,3 +1,5 @@
+import { ElementsType } from ".."
+
 // 表单原子控件
 const elements = {
   input: {
@@ -27,7 +29,7 @@ const elements = {
   }
 }
 
-export default ['atomElements', elements]
+export default ['atomElements', elements] as [string, ElementsType]
 
 // import 'codemirror/lib/codemirror.css';
 // import CodeMirror from 'codemirror/lib/codemirror';

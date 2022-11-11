@@ -1,3 +1,5 @@
+import { ElementsType } from ".."
+
 const elements = {
   something: {
     label: '复杂结构样例',
@@ -7,4 +9,4 @@ const elements = {
   }
 }
 
-export default ['exampleElements', elements]
+export default ['exampleElements', elements] as [string, ElementsType]

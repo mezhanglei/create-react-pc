@@ -1,3 +1,5 @@
+import { ElementsType } from ".."
+
 const elements = {
   object: {
     label: '对象容器',
@@ -39,4 +41,4 @@ const elements = {
   }
 }
 
-export default ['layoutElements', elements]
+export default ['layoutElements', elements] as [string, ElementsType]

@@ -40,17 +40,23 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const [error] = useFormError(store, currentPath);
   const FieldComponent = component
 
+  const childs = (
+    <ListCore
+      name={ignore ? undefined : name}
+      parent={parent}
+      rules={rules}
+      initialValue={initialValue}
+    >
+      {children}
+    </ListCore>
+  )
+  
   return (
-    <FieldComponent {...rest} ref={ref} error={error}>
-      <ListCore
-        name={ignore ? undefined : name}
-        parent={parent}
-        rules={rules}
-        initialValue={initialValue}
-      >
-        {children}
-      </ListCore>
-    </FieldComponent>
+    FieldComponent ?
+      <FieldComponent {...rest} ref={ref} error={error}>
+        {childs}
+      </FieldComponent>
+      : childs
   );
 });
 
