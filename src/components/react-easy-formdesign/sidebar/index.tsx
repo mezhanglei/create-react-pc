@@ -6,7 +6,7 @@ import { FormEditContext, FormRenderContext } from '../design-context';
 import { defaultGetId } from '../utils/utils';
 import SidebarList from './sidebar-list';
 import { endIsListItem, getInitialValues, getParent, getPathEnd, getPathEndIndex } from '@/components/react-easy-formrender/utils/utils';
-import { ELementProps, TabsData } from './components';
+import { ELementProps, TabsData } from '../components';
 
 
 export interface DesignComponentsProps {

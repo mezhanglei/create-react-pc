@@ -4,7 +4,7 @@ import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
 import { GeneratePrams } from '../form-render';
-import { ELementProps } from '../sidebar/components';
+import { ELementProps } from '../components';
 import './form-item-wrapper.less';
 
 export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {

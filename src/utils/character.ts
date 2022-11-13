@@ -1,11 +1,11 @@
 //===基础字符串或数字的处理===//
 import { isObject, isNumber, isEmpty } from "./type";
 import * as Pinyin from 'jian-pinyin';
-import numbro from 'numbro'
+import BigNumber from 'bignumber.js'
 
 // 格式化数字或字符串
 export function formatNumber(value: number | string, digit = 2) {
-  return numbro(value).format({ mantissa: digit, optionalMantissa: true })
+  return value
 }
 
 // 自动补充0

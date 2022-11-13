@@ -1,4 +1,4 @@
-import { FormFieldProps } from "../../form-render";
+import { FormFieldProps } from "../form-render";
 
 import atomElement from './base/atom';
 import layoutElement from './base/layout';

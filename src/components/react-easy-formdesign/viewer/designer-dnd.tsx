@@ -5,7 +5,7 @@ import './index.less';
 import { defaultGetId } from '../utils/utils';
 import { SideBarGroup } from '../sidebar/sidebar-list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { AllElements } from '../sidebar/components';
+import { AllElements } from '../components';
 
 export interface DesignerDndProps extends GeneratePrams {
   children?: any;

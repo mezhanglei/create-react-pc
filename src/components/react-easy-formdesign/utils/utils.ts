@@ -2,7 +2,7 @@ import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
-import { ELementProps } from '../sidebar/components';
+import { ELementProps } from '../components';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';

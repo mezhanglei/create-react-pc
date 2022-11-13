@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './sidebar-list.less';
-import { ELementProps } from './components';
+import { ELementProps } from '../components';
 
 export interface SideBarProps {
   className?: string;

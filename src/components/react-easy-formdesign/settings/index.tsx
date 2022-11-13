@@ -1,7 +1,6 @@
-import React, { cloneElement, useCallback, useContext, useState, CSSProperties, useEffect } from 'react'
+import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { Tabs } from 'antd';
-import { FormRenderContext } from '../design-context';
 import SelectedSettings from './selected-settings';
 import './index.less';
 
