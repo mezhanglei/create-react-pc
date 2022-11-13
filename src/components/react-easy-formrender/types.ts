@@ -46,7 +46,7 @@ export interface BaseRenderProps {
   inside?: FieldUnionType;
   // 自定义渲染列表组件
   renderList?: (params: GeneratePrams<any>) => any;
-  // 自定义渲染子元素
+  // 自定义渲染子表单域
   renderItem?: (params: GeneratePrams<any>) => any;
 }
 
