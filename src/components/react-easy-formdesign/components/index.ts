@@ -1,8 +1,8 @@
 import { FormFieldProps } from "../form-render";
 
-import atomElement from './base/atom';
-import layoutElement from './base/layout';
-import exampleElement from './template/example';
+import atomElement from './atom';
+import layoutElement from './layout';
+import exampleElement from './example';
 
 export const AllElements = Object.fromEntries([atomElement, layoutElement, exampleElement])
 

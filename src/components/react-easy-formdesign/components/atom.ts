@@ -1,4 +1,4 @@
-import { ElementsType } from ".."
+import { ElementsType } from "."
 
 // 表单原子控件
 const elements = {

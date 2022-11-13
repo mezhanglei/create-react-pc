@@ -1,4 +1,4 @@
-import { ElementsType } from ".."
+import { ElementsType } from "."
 
 const elements = {
   something: {
