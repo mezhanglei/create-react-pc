@@ -3,10 +3,6 @@ import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
 import DndSortable, { DndHandle, arrayMove, DndProps } from "@/components/react-dragger-sort";
-import { renderToStaticMarkup } from 'react-dom/server';
-import demo2 from '../demo2';
-import { GetUrlRelativePath } from '@/utils/url';
-import { exportWord } from '@/components/export-word';
 import { addDragItem, getItem, indexToArray, removeDragItem } from './utils';
 import { deepClone } from '@/utils/object';
 
@@ -19,22 +15,9 @@ const Demo1: React.FC<any> = (props) => {
     { backgroundColor: 'green', children: [{ label: 11 }, { label: 12 }, { label: 13 }, { label: 14 }, { label: 15 }] }
   ]);
 
-  // 1. useEffect依赖问题, 依赖为引用类型的时候，然后又去重新设置该依赖值，就会陷入死循环。
-  // 2. 闭包问题：针对原生事件的订阅，可以用函数作为useEffect的依赖就可以解决闭包问题。还有其他的发布订阅之类的。
-  // 3. 函数作为依赖，经常会伴随useCallback包裹，如果useCallBack不生效，可能你的组件需要memo配合。
-
   const onMove = (e, data) => {
     // setX(data?.x)
     // setY(data?.y)
-  };
-
-  const onClick = () => {
-    exportWord({
-      imgList: [
-        'http://bhyf-file.oss-cn-hangzhou.aliyuncs.com/4578/1636526930976_4fb0c795.jpeg',
-        'https://img-cloud.youjiaoyun.net/mp/0a802a40-4a4b-4121-aa88-1fc6367a7410.jpg'
-      ]
-    });
   };
 
   const onUpdate: DndProps['onUpdate'] = (params) => {
@@ -145,9 +128,6 @@ const Demo1: React.FC<any> = (props) => {
         }}>
         {loopChildren(data)}
       </DndSortable>
-      <Button onClick={onClick}>
-        导出
-      </Button>
     </div>
   );
 };

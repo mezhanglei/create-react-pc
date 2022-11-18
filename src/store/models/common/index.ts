@@ -30,7 +30,7 @@ export default {
   effects: effects,
   subscriptions: {
     async setup({ dispatch }) {
-      await dispatch(fetchUserInfo())
+      // await dispatch(fetchUserInfo())
     }
   }
 } as CommonModel;
