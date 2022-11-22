@@ -65,13 +65,6 @@ export const ItemCore = (props: ItemCoreProps) => {
 
   const aopOnchange = new AopFactory(onChange);
 
-  // 回填storeValue
-  useEffect(() => {
-    if (!isEqual(storeValue, value)) {
-      setValue(storeValue);
-    }
-  }, [storeValue])
-
   // 订阅更新值的函数
   useEffect(() => {
     if (!currentPath || !store) return
@@ -94,6 +87,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     if (initialItemValue !== undefined) {
       store.setInitialValues(currentPath, initialItemValue);
     }
+    setValue(initialItemValue)
     return () => {
       // 清除该表单域的props(在设置值的前面)
       currentPath && store?.setFieldProps(currentPath, undefined);

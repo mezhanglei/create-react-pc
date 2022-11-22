@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-
 import { FormStore } from './form-store'
 import Validator from './validator'
 
@@ -40,18 +39,13 @@ export function useFormValues(store: FormStore, path?: string | string[]) {
   const subscribeList = (store: FormStore, path?: string | string[]) => {
     if (!path) return;
     const queue = []
-    if (path instanceof Array) {
-      for (let i = 0; i < path?.length; i++) {
-        const item = path[i]
-        queue?.push(store.subscribeFormGlobal(item, (newValue) => {
-          if (item) {
-            setFomValues((old: any) => ({ ...old, [item]: newValue }))
-          }
-        }))
-      }
-    } else if (typeof path == 'string') {
-      queue?.push(store.subscribeFormGlobal(path, (newValue) => {
-        setFomValues((old: any) => ({ ...old, [path]: newValue }))
+    const pathList = typeof path == 'string' ? [path] : (path instanceof Array ? path : [])
+    for (let i = 0; i < pathList?.length; i++) {
+      const item = pathList[i]
+      queue?.push(store.subscribeFormGlobal(item, (newValue) => {
+        if (item) {
+          setFomValues((old: any) => ({ ...old, [item]: newValue }))
+        }
       }))
     }
     return queue;

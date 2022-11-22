@@ -85,23 +85,13 @@ export class FormStore<T extends Object = any> {
     return path === undefined ? this.lastValues : deepGet(this.lastValues, path)
   }
 
-  // 设置初始值(只有初始化时才进行赋值)
+  // 设置初始值(不触发监听)
   public setInitialValues(path: string, initialValue: any) {
     this.initialValues = deepSet(this.initialValues, path, initialValue);
     // 旧表单值存储
     this.lastValues = deepClone(this.values);
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
-    // 异步更新, 只有组件渲染成功了，才会去同步ui操作
-    setTimeout(() => {
-      const fieldProps = this.getFieldProps(path);
-      if (fieldProps) {
-        // 同步ui
-        this.notifyFormItem(path);
-        // 同时触发另一个值的监听
-        this.notifyFormGlobal(path);
-      }
-    }, 0);
   }
 
   // 获取初始值
@@ -118,7 +108,6 @@ export class FormStore<T extends Object = any> {
       this.values = deepSet(this.values, path, value);
       // 同步ui
       this.notifyFormItem(path);
-      // 同时触发另一个值的监听
       this.notifyFormGlobal(path);
       // 规则
       const fieldProps = this.getFieldProps();
@@ -216,7 +205,7 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 同步整个表单值的变化
+  // 同步路径上所有控件值的变化
   private notifyFormGlobal(path?: string) {
     if (path) {
       this.formGlobalListeners.forEach((listener) => {
@@ -253,7 +242,7 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 主动订阅整个表单值的变动(表单控件消失不会卸载)
+  // 主动订阅路径上所有表单控件的变动(表单控件消失不会卸载)
   public subscribeFormGlobal(path: string, listener: FormListener['onChange']) {
     this.formGlobalListeners.push({
       onChange: listener,
@@ -266,10 +255,10 @@ export class FormStore<T extends Object = any> {
 
   // 卸载
   public unsubscribeFormGlobal(path?: string) {
-    if (typeof path === 'string') {
-      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
-    } else {
+    if (path === undefined) {
       this.formGlobalListeners = []
+    } else if (typeof path === 'string') {
+      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
     }
   }
 
