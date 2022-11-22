@@ -32,8 +32,8 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   // 表单属性更改时回填属性初始值设置
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
     const path = getCurrentPath(name, parent)
-    // 回填setting表单的intialValue值
-    settingsForm.setInitialValues('initialValue', value);
+    // 回填setting表单的intialValue选项
+    settingsForm.setFieldValue('initialValue', value);
     // 回填designer的initialValue值
     designer?.store?.updateItemByPath(path, { initialValue: value });
   }

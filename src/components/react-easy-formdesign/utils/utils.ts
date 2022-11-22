@@ -34,7 +34,7 @@ export const updateSelectedValues = ({ store, form }: Designer, selected: string
   if (isNoSelected(selected)) return;
   const { name, ...field } = settingValues || {};
   // 更新控件的值
-  form?.setInitialValues(selected, field?.initialValue);
+  form?.setFieldValue(selected, field?.initialValue);
   // 更新控件的属性
   store?.updateItemByPath(selected, field);
   // 更新控件的字段名
@@ -48,7 +48,7 @@ export const setSelectedValues = ({ store, form }: Designer, selected: string, s
   if (isNoSelected(selected)) return;
   const { name, ...field } = settingValues || {};
   // 更新控件的值
-  form?.setInitialValues(selected, field?.initialValue);
+  form?.setFieldValue(selected, field?.initialValue);
   // 覆盖设置控件的属性
   store?.setItemByPath(selected, field);
   // 更新控件的字段名
