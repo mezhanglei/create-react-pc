@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import RenderForm, { getCurrentPath, RenderFormProps, useFormStore } from '../../form-render';
 import { FormDesignContext, FormEditContext } from '../designer-context';
 import { updateSelectedValues, getSelectedValues, isNoSelected, getSelectedSettings } from '../utils/utils';
-// import { changePathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -46,7 +45,6 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
-      // const newSelected = changePathEnd(selectedPath, name);
       setEdit({ selected: { ...selected, name } })
     }
   }

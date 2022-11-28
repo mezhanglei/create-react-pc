@@ -14,11 +14,6 @@ export const isNoSelected = (path?: string) => {
   if (!path || path === '#') return true;
 }
 
-export interface Designer {
-  store: FormRenderStore
-  form: FormStore
-}
-
 // 获取节点的值和属性
 export const getSelectedValues = (designer: FormRenderStore, selectedPath: string, initialForm?: ELementProps['settings']) => {
   const oldValues = designer.getItemByPath(selectedPath) || {};
@@ -59,11 +54,11 @@ export const setSelectedValues = (designer: FormRenderStore, designerForm: FormS
 }
 
 // 根据路径获取节点的配置表单
-export const getSelectedSettings = (designer: FormRenderStore, selectedPath: string, settingsForm?: ELementProps['settings']) => {
+export const getSelectedSettings = (designer: FormRenderStore, selectedPath: string, newSettings?: ELementProps['settings']) => {
   const selectedItem = designer.getItemByPath(selectedPath);
-  const originSettings = selectedItem?.['settings']; // 节点的setting初始设置
-  const commonSettings = CommonSettings[selectedItem?.source]; // 配置节点类型对应的公共设置
-  let baseSettings = { ...originSettings, ...commonSettings, ...settingsForm };
+  const originSettings = selectedItem?.['settings']; // components/configs中组件的settings属性
+  const commonSettings = CommonSettings[selectedItem?.source]; // components/settings配置公共属性
+  let baseSettings = { ...originSettings, ...commonSettings, ...newSettings };
   // 非列表节点设置字段名
   if (!endIsListItem(selectedPath)) {
     baseSettings = {
