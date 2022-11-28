@@ -54,11 +54,11 @@ export const setSelectedValues = (designer: FormRenderStore, designerForm: FormS
 }
 
 // 根据路径获取节点的配置表单
-export const getSelectedSettings = (designer: FormRenderStore, selectedPath: string, newSettings?: ELementProps['settings']) => {
+export const getSelectedSettings = (designer: FormRenderStore, selectedPath: string) => {
   const selectedItem = designer.getItemByPath(selectedPath);
   const originSettings = selectedItem?.['settings']; // components/configs中组件的settings属性
   const commonSettings = CommonSettings[selectedItem?.source]; // components/settings配置公共属性
-  let baseSettings = { ...originSettings, ...commonSettings, ...newSettings };
+  let baseSettings = { ...originSettings, ...commonSettings };
   // 非列表节点设置字段名
   if (!endIsListItem(selectedPath)) {
     baseSettings = {
