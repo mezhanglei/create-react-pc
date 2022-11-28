@@ -1,10 +1,9 @@
-import { FormFieldProps } from "../form-render";
-
+import { FormFieldProps } from "../../../form-render";
 import atomElement from './atom';
 import layoutElement from './layout';
 import exampleElement from './example';
 
-export const AllElements = Object.fromEntries([atomElement, layoutElement, exampleElement])
+export const ConfigElements = Object.fromEntries([atomElement, layoutElement, exampleElement])
 
 export const TabsData = [{
   key: 'base',
@@ -23,9 +22,11 @@ export const TabsData = [{
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
-  prefix?: string;
+  source?: string;
   settings?: FormFieldProps['properties']; // 属性配置项
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 
 export type ElementsType = { [key: string]: ELementProps }
+
+export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]

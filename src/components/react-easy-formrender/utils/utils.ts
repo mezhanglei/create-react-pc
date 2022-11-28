@@ -20,7 +20,7 @@ export const getParent = (path: string) => {
 }
 
 // 路径末尾项是否为数组项
-export const endIsListItem = (path: string) => {
+export const endIsListItem = (path?: string) => {
   if (typeof path === 'string') {
     const endReg = new RegExp('\\[\\d+\\]$');
     return endReg.test(path)
@@ -47,6 +47,11 @@ export const changePathEnd = (oldPath: string, endName: string | number) => {
 export const getPathEndIndex = (path: string, properties?: PropertiesData) => {
   const parentPath = getParent(path);
   const end = getPathEnd(path);
+  return getEndIndex(end, properties, parentPath)
+}
+
+// 返回在父元素中的当前位置, 没有则返回-1;
+export const getEndIndex = (end?: string, properties?: PropertiesData, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : properties;
   const keys = Object.keys(childProperties || {});

@@ -1,9 +1,9 @@
 import React, { CSSProperties, useContext, useEffect, useState } from 'react'
 import classnames from 'classnames';
-import RenderForm, { RenderFormProps, useFormStore } from '../form-render';
-import { FormEditContext, FormRenderContext } from '../design-context';
+import RenderForm, { getCurrentPath, RenderFormProps, useFormStore } from '../../form-render';
+import { FormDesignContext, FormEditContext } from '../designer-context';
 import { updateSelectedValues, getSelectedValues, isNoSelected, getSelectedSettings } from '../utils/utils';
-import { changePathEnd } from '@/components/react-easy-formrender/utils/utils';
+// import { changePathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -17,8 +17,11 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { designer, selected } = useContext(FormRenderContext);
-  const setEdit = useContext(FormEditContext);
+  const { designer, designerForm, selected } = useContext(FormDesignContext);
+  const { setEdit } = useContext(FormEditContext)
+  const selectedName = selected?.name;
+  const selectedParent = selected?.parent;
+  const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
   const form = useFormStore();
 
   const [settingProperties, setSettingProperties] = useState({});
@@ -27,24 +30,24 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   useEffect(() => {
     // 根据selected回填数据
-    if (isNoSelected(selected)) return;
-    const curSettings = getSelectedSettings(designer, selected);
-    const lastValues = getSelectedValues(designer, selected, curSettings);
+    if (isNoSelected(selectedName)) return;
+    const curSettings = getSelectedSettings(designer, selectedPath);
+    const lastValues = getSelectedValues(designer, selectedPath, curSettings);
     form?.reset(lastValues);
     setSettingProperties(curSettings);
-    updateSelectedValues(designer, selected, lastValues);
+    updateSelectedValues(designer, designerForm, selectedPath, lastValues);
     setEdit({ settingsForm: form });
-  }, [selected]);
+  }, [selectedPath]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
-    if (isNoSelected(selected)) return;
+    if (isNoSelected(selectedName)) return;
     const settingsValues = form.getFieldValue();
-    updateSelectedValues(designer, selected, settingsValues);
+    updateSelectedValues(designer, designerForm, selectedPath, settingsValues);
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
-      const newSelected = changePathEnd(selected, name);
-      setEdit({ selected: newSelected });
+      // const newSelected = changePathEnd(selectedPath, name);
+      setEdit({ selected: { ...selected, name } })
     }
   }
 

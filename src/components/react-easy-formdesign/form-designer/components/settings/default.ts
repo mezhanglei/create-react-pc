@@ -7,7 +7,7 @@ export default {
   layout: {
     label: "标签展示模式",
     type: "Radio.Group",
-    initialValue: "vertical",
+    initialValue: "horizontal",
     props: {
       style: { width: '100%' },
       children: [

@@ -1,18 +1,18 @@
 import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import React from 'react';
-import { GeneratePrams } from '../form-render';
+import { GeneratePrams } from '../../form-render';
 import './index.less';
 import { defaultGetId } from '../utils/utils';
-import { SideBarGroup } from '../sidebar/sidebar-list';
+import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { AllElements } from '../components';
+import { ConfigElements, ELementProps } from '../components/configs';
 
-export interface DesignerDndProps extends GeneratePrams {
+export interface RootDndProps extends GeneratePrams<ELementProps> {
   children?: any;
 }
 
-// 设计器的拖放
-function DesignerDnd(props: DesignerDndProps) {
+// 根节点的拖放控制
+function RootDnd(props: RootDndProps) {
   const { children, store } = props;
 
   const onUpdate: DndProps['onUpdate'] = (params) => {
@@ -49,12 +49,12 @@ function DesignerDnd(props: DesignerDndProps) {
     const parentData = store?.getItemByPath(dropCollection?.path)
     const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
-    if (fromCollection?.type === SideBarGroup) {
-      const prefix = from?.id as string;
-      const elements = AllElements[fromCollection?.elementsKey]
-      const item = elements[prefix]
+    if (fromCollection?.type === DndGroup) {
+      const source = from?.id as string;
+      const elements = ConfigElements[fromCollection?.elementsKey]
+      const item = elements[source]
       const field = { ...item, ...getInitialValues(item?.settings) }
-      const addItem = dropGroupIsList ? field : { name: defaultGetId(prefix), ...field };
+      const addItem = dropGroupIsList ? field : { name: defaultGetId(source), ...field };
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
@@ -80,4 +80,4 @@ function DesignerDnd(props: DesignerDndProps) {
   )
 };
 
-export default DesignerDnd;
+export default RootDnd;

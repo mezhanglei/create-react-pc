@@ -173,25 +173,26 @@ export default function BuildDndSortable() {
     }
 
     reset = () => {
-      // 拖拽元素
       const dragged = this.dragged;
-      // 克隆拖拽元素
       const cloneDragged = this.cloneDragged;
-      // 目标元素
       const over = this.over;
       const sortArea = this.sortArea;
       const options = this.getOptions(this.props.options);
       const sortPreClass = options?.sortPreClass || '';
       const sortNextClass = options?.sortNextClass || '';
-      // 重置
+      // 重置源
       if (dragged) {
         dragged.draggable = undefined;
         dragged.style.display = this.lastDisplay;
         this.dragged = undefined;
+      }
+      // 重置克隆
+      if(cloneDragged) {
         cloneDragged.draggable = undefined;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
         this.cloneDragged = undefined;
       }
+      // 重置被hover的元素样式
       over?.classList?.remove(sortNextClass, sortPreClass);
       this.over = undefined;
       const ownerDocument = getOwnerDocument(sortArea);

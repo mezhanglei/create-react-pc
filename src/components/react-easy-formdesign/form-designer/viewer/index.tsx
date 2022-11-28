@@ -1,10 +1,10 @@
 import React, { useContext, CSSProperties } from 'react'
 import classnames from 'classnames';
-import RenderForm, { BaseRenderProps, getCurrentPath, RenderFormProps } from '../form-render';
-import { FormEditContext, FormRenderContext } from '../design-context';
-import FormItemWrapper from './form-item-wrapper';
+import RenderForm, { getCurrentPath, RenderFormProps } from '../../form-render';
+import { FormDesignContext, FormEditContext } from '../designer-context';
+import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
-import DesignerDnd from './designer-dnd';
+import RootDnd from './root-dnd';
 
 export interface DesignViewerProps {
   className?: string
@@ -14,8 +14,8 @@ const prefixCls = 'easy-form-design-viewer';
 
 function DesignViewer(props: DesignViewerProps, ref: any) {
 
-  const { designer, properties, selected, settingsForm } = useContext(FormRenderContext);
-  const setEdit = useContext(FormEditContext);
+  const { designer, designerForm, settingsForm, properties } = useContext(FormDesignContext);
+  const { setEdit } = useContext(FormEditContext)
 
   const {
     style,
@@ -26,16 +26,16 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
-    setEdit({ properties: newData });
+    setEdit({ properties: newData })
   }
 
   // 表单属性更改时回填属性初始值设置
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
     const path = getCurrentPath(name, parent)
     // 回填setting表单的intialValue选项
-    settingsForm.setFieldValue('initialValue', value);
+    settingsForm?.setFieldValue('initialValue', value);
     // 回填designer的initialValue值
-    designer?.store?.updateItemByPath(path, { initialValue: value });
+    path && designer?.updateItemByPath(path, { initialValue: value });
   }
 
   return (
@@ -44,22 +44,22 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       style={style}
       {...restProps}
       onClick={() => {
-        setEdit({ selected: "#" })
+        setEdit({ selected: { name: '#' } })
       }}>
       <RenderForm
-        store={designer?.store}
-        form={designer?.form}
+        store={designer}
+        form={designerForm}
         properties={properties}
         onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}
-        inside={DesignerDnd}
+        inside={RootDnd}
         renderItem={renderItem}
       />
     </div>
   );
 };
 
-const renderItem: BaseRenderProps['renderItem'] = (params) => {
+const renderItem = (params: FormItemWrapperProps) => {
   const { field } = params;
   // 只针对单个表单域添加
   if (!field?.properties) {

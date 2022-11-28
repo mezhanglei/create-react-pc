@@ -1,4 +1,4 @@
-import { ElementsType } from ".."
+import { ElementsType } from "."
 
 const elements = {
   object: {
@@ -24,9 +24,7 @@ const elements = {
       {
         properties: {
           col1: {
-            properties: {
-
-            }
+            
           },
           col2: {
             properties: {

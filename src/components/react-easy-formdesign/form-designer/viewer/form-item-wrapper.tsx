@@ -1,11 +1,11 @@
 import { getCurrentPath, isListIndex } from '@/components/react-easy-formcore';
-import { FormEditContext, FormRenderContext } from '@/components/react-easy-formdesign/design-context';
-import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId } from '../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties, useContext } from 'react';
-import { GeneratePrams } from '../form-render';
-import { ELementProps } from '../components';
+import { GeneratePrams } from '../../form-render';
 import './form-item-wrapper.less';
+import { ELementProps } from '../components/configs';
+import { FormDesignContext, FormEditContext } from '../designer-context';
 
 export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -26,31 +26,38 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     name,
     parent,
     field,
-    store,
-    form,
+    store: designer,
+    form: designerForm,
     ...restProps
   } = props;
 
-  const { designer, selected } = useContext(FormRenderContext);
-  const setEdit = useContext(FormEditContext);
   const currentPath = getCurrentPath(name, parent) as string;
-  const isSelected = currentPath ? currentPath === selected : false;
-
+  const { selected } = useContext(FormDesignContext);
+  const { setEdit } = useContext(FormEditContext)
+  const selectedName = selected?.name;
+  const isSelected = name ? name === selectedName : false;
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
-    const newField = designer?.store?.getItemByPath(currentPath);
-    const addItem = isListIndex(name) ? newField : { ...newField, name: defaultGetId(field?.prefix) }
-    designer?.store?.addItemByIndex(addItem, nextIndex, parent);
+    const newField = designer?.getItemByPath(currentPath);
+    const addItem = isListIndex(name) ? newField : { ...newField, name: defaultGetId(field?.source) }
+    designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
   const deleteItem = () => {
-    designer?.store?.delItemByPath(currentPath);
-    setEdit({ selected: undefined });
+    designer?.delItemByPath(currentPath);
+    setEdit({ selected: {} })
   }
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
-    setEdit({ selected: currentPath });
+    setEdit({
+      selected: {
+        name: name,
+        parent: parent,
+        source: field?.source,
+        field: field
+      }
+    })
   }
 
   const prefixCls = "field-wrapper";

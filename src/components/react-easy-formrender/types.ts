@@ -66,4 +66,11 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
-export interface GeneratePrams<T = FormFieldProps> { name?: string | number; field?: T; parent?: string; store?: FormRenderStore; form: FormStore; children?: any };
+export interface GeneratePrams<T = FormFieldProps> {
+  name?: string | number;
+  field?: T;
+  parent?: string;
+  store?: FormRenderStore;
+  form: FormStore;
+  children?: any
+};

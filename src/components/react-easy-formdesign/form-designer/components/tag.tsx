@@ -8,7 +8,7 @@ export interface TagProps {
   children: any
   onChange: () => void
 }
-const prefixCls = 'sidebar-tag';
+const prefixCls = 'component-tag';
 function Tag(props: TagProps, ref: any) {
   const {
     style,

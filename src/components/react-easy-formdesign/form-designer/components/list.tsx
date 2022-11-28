@@ -2,10 +2,10 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
-import './sidebar-list.less';
-import { ELementProps } from '../components';
+import './list.less';
+import { ELementProps } from './configs';
 
-export interface SideBarProps {
+export interface ComponentListProps {
   className?: string;
   style?: CSSProperties;
   title: string;
@@ -14,9 +14,9 @@ export interface SideBarProps {
   tabKey: string;
   onChange?: (name: string, item: ELementProps, elementsKey?: string, tabKey?: string) => void;
 }
-export const SideBarGroup = 'sidebar'
-const prefixCls = 'sidebar-list';
-function SideBarList(props: SideBarProps, ref: any) {
+export const DndGroup = 'components'
+const prefixCls = 'components-list';
+function ComponentList(props: ComponentListProps, ref: any) {
   const {
     style,
     className,
@@ -33,7 +33,7 @@ function SideBarList(props: SideBarProps, ref: any) {
     return (
       <DndSortable
         className='elements-list'
-        collection={{ type: SideBarGroup, tabKey: tabKey, elementsKey: elementsKey }}
+        collection={{ type: DndGroup, tabKey: tabKey, elementsKey: elementsKey }}
         options={{
           childDrag: true,
           allowDrop: false,
@@ -41,8 +41,8 @@ function SideBarList(props: SideBarProps, ref: any) {
         }}
       >
         {
-          Object.entries(elements || {})?.map(([prefix, item], index) => {
-            return <Tag key={index} data-id={prefix} onChange={() => onChange?.(prefix, { ...item, prefix }, elementsKey, tabKey)}>{item.label}</Tag>
+          Object.entries(elements || {})?.map(([source, item], index) => {
+            return <Tag key={index} data-id={source} onChange={() => onChange?.(source, { ...item, source }, elementsKey, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>
@@ -59,5 +59,4 @@ function SideBarList(props: SideBarProps, ref: any) {
   );
 };
 
-SideBarList.displayName = 'design-sidebar-list';
-export default React.forwardRef(SideBarList);
+export default React.forwardRef(ComponentList);

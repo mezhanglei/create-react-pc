@@ -1,4 +1,5 @@
-import { useReducer } from "react";
+import { useMemo, useReducer } from "react";
+import { FormRenderStore } from "../form-render";
 
 // 模拟类似于 class component 的 setState
 export const useSet = <T>(initState: T) => {
@@ -24,3 +25,7 @@ export const useSet = <T>(initState: T) => {
 
   return [state, setClassState];
 };
+
+export function useFormDesignerStore() {
+  return useMemo(() => new FormRenderStore(), [])
+}
