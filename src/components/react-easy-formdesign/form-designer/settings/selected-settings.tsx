@@ -22,19 +22,18 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const selectedParent = selected?.parent;
   const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
   const form = useFormStore();
-
-  const [settingProperties, setSettingProperties] = useState({});
+  const [settings, setSettings] = useState({});
 
   const cls = classnames(prefixCls, className);
 
   useEffect(() => {
     // 根据selected回填数据
     if (isNoSelected(selectedName)) return;
-    const curSettings = getSelectedSettings(designer, selectedPath);
-    const lastValues = getSelectedValues(designer, selectedPath, curSettings);
-    form?.reset(lastValues);
-    setSettingProperties(curSettings);
-    updateSelectedValues(designer, designerForm, selectedPath, lastValues);
+    const curSettings = getSelectedSettings(designer, selectedPath); // 选中节点已存在的配置表单
+    const curSettingsValues = getSelectedValues(designer, selectedPath, curSettings); // 获取节点控件已有的值
+    form?.reset(curSettingsValues); // 设置配置表单值
+    setSettings(curSettings);
+    updateSelectedValues(designer, designerForm, selectedPath, curSettingsValues); // 同步更新节点控件
     setEdit({ settingsForm: form });
   }, [selectedPath]);
 
@@ -51,7 +50,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <RenderForm form={form} properties={settingProperties} layout="vertical" onFieldsChange={onFieldsChange} />
+      <RenderForm form={form} properties={settings} layout="vertical" onFieldsChange={onFieldsChange} />
     </div>
   );
 };

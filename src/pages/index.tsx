@@ -21,24 +21,8 @@ import "regenerator-runtime/runtime";
 //     });
 // }
 
-import ClickListen from "@/utils/listen-click";
 import { getUrlQuery } from "@/utils/url";
 import { clearUserInfo, initUserInfo, setToken } from "@/core/session";
-// 实例化一个节流类，在标签上有自定属性name的标签的click事件将被进行节流操作
-const event = new ClickListen({
-  name: "event-name=throttle",
-  callback: function (e) {
-    if (!this.timer) {
-      this.timer = setTimeout(() => {
-        e.cancelBubble = false;
-        this.timer = null;
-      }, 5000);
-    } else {
-      e.cancelBubble = true;
-    }
-  }
-});
-event.addEvent();
 
 setTimeout(() => {
   objectFitImages();

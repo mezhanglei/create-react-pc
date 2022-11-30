@@ -15,14 +15,14 @@ export const isNoSelected = (path?: string) => {
 }
 
 // 获取节点的值和属性
-export const getSelectedValues = (designer: FormRenderStore, selectedPath: string, initialForm?: ELementProps['settings']) => {
-  const oldValues = designer.getItemByPath(selectedPath) || {};
+export const getSelectedValues = (designer: FormRenderStore, selectedPath: string, lastForm?: ELementProps['settings']) => {
+  const curValues = designer.getItemByPath(selectedPath) || {};
   if (!endIsListItem(selectedPath)) {
-    oldValues['name'] = getPathEnd(selectedPath);
+    curValues['name'] = getPathEnd(selectedPath);
   }
-  const initialValues = getInitialValues(initialForm);
-  const lastValues = { ...initialValues, ...oldValues };
-  return lastValues;
+  const lastValues = getInitialValues(lastForm);
+  const result = { ...lastValues, ...curValues };
+  return result;
 }
 
 // 更新节点的值和属性
