@@ -5,7 +5,7 @@ export type EventType = MouseEvent | TouchEvent;
 
 // 事件对象的位置接口
 export interface EventData {
-  node?: any; // 节点
+  target?: any; // 节点
   deltaX: number; // x方向移动的距离
   deltaY: number; // y方向移动的距离
   eventX: number; // 事件对象位置x
@@ -16,7 +16,7 @@ export interface EventData {
 
 // 拖拽元素的位置接口
 export interface DragData {
-  node?: any; // 节点
+  target?: any; // 节点
   x?: number; // 元素在页面中的位置x
   y?: number; // 元素在页面中的位置y
   deltaX?: number;
@@ -27,7 +27,7 @@ export interface DragData {
 
 // 拖拽元素的位置接口
 export interface DragEventData {
-  node: any; // 节点
+  target: any; // 节点
   x: number; // 元素在页面中的位置x
   y: number; // 元素在页面中的位置y
   deltaX: number;
@@ -117,5 +117,5 @@ export interface DraggableState {
 }
 
 // 事件处理函数的type
-export type EventHandler<E = EventType, T = EventData> = (e: E, data?: T) => void | boolean;
-export type DragHandler<E = EventType, T = DragEventData> = (e: E, data?: T) => void | boolean;
+export type EventHandler<E = EventType & EventData> = (e: E) => void | boolean;
+export type DragHandler<E = EventType & DragEventData> = (e: E) => void | boolean;

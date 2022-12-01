@@ -201,7 +201,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
     // 返回事件对象相关的位置信息
     const newEventData = {
-      node: child,
+      ...e,
+      target: child,
       deltaX: 0,
       deltaY: 0,
       lastEventX: positionX,
@@ -212,7 +213,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     this.eventData = newEventData;
     this.initLayerNode();
     // 如果没有完成渲染或者返回false则禁止拖拽
-    onStart && onStart(e, newEventData);
+    onStart && onStart(newEventData);
 
     // 滚动过程中选中文本被添加样式
     if (enableUserSelectHack) addUserSelectStyles(ownerDocument);
@@ -244,7 +245,8 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
     // 返回事件对象相关的位置信息
     const newEventData = {
-      node: child,
+      ...e,
+      target: child,
       deltaX: this.canDragX() ? (positionX - lastEventX) / scale : 0,
       deltaY: this.canDragY() ? (positionY - lastEventY) / scale : 0,
       lastEventX: positionX,
@@ -256,10 +258,10 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     this.setLayerNode({ deltaX: newEventData?.deltaX, deltaY: newEventData?.deltaY });
 
     if (moveStartFlag) {
-      onMoveStart && onMoveStart(e, newEventData);
+      onMoveStart && onMoveStart(newEventData);
     }
     this.moveStartFlag = false
-    onMove && onMove(e, newEventData);
+    onMove && onMove(newEventData);
   };
 
   handleDragStop = (e: EventType) => {
@@ -270,6 +272,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const ownerDocument = this.findOwnerDocument();
 
     const newEventData = {
+      ...e,
       ...eventData,
       deltaX: 0,
       deltaY: 0
@@ -289,7 +292,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       removeEvent(ownerDocument, dragEventFor.move, this.handleDrag);
       removeEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
     }
-    onEnd && onEnd(e, newEventData);
+    onEnd && onEnd(newEventData);
   };
 
   canDragX = () => {

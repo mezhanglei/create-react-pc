@@ -451,10 +451,10 @@ export default function BuildDndSortable() {
           onMoveStart={ismobile ? this.onTouchMoveStart : undefined}
           onMove={ismobile ? this.onTouchMove : undefined}
           onEnd={this.onEnd}
-          onDragStart={this.onDragStart}
-          onDragEnd={this.onDragEnd}
           direction={options?.direction}
           showLayer={ismobile ? true : false}
+          onDragStart={this.onDragStart}
+          onDragEnd={this.onDragEnd}
           {...child.props}
         >
           {child}
