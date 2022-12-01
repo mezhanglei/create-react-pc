@@ -187,7 +187,7 @@ export default function BuildDndSortable() {
         this.dragged = undefined;
       }
       // 重置克隆
-      if(cloneDragged) {
+      if (cloneDragged) {
         cloneDragged.draggable = undefined;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
         this.cloneDragged = undefined;
@@ -323,7 +323,7 @@ export default function BuildDndSortable() {
     // 鼠标dragOver事件(鼠标端)
     onDragOver = (e: any) => {
       // over默认行为阻止
-      e.preventDefault();
+      // e.preventDefault();
       this.moveHandle(e);
     }
 
@@ -451,13 +451,11 @@ export default function BuildDndSortable() {
           onMoveStart={ismobile ? this.onTouchMoveStart : undefined}
           onMove={ismobile ? this.onTouchMove : undefined}
           onEnd={this.onEnd}
+          onDragStart={this.onDragStart}
+          onDragEnd={this.onDragEnd}
           direction={options?.direction}
           showLayer={ismobile ? true : false}
-          childProps={{
-            ...child.props,
-            onDragStart: this.onDragStart,
-            onDragEnd: this.onDragEnd
-          }}
+          {...child.props}
         >
           {child}
         </DraggableEvent>

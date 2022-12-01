@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
-import { getPositionByBounds, getTranslation } from './utils/dom';
 import { DraggableProps, EventHandler, DragTypes, DragData, BoundsInterface, DraggableState, DragEventData } from "./utils/types";
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
 import { deepMergeObject } from '@/utils/object';
 import ReactDOM from 'react-dom';
+import { getPositionByBounds, getTranslation } from './utils/utils';
 
 /**
  * 拖拽组件---transform移动组件
@@ -78,11 +78,14 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
   // 仅仅当为受控组件，且非正在拖拽的组件，位置变化时
   componentDidUpdate(prevProps: DraggableProps, prevState: DraggableState) {
-    const xChanged = this.props.x !== undefined && this.props.x !== prevProps.x;
-    const yChanged = this.props.y !== undefined && this.props.y !== prevProps.y;
+    const { x, y } = this.props;
+    const { x: prevX, y: prevY } = prevProps;
+    const dragType = this.dragType;
+    const xChanged = x !== undefined && x !== prevX;
+    const yChanged = y !== undefined && y !== prevY;
     if (xChanged || yChanged) {
-      if (!this.dragType) {
-        this.setDragdata(prevState?.dragData, this.props.x, this.props.y);
+      if (!dragType) {
+        this.setDragdata(prevState?.dragData, x, y);
       }
     }
   }
@@ -211,25 +214,24 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   onEnd: EventHandler = (e, data) => {
     const { dragData } = this.state;
     const dragType = this.dragType;
-    const { onEnd } = this.props;
+    const isUninstall = this.isUninstall;
+    const lastDragData = this.lastDragData;
+    const { restoreOnEnd, onEnd, x, y } = this.props;
     if (!dragType || !dragData) return;
     this.dragType = DragTypes.End;
     this.slackX = 0;
     this.slackY = 0;
-    const beforeEndDragData = {
-      ...dragData
-    }
     // 回调函数先执行然后再重置状态
-    onEnd && onEnd(e, beforeEndDragData as DragEventData);
+    onEnd && onEnd(e, dragData as DragEventData);
     // 注意是否已经组件卸载
-    if (!this.isUninstall) {
+    if (!isUninstall) {
       // 根据props值设置translate
-      const xChanged = this.props.x !== undefined && this.props.x !== beforeEndDragData?.x;
-      const yChanged = this.props.y !== undefined && this.props?.y !== beforeEndDragData?.y;
-      if (xChanged || yChanged) {
-        this.setDragdata(this.lastDragData, this.props?.x, this.props?.y);
-      } else if (this.props.fixed) {
-        this.setDragdata(this.lastDragData, undefined, undefined)
+      const xChanged = x !== undefined && x !== dragData?.x;
+      const yChanged = y !== undefined && y !== dragData?.y;
+      if (restoreOnEnd) {
+        this.setDragdata(lastDragData, undefined, undefined);
+      } else if (xChanged || yChanged) {
+        this.setDragdata(lastDragData, x, y);
       }
     }
   };
@@ -237,10 +239,11 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   render() {
     const { children, className, style, positionOffset, transform, forwardedRef, ...DraggableEventProps } = this.props;
     const { isSVG, dragData } = this.state;
+    const dragType = this.dragType;
     // 包裹元素的className
     const cls = classNames((children.props?.className || ''), wrapClassName, className, {
-      [wrapClassNameDragging]: this.dragType === DragTypes.Move,
-      [wrapClassNameDragged]: this.dragType
+      [wrapClassNameDragging]: dragType === DragTypes.Move,
+      [wrapClassNameDragged]: dragType
     });
 
     // 当前位置
@@ -256,7 +259,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
         style={deepMergeObject({ ...children.props.style, ...style }, {
           transform: !isSVG && getTranslation(currentPosition, positionOffset, 'px')
         })}
-        showLayer={false}
         className={cls}
         transform={isSVG ? getTranslation(currentPosition, positionOffset, '') : transform}
         onStart={this.onStart}

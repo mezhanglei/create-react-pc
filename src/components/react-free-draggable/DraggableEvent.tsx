@@ -1,10 +1,10 @@
 import React from 'react';
 import { matchParent, addEvent, removeEvent, getEventPosition, findElement, css, getClientXY, getWindow } from "@/utils/dom";
-import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from "./utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
 import { DragDirection, DragDirectionCode, DraggableEventProps, EventData, EventType } from "./utils/types";
 import ReactDOM from 'react-dom';
 import { MouseButton } from '@/utils/mouse';
+import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from './utils/utils';
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -25,7 +25,7 @@ export const dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
-  eventData: EventData | undefined;
+  eventData: EventData | {};
   child: any;
   cloneLayer: any;
   initStyle: { width: string, height: string, left: number, top: number } | undefined
@@ -34,16 +34,14 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     super(props);
     this.dragging = false;
     this.moveStartFlag = true;
-    this.eventData = undefined;
+    this.eventData = {};
     this.state = {
     };
   }
 
   static defaultProps = {
     direction: DragDirectionCode,
-    scale: 1,
-    showLayer: true,
-    stopBubble: true
+    scale: 1
   }
 
   componentDidMount() {
@@ -54,11 +52,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   componentWillUnmount() {
     const node = this.findDOMNode();
     const ownerDocument = this.findOwnerDocument();
+    const { enableUserSelectHack } = this.props
     removeEvent(node, dragEventFor.start, this.handleDragStart);
     removeEvent(ownerDocument, dragEventFor.move, this.handleDrag);
     removeEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
     // 移除选中样式
-    if (this.props?.enableUserSelectHack) removeUserSelectStyles(ownerDocument);
+    if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
   }
 
   // 顶层document对象
@@ -68,32 +67,36 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   };
 
   findDOMNode() {
-    return this.props?.forwardedRef?.current || ReactDOM.findDOMNode(this);
+    const { forwardedRef } = this.props;
+    return forwardedRef?.current || ReactDOM.findDOMNode(this);
   }
 
   // 拖拽句柄
   findHandle = () => {
     const child = this.findDOMNode();
+    const { handle } = this.props;
     const win = getWindow();
     const childStyle = win?.getComputedStyle(child);
-    const handle = this.props.handle ? findElement(this.props.handle, child) : child;
+    const handleDom = handle ? findElement(handle, child) : child;
     if (childStyle?.display === "inline") {
       throw new Error("the style of `props.children` cannot is `inline`, because `transform` has no effect on Element ");
     }
-    return handle;
+    return handleDom;
   };
 
   // 过滤的句柄
   findFilterNode = () => {
     const child = this.findDOMNode();
-    const node = this.props.filter && findElement(this.props.filter, child);
+    const { filter } = this.props;
+    const node = filter && findElement(filter, child);
     return node;
   };
 
   // 获取定位父元素, 涉及的位置相对于该父元素
   getEventBounds = () => {
     const ownerDocument = this.findOwnerDocument();
-    const parent = findElement(this.props?.eventBounds) || ownerDocument.body || ownerDocument.documentElement;
+    const { eventBounds } = this.props;
+    const parent = findElement(eventBounds) || ownerDocument.body || ownerDocument.documentElement;
     return parent;
   }
 
@@ -133,17 +136,18 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   setLayerNode = (delta: { deltaX: number, deltaY: number }) => {
     const { showLayer } = this.props;
     const { deltaX, deltaY } = delta;
+    const { initStyle, cloneLayer } = this;
     if (!showLayer) return;
-    if (this.initStyle) {
-      const newLeft = this.initStyle?.left + deltaX;
-      const newTop = this.initStyle?.top + deltaY;
-      css(this.cloneLayer, {
-        ...this.initStyle,
+    if (initStyle) {
+      const newLeft = initStyle?.left + deltaX;
+      const newTop = initStyle?.top + deltaY;
+      css(cloneLayer, {
+        ...initStyle,
         left: newLeft + 'px',
         top: newTop + 'px'
       })
       this.initStyle = {
-        ...this.initStyle,
+        ...initStyle,
         left: newLeft,
         top: newTop
       }
@@ -158,11 +162,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   }
 
   handleDragStart = (e: EventType) => {
-    const handle = this.findHandle();
+    const handleDom = this.findHandle();
     const child = this.findDOMNode();
     const filterNode = this.findFilterNode();
     const ownerDocument = this.findOwnerDocument();
     const win = getWindow();
+    const { allowAnyClick, disabled, enableUserSelectHack, onStart, } = this.props;
     const target = e.target;
 
     if (!ownerDocument) {
@@ -170,17 +175,17 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     }
 
     // allowAnyClick为false禁止非左键
-    if (!this.props?.allowAnyClick && !isEventTouch(e) && typeof (e as any).button === 'number' && (e as any).button !== MouseButton.left) return;
+    if (!allowAnyClick && !isEventTouch(e) && typeof (e as any).button === 'number' && (e as any).button !== MouseButton.left) return;
 
     // props控制是否拖拽
     if (
-      !handle ||
+      !handleDom ||
       // 禁止拖拽
-      this.props?.disabled ||
+      disabled ||
       // 拖拽目标不存在
       (!(target instanceof win?.Node)) ||
       // handle不存在
-      (handle && !matchParent(target, handle)) ||
+      (handleDom && !matchParent(target, handleDom)) ||
       // 点击目标为过滤的元素
       (filterNode && target === filterNode) ||
       (!this.canDragX() && !this.canDragY())) {
@@ -195,7 +200,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const positionY = positionXY?.y;
 
     // 返回事件对象相关的位置信息
-    this.eventData = {
+    const newEventData = {
       node: child,
       deltaX: 0,
       deltaY: 0,
@@ -204,13 +209,13 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       eventX: positionX,
       eventY: positionY
     };
-
+    this.eventData = newEventData;
     this.initLayerNode();
     // 如果没有完成渲染或者返回false则禁止拖拽
-    this.props?.onStart && this.props?.onStart(e, this.eventData);
+    onStart && onStart(e, newEventData);
 
     // 滚动过程中选中文本被添加样式
-    if (this.props?.enableUserSelectHack) addUserSelectStyles(ownerDocument);
+    if (enableUserSelectHack) addUserSelectStyles(ownerDocument);
     this.dragging = true;
     addEvent(ownerDocument, dragEventFor.move, this.handleDrag);
     addEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
@@ -222,11 +227,13 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     const parent = this.getEventBounds();
     const child = this.findDOMNode();
     const positionXY = getEventPosition(e, parent);
-    const { scale, grid } = this.props;
-    if (!positionXY || !this.eventData || !scale) return;
+    const { scale, grid, onMoveStart, onMove, } = this.props;
+    const eventData = this.eventData;
+    const { lastEventX, lastEventY } = eventData as EventData;
+    const moveStartFlag = this.moveStartFlag;
+    if (!positionXY || !scale) return;
     let positionX = positionXY?.x;
     let positionY = positionXY?.y;
-    const { lastEventX, lastEventY } = this.eventData;
     // 拖拽跳跃,可设置多少幅度跳跃一次
     if (Array.isArray(grid)) {
       let deltaX = positionX - lastEventX, deltaY = positionY - lastEventY;
@@ -236,7 +243,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     }
 
     // 返回事件对象相关的位置信息
-    this.eventData = {
+    const newEventData = {
       node: child,
       deltaX: this.canDragX() ? (positionX - lastEventX) / scale : 0,
       deltaY: this.canDragY() ? (positionY - lastEventY) / scale : 0,
@@ -245,24 +252,29 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       eventX: positionX,
       eventY: positionY
     }
-    this.setLayerNode({ deltaX: this.eventData?.deltaX, deltaY: this.eventData?.deltaY });
+    this.eventData = newEventData
+    this.setLayerNode({ deltaX: newEventData?.deltaX, deltaY: newEventData?.deltaY });
 
-    if (this.moveStartFlag) {
-      this.props?.onMoveStart && this.props?.onMoveStart(e, this.eventData);
+    if (moveStartFlag) {
+      onMoveStart && onMoveStart(e, newEventData);
     }
     this.moveStartFlag = false
-    this.props?.onMove && this.props?.onMove(e, this.eventData);
+    onMove && onMove(e, newEventData);
   };
 
   handleDragStop = (e: EventType) => {
-    if (!this.dragging || !this.eventData) return;
+    const eventData = this.eventData as EventData;
+    const dragging = this.dragging;
+    const { enableUserSelectHack, onEnd } = this.props;
+    if (!dragging || !eventData) return;
     const ownerDocument = this.findOwnerDocument();
 
-    this.eventData = {
-      ...this.eventData,
+    const newEventData = {
+      ...eventData,
       deltaX: 0,
       deltaY: 0
     }
+    this.eventData = newEventData
     // 重置
     this.removeLayerNode()
     this.moveStartFlag = true;
@@ -270,14 +282,14 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     // 移除文本因滚动造成的显示
     if (ownerDocument) {
       // Remove user-select hack
-      if (this.props?.enableUserSelectHack) removeUserSelectStyles(ownerDocument);
+      if (enableUserSelectHack) removeUserSelectStyles(ownerDocument);
     }
 
     if (ownerDocument) {
       removeEvent(ownerDocument, dragEventFor.move, this.handleDrag);
       removeEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
     }
-    this.props?.onEnd && this.props?.onEnd(e, this.eventData);
+    onEnd && onEnd(e, newEventData);
   };
 
   canDragX = () => {
@@ -291,13 +303,31 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   };
 
   render() {
-    const { children, className, style, forwardedRef, transform, childProps } = this.props;
+    const {
+      handle,
+      filter,
+      eventBounds,
+      showLayer,
+      layerStyle,
+      allowAnyClick,
+      disabled,
+      enableUserSelectHack,
+      direction,
+      scale,
+      grid,
+      onStart,
+      onMoveStart,
+      onMove,
+      onEnd,
+      children,
+      forwardedRef,
+      style,
+      ...rest
+    } = this.props;
     return React.cloneElement(React.Children.only(children), {
-      className: className,
       ref: forwardedRef,
       style: { ...children.props.style, ...style },
-      transform: transform,
-      ...childProps
+      ...rest
     });
   }
 }
