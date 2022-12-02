@@ -121,7 +121,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     const node = eventData?.target;
     const parent = this.getBoundsParent();
     const pos = getInsidePosition(node, parent);
-    if (!pos) return;
+    if (!eventData || !pos) return;
     let positionX = pos?.left;
     let positionY = pos?.top;
     const { dragData } = this.state;
@@ -143,7 +143,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
   onMove: EventHandler = (e, eventData) => {
     const dragType = this.dragType;
-    if (!dragType) return;
+    if (!eventData || !dragType) return;
     this.dragType = DragTypes.Move;
     const { dragData } = this.state;
     const { bounds, onMove } = this.props;
@@ -247,7 +247,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 
     const mergeStyle = { ...children.props.style, ...style }
     const transformValue = isSVG ? getTranslation(currentPosition, positionOffset, '') : getTranslation(currentPosition, positionOffset, 'px')
-    const transformSet = isSVG ? { transform: transformValue } : { style: { ...mergeStyle, transform: transformValue } }
+    const transformSet = isSVG ? { transform: transformValue, style: mergeStyle } : { style: { ...mergeStyle, transform: transformValue } }
 
     return (
       <DraggableEvent
