@@ -1,5 +1,6 @@
 import { isDom, isEmpty, isNumber } from "@/utils/type";
 import { isContains, findElement, getWindow } from "@/utils/dom";
+import { DraggableProps } from "./types";
 
 // 添加选中类和样式
 export const addUserSelectStyles = (doc: any): any => {
@@ -130,7 +131,7 @@ export function getBoundsInParent(node: HTMLElement, bounds: any) {
 }
 
 // 元素在父元素限制范围下的可视位置
-export function getPositionByBounds(node: HTMLElement, position: PositionInterface, bounds: any): PositionInterface {
+export function getPositionByBounds(node: HTMLElement, position: PositionInterface, bounds: DraggableProps['bounds']): PositionInterface {
 
   if (isEmpty(bounds)) return position;
 

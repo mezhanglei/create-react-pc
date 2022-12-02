@@ -3,8 +3,8 @@ import { CSSProperties } from "react";
 // 事件对象
 export type EventType = MouseEvent | TouchEvent;
 
-// 事件对象的位置接口
-export interface EventData {
+// 拖拽元素的位置接口
+export type DragEventData = {
   target?: any; // 节点
   deltaX: number; // x方向移动的距离
   deltaY: number; // y方向移动的距离
@@ -15,23 +15,9 @@ export interface EventData {
 }
 
 // 拖拽元素的位置接口
-export interface DragData {
-  target?: any; // 节点
+export interface DragData extends DragEventData {
   x?: number; // 元素在页面中的位置x
   y?: number; // 元素在页面中的位置y
-  deltaX?: number;
-  deltaY?: number;
-  translateX?: number; // 当前x轴的translate
-  translateY?: number; // 当前y轴的translate
-}
-
-// 拖拽元素的位置接口
-export interface DragEventData {
-  target: any; // 节点
-  x: number; // 元素在页面中的位置x
-  y: number; // 元素在页面中的位置y
-  deltaX: number;
-  deltaY: number;
   translateX?: number; // 当前x轴的translate
   translateY?: number; // 当前y轴的translate
 }
@@ -64,7 +50,6 @@ export interface BaseDragProps {
   children?: any;
   className?: string;
   style?: CSSProperties;
-  transform?: string;
   direction?: string[]; // 限制拖拽的方向
   scale?: number; // 拖拽灵敏度
   allowAnyClick?: boolean; // 表示允许非鼠标左键单击拖动
@@ -80,7 +65,6 @@ export interface BaseDragProps {
 // DraggableEvent的props的类型
 export interface DraggableEventProps extends BaseDragProps {
   onStart?: EventHandler; // 拖拽开始事件
-  onMoveStart?: EventHandler; // 移动开始事件
   onMove?: EventHandler; // 拖拽进行事件
   onEnd?: EventHandler; // 拖拽结束事件
   showLayer?: boolean; // 是否展示拖拽阴影浮层
@@ -96,6 +80,7 @@ export interface DraggableProps extends BaseDragProps {
   positionOffset?: PositionType; // 接收偏移位置（不受bounds影响）
   bounds?: string | HTMLElement | BoundsInterface; // 限制拖拽的父元素，默认body, 或者在bounds.element元素内部范围的限制拖拽范围
   restoreOnEnd?: boolean; // 结束时还原位置
+  transform?: string; // 设置transform属性
   onStart?: DragHandler; // 拖拽开始事件
   onMove?: DragHandler; // 拖拽进行事件
   onEnd?: DragHandler; // 拖拽结束事件
@@ -109,7 +94,7 @@ export enum DragTypes {
 }
 
 export interface DraggableState {
-  dragData: DragData;
+  dragData?: DragData;
   dragType?: DragTypes;
   isSVG: boolean;
   prevX?: number;
@@ -117,5 +102,5 @@ export interface DraggableState {
 }
 
 // 事件处理函数的type
-export type EventHandler<E = EventType & EventData> = (e: E) => void | boolean;
-export type DragHandler<E = EventType & DragEventData> = (e: E) => void | boolean;
+export type EventHandler<E = EventType, D = DragEventData> = (e: E, data?: D) => void | boolean;
+export type DragHandler<E = EventType, D = DragData> = (e: E, data?: D) => void | boolean;

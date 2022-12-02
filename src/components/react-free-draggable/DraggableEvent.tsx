@@ -1,7 +1,7 @@
 import React from 'react';
 import { matchParent, addEvent, removeEvent, getEventPosition, findElement, css, getClientXY, getWindow } from "@/utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
-import { DragDirection, DragDirectionCode, DraggableEventProps, EventData, EventType } from "./utils/types";
+import { DragDirection, DragDirectionCode, DragEventData, DraggableEventProps, EventType } from "./utils/types";
 import ReactDOM from 'react-dom';
 import { MouseButton } from '@/utils/mouse';
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from './utils/utils';
@@ -25,15 +25,13 @@ export const dragEventFor = isMobile() ? eventsFor.touch : eventsFor.mouse;
 
 class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
-  eventData: EventData | {};
+  eventData: DragEventData | {};
   child: any;
   cloneLayer: any;
   initStyle: { width: string, height: string, left: number, top: number } | undefined
-  moveStartFlag: boolean;
   constructor(props: DraggableEventProps) {
     super(props);
     this.dragging = false;
-    this.moveStartFlag = true;
     this.eventData = {};
     this.state = {
     };
@@ -194,26 +192,25 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
     // eventBounds内的位置
     const parent = this.getEventBounds();
-    const positionXY = getEventPosition(e, parent);
-    if (!positionXY) return;
-    const positionX = positionXY?.x;
-    const positionY = positionXY?.y;
+    const eventXY = getEventPosition(e, parent);
+    if (!eventXY) return;
+    const eventX = eventXY?.x;
+    const eventY = eventXY?.y;
 
     // 返回事件对象相关的位置信息
     const newEventData = {
-      ...e,
       target: child,
       deltaX: 0,
       deltaY: 0,
-      lastEventX: positionX,
-      lastEventY: positionY,
-      eventX: positionX,
-      eventY: positionY
+      lastEventX: eventX,
+      lastEventY: eventY,
+      eventX: eventX,
+      eventY: eventY
     };
     this.eventData = newEventData;
     this.initLayerNode();
     // 如果没有完成渲染或者返回false则禁止拖拽
-    onStart && onStart(newEventData);
+    onStart && onStart(e, newEventData);
 
     // 滚动过程中选中文本被添加样式
     if (enableUserSelectHack) addUserSelectStyles(ownerDocument);
@@ -227,52 +224,44 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     // eventBounds内的位置
     const parent = this.getEventBounds();
     const child = this.findDOMNode();
-    const positionXY = getEventPosition(e, parent);
-    const { scale, grid, onMoveStart, onMove, } = this.props;
+    const eventXY = getEventPosition(e, parent);
+    const { scale, grid, onMove, } = this.props;
     const eventData = this.eventData;
-    const { lastEventX, lastEventY } = eventData as EventData;
-    const moveStartFlag = this.moveStartFlag;
-    if (!positionXY || !scale) return;
-    let positionX = positionXY?.x;
-    let positionY = positionXY?.y;
+    const { lastEventX, lastEventY } = eventData as DragEventData;
+    if (!eventXY || !scale) return;
+    let eventX = eventXY?.x;
+    let eventY = eventXY?.y;
     // 拖拽跳跃,可设置多少幅度跳跃一次
     if (Array.isArray(grid)) {
-      let deltaX = positionX - lastEventX, deltaY = positionY - lastEventY;
+      let deltaX = eventX - lastEventX, deltaY = eventY - lastEventY;
       [deltaX, deltaY] = snapToGrid(grid, deltaX, deltaY);
       if (!deltaX && !deltaY) return; // skip useless drag
-      positionX = lastEventX + deltaX, positionY = lastEventY + deltaY;
+      eventX = lastEventX + deltaX, eventY = lastEventY + deltaY;
     }
 
     // 返回事件对象相关的位置信息
     const newEventData = {
-      ...e,
       target: child,
-      deltaX: this.canDragX() ? (positionX - lastEventX) / scale : 0,
-      deltaY: this.canDragY() ? (positionY - lastEventY) / scale : 0,
-      lastEventX: positionX,
-      lastEventY: positionY,
-      eventX: positionX,
-      eventY: positionY
+      deltaX: this.canDragX() ? (eventX - lastEventX) / scale : 0,
+      deltaY: this.canDragY() ? (eventY - lastEventY) / scale : 0,
+      lastEventX: eventX,
+      lastEventY: eventY,
+      eventX: eventX,
+      eventY: eventY
     }
     this.eventData = newEventData
     this.setLayerNode({ deltaX: newEventData?.deltaX, deltaY: newEventData?.deltaY });
-
-    if (moveStartFlag) {
-      onMoveStart && onMoveStart(newEventData);
-    }
-    this.moveStartFlag = false
-    onMove && onMove(newEventData);
+    onMove && onMove(e, newEventData);
   };
 
   handleDragStop = (e: EventType) => {
-    const eventData = this.eventData as EventData;
+    const eventData = this.eventData as DragEventData;
     const dragging = this.dragging;
     const { enableUserSelectHack, onEnd } = this.props;
     if (!dragging || !eventData) return;
     const ownerDocument = this.findOwnerDocument();
 
     const newEventData = {
-      ...e,
       ...eventData,
       deltaX: 0,
       deltaY: 0
@@ -280,7 +269,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     this.eventData = newEventData
     // 重置
     this.removeLayerNode()
-    this.moveStartFlag = true;
     this.dragging = false;
     // 移除文本因滚动造成的显示
     if (ownerDocument) {
@@ -292,7 +280,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       removeEvent(ownerDocument, dragEventFor.move, this.handleDrag);
       removeEvent(ownerDocument, dragEventFor.stop, this.handleDragStop);
     }
-    onEnd && onEnd(newEventData);
+    onEnd && onEnd(e, newEventData);
   };
 
   canDragX = () => {
@@ -319,7 +307,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       scale,
       grid,
       onStart,
-      onMoveStart,
       onMove,
       onEnd,
       children,
@@ -336,7 +323,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 }
 
 const wrapper = function (InnerComponent: typeof DraggableEvent) {
-  return React.forwardRef((props: DraggableEventProps, ref) => {
+  return React.forwardRef((props: any, ref) => {
     return (
       <InnerComponent forwardedRef={ref} {...props} />
     )

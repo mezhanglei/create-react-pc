@@ -227,17 +227,6 @@ export default function BuildDndSortable() {
         const ownerDocument = getOwnerDocument(this.sortArea);
         addEvent(ownerDocument, 'dragover', this.onDragOver);
       }
-      this.moveStartHandle(e, currentTarget);
-    }
-
-    // 触摸拖拽开始事件(移动端)
-    onTouchMoveStart: EventHandler = (e: any, data) => {
-      const currentTarget = data?.node;
-      this.moveStartHandle(e, currentTarget);
-    }
-
-    // 开始移动的事件处理
-    moveStartHandle = (e: any, currentTarget?: any) => {
       if (currentTarget) {
         const cloneDragged = currentTarget.cloneNode(true);
         this.dragged = currentTarget;
@@ -317,13 +306,12 @@ export default function BuildDndSortable() {
 
     // 移动事件(移动端)
     onTouchMove: EventHandler = (e) => {
+      if(!ismobile) return
       this.moveHandle(e);
     }
 
     // 鼠标dragOver事件(鼠标端)
     onDragOver = (e: any) => {
-      // over默认行为阻止
-      // e.preventDefault();
       this.moveHandle(e);
     }
 
@@ -448,8 +436,7 @@ export default function BuildDndSortable() {
           handle={options?.handle}
           filter={options?.filter}
           onStart={this.onStart}
-          onMoveStart={ismobile ? this.onTouchMoveStart : undefined}
-          onMove={ismobile ? this.onTouchMove : undefined}
+          onMove={this.onTouchMove}
           onEnd={this.onEnd}
           direction={options?.direction}
           showLayer={ismobile ? true : false}
