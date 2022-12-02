@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import React, { CSSProperties } from "react";
 
 // 事件对象
 export type EventType = MouseEvent | TouchEvent;
@@ -46,7 +46,7 @@ export interface BoundsInterface {
 }
 
 // 基础拖拽属性
-export interface BaseDragProps {
+export interface BaseDragProps extends React.HtmlHTMLAttributes<HTMLElement> {
   children?: any;
   className?: string;
   style?: CSSProperties;

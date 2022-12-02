@@ -265,7 +265,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
 }
 
 const wrapper = function (InnerComponent: typeof Draggable) {
-  return React.forwardRef((props: any, ref) => {
+  return React.forwardRef((props: DraggableProps, ref) => {
     return (
       <InnerComponent forwardedRef={ref} {...props} />
     )

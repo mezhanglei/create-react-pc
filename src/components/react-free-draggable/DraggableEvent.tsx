@@ -323,7 +323,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 }
 
 const wrapper = function (InnerComponent: typeof DraggableEvent) {
-  return React.forwardRef((props: any, ref) => {
+  return React.forwardRef((props: DraggableEventProps, ref) => {
     return (
       <InnerComponent forwardedRef={ref} {...props} />
     )
