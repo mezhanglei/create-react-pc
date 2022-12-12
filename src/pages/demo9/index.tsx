@@ -145,11 +145,6 @@ class Demo9 extends Component {
           return (
             <div key={uniqueId()}>
               <DndSortable
-                options={{
-                  childDrag: true,
-                  allowDrop: true,
-                  allowSort: true
-                }}
                 style={{
                   minHeight: 100,
                   margin: 10,
@@ -174,9 +169,8 @@ class Demo9 extends Component {
         <DndSortable
           collection={{ type: "components" }}
           options={{
-            childDrag: true,
-            allowDrop: false,
-            allowSort: false
+            disabledDrop: false,
+            disabledSort: false
           }}
         >
           {
@@ -187,11 +181,6 @@ class Demo9 extends Component {
         </DndSortable>
         <h2>容器</h2>
         <DndSortable
-          options={{
-            childDrag: true,
-            allowDrop: true,
-            allowSort: true
-          }}
           onHover={this.onHover}
           onUnHover={this.onUnHover}
           onUpdate={this.onUpdate}

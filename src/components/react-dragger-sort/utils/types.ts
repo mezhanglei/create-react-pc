@@ -38,7 +38,8 @@ export interface DndParams {
 export type DndHandle = (params: DndParams) => void;
 
 // 拖拽条件函数
-export type DndCondition = (params: DndParams, options: DndProps['options']) => boolean;
+export type DndCondition = (params: DndParams) => boolean;
+export type UnionCondition = boolean | (HTMLElement | string)[] | DndCondition;
 
 export interface DndBaseProps {
   onStart?: DndHandle; // 拖拽开始触发的函数
@@ -50,13 +51,13 @@ export interface DndBaseProps {
   onUnHover?: (over: HTMLElement) => void; // 元素失去hover状态时触发的事件
   collection?: any; // 收集额外信息字段
   // 拖拽相关的配置
-  options: {
+  options?: {
     handle?: string; // 拖拽句柄
     filter?: string; // 过滤句柄的选择器
-    allowDrop: boolean | DndCondition; // 是否允许拖放新元素
-    allowSort?: boolean | DndCondition; // 是否可以动态插入排序
-    childOut?: boolean | (HTMLElement | string)[] | DndCondition; // 子元素是否可以拖出当前区域
-    childDrag: boolean | (HTMLElement | string)[] | ((from: DragItem, options: DndProps['options']) => boolean); // 子元素是否允许在区域内拖拽
+    hiddenFrom?: UnionCondition; // 拖拽时隐藏拖拽源
+    disabledDrop?: UnionCondition; // 是否允许拖放新元素
+    disabledSort?: UnionCondition; // 是否允许动态插入
+    disabledDrag?: UnionCondition; // 是否禁止拖拽
     direction?: string[]; // 允许拖拽的轴向
     sortPreClass?: string; // 元素往序号小的排序时添加的class
     sortNextClass?: string; // 元素往序号大的排序时添加的class

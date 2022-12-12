@@ -2,7 +2,7 @@ import { isMoveIn } from "./utils/dom";
 import { EventType, SortableItem } from "./utils/types";
 
 // 管理拖拽的类
-export class DndManager<T extends Object = any> {
+export class DndManager {
   // 可拖拽的节点集合
   dragItemMap: Map<HTMLElement, SortableItem>
   // 可拖放的节点集合
@@ -22,7 +22,7 @@ export class DndManager<T extends Object = any> {
   updateDragItemMap = (node: HTMLElement, params: Partial<SortableItem>) => {
     const oldParams = this.dragItemMap.get(node);
     if (oldParams) {
-      const newParams = { ...oldParams, ...params } as SortableItem;
+      const newParams = { ...oldParams, ...params };
       this.setDragItemsMap(node, newParams);
     }
   }
@@ -36,7 +36,7 @@ export class DndManager<T extends Object = any> {
   updateDropItemMap = (node: HTMLElement, params: Partial<SortableItem>) => {
     const oldParams = this.dropItemMap.get(node);
     if (oldParams) {
-      const newParams = { ...oldParams, ...params } as SortableItem;
+      const newParams = { ...oldParams, ...params };
       this.setDropItemsMap(node, newParams);
     }
   }

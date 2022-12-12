@@ -69,11 +69,6 @@ function RootDnd(props: RootDndProps) {
       data-type="ignore"
       className='viewer-dnd-root'
       // collection={{ path: '' }}
-      options={{
-        childDrag: true,
-        allowDrop: true,
-        allowSort: true
-      }}
     >
       {children}
     </DndSortable>

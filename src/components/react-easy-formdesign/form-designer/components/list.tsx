@@ -34,11 +34,6 @@ function ComponentList(props: ComponentListProps, ref: any) {
       <DndSortable
         className='elements-list'
         collection={{ type: DndGroup, tabKey: tabKey, elementsKey: elementsKey }}
-        options={{
-          childDrag: true,
-          allowDrop: false,
-          allowSort: false
-        }}
       >
         {
           Object.entries(elements || {})?.map(([source, item], index) => {

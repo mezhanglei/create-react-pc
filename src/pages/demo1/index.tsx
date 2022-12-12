@@ -77,14 +77,12 @@ const Demo1: React.FC<any> = (props) => {
   const loopChildren = (arr: any[], parent?: string) => {
     return arr.map((item, index) => {
       const path = parent === undefined ? String(index) : `${parent}.${index}`;
-      if (item.children) {
+      if (item?.children) {
         return (
           <div key={index}>
             <DndSortable
               options={{
-                childDrag: true,
-                allowDrop: true,
-                allowSort: true
+                // hiddenFrom: true
               }}
               collection={{ path: path }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}
@@ -96,7 +94,7 @@ const Demo1: React.FC<any> = (props) => {
           </div>
         );
       }
-      return (<div style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={path}>{item.label}</div>);
+      return (<div style={{ width: '50px', height: '50px', backgroundColor: 'red', border: '1px solid green' }} key={path}>{item?.label}</div>);
     });
   };
 
@@ -121,11 +119,7 @@ const Demo1: React.FC<any> = (props) => {
       <DndSortable
         onUpdate={onUpdate}
         onAdd={onAdd}
-        options={{
-          childDrag: true,
-          allowDrop: true,
-          allowSort: true
-        }}>
+      >
         {loopChildren(data)}
       </DndSortable>
     </div>

@@ -1,12 +1,12 @@
 import React, { CSSProperties } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
-import { DndProps, DropEffect, DndBaseProps, DndParams } from "./utils/types";
+import { DndProps, DropEffect, DndParams, DndHandle, EventType } from "./utils/types";
 import classNames from "classnames";
-import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, isContains, getOwnerDocument, getClientXY } from "@/utils/dom";
+import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, getOwnerDocument, getClientXY } from "@/utils/dom";
 import { DndManager } from './dnd-manager';
 import { createAnimate, isMoveIn } from './utils/dom';
-import { isEventTouch, isMobile } from '@/utils/verify';
-import { isCanDrop, isCanSort, isChildDrag, isChildOut } from './utils/utils';
+import { isMobile } from '@/utils/verify';
+import { isDisabledDrop, isDisabledSort, isDisabledDrag, isHiddenFrom, setMouseEvent } from './utils/utils';
 import { isEqual } from '@/utils/object';
 
 const ismobile = isMobile();
@@ -15,10 +15,10 @@ export default function BuildDndSortable() {
   const dndManager = new DndManager();
 
   return class DndCore extends React.Component<DndProps> {
-    sortArea: any;
-    dragged: any;
-    cloneDragged: any;
-    over: HTMLElement | undefined;
+    parentEl?: HTMLDivElement;
+    dragged?: HTMLElement;
+    cloneDragged?: HTMLElement;
+    over?: HTMLElement;
     lastDisplay: CSSProperties['display'];
     constructor(props: DndProps) {
       super(props);
@@ -27,17 +27,13 @@ export default function BuildDndSortable() {
     }
 
     componentDidMount() {
-      setTimeout(() => {
-        this.initManagerData(this.sortArea);
-      }, 0);
+      this.initManagerData(this.parentEl);
     }
 
     componentDidUpdate(prevProps: DndProps) {
-      if (!this.over) {
-        setTimeout(() => {
-          this.initManagerData(this.sortArea);
-        }, 0);
-      }
+      setTimeout(() => {
+        this.initManagerData(this.parentEl);
+      }, 0);
     }
 
     static getDerivedStateFromProps(nextProps: DndProps, prevState: any) {
@@ -52,183 +48,43 @@ export default function BuildDndSortable() {
     }
 
     componentWillUnmount() {
-      const ownerDocument = getOwnerDocument(this.sortArea);
+      const ownerDocument = getOwnerDocument(this.parentEl);
       removeEvent(ownerDocument, 'dragover', this.onDragOver);
     }
 
-    // 获取options
-    getOptions = (options: DndProps['options']): DndProps['options'] => {
-      const defaultOptions = {
-        childDrag: true,
-        childOut: true,
-        allowDrop: true,
-        allowSort: true,
-        direction: DragDirectionCode,
-        sortPreClass: 'over-pre',
-        sortNextClass: 'over-next'
-      };
-      const newOptions = { ...defaultOptions, ...options };
-      return newOptions;
-    }
-
     // 初始化manager的数据
-    initManagerData = (sortArea: any) => {
-      if (!sortArea) return;
+    initManagerData = (parentEl?: HTMLElement) => {
+      if (!parentEl) return;
       const props = this.props;
-      const childNodes = sortArea?.children;
-      const len = childNodes?.length
+      const childNodes = parentEl?.children;
+      const len = childNodes?.length;
       // 初始化可拖拽元素
       for (let i = 0; i < len; i++) {
-        const childNode = childNodes?.[i];
+        const childNode = childNodes?.[i] as HTMLElement;
         const dataId = childNode?.dataset?.id;
         dndManager.setDragItemsMap(childNode, {
           node: childNode,
           id: dataId,
           index: i,
           group: {
-            node: sortArea,
+            node: parentEl,
             ...props
           }
         });
       }
       // 初始化可拖放元素
-      dndManager.setDropItemsMap(sortArea, {
+      dndManager.setDropItemsMap(parentEl, {
         group: {
-          node: sortArea,
+          node: parentEl,
           ...props
         }
       });
     }
 
-    // 鼠标点击/触摸事件开始
-    onStart: EventHandler = (e: any) => {
-      // 移动端处理冒泡
-      if (isEventTouch(e)) {
-        e.stopPropagation();
-      }
-      const currentTarget = e.currentTarget;
-      const dragItem = dndManager.getDragItem(currentTarget);
-      const options = this.getOptions(this.props?.options);
-      if (currentTarget && dragItem && isChildDrag(dragItem, options)) {
-        currentTarget.draggable = true;
-        this.lastDisplay = css(currentTarget)?.display;
-      }
-    }
-
-    // 鼠标点击/触摸事件结束
-    onEnd: EventHandler = (e: any) => {
-      if (isEventTouch(e)) {
-        e.stopPropagation();
-      }
-      if (this.dragged) {
-        this.onDragEnd(e)
-      }
-    }
-
-    // 鼠标拖拽结束事件
-    onDragEnd = (e: any) => {
-      e.stopPropagation();
-      // 拖拽元素
-      const dragged = this.dragged;
-      // 克隆拖拽元素
-      const cloneDragged = this.cloneDragged;
-      // 目标元素
-      const over = this.over;
-      const sortArea = this.sortArea;
-      const dragItem = dndManager.getDragItem(dragged);
-      const toItem = over && dndManager.getDragItem(over);
-      const toGroup = over && dndManager.getDropItem(over);
-      const to = (toItem || toGroup)
-      const dropGroup = to?.group;
-      if (dragItem) {
-        const params = {
-          e,
-          from: {
-            ...dragItem,
-            clone: cloneDragged
-          },
-          to: to
-        }
-        if (dropGroup) {
-          const options = this.getOptions(dropGroup?.options);
-          const canSort = isCanSort(params, options);
-          const childOut = isChildOut(params, options);
-          if (canSort) {
-            // 需要手动变更序号
-            to.index = getChildrenIndex(cloneDragged, [dragged]);
-          }
-          // 是否为同域排序
-          if (dropGroup?.node === sortArea) {
-            dropGroup.onUpdate && dropGroup.onUpdate(params);
-          } else if (childOut) {
-            // 跨域排序
-            dropGroup?.onAdd && dropGroup?.onAdd(params);
-          }
-          // 结束时移除hover状态
-          over && dropGroup?.onUnHover && dropGroup.onUnHover(over);
-        }
-        this.props.onEnd && this.props.onEnd(params);
-      }
-      this.reset();
-    }
-
-    reset = () => {
-      const dragged = this.dragged;
-      const cloneDragged = this.cloneDragged;
-      const over = this.over;
-      const sortArea = this.sortArea;
-      const options = this.getOptions(this.props.options);
-      const sortPreClass = options?.sortPreClass || '';
-      const sortNextClass = options?.sortNextClass || '';
-      // 重置源
-      if (dragged) {
-        dragged.draggable = undefined;
-        dragged.style.display = this.lastDisplay;
-        this.dragged = undefined;
-      }
-      // 重置克隆
-      if (cloneDragged) {
-        cloneDragged.draggable = undefined;
-        cloneDragged?.parentNode?.removeChild?.(cloneDragged);
-        this.cloneDragged = undefined;
-      }
-      // 重置被hover的元素样式
-      over?.classList?.remove(sortNextClass, sortPreClass);
-      this.over = undefined;
-      const ownerDocument = getOwnerDocument(sortArea);
-      removeEvent(ownerDocument, 'dragover', this.onDragOver);
-    }
-
-    handleDragOverClass = (params: { draggedIndex: number, newOverIndex: number, oldOverIndex: number, newOver: HTMLElement, oldOver?: HTMLElement, props: DndBaseProps }) => {
-      const { draggedIndex, newOverIndex, oldOverIndex, newOver, oldOver, props } = params;
-      const { onHover, onUnHover } = props;
-      const options = this.getOptions(props?.options);
-      const sortPreClass = options?.sortPreClass || '';
-      const sortNextClass = options?.sortNextClass || '';
-      newOver.classList.remove(sortPreClass, sortNextClass);
-      if (draggedIndex < newOverIndex) {
-        newOver.classList.add(sortPreClass);
-        onHover && onHover(newOver);
-      } else {
-        newOver.classList.add(sortNextClass);
-        onHover && onHover(newOver);
-      }
-      if (oldOver && newOverIndex !== oldOverIndex) {
-        oldOver.classList.remove(sortNextClass, sortPreClass);
-        onUnHover && onUnHover(oldOver);
-      }
-    }
-
-    // 鼠标拖拽开始事件(鼠标端，并且触发时其他事件将不会再触发)
-    onDragStart = (e: any) => {
-      e.stopPropagation();
-      const currentTarget = e.currentTarget;
+    // 开始移动的事件处理
+    moveStartHandle = (e: EventType, currentTarget?: HTMLElement) => {
       if (currentTarget) {
-        const ownerDocument = getOwnerDocument(this.sortArea);
-        addEvent(ownerDocument, 'dragover', this.onDragOver);
-      }
-      if (currentTarget) {
-        const cloneDragged = currentTarget.cloneNode(true);
+        const cloneDragged = currentTarget.cloneNode(true) as HTMLElement;
         this.dragged = currentTarget;
         this.cloneDragged = cloneDragged;
         const dragItem = dndManager.getDragItem(currentTarget);
@@ -245,21 +101,157 @@ export default function BuildDndSortable() {
       }
     }
 
-    // 移动过程中的事件处理
-    moveHandle: EventHandler = (e: any) => {
+    // 鼠标点击/触摸事件开始
+    onStart: EventHandler = (e) => {
+      e.stopPropagation();
+      const currentTarget = e.currentTarget as HTMLElement;
+      const dragItem = dndManager.getDragItem(currentTarget);
+      if (currentTarget && dragItem) {
+        const disabledDrag = isDisabledDrag({ e, from: dragItem });
+        if (!disabledDrag) {
+          currentTarget.draggable = true;
+          this.lastDisplay = css(currentTarget)?.display;
+          this.moveStartHandle(e, currentTarget);
+        }
+      }
+    }
+
+    // 移动事件(移动端)
+    onMove: EventHandler = (e) => {
+      if (!ismobile) return
+      this.moveHandle(e);
+    }
+
+    // 鼠标点击/触摸事件结束
+    onEnd: EventHandler = (e) => {
+      if (!ismobile) return
+      e.stopPropagation();
+      if (this.dragged) {
+        this.onEndHandle(e)
+      }
+    }
+
+    // 鼠标拖拽开始事件(鼠标端，并且触发时其他事件将不会再触发)
+    onDragStart = (e: EventType) => {
+      e.stopPropagation();
+      const currentTarget = e.currentTarget as HTMLElement;
+      if (currentTarget) {
+        const ownerDocument = getOwnerDocument(this.parentEl);
+        addEvent(ownerDocument, 'dragover', this.onDragOver);
+        this.moveStartHandle(e, currentTarget);
+      }
+    }
+
+    // 鼠标dragOver事件(鼠标端)
+    onDragOver = (e: EventType) => {
+      setMouseEvent(e, 'dragover', DropEffect.Move)
+      this.moveHandle(e);
+    }
+
+    // 拖拽结束事件(鼠标)
+    onDragEnd = (e: EventType) => {
+      this.onEndHandle(e)
+    }
+
+    // 鼠标拖拽结束事件
+    onEndHandle = (e: EventType) => {
+      e.stopPropagation();
+      // 拖拽元素
+      const dragged = this.dragged;
+      // 克隆拖拽元素
+      const cloneDragged = this.cloneDragged;
+      if (!cloneDragged) return;
+      // 目标元素
+      const over = this.over;
+      const parentEl = this.parentEl;
+      const dragItem = dndManager.getDragItem(dragged);
+      const toItem = over && dndManager.getDragItem(over);
+      const toGroup = over && dndManager.getDropItem(over);
+      const to = (toItem || toGroup);
+      const dropGroup = to?.group;
+      const toIndex = getChildrenIndex(cloneDragged, [dragged]);
+      const params = {
+        e,
+        from: {
+          ...dragItem,
+          clone: cloneDragged
+        },
+        to: { ...to, index: toIndex }
+      }
+      if (dropGroup) {
+        this.reset(params);
+        // 是否为同域排序
+        if (dropGroup?.node === parentEl) {
+          dropGroup.onUpdate && dropGroup.onUpdate(params);
+        } else {
+          // 跨域排序
+          dropGroup?.onAdd && dropGroup?.onAdd(params);
+        }
+        // 结束时移除hover状态
+        over && dropGroup?.onUnHover && dropGroup.onUnHover(over);
+      }
+      this.props.onEnd && this.props.onEnd(params);
+    }
+
+    reset: DndHandle = (params) => {
+      const { to } = params;
       const dragged = this.dragged;
       const cloneDragged = this.cloneDragged;
-      const sortArea = this.sortArea;
-      // 添加拖拽副本
-      if (dragged?.style?.display !== "none" && !isContains(sortArea, cloneDragged)) {
-        insertAfter(cloneDragged, dragged);
+      const over = this.over;
+      const parentEl = this.parentEl;
+      const toOptions = to?.group?.options;
+      const overPreClass = toOptions?.sortPreClass || 'over-pre';
+      const overNextClass = toOptions?.sortNextClass || 'over-next';
+      // 拖拽结束后dom变换
+      if (cloneDragged && dragged) {
+        dragged.draggable = false;
+        if (this.lastDisplay) {
+          dragged.style.display = this.lastDisplay;
+        }
+        cloneDragged.draggable = false;
+        cloneDragged?.parentNode?.removeChild?.(cloneDragged);
       }
-      dragged.style.display = "none";
+      // 重置被hover的元素样式
+      over?.classList?.remove(overNextClass, overPreClass);
+      this.over = undefined;
+      this.cloneDragged = undefined;
+      this.dragged = undefined;
+      const ownerDocument = getOwnerDocument(parentEl);
+      removeEvent(ownerDocument, 'dragover', this.onDragOver);
+    }
+
+    handleDragOverClass = (overInfo: { draggedIndex: number, newOverIndex: number, oldOverIndex: number, newOver: HTMLElement, oldOver?: HTMLElement }, params: DndParams) => {
+      const { draggedIndex, newOverIndex, oldOverIndex, newOver, oldOver } = overInfo;
+      const toGroup = params?.to?.group;
+      if (!toGroup) return;
+      const { onHover, onUnHover } = toGroup;
+      const toOptions = toGroup?.options;
+      const overPreClass = toOptions?.sortPreClass || 'over-pre';
+      const overNextClass = toOptions?.sortNextClass || 'over-next';
+      newOver.classList.remove(overPreClass, overNextClass);
+      if (draggedIndex < newOverIndex) {
+        newOver.classList.add(overPreClass);
+        onHover && onHover(newOver);
+      } else {
+        newOver.classList.add(overNextClass);
+        onHover && onHover(newOver);
+      }
+      if (oldOver && newOverIndex !== oldOverIndex) {
+        oldOver.classList.remove(overNextClass, overPreClass);
+        onUnHover && onUnHover(oldOver);
+      }
+    }
+
+    // 移动过程中的事件处理
+    moveHandle: EventHandler = (e) => {
+      const dragged = this.dragged;
+      const cloneDragged = this.cloneDragged;
+      const parentEl = this.parentEl;
+      if (!dragged || !cloneDragged || !parentEl) return
       // 经过的节点
       const isOverSelf = isMoveIn(e, cloneDragged);
       const target = dndManager.findOver(e, dragged, isOverSelf);
       const dragItem = dndManager.getDragItem(dragged);
-      const options = this.getOptions(this.props.options);
       // 触发目标
       if (dragItem) {
         const toItem = target && dndManager.getDragItem(target);
@@ -274,9 +266,12 @@ export default function BuildDndSortable() {
           },
           to: to
         };
-        const childOut = isChildOut(params, options);
+        const hiddenFrom = isHiddenFrom(params)
+        if (hiddenFrom) {
+          dragged.style.display = "none";
+        }
         // 拖放行为是否在同域内
-        if (dropGroup?.node === sortArea) {
+        if (dropGroup?.node === parentEl) {
           if (!isOverSelf) {
             if (toItem) {
               this.sortInSameArea(params);
@@ -284,35 +279,14 @@ export default function BuildDndSortable() {
               this.setDropEndChild(params);
             }
           }
-        } else if (childOut) {
-          if (dropGroup) {
-            const options = this.getOptions(dropGroup?.options);
-            const canDrop = isCanDrop(params, options);
-            if (!canDrop) {
-              // 鼠标的样式更改
-              if (e.dataTransfer) {
-                e.dataTransfer.dropEffect = DropEffect.None;
-              }
-              return;
-            }
-            if (!isOverSelf) {
-              this.addNewOver(params);
-            }
+        } else if (dropGroup) {
+          const disabledDrop = isDisabledDrop(params);
+          if (!disabledDrop && !isOverSelf) {
+            this.addNewOver(params);
           }
         }
         this.props.onMove && this.props.onMove(params);
       }
-    }
-
-    // 移动事件(移动端)
-    onTouchMove: EventHandler = (e) => {
-      if(!ismobile) return
-      this.moveHandle(e);
-    }
-
-    // 鼠标dragOver事件(鼠标端)
-    onDragOver = (e: any) => {
-      this.moveHandle(e);
     }
 
     // 同区域内拖拽更新位置
@@ -323,48 +297,49 @@ export default function BuildDndSortable() {
       const oldOver = this.over;
       const newOver = to?.node;
       // 只允许一个动画
-      if (!newOver || newOver?.animated) return;
+      if (!newOver || !cloneDragged || newOver?.animated) return;
       // 移动前创建动画实例记录位置和dom
-      const animateInstance = createAnimate(cloneDragged?.parentNode?.children);
+      const executeAnimation = createAnimate(cloneDragged?.parentNode?.children);
       // 位置序号
       const draggedIndex = getChildrenIndex(cloneDragged, [dragged]);
       const newOverIndex = getChildrenIndex(newOver, [dragged]);
       const oldOverIndex = getChildrenIndex(oldOver, [dragged]);
-      const options = this.getOptions(this.props?.options);
-      const canSort = isCanSort(params, options);
+      const disabledSort = isDisabledSort(params);
       if (draggedIndex < newOverIndex) {
-        canSort && insertAfter(cloneDragged, newOver);
+        if (!disabledSort) {
+          insertAfter(cloneDragged, newOver);
+        }
         this.over = newOver;
       } else if (draggedIndex > newOverIndex) {
-        // 目标比元素小，插到其前面
-        canSort && insertBefore(cloneDragged, newOver);
+        if (!disabledSort) {
+          insertBefore(cloneDragged, newOver);
+        }
         this.over = newOver;
       }
-      this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver, props: this.props });
+      this.handleDragOverClass({ draggedIndex, oldOverIndex, oldOver, newOver, newOverIndex }, params);
       // 执行动画
-      animateInstance();
+      executeAnimation();
     }
 
     // 跨域添加新元素
     addNewOver = (params: DndParams) => {
       const { to } = params;
       const dropGroup = to?.group;
-      if (!dropGroup) return;
       const dropGroupNode = dropGroup?.node;
       const cloneDragged = this.cloneDragged;
-      const options = this.getOptions(dropGroup.options);
+      if (!dropGroup || !cloneDragged) return;
       const oldOver = this.over;
       const sortableOver = to?.node;
-      const canSort = isCanSort(params, options);
+      const disabledSort = isDisabledSort(params);
       if (!dropGroupNode?.contains(cloneDragged)) {
         if (sortableOver) {
           const animateInstance = createAnimate([sortableOver, cloneDragged]);
-          canSort && insertBefore(cloneDragged, sortableOver)
+          !disabledSort && insertBefore(cloneDragged, sortableOver)
           this.over = sortableOver
           animateInstance()
         } else {
           const animateInstance = createAnimate([cloneDragged]);
-          canSort && dropGroupNode?.appendChild(cloneDragged);
+          !disabledSort && dropGroupNode?.appendChild(cloneDragged);
           this.over = dropGroupNode;
           animateInstance();
         }
@@ -374,22 +349,26 @@ export default function BuildDndSortable() {
           // 只允许一个动画
           if (sortableOver?.animated) return;
           // 创建动画实例记录移动前的dom和位置
-          const animateInstance = createAnimate(cloneDragged?.parentNode?.children);
+          const executeAnimation = createAnimate(cloneDragged?.parentNode?.children);
           // 位置序号
           const draggedIndex = getChildrenIndex(cloneDragged);
           const newOverIndex = getChildrenIndex(sortableOver);
           const oldOverIndex = getChildrenIndex(oldOver);
           // 交换位置
           if (draggedIndex < newOverIndex) {
-            canSort && insertAfter(cloneDragged, sortableOver);
+            if (!disabledSort) {
+              insertAfter(cloneDragged, sortableOver)
+            }
             this.over = sortableOver;
           } else if (draggedIndex > newOverIndex) {
-            canSort && insertBefore(cloneDragged, sortableOver);
+            if (!disabledSort) {
+              insertBefore(cloneDragged, sortableOver);
+            }
             this.over = sortableOver;
           }
-          this.handleDragOverClass({ draggedIndex, newOverIndex, oldOverIndex, oldOver, newOver: sortableOver, props: dropGroup });
+          this.handleDragOverClass({ draggedIndex, oldOverIndex, oldOver, newOver: sortableOver, newOverIndex }, params);
           // 执行动画
-          animateInstance();
+          executeAnimation();
         } else {
           // 在当前域内空白处时
           this.setDropEndChild(params)
@@ -407,19 +386,18 @@ export default function BuildDndSortable() {
       if (cloneDragged?.animated) return;
       const parent = dropGroup?.node;
       const lastChild = parent.lastChild as HTMLElement;
-      const options = this.getOptions(dropGroup.options);
       if (cloneDragged !== lastChild && lastChild) {
         const lastChildRect = lastChild.getBoundingClientRect();
         const cloneRect = cloneDragged.getBoundingClientRect();
         const eventRect = getClientXY(e);
-        const canSort = isCanSort(params, options);
-        if (canSort && eventRect) {
-          const isToBttom = cloneRect?.top < lastChildRect?.top && eventRect?.y > lastChildRect?.top;
-          const isToRight = cloneRect?.left < lastChildRect?.left && eventRect?.x > lastChildRect?.left;
-          if (isToBttom || isToRight) {
-            const animateInstance = createAnimate(cloneDragged?.parentNode?.children);
+        const disabledSort = isDisabledSort(params);
+        if (!disabledSort && eventRect) {
+          const isToBttomTail = cloneRect?.top < lastChildRect?.top && eventRect?.y > lastChildRect?.top;
+          const isToRightTail = cloneRect?.left < lastChildRect?.left && eventRect?.x > lastChildRect?.left;
+          if (isToBttomTail || isToRightTail) {
+            const executeAnimation = createAnimate(cloneDragged?.parentNode?.children);
             parent?.appendChild(cloneDragged);
-            animateInstance();
+            executeAnimation();
           }
         }
         const oldOver = this.over;
@@ -429,16 +407,16 @@ export default function BuildDndSortable() {
     }
 
     renderChild(child: any) {
-      const options = this.getOptions(this.props?.options);
+      const options = this.props?.options;
 
       return (
         <DraggableEvent
           handle={options?.handle}
           filter={options?.filter}
           onStart={this.onStart}
-          onMove={this.onTouchMove}
+          onMove={this.onMove}
           onEnd={this.onEnd}
-          direction={options?.direction}
+          direction={options?.direction || DragDirectionCode}
           showLayer={ismobile ? true : false}
           onDragStart={this.onDragStart}
           onDragEnd={this.onDragEnd}
@@ -454,7 +432,7 @@ export default function BuildDndSortable() {
       const cls = classNames((children?.props?.className || ''), className);
 
       return (
-        <div ref={(node: any) => this.sortArea = node} className={cls} style={style}>
+        <div ref={(node: HTMLDivElement) => this.parentEl = node} className={cls} style={style}>
           {
             React.Children.map(children, (child) => {
               if (child) {

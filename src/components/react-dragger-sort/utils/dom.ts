@@ -15,7 +15,7 @@ export const isMoveIn = (e: EventType, target: HTMLElement) => {
 };
 
 // 触发动画
-export function _animate(target: any, prevRect: any, transitionStyle?: CSSProperties) {
+export function _animate(target: HTMLElement & { animated?: any }, prevRect: any, transitionStyle?: CSSProperties) {
   const ms = 160;
   if (ms) {
     // 目标后面的位置
@@ -24,16 +24,16 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
       prevRect = prevRect.getBoundingClientRect()
     }
 
-    // 动画起始位置
+    // 先回到动画起始位置
     css(target, {
       transition: 'none',
       'transform': `translate3d(${prevRect.left - currentRect.left}px, ${prevRect.top - currentRect.top}px,0)`
     });
 
-    // dom的宽高位置属性会回流重绘目前的布局样式
+    // 然后通过重绘展示已经在起始位置
     target.offsetWidth;
 
-    // 动画终点位置
+    // 确认执行动画
     css(target, {
       'transition': `all ${ms}ms`,
       'transform': 'translate3d(0,0,0)',
@@ -53,14 +53,16 @@ export function _animate(target: any, prevRect: any, transitionStyle?: CSSProper
 }
 
 // 收集dom，返回可以执行动画的函数
-export function createAnimate(doms) {
-  const collect: any[] = [];
-  for (let i = 0; i < doms?.length; i++) {
-    const dom = doms[i];
-    collect.push({
-      dom,
-      rect: dom?.getBoundingClientRect()
-    })
+export function createAnimate(doms?: HTMLCollection | HTMLElement[]) {
+  const collect: { dom: HTMLElement, rect: DOMRect }[] = [];
+  if (doms) {
+    for (let i = 0; i < doms?.length; i++) {
+      const dom = doms[i] as HTMLElement;
+      collect.push({
+        dom,
+        rect: dom?.getBoundingClientRect()
+      })
+    }
   }
   return () => {
     for (let i = 0; i < collect?.length; i++) {
