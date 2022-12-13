@@ -197,7 +197,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     const dragType = this.dragType;
     const isUninstall = this.isUninstall;
     const dragStartData = this.dragStartData;
-    const { restoreOnEnd, onEnd, x, y } = this.props;
+    const { resetOnEnd, onEnd, x, y } = this.props;
     if (!dragType || !dragData) return;
     this.slackX = 0;
     this.slackY = 0;
@@ -209,7 +209,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       // 根据props值设置translate
       const xChanged = x !== undefined && x !== dragData?.x;
       const yChanged = y !== undefined && y !== dragData?.y;
-      if (restoreOnEnd) {
+      if (resetOnEnd) {
         this.setDragdata(dragStartData, undefined, undefined);
       } else if (xChanged || yChanged) {
         this.setDragdata(dragStartData, x, y);
@@ -227,7 +227,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       positionOffset,
       transform,
       forwardedRef,
-      restoreOnEnd,
+      resetOnEnd,
       bounds,
       ...DraggableEventProps
     } = this.props;
