@@ -1,4 +1,3 @@
-import { ElementsType } from "."
 
 const elements = {
   object: {
@@ -39,4 +38,4 @@ const elements = {
   }
 }
 
-export default ['layoutElements', elements] as [string, ElementsType]
+export default ['布局容器', elements] as [string, typeof elements]

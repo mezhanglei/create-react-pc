@@ -4,7 +4,6 @@ import React, { CSSProperties } from 'react';
 import './control.less';
 
 export interface ControlBaseProps {
-  compact?: boolean;
   error?: string;
   suffix?: React.ReactNode | any; // 右边节点
   footer?: React.ReactNode | any; // 底部节点
@@ -21,7 +20,6 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
     style,
     className,
     error,
-    compact,
     footer,
     suffix,
     ...restProps
@@ -32,7 +30,6 @@ export const Control = React.forwardRef((props: ControlProps, ref: any) => {
   const cls = classnames(
     `${prefix}__container`,
     error ? `${prefix}--error` : '',
-    compact ? `${prefix}--compact` : '',
     className ? className : ''
   );
 

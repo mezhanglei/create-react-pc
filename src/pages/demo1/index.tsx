@@ -1,8 +1,8 @@
-import React, { Component, useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndSortable, { DndHandle, arrayMove, DndProps } from "@/components/react-dragger-sort";
+import DndSortable, { arrayMove, DndProps } from "@/components/react-dragger-sort";
 import { addDragItem, getItem, indexToArray, removeDragItem } from './utils';
 import { deepClone } from '@/utils/object';
 

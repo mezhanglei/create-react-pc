@@ -18,7 +18,6 @@ const prefixCls = 'field-item';
 const classes = {
   field: prefixCls,
   inline: `${prefixCls}--inline`,
-  compact: `${prefixCls}--compact`,
   required: `${prefixCls}--required`,
   error: `${prefixCls}--error`
 };
@@ -32,7 +31,6 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
     labelAlign,
     gutter,
     /** ControlBaseProps */
-    compact,
     error,
     suffix,
     footer,
@@ -53,7 +51,6 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
   const cls = classnames(
     classes.field,
     layout ? `${classes.field}--${layout}` : '',
-    compact ? classes.compact : '',
     required ? classes.required : '',
     error ? classes.error : '',
     inline ? classes.inline : '',
@@ -65,7 +62,7 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
       <Label colon={colon} gutter={gutter} labelWidth={labelWidth} labelAlign={labelAlign} required={required} style={labelStyle}>
         {label}
       </Label>
-      <Control compact={compact} error={error} footer={footer} suffix={suffix}>
+      <Control error={error} footer={footer} suffix={suffix}>
         {children}
       </Control>
     </div>

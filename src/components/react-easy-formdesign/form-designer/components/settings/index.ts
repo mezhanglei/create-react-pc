@@ -1,8 +1,12 @@
+import { ValueOf } from "@/components/react-easy-formrender";
 import DefaultFieldSettings from "./default";
 
-// 针对对应的键和对应的公共的属性配置
+// 公共的表单控件属性配置
 const CommonSettings = {
-  input: DefaultFieldSettings
+  input: [DefaultFieldSettings]
 }
 
+
+export type CommonSettingsType = typeof CommonSettings;
+export type CommonSettingsItem = ValueOf<CommonSettingsType>;
 export default CommonSettings

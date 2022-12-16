@@ -51,10 +51,10 @@ function RootDnd(props: RootDndProps) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndGroup) {
       const source = from?.id as string;
-      const elements = ConfigElements[fromCollection?.elementsKey]
+      const elements = ConfigElements[fromCollection?.elementType]
       const item = elements[source]
-      const field = { ...item, ...getInitialValues(item?.settings) }
-      const addItem = dropGroupIsList ? field : { name: defaultGetId(source), ...field };
+      const field = { ...item, source, ...getInitialValues(item?.settings) }
+      const addItem = dropGroupIsList ? field : { ...field, name: defaultGetId(source) };
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {
@@ -68,7 +68,8 @@ function RootDnd(props: RootDndProps) {
       onAdd={onAdd}
       data-type="ignore"
       className='viewer-dnd-root'
-      // collection={{ path: '' }}
+      options={{ hiddenFrom: true }}
+    // collection={{ path: '' }}
     >
       {children}
     </DndSortable>

@@ -1,8 +1,11 @@
 import React, { CSSProperties, useContext, useEffect, useState } from 'react'
 import classnames from 'classnames';
-import RenderForm, { getCurrentPath, RenderFormProps, useFormStore } from '../../form-render';
+import { Form, getCurrentPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
 import { FormDesignContext, FormEditContext } from '../designer-context';
-import { updateSelectedValues, getSelectedValues, isNoSelected, getSelectedSettings } from '../utils/utils';
+import { updateSelectedValues, getSelectedValues, isNoSelected, getCurSettings, getOtherSettingsList } from '../utils/utils';
+import { CommonSettingsItem } from '../components/settings';
+import { ElementsType } from '../components/configs';
+import CustomCollapse from '../../form-render/collapse';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -22,19 +25,20 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const selectedParent = selected?.parent;
   const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
   const form = useFormStore();
-  const [settings, setSettings] = useState({});
+  const [curSettings, setCurSettings] = useState<ElementsType>({});
+  const [otherSettingsList, setOtherSettingsList] = useState<CommonSettingsItem>([]);
 
   const cls = classnames(prefixCls, className);
 
   useEffect(() => {
     // 根据selected回填数据
     if (isNoSelected(selectedName)) return;
-    const curSettings = getSelectedSettings(designer, selectedPath); // 选中节点已存在的配置表单
-    const curSettingsValues = getSelectedValues(designer, selectedPath, curSettings); // 获取节点控件已有的值
-    form?.reset(curSettingsValues); // 设置配置表单值
-    setSettings(curSettings);
-    updateSelectedValues(designer, designerForm, selectedPath, curSettingsValues); // 同步更新节点控件
+    const curSettings = getCurSettings(designer, selectedPath); // 主要配置表单
+    const otherSettingsList = getOtherSettingsList(designer, selectedPath); // 其他配置表单列表
+    setCurSettings(curSettings);
+    setOtherSettingsList(otherSettingsList);
     setEdit({ settingsForm: form });
+    setFormValue();
   }, [selectedPath]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
@@ -48,9 +52,33 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     }
   }
 
+  // 配置属性表单值
+  const setFormValue = () => {
+    const curSettingsValues = getSelectedValues(designer, selectedPath); // 获取节点控件已有的值
+    form?.reset(curSettingsValues); // 设置配置表单值
+    updateSelectedValues(designer, designerForm, selectedPath, curSettingsValues); // 同步更新节点控件
+  }
+
+  const renderOtherList = () => {
+    if (!otherSettingsList?.length) return;
+    return (
+      otherSettingsList?.map((item) => {
+        const [title, settings] = item;
+        return (
+          <CustomCollapse header={title} key={title} isOpened>
+            <RenderFormChildren properties={settings} />
+          </CustomCollapse>
+        )
+      })
+    )
+  }
+
   return (
     <div ref={ref} className={cls} style={style}>
-      <RenderForm form={form} properties={settings} layout="vertical" onFieldsChange={onFieldsChange} />
+      <Form layout="vertical" store={form} onFieldsChange={onFieldsChange} >
+        <RenderFormChildren properties={curSettings} />
+        {renderOtherList()}
+      </Form>
     </div>
   );
 };

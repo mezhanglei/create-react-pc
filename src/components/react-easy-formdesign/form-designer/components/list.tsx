@@ -9,10 +9,10 @@ export interface ComponentListProps {
   className?: string;
   style?: CSSProperties;
   title: string;
-  elementsKey: string;
+  elementType: string;
   elements?: { [key: string]: ELementProps };
   tabKey: string;
-  onChange?: (name: string, item: ELementProps, elementsKey?: string, tabKey?: string) => void;
+  onChange?: (name: string, item: ELementProps, elementType?: string, tabKey?: string) => void;
 }
 export const DndGroup = 'components'
 const prefixCls = 'components-list';
@@ -21,9 +21,9 @@ function ComponentList(props: ComponentListProps, ref: any) {
     style,
     className,
     title,
-    elementsKey,
     elements,
     tabKey,
+    elementType,
     onChange
   } = props;
 
@@ -33,11 +33,11 @@ function ComponentList(props: ComponentListProps, ref: any) {
     return (
       <DndSortable
         className='elements-list'
-        collection={{ type: DndGroup, tabKey: tabKey, elementsKey: elementsKey }}
+        collection={{ type: DndGroup, tabKey: tabKey, elementType: elementType }}
       >
         {
           Object.entries(elements || {})?.map(([source, item], index) => {
-            return <Tag key={index} data-id={source} onChange={() => onChange?.(source, { ...item, source }, elementsKey, tabKey)}>{item.label}</Tag>
+            return <Tag key={index} data-id={source} onChange={() => onChange?.(source, { ...item, source }, elementType, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>

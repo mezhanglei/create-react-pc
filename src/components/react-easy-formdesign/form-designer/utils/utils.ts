@@ -15,12 +15,14 @@ export const isNoSelected = (path?: string) => {
 }
 
 // 获取节点的值和属性
-export const getSelectedValues = (designer: FormRenderStore, selectedPath: string, lastForm?: ELementProps['settings']) => {
+export const getSelectedValues = (designer: FormRenderStore, selectedPath: string) => {
+  if (isNoSelected(selectedPath)) return;
   const curValues = designer.getItemByPath(selectedPath) || {};
   if (!endIsListItem(selectedPath)) {
     curValues['name'] = getPathEnd(selectedPath);
   }
-  const lastValues = getInitialValues(lastForm);
+  const expandSettings = getExpandSettings(designer, selectedPath); // 选中节点已存在的配置表单
+  const lastValues = getInitialValues(expandSettings);
   const result = { ...lastValues, ...curValues };
   return result;
 }
@@ -53,12 +55,12 @@ export const setSelectedValues = (designer: FormRenderStore, designerForm: FormS
   }
 }
 
-// 根据路径获取节点的配置表单
-export const getSelectedSettings = (designer: FormRenderStore, selectedPath: string) => {
+// 获取路径节点获取当前的属性配置(components/configs中控件的settings属性)
+export const getCurSettings = (designer: FormRenderStore, selectedPath: string) => {
+  if (isNoSelected(selectedPath)) return;
   const selectedItem = designer.getItemByPath(selectedPath);
-  const originSettings = selectedItem?.['settings']; // components/configs中组件的settings属性
-  const commonSettings = CommonSettings[selectedItem?.source]; // components/settings配置公共属性
-  let baseSettings = { ...originSettings, ...commonSettings };
+  const originSettings = selectedItem?.['settings'];
+  let baseSettings = originSettings;
   // 非列表节点设置字段名
   if (!endIsListItem(selectedPath)) {
     baseSettings = {
@@ -66,8 +68,30 @@ export const getSelectedSettings = (designer: FormRenderStore, selectedPath: str
         label: '字段名',
         type: 'Input'
       },
-      ...baseSettings
+      ...originSettings
     };
   }
   return baseSettings;
+}
+
+// 根据路径节点获取其他配置(components/settings配置其他属性)
+export const getOtherSettingsList = (designer: FormRenderStore, selectedPath: string) => {
+  if (isNoSelected(selectedPath)) return;
+  const selectedItem = designer.getItemByPath(selectedPath) as ELementProps;
+  const otherSettingsList = selectedItem?.source ? CommonSettings[selectedItem?.source] : []
+  return otherSettingsList;
+}
+
+// 根据路径节点获取展平的配置
+export const getExpandSettings = (designer: FormRenderStore, selectedPath: string) => {
+  if (isNoSelected(selectedPath)) return;
+  const curSettings = getCurSettings(designer, selectedPath);
+  const otherSettingsList = getOtherSettingsList(designer, selectedPath);
+  let expandSettings = {};
+  for (let i = 0; i < otherSettingsList?.length; i++) {
+    // 遍历获取当前的配置项
+    const item = otherSettingsList[i][1];
+    expandSettings = { ...expandSettings, ...item };
+  }
+  return { ...curSettings, ...expandSettings }
 }

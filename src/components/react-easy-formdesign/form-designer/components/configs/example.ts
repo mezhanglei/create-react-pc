@@ -1,4 +1,3 @@
-import { ElementsType } from "."
 
 const elements = {
   something: {
@@ -9,4 +8,4 @@ const elements = {
   }
 }
 
-export default ['exampleElements', elements] as [string, ElementsType]
+export default ['案例', elements] as [string, typeof elements]

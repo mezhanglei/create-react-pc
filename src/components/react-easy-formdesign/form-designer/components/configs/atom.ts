@@ -1,4 +1,3 @@
-import { ElementsType } from "."
 
 // 表单原子控件
 const elements = {
@@ -29,7 +28,7 @@ const elements = {
   }
 }
 
-export default ['atomElements', elements] as [string, ElementsType]
+export default ['基础控件', elements] as [string, typeof elements]
 
 // import 'codemirror/lib/codemirror.css';
 // import CodeMirror from 'codemirror/lib/codemirror';
