@@ -178,8 +178,8 @@ export default function BuildDndSortable() {
         },
         to: { ...to, index: toIndex }
       }
+      this.reset(params);
       if (dropGroup) {
-        this.reset(params);
         // 是否为同域排序
         if (dropGroup?.node === parentEl) {
           dropGroup.onUpdate && dropGroup.onUpdate(params);
