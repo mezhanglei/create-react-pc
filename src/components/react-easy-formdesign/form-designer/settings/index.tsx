@@ -4,12 +4,12 @@ import { Tabs } from 'antd';
 import ComponentSettings from './component-settings';
 import './index.less';
 
-export interface DesignPropertiesProps {
+export interface DesignSettingsProps {
   className?: string
   style?: CSSProperties
 }
 const prefixCls = 'easy-form-design-properties';
-function DesignProperties(props: DesignPropertiesProps, ref: any) {
+function DesignSettings(props: DesignSettingsProps, ref: any) {
   const {
     style,
     className
@@ -25,7 +25,7 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <Tabs className='properties-tabs'>
+      <Tabs className='settings-tabs'>
         {
           TabsData?.map((item) => {
             const { component: TabChildren, ...rest } = item
@@ -41,5 +41,5 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
   )
 };
 
-DesignProperties.displayName = 'design-properties';
-export default React.forwardRef(DesignProperties);
+DesignSettings.displayName = 'design-settings';
+export default React.forwardRef(DesignSettings);
