@@ -3,12 +3,13 @@ import classnames from 'classnames';
 import { Tabs } from 'antd';
 import ComponentSettings from './component-settings';
 import './index.less';
+import { DesignprefixCls } from '..';
 
 export interface DesignSettingsProps {
   className?: string
   style?: CSSProperties
 }
-const prefixCls = 'easy-form-design-properties';
+const prefixCls = `${DesignprefixCls}-settings`;
 function DesignSettings(props: DesignSettingsProps, ref: any) {
   const {
     style,

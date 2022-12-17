@@ -12,12 +12,12 @@ export interface DesignFormProps {
   style?: CSSProperties
 }
 
-const prefixCls = 'fr-generator-container';
+export const DesignprefixCls = 'easy-form-design';
 const classes_design = {
-  design: prefixCls,
-  components: `${prefixCls}__components`,
-  viewer: `${prefixCls}__viewer`,
-  properties: `${prefixCls}__properties`
+  design: DesignprefixCls,
+  components: `${DesignprefixCls}__components`,
+  viewer: `${DesignprefixCls}__viewer`,
+  properties: `${DesignprefixCls}__settings`
 }
 
 const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {

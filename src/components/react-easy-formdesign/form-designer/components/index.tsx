@@ -8,6 +8,7 @@ import { endIsListItem, getEndIndex, getInitialValues } from '@/components/react
 import { ELementProps, TabsData } from '../components/configs';
 import { FormDesignContext } from '../designer-context';
 import { getCurrentPath } from '../../form-render';
+import { DesignprefixCls } from '..';
 
 
 export interface DesignComponentsProps {
@@ -15,7 +16,7 @@ export interface DesignComponentsProps {
   style?: CSSProperties
 }
 
-const prefixCls = 'easy-form-design-components';
+const prefixCls = `${DesignprefixCls}-components`;
 function DesignComponents(props: DesignComponentsProps, ref: any) {
   const {
     style,
