@@ -32,19 +32,20 @@ export function useFormError(store: FormStore, path?: string) {
 }
 
 // 获取表单值
-export function useFormValues(store: FormStore, path?: string | string[]) {
+export function useFormValues<T = unknown>(store: FormStore, path?: string | string[]) {
   const initialValues = store.getFieldValue(path)
-  const [formValues, setFomValues] = useState(initialValues)
+  const [formValues, setFomValues] = useState<T>(initialValues)
 
   const subscribeList = (store: FormStore, path?: string | string[]) => {
     if (!path) return;
-    const queue = []
-    const pathList = typeof path == 'string' ? [path] : (path instanceof Array ? path : [])
+    const queue = [];
+    const isChar = typeof path == 'string' || typeof path == 'number';
+    const pathList = isChar ? [path] : (path instanceof Array ? path : [])
     for (let i = 0; i < pathList?.length; i++) {
       const item = pathList[i]
       queue?.push(store.subscribeFormGlobal(item, (newValue) => {
-        if (item) {
-          setFomValues((old: any) => ({ ...old, [item]: newValue }))
+        if (typeof item == 'string' || typeof item == 'number') {
+          setFomValues((old) => ({ ...old, [item]: newValue }));
         }
       }))
     }
