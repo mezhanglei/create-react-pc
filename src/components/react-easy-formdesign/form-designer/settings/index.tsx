@@ -17,7 +17,7 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
 
   const TabsData = [{
     key: 'component',
-    tab: '属性配置',
+    tab: '组件配置',
     component: ComponentSettings
   }]
 
