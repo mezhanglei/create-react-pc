@@ -5,7 +5,7 @@ import { FormDesignContext, FormEditContext } from '../designer-context';
 import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
 import RootDnd from './root-dnd';
-import { DesignprefixCls } from '..';
+import { DesignprefixCls } from '../provider';
 
 export interface DesignViewerProps {
   className?: string

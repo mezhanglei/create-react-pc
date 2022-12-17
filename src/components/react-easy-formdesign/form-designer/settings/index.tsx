@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { Tabs } from 'antd';
 import ComponentSettings from './component-settings';
 import './index.less';
-import { DesignprefixCls } from '..';
+import { DesignprefixCls } from '../provider';
 
 export interface DesignSettingsProps {
   className?: string

@@ -6,7 +6,7 @@ import { useSet } from './use-hooks';
 export interface ProviderProps {
   children: any;
 }
-
+export const DesignprefixCls = 'easy-form-design';
 function Provider(props: ProviderProps) {
 
   const designerStore = useFormRenderStore();

@@ -8,7 +8,7 @@ import { endIsListItem, getEndIndex, getInitialValues } from '@/components/react
 import { ELementProps, TabsData } from '../components/configs';
 import { FormDesignContext } from '../designer-context';
 import { getCurrentPath } from '../../form-render';
-import { DesignprefixCls } from '..';
+import { DesignprefixCls } from '../provider';
 
 
 export interface DesignComponentsProps {

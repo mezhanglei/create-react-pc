@@ -1,5 +1,5 @@
 import React, { CSSProperties, forwardRef } from 'react';
-import Provider from './provider';
+import Provider, { DesignprefixCls } from './provider';
 import Components from './components';
 import Viewer from './viewer';
 import Settings from './settings';
@@ -12,7 +12,6 @@ export interface DesignFormProps {
   style?: CSSProperties
 }
 
-export const DesignprefixCls = 'easy-form-design';
 const classes_design = {
   design: DesignprefixCls,
   components: `${DesignprefixCls}__components`,
