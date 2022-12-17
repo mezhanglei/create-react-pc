@@ -20,7 +20,7 @@ export interface FormDesignCtxProps {
     steps: Array<SelectedType>;
   }
   mode?: string;
-  settingsForm?: FormStore;
+  settingsForm?: FormStore | null;
   properties: FormDesignData;
 }
 

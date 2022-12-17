@@ -32,9 +32,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   useEffect(() => {
     // 根据selected回填数据
-    if (isNoSelected(selectedPath)) return;
     setForm(selectedPath);
-    setEdit({ settingsForm: form });
     setFormValue(selectedPath);
   }, [selectedPath]);
 
@@ -51,11 +49,17 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   // 设置配置表单
   const setForm = (selectedPath: string) => {
-    if (isNoSelected(selectedPath)) return;
+    if (isNoSelected(selectedPath)) {
+      setEdit({ settingsForm: null });
+      setCurSettings({});
+      setOtherSettingsList([]);
+      return;
+    };
     const curSettings = getCurSettings(designer, selectedPath); // 主要配置表单
     const otherSettingsList = getOtherSettingsList(designer, selectedPath); // 其他配置表单列表
     setCurSettings(curSettings);
     setOtherSettingsList(otherSettingsList);
+    setEdit({ settingsForm: form });
   }
 
   // 配置属性表单值
