@@ -56,8 +56,8 @@ export const isDisabledDrop = (params: DndParams) => {
 
 // 设置拖拽时焦点样式
 export const setMouseEvent = (e: any, type: 'dragstart' | 'dragover', val?: DropEffect) => {
-  // 只有dragStart事件里面设置effectAllowed
   if (!e.dataTransfer) return;
+  // 只有dragStart事件里面设置effectAllowed
   if (type === 'dragstart') {
     e.dataTransfer.effectAllowed = val;
   } else {

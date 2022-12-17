@@ -204,9 +204,11 @@ export default function BuildDndSortable() {
       const overNextClass = toOptions?.sortNextClass || 'over-next';
       // 拖拽结束后dom变换
       if (cloneDragged && dragged) {
-        dragged.draggable = false;
-        if (this.lastDisplay) {
-          dragged.style.display = this.lastDisplay;
+        if(dragged?.draggable) {
+          dragged.draggable = false;
+          if (this.lastDisplay) {
+            dragged.style.display = this.lastDisplay;
+          }
         }
         cloneDragged.draggable = false;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
