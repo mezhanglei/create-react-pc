@@ -5,7 +5,7 @@ import { ELementProps, FormDesignData } from './components/configs';
 export interface SelectedType {
   name?: string; // 当前表单控件节点
   parent?: string; // 表单控件父节点
-  source?: string; // 来源的组件
+  source: string; // 来源的组件
   field?: ELementProps; // 所在组件的field
 }
 

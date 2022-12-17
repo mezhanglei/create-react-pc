@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { Tabs } from 'antd';
-import SelectedSettings from './selected-settings';
+import ComponentSettings from './component-settings';
 import './index.less';
 
 export interface DesignPropertiesProps {
@@ -18,7 +18,7 @@ function DesignProperties(props: DesignPropertiesProps, ref: any) {
   const TabsData = [{
     key: 'component',
     tab: '属性配置',
-    component: SelectedSettings
+    component: ComponentSettings
   }]
 
   const cls = classnames(prefixCls, className)

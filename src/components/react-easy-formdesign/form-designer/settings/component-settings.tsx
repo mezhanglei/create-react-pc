@@ -32,17 +32,14 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   useEffect(() => {
     // 根据selected回填数据
-    if (isNoSelected(selectedName)) return;
-    const curSettings = getCurSettings(designer, selectedPath); // 主要配置表单
-    const otherSettingsList = getOtherSettingsList(designer, selectedPath); // 其他配置表单列表
-    setCurSettings(curSettings);
-    setOtherSettingsList(otherSettingsList);
+    if (isNoSelected(selectedPath)) return;
+    setForm(selectedPath);
     setEdit({ settingsForm: form });
-    setFormValue();
+    setFormValue(selectedPath);
   }, [selectedPath]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
-    if (isNoSelected(selectedName)) return;
+    if (isNoSelected(selectedPath)) return;
     const settingsValues = form.getFieldValue();
     updateSelectedValues(designer, designerForm, selectedPath, settingsValues);
     // 当前字段名更改则同步更改selected
@@ -52,8 +49,18 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     }
   }
 
+  // 设置配置表单
+  const setForm = (selectedPath: string) => {
+    if (isNoSelected(selectedPath)) return;
+    const curSettings = getCurSettings(designer, selectedPath); // 主要配置表单
+    const otherSettingsList = getOtherSettingsList(designer, selectedPath); // 其他配置表单列表
+    setCurSettings(curSettings);
+    setOtherSettingsList(otherSettingsList);
+  }
+
   // 配置属性表单值
-  const setFormValue = () => {
+  const setFormValue = (selectedPath: string) => {
+    if (isNoSelected(selectedPath)) return;
     const curSettingsValues = getSelectedValues(designer, selectedPath); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值
     updateSelectedValues(designer, designerForm, selectedPath, curSettingsValues); // 同步更新节点控件
@@ -83,5 +90,5 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   );
 };
 
-SelectedSettings.displayName = 'selected-settings';
+SelectedSettings.displayName = 'component-settings';
 export default React.forwardRef(SelectedSettings);

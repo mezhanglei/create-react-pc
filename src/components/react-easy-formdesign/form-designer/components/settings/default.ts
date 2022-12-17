@@ -18,7 +18,7 @@ const settings = {
   },
   gutter: {
     label: '标签间距',
-    type: 'SliderNumber',
+    type: 'InputNumber',
     props: {
       min: 0,
       max: 300
@@ -26,7 +26,7 @@ const settings = {
   },
   labelWidth: {
     label: '标签宽度',
-    type: 'SliderNumber',
+    type: 'InputNumber',
     initialValue: 120,
     props: {
       min: 0,
