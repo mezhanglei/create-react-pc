@@ -68,10 +68,8 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
 
   const Tool = (
     <div className='wrapper-tools'>
-      <div>
-        <i className='iconfont icon-shanchu' onClick={deleteItem} />
-        <i className='iconfont icon-fuzhi' onClick={copyItem} />
-      </div>
+      <i className='iconfont icon-fuzhi' onClick={copyItem} />
+      <i className='iconfont icon-shanchu' onClick={deleteItem} />
     </div>
   );
 

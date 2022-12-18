@@ -7,6 +7,7 @@ export interface TagProps {
   style?: CSSProperties
   children: any
   onChange: () => void
+  icon?: string;
 }
 const prefixCls = 'component-tag';
 function Tag(props: TagProps, ref: any) {
