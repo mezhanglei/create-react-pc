@@ -9,6 +9,7 @@ export interface ItemProps extends LabelBaseProps, ControlBaseProps {
   label?: string;
   inline?: boolean;
   layout?: Layout;
+  compact?: boolean;
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
@@ -19,6 +20,7 @@ const classes = {
   field: prefixCls,
   inline: `${prefixCls}--inline`,
   required: `${prefixCls}--required`,
+  compact: `${prefixCls}--compact`,
   error: `${prefixCls}--error`
 };
 
@@ -42,6 +44,7 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
     labelStyle,
     inline,
     layout = "horizontal",
+    compact,
     className,
     style,
     children,
@@ -52,6 +55,7 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
     classes.field,
     layout ? `${classes.field}--${layout}` : '',
     required ? classes.required : '',
+    compact ? classes.compact : '',
     error ? classes.error : '',
     inline ? classes.inline : '',
     className ? className : ''

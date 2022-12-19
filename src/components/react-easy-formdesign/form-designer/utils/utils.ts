@@ -23,6 +23,7 @@ export const getSelectedValues = (designer: FormRenderStore, selectedPath: strin
   }
   const expandSettings = getExpandSettings(designer, selectedPath); // 选中节点已存在的配置表单
   const lastValues = getInitialValues(expandSettings);
+  console.log(lastValues, 222)
   const result = { ...lastValues, ...curValues };
   return result;
 }

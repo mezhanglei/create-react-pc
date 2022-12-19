@@ -46,22 +46,6 @@ const settings = {
       ]
     }
   },
-  colon: {
-    type: 'Checkbox',
-    valueProp: 'checked',
-    initialValue: false,
-    props: {
-      children: '携带冒号'
-    }
-  },
-  required: {
-    type: 'Checkbox',
-    valueProp: 'checked',
-    initialValue: false,
-    props: {
-      children: '必填标志'
-    }
-  },
   suffix: {
     label: '后缀',
     type: 'Input'
@@ -69,7 +53,19 @@ const settings = {
   footer: {
     label: '描述',
     type: 'Input'
-  }
+  },
+  colon: {
+    label: '携带冒号',
+    type: 'Switch',
+    valueProp: 'checked',
+    initialValue: false,
+  },
+  required: {
+    label: '必填标志',
+    type: 'Switch',
+    valueProp: 'checked',
+    initialValue: false,
+  },
 }
 
 export default ['表单域设置', settings] as [string, typeof settings]
