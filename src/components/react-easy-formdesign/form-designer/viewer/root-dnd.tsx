@@ -5,7 +5,7 @@ import './index.less';
 import { defaultGetId } from '../utils/utils';
 import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { ConfigElements, ELementProps } from '../components/configs';
+import { ConfigElementsMap, ELementProps } from '../components/configs';
 
 export interface RootDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -50,11 +50,10 @@ function RootDnd(props: RootDndProps) {
     const dropGroupIsList = parentData instanceof Array;
     // 从侧边栏插入进来
     if (fromCollection?.type === DndGroup) {
-      const source = from?.id as string;
-      const elements = ConfigElements[fromCollection?.elementType]
-      const item = elements[source]
-      const field = { ...item, source, ...getInitialValues(item?.settings) }
-      const addItem = dropGroupIsList ? field : { ...field, name: defaultGetId(source) };
+      const elementId = from?.id as string;
+      const item = ConfigElementsMap[elementId];
+      const field = { ...item, ...getInitialValues(item?.settings) }
+      const addItem = dropGroupIsList ? field : { ...field, name: defaultGetId(item?.id) };
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {

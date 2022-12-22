@@ -79,7 +79,7 @@ export const getCurSettings = (designer: FormRenderStore, selectedPath: string) 
 export const getOtherSettingsList = (designer: FormRenderStore, selectedPath: string) => {
   if (isNoSelected(selectedPath)) return;
   const selectedItem = designer.getItemByPath(selectedPath) as ELementProps;
-  const otherSettingsList = selectedItem?.source ? CommonSettings[selectedItem?.source] : []
+  const otherSettingsList = selectedItem?.id ? CommonSettings[selectedItem?.id] : []
   return otherSettingsList;
 }
 

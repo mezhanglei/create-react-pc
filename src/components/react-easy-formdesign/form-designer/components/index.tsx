@@ -29,12 +29,12 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
   const cls = classnames(prefixCls, className);
 
-  const onChange = (source: string, item: ELementProps) => {
+  const onChange = (item: ELementProps) => {
     const newIndex = getEndIndex(selectedName, properties, selectedParent) + 1; // 插入位置序号
     const isListItem = endIsListItem(selectedPath);
     const field = { ...item, ...getInitialValues(item?.settings) };
     // 非数组项需要生成id
-    const addItem = isListItem ? field : { ...field, name: defaultGetId(source) };
+    const addItem = isListItem ? field : { ...field, name: defaultGetId(item?.id) };
     designer?.addItemByIndex(addItem, newIndex, selectedParent);
   }
 
@@ -43,11 +43,11 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
       <Tabs className='components-tabs'>
         {
           TabsData?.map((item) => {
-            const { data, ...rest } = item;
+            const { children, ...rest } = item;
             return (
               <Tabs.TabPane {...rest}>
                 {
-                  data?.map((sub, subIndex) => {
+                  children?.map((sub, subIndex) => {
                     return <ComponentList {...sub} tabKey={rest?.key} key={subIndex} onChange={onChange} />
                   })
                 }

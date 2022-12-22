@@ -11,9 +11,9 @@ export interface ComponentListProps {
   style?: CSSProperties;
   title: string;
   elementType: string;
-  elements?: { [key: string]: ELementProps };
+  elements?: ELementProps[];
   tabKey: string;
-  onChange?: (name: string, item: ELementProps, elementType?: string, tabKey?: string) => void;
+  onChange?: (item: ELementProps, elementType?: string, tabKey?: string) => void;
 }
 export const DndGroup = 'components'
 const prefixCls = 'components-list';
@@ -37,8 +37,9 @@ function ComponentList(props: ComponentListProps, ref: any) {
         collection={{ type: DndGroup, tabKey: tabKey, elementType: elementType }}
       >
         {
-          Object.entries(elements || {})?.map(([source, item], index) => {
-            return <Tag key={index} data-id={source} icon={IconFonts[source]} onChange={() => onChange?.(source, { ...item, source }, elementType, tabKey)}>{item.label}</Tag>
+          elements?.map((item, index) => {
+            const id = item?.id as string;
+            return <Tag key={index} data-id={id} icon={IconFonts[id]} onChange={() => onChange?.(item, elementType, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>

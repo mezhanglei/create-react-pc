@@ -39,7 +39,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = designer?.getItemByPath(currentPath);
-    const addItem = isListIndex(name) ? newField : { ...newField, name: defaultGetId(field?.source) }
+    const addItem = isListIndex(name) ? newField : { ...newField, name: defaultGetId(field?.id) }
     designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
@@ -54,7 +54,6 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
       selected: {
         name: name,
         parent: parent,
-        source: field?.source,
         field: field
       }
     })
