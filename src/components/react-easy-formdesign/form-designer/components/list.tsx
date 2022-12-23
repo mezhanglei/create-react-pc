@@ -4,7 +4,6 @@ import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './list.less';
 import { ELementProps } from './configs';
-import { IconFonts } from './iconfont';
 
 export interface ComponentListProps {
   className?: string;
@@ -39,7 +38,7 @@ function ComponentList(props: ComponentListProps, ref: any) {
         {
           elements?.map((item, index) => {
             const id = item?.id as string;
-            return <Tag key={index} data-id={id} icon={IconFonts[id]} onChange={() => onChange?.(item, elementType, tabKey)}>{item.label}</Tag>
+            return <Tag key={index} data-id={id} icon={item?.icon} onChange={() => onChange?.(item, elementType, tabKey)}>{item.label}</Tag>
           })
         }
       </DndSortable>

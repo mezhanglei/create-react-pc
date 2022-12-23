@@ -6,6 +6,7 @@ import radio from './base/radio';
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
   id?: string;
+  icon?: string;
   settings?: FormFieldProps['properties']; // 属性配置项
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
@@ -42,7 +43,7 @@ export const ConfigElements = TabsData.reduce((pre: ELementProps[], cur) => {
   const children = cur?.children;
   for (let i = 0; i < children?.length; i++) {
     const elements = children[i]?.elements;
-    temp.concat(elements)
+    temp.concat(elements);
   }
   return pre.concat(temp)
 }, []);

@@ -8,5 +8,5 @@ export default {
       label: '默认值',
       type: 'Input'
     },
-  }
+  },
 }
