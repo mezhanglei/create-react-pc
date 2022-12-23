@@ -1,7 +1,7 @@
 import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
-import input from './base/input';
-import radio from './base/radio';
+import input from './input';
+import radio from './radio';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
