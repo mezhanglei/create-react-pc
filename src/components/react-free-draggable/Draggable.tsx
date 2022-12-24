@@ -4,7 +4,6 @@ import { DraggableProps, EventHandler, DragTypes, DragData, BoundsInterface, Dra
 import { isElementSVG } from "@/utils/verify";
 import DraggableEvent from './DraggableEvent';
 import { findElement, getInsidePosition } from '@/utils/dom';
-import ReactDOM from 'react-dom';
 import { getPositionByBounds, getTranslation } from './utils/utils';
 
 /**
@@ -23,10 +22,12 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   dragType: DragTypes | undefined;
   dragStartData?: DragData;
   isUninstall: boolean | undefined;
+  handleRef: any;
   constructor(props: DraggableProps) {
     super(props);
     this.slackX = 0;
     this.slackY = 0;
+    this.handleRef = React.createRef();
     // dragStart时的数据
     this.state = {
       isSVG: false
@@ -106,7 +107,7 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
   }
 
   findDOMNode() {
-    return this.props?.forwardedRef?.current || ReactDOM.findDOMNode(this);
+    return this.props?.forwardedRef?.current || this.handleRef?.current;
   }
 
   // 获取定位父元素，涉及的位置相对于该父元素
@@ -202,8 +203,6 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
     this.slackX = 0;
     this.slackY = 0;
     const endData = { ...eventData, ...dragData };
-    // 回调函数先执行然后再重置状态
-    onEnd && onEnd(e, endData);
     // 组件没卸载情况下设置位置
     if (!isUninstall) {
       // 根据props值设置translate
@@ -215,6 +214,8 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
         this.setDragdata(dragStartData, x, y);
       }
     }
+    // 回调函数先执行然后再重置状态
+    onEnd && onEnd(e, endData);
   };
 
   render() {
@@ -245,13 +246,15 @@ class Draggable extends React.Component<DraggableProps, DraggableState> {
       y: dragData?.translateY
     };
 
+    const ref = forwardedRef ?? this.handleRef
+
     const mergeStyle = { ...children.props.style, ...style }
     const transformValue = isSVG ? getTranslation(currentPosition, positionOffset, '') : getTranslation(currentPosition, positionOffset, 'px')
     const transformSet = isSVG ? { transform: transformValue, style: mergeStyle } : { style: { ...mergeStyle, transform: transformValue } }
 
     return (
       <DraggableEvent
-        ref={forwardedRef}
+        ref={ref}
         {...DraggableEventProps}
         {...transformSet}
         className={cls}

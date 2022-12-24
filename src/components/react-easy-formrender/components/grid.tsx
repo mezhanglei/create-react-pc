@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, ColProps, Row, RowProps } from "react-flexbox-grid";
+import { Col, ColProps, Row, RowProps } from "antd";
 import { GeneratePrams } from '../types';
 import './grid.less';
 import classnames from 'classnames';
@@ -15,7 +15,7 @@ export interface FromColProps extends ColProps {
 // 列宽
 export const getColProps = (props: FromColProps, inline?: boolean) => {
   const { xs, sm, md, lg, span, ...restProps } = props || {};
-  const maxspan = 12;
+  const maxspan = 24;
   // 计算layout带来的影响
   const getValue = (inline?: boolean, value?: number) => {
     if (!inline) {

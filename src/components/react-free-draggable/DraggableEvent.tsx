@@ -2,7 +2,6 @@ import React from 'react';
 import { matchParent, addEvent, removeEvent, getEventPosition, findElement, css, getClientXY, getWindow } from "@/utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
 import { DragDirection, DragDirectionCode, DragEventData, DraggableEventProps, EventType } from "./utils/types";
-import ReactDOM from 'react-dom';
 import { MouseButton } from '@/utils/mouse';
 import { addUserSelectStyles, removeUserSelectStyles, snapToGrid } from './utils/utils';
 
@@ -29,10 +28,12 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   child: any;
   cloneLayer: any;
   initStyle: { width: string, height: string, left: number, top: number } | undefined
+  handleRef: any;
   constructor(props: DraggableEventProps) {
     super(props);
     this.dragging = false;
     this.eventData = {};
+    this.handleRef = React.createRef();
     this.state = {
     };
   }
@@ -66,7 +67,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
 
   findDOMNode() {
     const { forwardedRef } = this.props;
-    return forwardedRef?.current || ReactDOM.findDOMNode(this);
+    return forwardedRef?.current || this.handleRef.current;
   }
 
   // 拖拽句柄
@@ -314,8 +315,9 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       style,
       ...rest
     } = this.props;
+    const ref = forwardedRef ?? this.handleRef
     return React.cloneElement(React.Children.only(children), {
-      ref: forwardedRef,
+      ref: ref,
       style: { ...children.props.style, ...style },
       ...rest
     });

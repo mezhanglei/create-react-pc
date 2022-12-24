@@ -103,9 +103,9 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     this.setState({
       dragType: DragTypes.Start
     });
-    this.lastZindex = data?.node?.style?.zIndex;
-    if (data?.node?.style?.zIndex != '999') {
-      data.node.style.zIndex = '999'
+    this.lastZindex = data?.target?.style?.zIndex;
+    if (data?.target?.style?.zIndex != '999') {
+      data.target.style.zIndex = '999'
     }
     const { x = 0, y = 0 } = data;
     const { GridX, GridY } = this.calPxToGridXY(x, y)
@@ -117,8 +117,8 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     this.setState({
       dragType: DragTypes.Move
     });
-    if (data?.node?.style?.zIndex != '999') {
-      data.node.style.zIndex = '999'
+    if (data?.target?.style?.zIndex != '999') {
+      data.target.style.zIndex = '999'
     }
     const { x = 0, y = 0 } = data;
     const { GridX, GridY } = this.calPxToGridXY(x, y);
@@ -130,7 +130,7 @@ export default class GridItem extends React.Component<GridItemProps, { dragType?
     this.setState({
       dragType: DragTypes.End
     });
-    data.node.style.zIndex = this.lastZindex;
+    data.target.style.zIndex = this.lastZindex;
     const { x = 0, y = 0 } = data;
     const { GridX, GridY } = this.calPxToGridXY(x, y);
     if (this.props.onEnd) this.props.onEnd(this.addEventParams({ GridX, GridY }), e);

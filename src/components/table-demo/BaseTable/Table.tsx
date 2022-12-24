@@ -1,6 +1,15 @@
 import React, { useCallback, useMemo } from "react";
 import cx from "classnames";
-import { Classes, StyledWrapTable } from "./style";
+import './Table.less';
+
+const prefix = "r-";
+export const Classes = {
+  Table: `${prefix}table`,
+  TableBody: `${prefix}table-body`,
+  TableRow: `${prefix}table-row`,
+  TableHead: `${prefix}table-head`,
+  TableCell: `${prefix}table-cell`,
+};
 
 export interface ColumnType {
   key: string;
@@ -102,20 +111,18 @@ const Table: React.FC<TableProps> = ({
   );
 
   return (
-    <StyledWrapTable>
-      <table
-        className={cx([Classes.Table, className])}
-        style={{ tableLayout: tableLayout, ...style }}
-      >
-        <ColumnGroup columns={columns} />
-        <TableHead columns={columns}></TableHead>
-        <TableBody
-          getRowKey={getRowKey}
-          columns={columns}
-          dataSource={dataSource}
-        />
-      </table>
-    </StyledWrapTable>
+    <table
+      className={cx([Classes.Table, className])}
+      style={{ tableLayout: tableLayout, ...style }}
+    >
+      <ColumnGroup columns={columns} />
+      <TableHead columns={columns}></TableHead>
+      <TableBody
+        getRowKey={getRowKey}
+        columns={columns}
+        dataSource={dataSource}
+      />
+    </table>
   );
 };
 

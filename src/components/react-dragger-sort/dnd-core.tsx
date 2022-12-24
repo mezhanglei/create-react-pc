@@ -132,7 +132,7 @@ export default function BuildDndSortable() {
     }
 
     // 鼠标拖拽开始事件(鼠标端，并且触发时其他事件将不会再触发)
-    onDragStart = (e: EventType) => {
+    onDragStart = (e: any) => {
       e.stopPropagation();
       const currentTarget = e.currentTarget as HTMLElement;
       if (currentTarget) {
@@ -143,13 +143,13 @@ export default function BuildDndSortable() {
     }
 
     // 鼠标dragOver事件(鼠标端)
-    onDragOver = (e: EventType) => {
+    onDragOver = (e: any) => {
       setMouseEvent(e, 'dragover', DropEffect.Move)
       this.moveHandle(e);
     }
 
     // 拖拽结束事件(鼠标)
-    onDragEnd = (e: EventType) => {
+    onDragEnd = (e: any) => {
       this.onEndHandle(e)
     }
 
@@ -422,7 +422,6 @@ export default function BuildDndSortable() {
           showLayer={ismobile ? true : false}
           onDragStart={this.onDragStart}
           onDragEnd={this.onDragEnd}
-          {...child.props}
         >
           {child}
         </DraggableEvent>

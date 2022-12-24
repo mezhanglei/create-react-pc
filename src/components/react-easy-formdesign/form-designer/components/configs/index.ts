@@ -39,11 +39,11 @@ export const TabsData = [{
 
 // 所有元素的展平列表
 export const ConfigElements = TabsData.reduce((pre: ELementProps[], cur) => {
-  const temp: ELementProps[] = [];
+  let temp: ELementProps[] = [];
   const children = cur?.children;
   for (let i = 0; i < children?.length; i++) {
     const elements = children[i]?.elements;
-    temp.concat(elements);
+    temp = temp.concat(elements);
   }
   return pre.concat(temp)
 }, []);

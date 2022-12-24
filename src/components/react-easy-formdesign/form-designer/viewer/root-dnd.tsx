@@ -12,7 +12,7 @@ export interface RootDndProps extends GeneratePrams<ELementProps> {
 }
 
 // 根节点的拖放控制
-function RootDnd(props: RootDndProps) {
+function RootDnd(props: RootDndProps, ref) {
   const { children, store } = props;
 
   const onUpdate: DndProps['onUpdate'] = (params) => {
@@ -63,6 +63,7 @@ function RootDnd(props: RootDndProps) {
 
   return (
     <DndSortable
+    ref={ref}
       onUpdate={onUpdate}
       onAdd={onAdd}
       data-type="ignore"
@@ -75,4 +76,4 @@ function RootDnd(props: RootDndProps) {
   )
 };
 
-export default RootDnd;
+export default React.forwardRef(RootDnd);

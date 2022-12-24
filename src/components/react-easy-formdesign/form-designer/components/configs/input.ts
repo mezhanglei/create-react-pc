@@ -2,7 +2,7 @@ export default {
   id: 'input',
   label: '输入框',
   type: 'Input',
-  outside: { type: 'col', props: { span: 12 } },
+  outside: { type: 'col', props: { span: 24 } },
   settings: {
     type: {
       label: "输入框类型",

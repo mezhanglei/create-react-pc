@@ -5,7 +5,7 @@ const settings = {
     type: 'Input'
   },
   layout: {
-    label: "标签展示模式",
+    label: "标签布局",
     type: "Radio.Group",
     initialValue: "horizontal",
     props: {
