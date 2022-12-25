@@ -1,6 +1,6 @@
 import { InputNumber, Slider } from 'antd';
 import React, { useEffect, useState } from 'react';
-import './slider-number.less';
+import './index.less';
 
 export interface SliderNumberProps {
   value: number;

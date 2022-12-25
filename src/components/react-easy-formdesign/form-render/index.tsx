@@ -1,5 +1,6 @@
-import RenderFormDefault, {RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
+import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
 import React from 'react';
+import { BaseComponents } from './base-components';
 import { AntdBaseControls } from './base-controls';
 
 export * from '@/components/react-easy-formrender';
@@ -7,16 +8,13 @@ export * from '@/components/react-easy-formrender';
 // 重新包装子元素渲染组件
 export function RenderFormChildren(props: RenderFormChildrenProps) {
   return (
-    <RenderFormChilds {...props} controls={{ ...AntdBaseControls, ...props?.controls }} />
+    <RenderFormChilds {...props} controls={{ ...AntdBaseControls, ...props?.controls }} components={{ ...BaseComponents, ...props?.components }} />
   );
 }
 
 // 完整表单组件
-export interface FormRenderProps extends RenderFormProps {
-  controls?: any
-}
-export default function FormRender(props: FormRenderProps) {
+export default function FormRender(props: RenderFormProps) {
   return (
-    <RenderFormDefault {...props} controls={{ ...AntdBaseControls, ...props?.controls }} />
+    <RenderFormDefault {...props} controls={{ ...AntdBaseControls, ...props?.controls }} components={{ ...BaseComponents, ...props?.components }} />
   );
 }

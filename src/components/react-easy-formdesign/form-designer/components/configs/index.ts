@@ -2,6 +2,7 @@ import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
 import input from './input';
 import radio from './radio';
+import table from './table';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
@@ -32,7 +33,7 @@ export const TabsData = [{
     {
       title: '',
       elementType: '',
-      elements: []
+      elements: [table]
     }
   ]
 }]

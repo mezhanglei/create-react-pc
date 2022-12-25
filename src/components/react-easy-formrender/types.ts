@@ -13,8 +13,14 @@ export interface FormComponent {
   hidden?: string | boolean;
 }
 
+export type UnionComponent<P> =
+  | React.ComponentType<P>
+  | React.ForwardRefExoticComponent<P>
+  | React.FC<P>
+  | keyof React.ReactHTML;
+
 // 表单上的组件联合类型
-export type FieldUnionType = FormComponent | Array<FormComponent> | React.ComponentType<any> | Function
+export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function
 
 export interface BaseFieldProps extends FormComponent {
   ignore?: boolean; // 忽略当前节点不会作为表单值
