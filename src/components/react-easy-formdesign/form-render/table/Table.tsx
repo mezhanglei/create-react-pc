@@ -1,4 +1,4 @@
-import React, { LegacyRef, useCallback } from "react";
+import React, { CSSProperties, LegacyRef, useCallback } from "react";
 import cx from "classnames";
 import './Table.less';
 import { ColumnGroup } from "./columnGroup";
@@ -19,11 +19,14 @@ export interface ColumnType {
   title: string;
   width?: React.CSSProperties["width"];
   align?: React.CSSProperties["textAlign"];
+  render?: (val: unknown, record?: unknown, index?: number) => any;
 }
 
-export interface TableProps extends React.HtmlHTMLAttributes<HTMLTableElement> {
-  columns: ColumnType[];
-  dataSource?: { [x: string]: any }[];
+export interface TableProps {
+  className?: string;
+  style?: CSSProperties;
+  columns?: ColumnType[];
+  dataSource?: { [x: string]: unknown }[];
   rowKey?: string | ((record: { [x: string]: any }) => string);
   tableLayout?: React.CSSProperties["tableLayout"];
 }

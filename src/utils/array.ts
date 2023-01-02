@@ -393,7 +393,7 @@ export function findInArray(array: any, callback: (value: any, i?: number, array
 
 // 转化对象数组为map数据
 export const getArrMap = <T = any>(arr: T[] = [], valueKey?: string, labelKey?: string) => {
-  const data: { [key: string]: T | T[keyof T] } = {};
+  const data: { [key: string]: T } = {};
   arr.forEach((item, index) => valueKey && item?.[valueKey] && (data[item?.[valueKey]] = labelKey ? item[labelKey] : item));
   return data;
 };

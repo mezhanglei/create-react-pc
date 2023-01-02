@@ -3,6 +3,7 @@ export default {
   label: '输入框',
   type: 'Input',
   settings: {
+    // == 表单域上的属性
     type: {
       label: "输入框类型",
       type: "Select",
@@ -21,7 +22,7 @@ export default {
       label: '默认值',
       type: 'Input'
     },
-    // 控件自身的属性
+    // === 控件自身的props的设置
     props: {
       compact: true,
       properties: {

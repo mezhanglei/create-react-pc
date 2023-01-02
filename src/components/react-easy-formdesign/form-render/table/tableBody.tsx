@@ -14,11 +14,13 @@ export const TableBody: React.FC<TableBodyProps> = React.forwardRef((props, ref:
   const { dataSource, columns, getRowKey, className, children, ...rest } = props;
 
   const childs = (
-    dataSource?.map((record) => (
+    dataSource?.map((record, rowIndex) => (
       <TableRow key={getRowKey(record)}>
-        {columns.map((cell) => (
-          <TableCell key={cell.key}> {record[cell.key]}</TableCell>
-        ))}
+        {columns.map((cell) => {
+          const render = cell?.render;
+          const child = typeof render == 'function' ? render(record[cell.key], record, rowIndex) : record[cell.key];
+          return <TableCell key={cell.key}>{child}</TableCell>
+        })}
       </TableRow>
     ))
   );

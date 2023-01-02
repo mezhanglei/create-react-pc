@@ -2,8 +2,8 @@ import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { nanoid } from 'nanoid';
-import { ELementProps } from '../components/configs';
-import CommonSettings from '../components/settings';
+import { ELementProps, ElementsType } from '../components/configs';
+import CommonSettings, { CommonSettingsItem } from '../components/settings';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
@@ -21,7 +21,9 @@ export const getSelectedValues = (designer: FormRenderStore, selectedPath: strin
   if (!endIsListItem(selectedPath)) {
     curValues['name'] = getPathEnd(selectedPath);
   }
-  const expandSettings = getExpandSettings(designer, selectedPath); // 选中节点已存在的配置表单
+  // 获取所有的配置表单
+  const expandSettings = getExpandSettings(designer, selectedPath);
+  // 从配置表单中获取初始设置值
   const lastValues = getInitialValues(expandSettings);
   const result = { ...lastValues, ...curValues };
   return result;
@@ -31,10 +33,14 @@ export const getSelectedValues = (designer: FormRenderStore, selectedPath: strin
 export const updateSelectedValues = (designer: FormRenderStore, designerForm: FormStore, selectedPath: string, settingValues: FieldProps) => {
   if (isNoSelected(selectedPath)) return;
   const { name, ...field } = settingValues || {};
-  // 更新控件的值
-  designerForm?.setFieldValue(selectedPath, field?.initialValue);
-  // 更新控件的属性
-  designer?.updateItemByPath(selectedPath, field);
+  // 同步控件的值
+  if (field?.initialValue !== undefined) {
+    designerForm?.setFieldValue(selectedPath, field?.initialValue);
+  }
+  if (field) {
+    // 更新控件的属性
+    designer?.updateItemByPath(selectedPath, field);
+  }
   // 更新控件的字段名
   if (name) {
     designer?.updateNameByPath(selectedPath, name);
@@ -45,10 +51,14 @@ export const updateSelectedValues = (designer: FormRenderStore, designerForm: Fo
 export const setSelectedValues = (designer: FormRenderStore, designerForm: FormStore, selectedPath: string, settingValues: FieldProps) => {
   if (isNoSelected(selectedPath)) return;
   const { name, ...field } = settingValues || {};
-  // 更新控件的值
-  designerForm?.setFieldValue(selectedPath, field?.initialValue);
+  // 同步控件的值
+  if (field?.initialValue !== undefined) {
+    designerForm?.setFieldValue(selectedPath, field?.initialValue);
+  }
   // 覆盖设置控件的属性
-  designer?.setItemByPath(selectedPath, field);
+  if (field) {
+    designer?.setItemByPath(selectedPath, field);
+  }
   // 更新控件的字段名
   if (name) {
     designer?.updateNameByPath(selectedPath, name);
@@ -56,7 +66,7 @@ export const setSelectedValues = (designer: FormRenderStore, designerForm: FormS
 }
 
 // 获取路径节点获取当前的属性配置(components/configs中控件的settings属性)
-export const getCurSettings = (designer: FormRenderStore, selectedPath: string) => {
+export const getCurSettings = (designer: FormRenderStore, selectedPath: string): ElementsType | undefined => {
   if (isNoSelected(selectedPath)) return;
   const selectedItem = designer.getItemByPath(selectedPath);
   const originSettings = selectedItem?.['settings'];
@@ -74,23 +84,24 @@ export const getCurSettings = (designer: FormRenderStore, selectedPath: string) 
   return baseSettings;
 }
 
-// 根据路径节点获取其他配置(components/settings配置其他属性)
-export const getOtherSettingsList = (designer: FormRenderStore, selectedPath: string) => {
+// 根据路径节点获取公共配置(components/settings配置其他属性)
+export const getCommonSettingsList = (designer: FormRenderStore, selectedPath: string): CommonSettingsItem | undefined => {
   if (isNoSelected(selectedPath)) return;
   const selectedItem = designer.getItemByPath(selectedPath) as ELementProps;
-  const otherSettingsList = selectedItem?.id ? CommonSettings[selectedItem?.id] : []
-  return otherSettingsList;
+  const commonSettingsList = selectedItem?.id ? CommonSettings[selectedItem?.id] : []
+  return commonSettingsList;
 }
 
 // 根据路径节点获取展平的配置
 export const getExpandSettings = (designer: FormRenderStore, selectedPath: string) => {
   if (isNoSelected(selectedPath)) return;
   const curSettings = getCurSettings(designer, selectedPath);
-  const otherSettingsList = getOtherSettingsList(designer, selectedPath);
+  const commonSettingsList = getCommonSettingsList(designer, selectedPath);
+  if (!commonSettingsList?.length) return curSettings;
   let expandSettings = {};
-  for (let i = 0; i < otherSettingsList?.length; i++) {
+  for (let i = 0; i < commonSettingsList?.length; i++) {
     // 遍历获取当前的配置项
-    const item = otherSettingsList[i][1];
+    const item = commonSettingsList[i][1];
     expandSettings = { ...expandSettings, ...item };
   }
   return { ...curSettings, ...expandSettings }

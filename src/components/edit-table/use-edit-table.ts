@@ -29,7 +29,7 @@ export interface TableConfig {
 export function useEditTable<T extends { key?: string }>(initialValue: T[], initialConfig = { page: 1, pageSize: 20 }) {
   const [dataSource, setData] = useState<T[]>([])
   const dataSourceRef = useRef<T[]>([])
-  const dataSourceMapRef = useRef<{ [key: string]: T }>({})
+  const dataSourceMapRef = useRef<{ [key: string]: any }>({})
   const validator = useValidator()
   // 当前表格的一些状态
   const [tableConfig, setConfig] = useState<TableConfig>(initialConfig)
@@ -41,7 +41,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
     const newValue = typeof value === 'function' ? value?.(oldValue) : value;
     dataSourceRef.current = newValue
     setData(newValue)
-    dataSourceMapRef.current = getArrMap(newValue, 'key')
+    dataSourceMapRef.current = getArrMap<T>(newValue, 'key')
     setTableConfig((last: any) => ({ ...last, total: newValue?.length }))
   }
 

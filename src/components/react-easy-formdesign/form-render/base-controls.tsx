@@ -11,6 +11,7 @@ import {
   Switch,
   TimePicker
 } from 'antd';
+import DataSourceComponent from './data-source';
 import { SliderNumber } from './slider-number';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
@@ -37,4 +38,5 @@ export const AntdBaseControls = {
   "Switch": Switch, // 切换组件
   "TimePicker": TimePicker, // 时分秒控件
   "TimePicker.RangePicker": TimePicker.RangePicker, // 时分秒范围控件
+  "DataSourceComponent": DataSourceComponent, // 用于显示数据源的控件
 }
