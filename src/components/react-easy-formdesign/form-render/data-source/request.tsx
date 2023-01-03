@@ -2,6 +2,7 @@ import { Col, Input, Row, Select } from "antd";
 import classNames from "classnames";
 import React, { CSSProperties, LegacyRef, useState } from "react";
 import { Form } from "..";
+import { useSelected } from "../../form-designer/utils/hooks";
 import { EditorSourceModal } from "./editor";
 
 export interface RequestSourceConfig {
@@ -36,6 +37,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
 
   const labelWidth = 80;
   const [requestConfig, setRequestConfig] = useState<RequestSourceProps>({});
+  const {selectedPath} = useSelected();
 
   return (
     <div className={classNames(classes.cls, className)} {...rest}>

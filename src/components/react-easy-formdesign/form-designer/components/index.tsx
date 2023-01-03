@@ -7,8 +7,8 @@ import ComponentList from './list';
 import { endIsListItem, getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ELementProps, TabsData } from '../components/configs';
 import { FormDesignContext } from '../designer-context';
-import { getCurrentPath } from '../../form-render';
 import { DesignprefixCls } from '../provider';
+import { useSelected } from '../utils/hooks';
 
 
 export interface DesignComponentsProps {
@@ -23,10 +23,10 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { designer, selected, properties } = useContext(FormDesignContext);
+  const { designer, properties } = useContext(FormDesignContext);
+  const { selected, selectedPath } = useSelected();
   const selectedName = selected?.name;
   const selectedParent = selected?.parent;
-  const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
   const cls = classnames(prefixCls, className);
 
   const onChange = (item: ELementProps) => {

@@ -1,9 +1,10 @@
 import React, { CSSProperties, useContext, useEffect, useMemo, useState } from 'react'
 import classnames from 'classnames';
-import { Form, getCurrentPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
+import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
 import { FormDesignContext, FormEditContext } from '../designer-context';
 import { updateSelectedValues, getSelectedValues, isNoSelected, getCurSettings, getCommonSettingsList } from '../utils/utils';
 import CustomCollapse from '../../form-render/collapse';
+import { useSelected } from '../utils/hooks';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -17,11 +18,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { designer, designerForm, selected } = useContext(FormDesignContext);
-  const { setEdit } = useContext(FormEditContext)
-  const selectedName = selected?.name;
-  const selectedParent = selected?.parent;
-  const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
+  const { designer, designerForm } = useContext(FormDesignContext);
+  const { setEdit } = useContext(FormEditContext);
+  const { selected, selectedPath } = useSelected();
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const curSettings = useMemo(() => (getCurSettings(designer, selectedPath) || {}), [designer, selectedPath]);  // 主要配置表单

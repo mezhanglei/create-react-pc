@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { Tabs } from 'antd';
-import ComponentSettings from './component-settings';
+import ComponentSettings from './component';
 import './index.less';
 import { DesignprefixCls } from '../provider';
 
