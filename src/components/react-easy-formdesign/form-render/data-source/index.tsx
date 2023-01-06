@@ -1,8 +1,8 @@
 import { Radio } from "antd";
 import React, { LegacyRef, useMemo, useState } from "react";
 import TableSource from './options';
-import EditorSource from './editor';
-import RequestSource, {RequestSourceConfig} from './request';
+import { EditorCodeMirror } from './editor';
+import RequestSource from './request';
 import './index.less';
 
 /**
@@ -16,8 +16,6 @@ export interface OptionsProps {
 
 export interface DataSourceComponentProps extends OptionsProps {
   includes?: string[]; // 当前可用模块
-  module?: string; // 当前所选的组件类型
-  requestConfig?: RequestSourceConfig; // request组件的请求配置
 }
 
 const prefixCls = 'option-source'
@@ -30,10 +28,8 @@ const DataSourceComponent: React.FC<DataSourceComponentProps> = React.forwardRef
 
   const {
     includes = ['table', 'json', 'request'],
-    module,
     value,
     onChange,
-    requestConfig,
     ...rest
   } = props;
 
@@ -43,12 +39,12 @@ const DataSourceComponent: React.FC<DataSourceComponentProps> = React.forwardRef
     { value: 'request', label: '接口请求' },
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
 
-  const [tab, setTab] = useState<string>(module || buttons[0]?.value);
+  const [tab, setTab] = useState<string>(buttons[0]?.value);
 
   const ComponentMap = {
     table: <TableSource value={value} onChange={onChange} {...rest} />,
-    json: <EditorSource value={value} onChange={onChange} {...rest} />,
-    request: <RequestSource value={requestConfig} />,
+    json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
+    request: <RequestSource />,
   }
 
   const Component = ComponentMap[tab]

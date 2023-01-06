@@ -1,11 +1,11 @@
-import React, { useContext, CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import RenderForm, { getCurrentPath, RenderFormProps } from '../../form-render';
-import { FormDesignContext, FormEditContext } from '../designer-context';
 import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
 import RootDnd from './root-dnd';
 import { DesignprefixCls } from '../provider';
+import { useFormDesign, useFormEdit } from '../utils/hooks';
 
 export interface DesignViewerProps {
   className?: string
@@ -15,8 +15,8 @@ const prefixCls = `${DesignprefixCls}-viewer`;
 
 function DesignViewer(props: DesignViewerProps, ref: any) {
 
-  const { designer, designerForm, settingsForm, properties } = useContext(FormDesignContext);
-  const { setEdit } = useContext(FormEditContext)
+  const { designer, designerForm, settingsForm, properties } = useFormDesign();
+  const setEdit = useFormEdit();
 
   const {
     style,

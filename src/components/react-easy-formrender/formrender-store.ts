@@ -23,78 +23,78 @@ export class FormRenderStore {
 
   // 获取当前组件的properties
   public getProperties() {
-    return this.properties;
+    return deepClone(this.properties || {});
   }
 
   // 设置properties
   setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
-    this.properties = deepClone(data || {});
+    this.properties = data || {};
     this.notifyProperties();
   }
 
   // 更新指定路径的值
   updateItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
-    const properties = this.getProperties();
-    if (properties) {
-      let newProperties = updateItemByPath(properties, path, data);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      let newProperties = updateItemByPath(cloneProperties, path, data);
       this.setProperties(newProperties);
     }
   }
 
   // 设置指定路径的值
   setItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
-    const properties = this.getProperties();
-    if (properties) {
-      let newProperties = setItemByPath(properties, path, data);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      let newProperties = setItemByPath(cloneProperties, path, data);
       this.setProperties(newProperties);
     }
   }
 
   // 更新键
   updateNameByPath = (path: string, newName?: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      let newProperties = updateName(properties, path, newName);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      let newProperties = updateName(cloneProperties, path, newName);
       this.setProperties(newProperties);
     }
   }
 
   // 插入值，默认末尾
   addItemByIndex = (data: FormFieldProps | FormFieldProps[], index?: number, parent?: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      let newProperties = addItemByIndex(properties, data, index, parent);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      let newProperties = addItemByIndex(cloneProperties, data, index, parent);
       this.setProperties(newProperties);
     }
   }
 
   // 根据path删除一条
   delItemByPath = (path: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      let newProperties = setItemByPath(properties, path, undefined);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      let newProperties = setItemByPath(cloneProperties, path, undefined);
       this.setProperties(newProperties);
     }
   }
 
   // 获取指定路径的项
   getItemByPath = (path: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      return getItemByPath(properties, path);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      return getItemByPath(cloneProperties, path);
     }
   }
 
   // 从from到to更换位置
   moveItemByPath = (from: { parent?: string, index: number }, to: { parent?: string, index?: number }) => {
-    const properties = this.getProperties();
-    if (properties) {
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
       let newProperties;
       if (from?.parent === to?.parent) {
-        newProperties = moveSameLevel(properties, from, to);
+        newProperties = moveSameLevel(cloneProperties, from, to);
       } else {
-        newProperties = moveDiffLevel(properties, from, to);
+        newProperties = moveDiffLevel(cloneProperties, from, to);
       }
       this.setProperties(newProperties);
     }
@@ -111,30 +111,30 @@ export class FormRenderStore {
   // 同步表单渲染数据的变化
   private notifyProperties() {
     this.propertiesListeners.forEach((onChange) => {
-      const properties = this.getProperties()
-      onChange && onChange(properties, this.lastProperties);
+      const cloneProperties = this.getProperties()
+      onChange && onChange(cloneProperties, this.lastProperties);
     })
   }
 
   // 在目标路径后面插入数据
   addAfterByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      const nextIndex = getPathEndIndex(path, properties) + 1;
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      const nextIndex = getPathEndIndex(path, cloneProperties) + 1;
       const parent = getParent(path);
-      let newProperties = addItemByIndex(properties, data, nextIndex, parent);
+      let newProperties = addItemByIndex(cloneProperties, data, nextIndex, parent);
       this.setProperties(newProperties);
     }
   }
 
   // 在目标路径前面插入数据
   addBeforeByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
-    const properties = this.getProperties();
-    if (properties) {
-      const endIndex = getPathEndIndex(path, properties);
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      const endIndex = getPathEndIndex(path, cloneProperties);
       const beforeIndex = endIndex > 0 ? endIndex - 1 : 0;
       const parent = getParent(path);
-      let newProperties = addItemByIndex(properties, data, beforeIndex, parent);
+      let newProperties = addItemByIndex(cloneProperties, data, beforeIndex, parent);
       this.setProperties(newProperties);
     }
   }

@@ -2,10 +2,12 @@ import React, { CSSProperties, LegacyRef, useEffect, useRef, useState } from "re
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
-import { parseStringify, toStringify } from "@/utils/string";
+import { evalString, uneval } from "@/utils/string";
 import classNames from 'classnames';
 import './editor.less';
-import { Button, Modal } from "antd";
+import { Button, Input, Modal } from "antd";
+import { TextAreaProps } from "antd/lib/input";
+import { TextAreaRef } from "antd/lib/input/TextArea";
 
 const prefixCls = 'options-codemirror';
 const classes = {
@@ -13,14 +15,14 @@ const classes = {
   disabled: `${prefixCls}-disabled`,
   modal: `${prefixCls}-modal`,
 }
-export interface EditorSourceProps extends IUnControlledCodeMirror {
+export interface EditorCodeMirrorProps extends IUnControlledCodeMirror {
   value?: any;
   onChange?: (val: any) => void;
   disabled?: boolean; // 是否禁止输入
   style?: CSSProperties;
 }
-// 代码编辑器区域
-const EditorSource = React.forwardRef((props: EditorSourceProps, ref: LegacyRef<CodeMirror>) => {
+// 代码编辑器(不可以编辑函数)
+export const EditorCodeMirror = React.forwardRef((props: EditorCodeMirrorProps, ref: LegacyRef<CodeMirror>) => {
 
   const {
     value,
@@ -33,13 +35,13 @@ const EditorSource = React.forwardRef((props: EditorSourceProps, ref: LegacyRef<
 
   // 接收外界的值
   const toStr = (val: any) => {
-    return typeof val === 'string' ? val : toStringify(val)
+    return typeof val === 'string' ? val : uneval(val)
   }
 
   const onBlur: IUnControlledCodeMirror['onBlur'] = (editor) => {
     const codeStr = editor.getValue();
-    const code = parseStringify(codeStr);
-    onChange && onChange(code)
+    const code = evalString(codeStr);
+    onChange && onChange(code);
   }
 
   return (
@@ -64,12 +66,46 @@ const EditorSource = React.forwardRef((props: EditorSourceProps, ref: LegacyRef<
   );
 });
 
-export default EditorSource;
+// 函数代码编辑器(可以编辑函数)
+export interface EditorFnProps extends TextAreaProps {
+  value?: any;
+  onChange?: (val: any) => void;
+  disabled?: boolean; // 是否禁止输入
+  style?: CSSProperties;
+}
+export const EditorFnTextArea = React.forwardRef((props: EditorFnProps, ref: LegacyRef<TextAreaRef>) => {
 
+  const {
+    value,
+    onChange,
+    disabled,
+    className,
+    ...rest
+  } = props;
+
+  // 接收外界的值
+  const toStr = (val: any) => {
+    return typeof val === 'string' ? val : uneval(val)
+  }
+
+  const onBlur: TextAreaProps['onChange'] = (e) => {
+    const codeStr = e?.target?.value;
+    const code = evalString(codeStr);
+    onChange && onChange(code)
+  }
+
+  return (
+    <Input.TextArea
+      value={toStr(value)}
+      onBlur={onBlur}
+      {...rest}
+    />
+  );
+});
 
 // 代码编辑器弹窗
-export const EditorSourceModal = (
-  props: EditorSourceProps & {
+export const EditorCodeMirrorModal = (
+  props: EditorCodeMirrorProps & {
     onClose?: () => void;
   }) => {
 
@@ -87,7 +123,7 @@ export const EditorSourceModal = (
 
   // 转化为字符串
   const toStr = (val: any) => {
-    return typeof val === 'string' ? val : toStringify(val)
+    return typeof val === 'string' ? val : uneval(val)
   }
 
   useEffect(() => {
@@ -104,7 +140,7 @@ export const EditorSourceModal = (
     const editor = codemirror?.editor;
     if (editor) {
       const codeStr = editor.getValue();
-      const code = parseStringify(codeStr);
+      const code = evalString(codeStr);
       onChange && onChange(code);
       setCodeStr(codeStr);
     }
@@ -120,7 +156,7 @@ export const EditorSourceModal = (
     <>
       <div>
         <span>{codeStr}</span>
-        <Button disabled={disabled} onClick={showModal}>编辑数据</Button>
+        <Button type="link" disabled={disabled} onClick={showModal}>编辑数据</Button>
       </div>
       <Modal
         destroyOnClose
@@ -128,7 +164,7 @@ export const EditorSourceModal = (
         visible={visible}
         onCancel={closeModal}
         onOk={handleOk}>
-        <EditorSource
+        <EditorCodeMirror
           ref={codemirrorRef}
           value={value}
           options={options}

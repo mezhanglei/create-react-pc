@@ -1,10 +1,9 @@
-import React, { CSSProperties, useContext, useEffect, useMemo, useState } from 'react'
+import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { FormDesignContext, FormEditContext } from '../designer-context';
-import { updateSelectedValues, getSelectedValues, isNoSelected, getCurSettings, getCommonSettingsList } from '../utils/utils';
+import { updateDesignerItem, getDesignerItem, isNoSelected, getCurSettings, getCommonSettingsList } from '../utils/utils';
 import CustomCollapse from '../../form-render/collapse';
-import { useSelected } from '../utils/hooks';
+import { useFormDesign, useFormEdit } from '../utils/hooks';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -18,9 +17,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     style,
     className
   } = props;
-  const { designer, designerForm } = useContext(FormDesignContext);
-  const { setEdit } = useContext(FormEditContext);
-  const { selected, selectedPath } = useSelected();
+
+  const setEdit = useFormEdit();
+  const { selected, selectedPath, designer, designerForm } = useFormDesign();
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const curSettings = useMemo(() => (getCurSettings(designer, selectedPath) || {}), [designer, selectedPath]);  // 主要配置表单
@@ -35,7 +34,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
     if (isNoSelected(selectedPath)) return;
     const settingsValues = form.getFieldValue();
-    updateSelectedValues(designer, designerForm, selectedPath, settingsValues);
+    updateDesignerItem(designer, designerForm, selectedPath, settingsValues);
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
@@ -44,8 +43,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 设置配置表单
-  const setSettingsForm = (selectedPath: string) => {
-    if (isNoSelected(selectedPath)) {
+  const setSettingsForm = (path: string) => {
+    if (isNoSelected(path)) {
       setEdit({ settingsForm: null });
       return;
     };
@@ -53,11 +52,11 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 配置属性表单值
-  const setSettingsFormValue = (selectedPath: string) => {
-    if (isNoSelected(selectedPath)) return;
-    const curSettingsValues = getSelectedValues(designer, selectedPath); // 获取节点控件已有的值
+  const setSettingsFormValue = (path: string) => {
+    if (isNoSelected(path)) return;
+    const curSettingsValues = getDesignerItem(designer, path); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值
-    updateSelectedValues(designer, designerForm, selectedPath, curSettingsValues); // 同步更新节点控件
+    updateDesignerItem(designer, designerForm, path, curSettingsValues); // 同步更新节点控件
   }
 
   const renderCommonList = () => {

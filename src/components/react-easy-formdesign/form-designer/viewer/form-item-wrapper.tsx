@@ -1,12 +1,11 @@
 import { getCurrentPath, isListIndex } from '@/components/react-easy-formcore';
 import { defaultGetId } from '../utils/utils';
 import classnames from 'classnames';
-import React, { CSSProperties, useContext } from 'react';
+import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './form-item-wrapper.less';
 import { ELementProps } from '../components/configs';
-import { FormEditContext } from '../designer-context';
-import { useSelected } from '../utils/hooks';
+import { useFormDesign, useFormEdit } from '../utils/hooks';
 
 export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -33,8 +32,8 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   } = props;
 
   const currentPath = getCurrentPath(name, parent) as string;
-  const { selected } = useSelected();
-  const { setEdit } = useContext(FormEditContext)
+  const { selected } = useFormDesign();
+  const setEdit = useFormEdit();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName : false;
   const copyItem = () => {

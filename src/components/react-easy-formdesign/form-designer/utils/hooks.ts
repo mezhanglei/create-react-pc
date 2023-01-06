@@ -1,32 +1,18 @@
 import { useContext } from "react";
 import { getCurrentPath } from "../../form-render";
-import { FormDesignContext } from "../designer-context";
-import { setSelectedValues, updateSelectedValues } from "./utils";
+import { FormDesignContext, FormEditContext } from "../designer-context";
 
-// 获取表单的选中项
-export function useSelected() {
-  const { selected } = useContext(FormDesignContext);
-  const selectedName = selected?.name;
-  const selectedParent = selected?.parent;
+// 表单设计器的context
+export function useFormDesign() {
+  const context = useContext(FormDesignContext);
+  const selectedName = context?.selected?.name;
+  const selectedParent = context?.selected?.parent;
   const selectedPath = getCurrentPath(selectedName, selectedParent) as string;
-  return { selected, selectedPath };
+  return { ...context, selectedPath };
 }
 
-// 更新表单的属性配置
-export function useSettingsForm() {
-
-  const { designer, designerForm } = useContext(FormDesignContext);
-
-  const updateValues = (selectedPath: string, formValues: any) => {
-    updateSelectedValues(designer, designerForm, selectedPath, formValues);
-  }
-
-  const setValues = (selectedPath: string, formValues: any) => {
-    setSelectedValues(designer, designerForm, selectedPath, formValues)
-  }
-
-  return {
-    updateValues,
-    setValues
-  }
+// 表单设计器的state
+export function useFormEdit() {
+  const context = useContext(FormEditContext);
+  return context?.setEdit;
 }

@@ -16,7 +16,7 @@ const classes_design = {
   design: DesignprefixCls,
   components: `${DesignprefixCls}__components`,
   viewer: `${DesignprefixCls}__viewer`,
-  properties: `${DesignprefixCls}__settings`
+  settings: `${DesignprefixCls}__settings`
 }
 
 const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
@@ -25,7 +25,7 @@ const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
       <Provider {...props}>
         <Col className={classes_design.components} xs={24} sm={24} md={5} lg={5}><Components /></Col>
         <Col className={classes_design.viewer} xs={24} sm={24} md={14} lg={14}><Viewer /></Col>
-        <Col className={classes_design.properties} xs={24} sm={24} md={5} lg={5}><Settings /></Col>
+        <Col className={classes_design.settings} xs={24} sm={24} md={5} lg={5}><Settings /></Col>
       </Provider>
     </Row>
   );

@@ -1,3 +1,5 @@
+import CommonProps from './common-props';
+
 export default {
   id: 'radio',
   label: '单选框',
@@ -15,10 +17,11 @@ export default {
       properties: {
         options: {
           type: 'DataSourceComponent',
+          label: '选项数据',
           props: {
-            // module: 'request'
           }
-        }
+        },
+        ...CommonProps
       }
     }
   },
