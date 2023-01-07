@@ -46,6 +46,7 @@ export interface FormFieldProps extends Overwrite<FormItemProps, {
 export type WatchHandler = (newValue: any, oldValue: any) => void
 
 export interface BaseRenderProps {
+  uneval?: boolean;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   controls?: any;
   components?: any;

@@ -23,10 +23,12 @@ const OptionsSource: React.FC<OptionsSourceProps> = React.forwardRef((props, ref
     ...rest
   } = props;
 
-  const [dataSource, setDataSource] = useState<any[]>([{}]);
+  const intialItem = { label: '', value: '' };
+  const intialValue = [intialItem];
+  const [dataSource, setDataSource] = useState<any[]>(intialValue);
 
   useEffect(() => {
-    setDataSource(value || [{}])
+    setDataSource(value || intialValue);
   }, [value]);
 
   const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
@@ -48,7 +50,7 @@ const OptionsSource: React.FC<OptionsSourceProps> = React.forwardRef((props, ref
     } else {
       cloneData[rowIndex] = data;
     }
-    setDataSource(cloneData)
+    setDataSource(cloneData);
     dataSourceChange(cloneData);
   }
 
@@ -59,9 +61,8 @@ const OptionsSource: React.FC<OptionsSourceProps> = React.forwardRef((props, ref
       message.info('请填写完整')
       return;
     }
-    const newData = dataSource?.concat({});
+    const newData = dataSource?.concat(intialItem);
     setDataSource(newData);
-    dataSourceChange(newData);
   }
 
   // 删除一行

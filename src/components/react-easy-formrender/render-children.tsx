@@ -15,6 +15,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const [properties, setProperties] = useState<PropertiesData>({});
 
   const {
+    uneval,
     controls,
     components,
     watch,
@@ -99,7 +100,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         if (propsKey !== 'properties') {
           const propsValue = formField[propsKey];
           const propsPath = getCurrentPath(propsKey, path) as string;
-          const result = calcExpression(propsValue);
+          const result = evalExpression(propsValue, uneval);
           fieldPropsMap[propsPath] = result;
         } else {
           const children = formField[propsKey];
@@ -140,12 +141,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 值兼容字符串表达式
-  const calcExpression = (value?: string | boolean) => {
+  const evalExpression = (value?: string | boolean, uneval?: boolean) => {
+    if (uneval) return value;
     if (typeof value === 'string') {
       const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
-      const hiddenStr = value?.match(reg)?.[0];
-      if (hiddenStr) {
-        let target = hiddenStr?.replace(/\{\{|\}\}|\s*/g, '');
+      const evalStr = value?.match(reg)?.[0];
+      if (evalStr) {
+        let target = evalStr?.replace(/\{\{|\}\}|\s*/g, '');
         target = target?.replace(/\$formvalues/g, 'form && form.getFieldValue()');
         target = target?.replace(/\$form/g, 'form');
         target = target?.replace(/\$store/g, 'store');
@@ -193,7 +195,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 是否为已注册的组件声明
     if (typeof target === 'object') {
       const targetInfo = target as FormComponent;
-      const hidden = calcExpression(targetInfo?.hidden);
+      const hidden = evalExpression(targetInfo?.hidden, uneval);
       if (hidden === true) {
         return;
       }

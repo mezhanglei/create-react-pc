@@ -2,6 +2,7 @@ import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
 import input from './input';
 import radio from './radio';
+import checkbox from './checkbox';
 import table from './table';
 
 // 列表中的元素类型
@@ -23,7 +24,7 @@ export const TabsData = [{
     {
       title: '基础控件',
       elementType: '基础控件',
-      elements: [input, radio]
+      elements: [input, radio, checkbox]
     }
   ]
 }, {

@@ -1,16 +1,17 @@
 import CommonProps from './common-props';
 
 export default {
-  id: 'radio',
-  label: '单选框',
-  type: 'Radio.Group',
+  id: 'checkbox',
+  label: '多选框',
+  type: 'Checkbox.Group',
+  valueProp: 'checked',
   props: {
     options: [{ label: '选项1', value: '1' }, { label: '选项2', value: '2' }]
   },
   settings: {
     initialValue: {
       label: '默认值',
-      type: 'Input',
+      type: 'Input'
     },
     props: {
       compact: true,

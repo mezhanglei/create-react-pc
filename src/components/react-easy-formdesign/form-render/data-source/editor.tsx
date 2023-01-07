@@ -66,7 +66,7 @@ export const EditorCodeMirror = React.forwardRef((props: EditorCodeMirrorProps, 
   );
 });
 
-// 函数代码编辑器(可以编辑函数)
+// 函数代码编辑器
 export interface EditorFnProps extends TextAreaProps {
   value?: any;
   onChange?: (val: any) => void;

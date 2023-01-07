@@ -27,7 +27,15 @@ export default {
     // === 控件自身的props的设置
     props: {
       compact: true,
-      properties: CommonProps
+      properties: {
+        ...CommonProps,
+        allowClear: {
+          label: '是否可以清除',
+          type: 'Switch',
+          valueProp: 'checked',
+          initialValue: true
+        },
+      }
     }
   },
 }

@@ -28,10 +28,4 @@ export default {
     type: 'Switch',
     valueProp: 'checked',
   },
-  allowClear: {
-    label: '是否可以清除',
-    type: 'Switch',
-    valueProp: 'checked',
-    initialValue: true
-  },
 }

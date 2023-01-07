@@ -8,6 +8,7 @@ export default function RenderForm(props: RenderFormProps) {
   const {
     store,
     form,
+    uneval,
     properties,
     controls,
     components,
@@ -22,6 +23,7 @@ export default function RenderForm(props: RenderFormProps) {
   return (
     <Form store={form} {...formProps}>
       <RenderFormChildren
+        uneval={uneval}
         store={store}
         properties={properties}
         controls={controls}
