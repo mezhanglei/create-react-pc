@@ -1,10 +1,11 @@
 import { Col, Input, Row, Select } from "antd";
 import classNames from "classnames";
 import React, { CSSProperties, LegacyRef, useState } from "react";
-import { Form } from "..";
+import { Form } from "../../";
 import { useFormDesign } from "../../../form-designer/utils/hooks";
 import { updateDesignerItem } from "../../../form-designer/utils/utils";
-import { EditorFnTextArea, EditorCodeMirrorModal } from "./editor";
+import CodeTextArea from "../code-textarea";
+import { EditorCodeMirrorModal } from "./editor";
 
 export interface RequestSourceConfig {
   url?: string; // 请求的路径
@@ -26,8 +27,14 @@ const prefixCls = 'request-source';
 const classes = {
   cls: prefixCls
 }
-const methodOptions = [{ value: 'get', label: 'GET' }, { value: 'post', label: 'POST' }];
-const requestTypeOptions = [{ value: 'formData', label: 'FormData' }, { value: 'json', label: 'JSON' }];
+const methodOptions = [
+  { value: 'get', label: 'GET' },
+  { value: 'post', label: 'POST' }
+];
+const requestTypeOptions = [
+  { value: 'formData', label: 'FormData' },
+  { value: 'json', label: 'JSON' }
+];
 
 const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
 
@@ -84,7 +91,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
       </Col>
       <Col span={24}>
         <Form.Item label="解析函数" layout="horizontal" labelWidth={labelWidth}>
-          <EditorFnTextArea style={{ width: '100%' }} onChange={(val) => configChange('returnFn', val)} />
+          <CodeTextArea style={{ width: '100%' }} onChange={(val) => configChange('returnFn', val)} />
         </Form.Item>
       </Col>
     </div>

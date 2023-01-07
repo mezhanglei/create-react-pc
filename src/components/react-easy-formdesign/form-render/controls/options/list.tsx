@@ -2,12 +2,12 @@ import { isEmpty } from "@/utils/type";
 import { Button, Col, Input, message, Row } from "antd";
 import React, { ChangeEvent, LegacyRef, useEffect, useState } from "react";
 import { OptionsProps } from ".";
-import './options.less';
+import './list.less';
 
-export interface OptionsSourceProps extends OptionsProps {
+export interface OptionsListProps extends OptionsProps {
 }
 
-const prefixCls = 'options-source';
+const prefixCls = 'options-list';
 const classes = {
   item: `${prefixCls}-item`
 }
@@ -15,7 +15,7 @@ const classes = {
 /**
  * 单选或多选编辑组件
  */
-const OptionsSource: React.FC<OptionsSourceProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const OptionsList: React.FC<OptionsListProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
 
   const {
     value,
@@ -105,4 +105,4 @@ const OptionsSource: React.FC<OptionsSourceProps> = React.forwardRef((props, ref
   );
 });
 
-export default OptionsSource;
+export default OptionsList;

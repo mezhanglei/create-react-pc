@@ -1,13 +1,11 @@
-import React, { CSSProperties, LegacyRef, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, LegacyRef, Ref, useEffect, useRef, useState } from "react";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
 import { evalString, uneval } from "@/utils/string";
 import classNames from 'classnames';
 import './editor.less';
-import { Button, Input, Modal } from "antd";
-import { TextAreaProps } from "antd/lib/input";
-import { TextAreaRef } from "antd/lib/input/TextArea";
+import { Button, Modal } from "antd";
 
 const prefixCls = 'options-codemirror';
 const classes = {
@@ -60,43 +58,6 @@ export const EditorCodeMirror = React.forwardRef((props: EditorCodeMirrorProps, 
         readOnly: disabled,
         ...options
       }}
-      onBlur={onBlur}
-      {...rest}
-    />
-  );
-});
-
-// 函数代码编辑器
-export interface EditorFnProps extends TextAreaProps {
-  value?: any;
-  onChange?: (val: any) => void;
-  disabled?: boolean; // 是否禁止输入
-  style?: CSSProperties;
-}
-export const EditorFnTextArea = React.forwardRef((props: EditorFnProps, ref: LegacyRef<TextAreaRef>) => {
-
-  const {
-    value,
-    onChange,
-    disabled,
-    className,
-    ...rest
-  } = props;
-
-  // 接收外界的值
-  const toStr = (val: any) => {
-    return typeof val === 'string' ? val : uneval(val)
-  }
-
-  const onBlur: TextAreaProps['onChange'] = (e) => {
-    const codeStr = e?.target?.value;
-    const code = evalString(codeStr);
-    onChange && onChange(code)
-  }
-
-  return (
-    <Input.TextArea
-      value={toStr(value)}
       onBlur={onBlur}
       {...rest}
     />

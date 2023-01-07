@@ -1,6 +1,6 @@
 import { Radio } from "antd";
 import React, { LegacyRef, useMemo, useState } from "react";
-import TableSource from './options';
+import ListSource from './list';
 import { EditorCodeMirror } from './editor';
 import RequestSource from './request';
 import './index.less';
@@ -14,7 +14,7 @@ export interface OptionsProps {
   onChange?: (val: { [x: string]: any }[]) => void;
 }
 
-export interface DataSourceComponentProps extends OptionsProps {
+export interface OptionsComponentProps extends OptionsProps {
   includes?: string[]; // 当前可用模块
 }
 
@@ -24,17 +24,17 @@ const classes = {
   component: `${prefixCls}-component`
 }
 
-const DataSourceComponent: React.FC<DataSourceComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
 
   const {
-    includes = ['table', 'json', 'request'],
+    includes = ['list', 'json', 'request'],
     value,
     onChange,
     ...rest
   } = props;
 
   const buttons = useMemo(() => ([
-    { value: 'table', label: '表格数据' },
+    { value: 'list', label: '表格数据' },
     { value: 'json', label: '静态数据' },
     { value: 'request', label: '接口请求' },
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
@@ -42,7 +42,7 @@ const DataSourceComponent: React.FC<DataSourceComponentProps> = React.forwardRef
   const [tab, setTab] = useState<string>(buttons[0]?.value);
 
   const ComponentMap = {
-    table: <TableSource value={value} onChange={onChange} {...rest} />,
+    table: <ListSource value={value} onChange={onChange} {...rest} />,
     json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
     request: <RequestSource />,
   }
@@ -65,4 +65,4 @@ const DataSourceComponent: React.FC<DataSourceComponentProps> = React.forwardRef
   );
 });
 
-export default DataSourceComponent;
+export default OptionsComponent;

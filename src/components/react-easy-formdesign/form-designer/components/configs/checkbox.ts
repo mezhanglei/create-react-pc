@@ -11,13 +11,13 @@ export default {
   settings: {
     initialValue: {
       label: '默认值',
-      type: 'Input'
+      type: 'CodeInput'
     },
     props: {
       compact: true,
       properties: {
         options: {
-          type: 'DataSourceComponent',
+          type: 'OptionsComponent',
           label: '选项数据',
           props: {
           }
