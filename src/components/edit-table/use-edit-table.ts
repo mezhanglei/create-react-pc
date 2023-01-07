@@ -33,7 +33,8 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   const validator = useValidator()
   // 当前表格的一些状态
   const [tableConfig, setConfig] = useState<TableConfig>(initialConfig)
-  const tableConfigRef = useRef<TableConfig>(initialConfig)
+  const tableConfigRef = useRef<TableConfig>(initialConfig);
+  const debounceRef = useRef<any>();
 
   // 设置dataSource
   const setDataSource = (value: any) => {
@@ -103,11 +104,22 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   const validateCell = async (rowKey: string, dataIndex: string) => {
     const path = getCellPath(rowKey, dataIndex)
     if (!path) return
-    // TODO：需要防抖操作
-    setDataSource([...dataSourceRef.current])
+    // 防抖操作
+    const handleDebounce = () => {
+      debounceRef.current = setTimeout(() => {
+        setDataSource([...dataSourceRef.current])
+      }, 500);
+    }
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      handleDebounce()
+    } else {
+      handleDebounce()
+    }
+
     const record = dataSourceMapRef.current[rowKey]
-    const isRemoved = !record
-    const message = await validator?.start?.(path, record?.[dataIndex], isRemoved)
+    const message = await validator?.start?.(path, record?.[dataIndex])
     return message
   }
 

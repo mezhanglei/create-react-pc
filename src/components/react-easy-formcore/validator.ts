@@ -1,3 +1,5 @@
+import { TriggerType } from "./item-core";
+import { handleTrigger } from "./utils/utils";
 import { validatorsMap } from "./validate-rules";
 export type FormRule = {
   required?: boolean;
@@ -6,10 +8,12 @@ export type FormRule = {
   max?: number;
   min?: number;
   message?: string;
-  validator?: FormValidator
+  validator?: FormValidator;
+  validateTrigger?: TriggerType;
 }
 export type FormValidatorCallBack = (message?: string) => void;
 export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => any | Promise<any>;
+export type TriggerHandle = TriggerType | boolean;
 
 /*Validator类*/
 export default class Validator {
@@ -58,20 +62,20 @@ export default class Validator {
     this.errorsMap = {}
   }
 
-  async start(path: string, value: any, removed?: boolean) {
-    this.setError(path)
-    if (removed) {
-      this.add(path)
-      this.setError(path)
-      return;
-    };
+  async start(path: string, value: any, type?: TriggerHandle) {
+    this.setError(path);
     const rules = this.rulesMap[path];
     for (let i = 0; i < rules?.length; i++) {
-      const rule = rules?.[i]
-      const message = await handleRule(rule, value)
-      if (message) {
-        this.setError(path, message)
-        return message
+      const rule = rules?.[i];
+      const { validateTrigger, ...rest } = rule || {};
+      // 是否可以触发规则
+      const canTrigger = handleTrigger(type, validateTrigger);
+      if (canTrigger) {
+        const message = await handleRule(rest, value);
+        if (message) {
+          this.setError(path, message)
+          return message
+        }
       }
     }
   }

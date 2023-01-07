@@ -1,17 +1,20 @@
 import { isEqual } from '@/utils/object';
 import classnames from 'classnames';
-import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useState } from 'react';
+import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
 import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
-import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode } from './utils/utils';
+import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
 import { FormRule } from './validator';
-import { AopFactory } from '@/utils/function-aop';
 import { isEmpty } from '@/utils/type';
+
+export type TriggerType = string;
 
 export interface ItemCoreProps {
   name?: string | number;
   parent?: string;
   index?: number;
+  trigger?: TriggerType | TriggerType[]; // 设置收集字段值变更的时机
+  validateTrigger?: TriggerType | TriggerType[];
   valueProp?: string | ((type: any) => string);
   valueGetter?: ((...args: any[]) => any);
   valueSetter?: ((value: any) => any);
@@ -38,7 +41,9 @@ export const ItemCore = (props: ItemCoreProps) => {
     errorClassName,
     onFieldsChange,
     onValuesChange,
-    initialValue
+    initialValue,
+    trigger = 'onChange',
+    validateTrigger
   } = fieldProps;
 
   const currentPath = getCurrentPath(name, parent);
@@ -49,21 +54,39 @@ export const ItemCore = (props: ItemCoreProps) => {
   // 初始化获取初始props
   currentPath && store?.setFieldProps(currentPath, fieldProps);
 
+  // 收集的rules中的validateTrigger
+  const ruleTriggers = useMemo(() => {
+    const rules = fieldProps?.['rules'];
+    const result = []
+    for (let i = 0; i < rules?.length; i++) {
+      const rule = rules?.[i];
+      if (rule?.validateTrigger) {
+        result.push(rule?.validateTrigger)
+      }
+    }
+    return result;
+  }, [fieldProps?.['rules']]);
+
+  // 可触发事件列表
+  const triggers = useMemo(() => new Set<string>([
+    ...toArray(trigger),
+    ...toArray(validateTrigger),
+    ...ruleTriggers
+  ]), [trigger, validateTrigger, ruleTriggers]);
+
   // 给子元素绑定的onChange
-  const onChange = useCallback(
-    (...args: any[]) => {
+  const bindChange = useCallback(
+    (eventName, ...args: any[]) => {
       const value = valueGetter(...args);
       if (currentPath && store) {
         // 设置值
-        store.setFieldValue(currentPath, value);
+        store.setFieldValue(currentPath, value, eventName);
         // 主动onchange事件
         onFieldsChange && onFieldsChange({ parent: parent, name: name, value: value }, store?.getFieldValue());
       }
     },
     [currentPath, store, valueGetter, onFieldsChange]
   );
-
-  const aopOnchange = new AopFactory(onChange);
 
   // 订阅更新值的函数
   useEffect(() => {
@@ -103,16 +126,23 @@ export const ItemCore = (props: ItemCoreProps) => {
       return value;
     }
   }
+
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
     if (!isEmpty(name) && isValidElement(child)) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { className } = childProps || {};
-      // onChange
-      const childOnChange = aopOnchange.addAfter(childProps?.onChange)
       const valueResult = childValue(value);
-      const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult, onChange: childOnChange }
+      const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult }
+
+      triggers.forEach((eventName) => {
+        newChildProps[eventName] = (...args: any[]) => {
+          bindChange?.(eventName, ...args);
+          childProps[eventName]?.(...args);
+        };
+      });
+
       return cloneElement(child, newChildProps)
     } else {
       return child;

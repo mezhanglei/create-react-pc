@@ -1,6 +1,6 @@
-import { isExitPrefix } from './utils/utils';
+import { isExitPrefix, handleTrigger } from './utils/utils';
 import { deepClone, deepGet, deepSet } from '@/utils/object';
-import Validator, { FormRule } from './validator';
+import Validator, { FormRule, TriggerHandle } from './validator';
 
 export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
 
@@ -10,7 +10,7 @@ export type ValidateResult<T> = { error?: string, values: T }
 
 export type FieldProps = { rules?: FormRule[], [other: string]: any };
 
-export type FormFieldsProps<T = any> = { [key in keyof T]: FieldProps }
+export type FormFieldsProps<T = any> = { [key in keyof T]: FieldProps };
 
 export class FormStore<T extends Object = any> {
   private initialValues?: Partial<T>
@@ -100,7 +100,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public setFieldValue(path: string | Partial<T>, value?: any, noError?: boolean) {
+  public setFieldValue(path: string | Partial<T>, value?: any, type?: TriggerHandle) {
     if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = deepClone(this.values);
@@ -110,11 +110,11 @@ export class FormStore<T extends Object = any> {
       this.notifyFormItem(path);
       this.notifyFormGlobal(path);
       // 规则
-      const fieldProps = this.getFieldProps();
-      const rules = fieldProps?.[path]?.['rules'];
-      if (rules?.length && !noError) {
+      const fieldPropsMap = this.getFieldProps();
+      const rules = fieldPropsMap?.[path]?.['rules'];
+      if (rules?.length) {
         // 校验规则
-        this.validate(path);
+        this.validate(path, type);
       }
     } else if (typeof path === 'object') {
       Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
@@ -164,8 +164,8 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(path: string): Promise<string>
-  public async validate(path?: string) {
+  public async validate(path: string, type?: TriggerHandle): Promise<string>
+  public async validate(path?: string, type?: TriggerHandle) {
     const fieldProps = this.getFieldProps(path);
     if (path === undefined) {
       const result = await Promise.all(Object.keys(fieldProps)?.map((n) => {
@@ -179,16 +179,18 @@ export class FormStore<T extends Object = any> {
         error: currentError,
         values: this.getFieldValue()
       }
-    } else {
+    } else if (typeof path == 'string') {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
-      const disabled = !fieldProps; // 校验的时候如果没有该元素则删除校验规则
-      const message = await this.validator.start(path, value, disabled);
-      if (message) {
-        this.setFieldError(path, message);
+      const canTrigger = handleTrigger(type, fieldProps['validateTrigger']);
+      if (canTrigger) {
+        const message = await this.validator.start(path, value, type);
+        if (message) {
+          this.setFieldError(path, message);
+        }
+        return message;
       }
-      return message;
     }
   }
 

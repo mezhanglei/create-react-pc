@@ -1,5 +1,7 @@
 import { pathToArr, deepGet, deepSet } from "@/utils/object";
 import { isEmpty } from "@/utils/type";
+import { TriggerType } from "../item-core";
+import { TriggerHandle } from "../validator";
 export { pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
@@ -65,3 +67,27 @@ export const isFormNode = (child: any) => {
   const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
   return formFields?.includes(displayName) && dataType !== 'ignore'
 };
+
+// 校验是否触发
+export const handleTrigger = (type?: TriggerHandle, validateTrigger?: TriggerType | TriggerType[],) => {
+  // 不设置validateTrigger允许触发
+  if (!validateTrigger) return true;
+  // validateType传入布尔值则返回该布尔值
+  if (typeof type === 'boolean') return type;
+  // 没有值则默认可以触发
+  if (!type) return true;
+  if (typeof validateTrigger === 'string') {
+    return validateTrigger === type;
+  }
+  if (validateTrigger instanceof Array) {
+    return validateTrigger?.includes(type)
+  }
+}
+
+export function toArray<T>(list: T | T[]): T[] {
+  if (!list) {
+    return [];
+  }
+  return Array.isArray(list) ? list : [list];
+}
+

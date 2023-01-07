@@ -37,7 +37,7 @@ export default function Demo5(props) {
       label: "输入框",
       required: true,
       outside: { type: 'col', props: { span: 6 } },
-      rules: [{ required: true, message: 'name1空了' }],
+      rules: [{ required: true, validateTrigger: 'onBlur', message: 'name1空了' }],
       initialValue: 1,
       hidden: '{{$formvalues.name6 == true}}',
       type: 'Input',

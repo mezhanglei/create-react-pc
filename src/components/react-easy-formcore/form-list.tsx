@@ -25,6 +25,9 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
     parent,
     initialValue,
     /** 忽略传递的props */
+    index,
+    trigger,
+    validateTrigger,
     valueProp,
     valueGetter,
     valueSetter,

@@ -24,7 +24,7 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
 
   const currentPath = getCurrentPath(name, parent);
   const deleteItem = () => {
-    currentPath && form?.setFieldValue(currentPath, undefined, true);
+    currentPath && form?.setFieldValue(currentPath, undefined, false);
     currentPath && store?.delItemByPath(currentPath);
   }
 

@@ -23,6 +23,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     name,
     parent,
     index,
+    trigger,
+    validateTrigger,
     valueProp,
     valueGetter,
     valueSetter,
@@ -45,6 +47,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
       name={ignore ? undefined : name}
       parent={parent}
       index={index}
+      trigger={trigger}
+      validateTrigger={validateTrigger}
       valueProp={valueProp}
       valueGetter={valueGetter}
       valueSetter={valueSetter}
