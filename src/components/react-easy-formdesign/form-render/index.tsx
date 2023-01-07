@@ -1,7 +1,7 @@
 import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
 import React from 'react';
-import { BaseComponents } from './base-components';
-import { BaseControls } from './base-controls';
+import { BaseComponents } from './components';
+import { BaseControls } from './controls';
 
 export * from '@/components/react-easy-formrender';
 

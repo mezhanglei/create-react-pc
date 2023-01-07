@@ -2,8 +2,8 @@ import { Col, Input, Row, Select } from "antd";
 import classNames from "classnames";
 import React, { CSSProperties, LegacyRef, useState } from "react";
 import { Form } from "..";
-import { useFormDesign } from "../../form-designer/utils/hooks";
-import { updateDesignerItem } from "../../form-designer/utils/utils";
+import { useFormDesign } from "../../../form-designer/utils/hooks";
+import { updateDesignerItem } from "../../../form-designer/utils/utils";
 import { EditorFnTextArea, EditorCodeMirrorModal } from "./editor";
 
 export interface RequestSourceConfig {
