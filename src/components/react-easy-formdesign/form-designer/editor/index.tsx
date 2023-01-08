@@ -5,15 +5,15 @@ import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
 import RootDnd from './root-dnd';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign, useFormEdit } from '../utils/hooks';
+import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
-export interface DesignViewerProps {
+export interface DesignEditorProps {
   className?: string
   style?: CSSProperties
 }
-const prefixCls = `${DesignprefixCls}-viewer`;
+const prefixCls = `${DesignprefixCls}-editor`;
 
-function DesignViewer(props: DesignViewerProps, ref: any) {
+function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const { designer, designerForm, settingsForm, properties } = useFormDesign();
   const setEdit = useFormEdit();
@@ -69,5 +69,5 @@ const renderItem = (params: FormItemWrapperProps) => {
   return params?.children
 }
 
-DesignViewer.displayName = 'design-viewer';
-export default React.forwardRef(DesignViewer);
+DesignEditor.displayName = 'design-editor';
+export default React.forwardRef(DesignEditor);

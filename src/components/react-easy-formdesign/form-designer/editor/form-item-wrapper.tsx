@@ -1,11 +1,11 @@
 import { getCurrentPath, isListIndex } from '@/components/react-easy-formcore';
-import { defaultGetId } from '../utils/utils';
+import { defaultGetId } from '../../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './form-item-wrapper.less';
 import { ELementProps } from '../components/configs';
-import { useFormDesign, useFormEdit } from '../utils/hooks';
+import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
 export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
   children?: any;

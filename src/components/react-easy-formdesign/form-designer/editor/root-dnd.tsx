@@ -2,7 +2,7 @@ import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './index.less';
-import { defaultGetId } from '../utils/utils';
+import { defaultGetId } from '../../utils/utils';
 import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ConfigElementsMap, ELementProps } from '../components/configs';
@@ -68,7 +68,7 @@ function RootDnd(props: RootDndProps, ref) {
       onUpdate={onUpdate}
       onAdd={onAdd}
       data-type="ignore"
-      className='viewer-dnd-root'
+      className='editor-dnd-root'
       options={{ hiddenFrom: true }}
     // collection={{ path: '' }}
     >

@@ -3,8 +3,8 @@ import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { deepMergeObject } from '@/utils/object';
 import { nanoid } from 'nanoid';
-import { ELementProps, ElementsType } from '../components/configs';
-import CommonSettings, { CommonSettingsItem } from '../components/settings';
+import { ELementProps, ElementsType } from '../form-designer/components/configs';
+import CommonSettings, { CommonSettingsItem } from '../form-designer/components/settings';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';

@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { getCurrentPath } from "../../form-render";
-import { FormDesignContext, FormEditContext } from "../designer-context";
+import { getCurrentPath } from "../form-render";
+import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
 
 // 表单设计器的context
 export function useFormDesign() {
