@@ -26,7 +26,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
   eventData: DragEventData | {};
   child: any;
-  cloneLayer: any;
   initStyle: { width: string, height: string, left: number, top: number } | undefined
   handleRef: any;
   constructor(props: DraggableEventProps) {
@@ -99,67 +98,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
     return parent;
   }
 
-  initLayerNode = () => {
-    const { showLayer, layerStyle } = this.props;
-    if (!showLayer) return;
-    const node = this.findDOMNode();
-    const ownerDocument = this.findOwnerDocument();
-    const cloneLayer = node.cloneNode(true);
-    this.cloneLayer = cloneLayer;
-    const clientXY = getClientXY(node);
-    const win = getWindow();
-    const nodeStyle = win?.getComputedStyle(node);
-    if (cloneLayer && clientXY) {
-      css(cloneLayer, {
-        width: nodeStyle.getPropertyValue('width'),
-        height: nodeStyle.getPropertyValue('height'),
-        left: clientXY?.x + 'px',
-        top: clientXY?.y + 'px',
-        position: 'fixed',
-        zIndex: 999,
-        transition: '',
-        opacity: 0.6,
-        margin: 0,
-        ...layerStyle
-      })
-      this.initStyle = {
-        width: nodeStyle.getPropertyValue('width'),
-        height: nodeStyle.getPropertyValue('height'),
-        left: clientXY?.x,
-        top: clientXY?.y
-      }
-    }
-    ownerDocument.body.appendChild(cloneLayer)
-  }
-
-  setLayerNode = (delta: { deltaX: number, deltaY: number }) => {
-    const { showLayer } = this.props;
-    const { deltaX, deltaY } = delta;
-    const { initStyle, cloneLayer } = this;
-    if (!showLayer) return;
-    if (initStyle) {
-      const newLeft = initStyle?.left + deltaX;
-      const newTop = initStyle?.top + deltaY;
-      css(cloneLayer, {
-        ...initStyle,
-        left: newLeft + 'px',
-        top: newTop + 'px'
-      })
-      this.initStyle = {
-        ...initStyle,
-        left: newLeft,
-        top: newTop
-      }
-    }
-  }
-
-  removeLayerNode = () => {
-    const { showLayer } = this.props;
-    if (!showLayer) return;
-    const ownerDocument = this.findOwnerDocument();
-    ownerDocument.body.removeChild(this.cloneLayer);
-  }
-
   handleDragStart = (e: EventType) => {
     const handleDom = this.findHandle();
     const child = this.findDOMNode();
@@ -209,7 +147,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       eventY: eventY
     };
     this.eventData = newEventData;
-    this.initLayerNode();
     // 如果没有完成渲染或者返回false则禁止拖拽
     onStart && onStart(e, newEventData);
 
@@ -250,8 +187,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       eventX: eventX,
       eventY: eventY
     }
-    this.eventData = newEventData
-    this.setLayerNode({ deltaX: newEventData?.deltaX, deltaY: newEventData?.deltaY });
+    this.eventData = newEventData;
     onMove && onMove(e, newEventData);
   };
 
@@ -267,9 +203,7 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       deltaX: 0,
       deltaY: 0
     }
-    this.eventData = newEventData
-    // 重置
-    this.removeLayerNode()
+    this.eventData = newEventData;
     this.dragging = false;
     // 移除文本因滚动造成的显示
     if (ownerDocument) {
@@ -299,8 +233,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
       handle,
       filter,
       eventBounds,
-      showLayer,
-      layerStyle,
       allowAnyClick,
       disabled,
       enableUserSelectHack,
