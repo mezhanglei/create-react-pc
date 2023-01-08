@@ -1,4 +1,11 @@
-import CommonProps from './common-props';
+import {
+  allowClear,
+  disabled,
+  initialValue,
+  maxLength,
+  placeholder,
+  size
+} from "./common";
 
 export default {
   id: 'input',
@@ -12,29 +19,24 @@ export default {
       initialValue: "Input",
       props: {
         style: { width: '100%' },
-        children: [
-          { type: "Select.Option", props: { key: 'Input', value: "Input", children: "单行输入" } },
-          { type: "Select.Option", props: { key: 'Input.TextArea', value: "Input.TextArea", children: "多行输入" } },
-          { type: "Select.Option", props: { key: 'InputNumber', value: "InputNumber", children: "数字输入" } },
-          { type: "Select.Option", props: { key: 'Input.Password', value: "Input.Password", children: "密码输入" } }
+        options: [
+          { label: '单行输入', value: 'Input' },
+          { label: '多行输入', value: 'Input.TextArea' },
+          { label: '数字输入', value: 'InputNumber' },
+          { label: '密码输入', value: 'Input.Password' },
         ]
       }
     },
-    initialValue: {
-      label: '默认值',
-      type: 'Input'
-    },
+    initialValue: initialValue,
     // === 控件自身的props的设置
     props: {
       compact: true,
       properties: {
-        ...CommonProps,
-        allowClear: {
-          label: '是否可以清除',
-          type: 'Switch',
-          valueProp: 'checked',
-          initialValue: true
-        },
+        placeholder: placeholder,
+        maxLength: maxLength,
+        size: size,
+        disabled: disabled,
+        allowClear: allowClear,
       }
     }
   },

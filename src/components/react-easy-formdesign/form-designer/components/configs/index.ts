@@ -1,8 +1,15 @@
 import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
-import input from './input';
-import radio from './radio';
-import checkbox from './checkbox';
+import Input from './input';
+import Radio from './radio';
+import Checkbox from './checkbox';
+import Select from './select';
+import Switch from './switch';
+import TimePicker from './timePicker';
+import DatePicker from './datePicker';
+import Slider from './sliderLine';
+import Rate from './rate';
+import ColorPicker from './colorPicker';
 import table from './table';
 
 // 列表中的元素类型
@@ -24,7 +31,7 @@ export const TabsData = [{
     {
       title: '基础控件',
       elementType: '基础控件',
-      elements: [input, radio, checkbox]
+      elements: [Input, Radio, Checkbox, Select, Switch, TimePicker, DatePicker, Slider, Rate, ColorPicker]
     }
   ]
 }, {

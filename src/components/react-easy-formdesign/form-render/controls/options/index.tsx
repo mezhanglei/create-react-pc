@@ -1,6 +1,6 @@
 import { Radio } from "antd";
 import React, { LegacyRef, useMemo, useState } from "react";
-import ListSource from './list';
+import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
 import RequestSource from './request';
 import './index.less';
@@ -42,7 +42,7 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
   const [tab, setTab] = useState<string>(buttons[0]?.value);
 
   const ComponentMap = {
-    table: <ListSource value={value} onChange={onChange} {...rest} />,
+    list: <OptionsList value={value} onChange={onChange} {...rest} />,
     json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
     request: <RequestSource />,
   }

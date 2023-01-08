@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import CodeInput from './code-input';
 import CodeTextArea from './code-textarea';
+import ColorPicker from './color-picker';
 import OptionsComponent from './options';
 import { SliderNumber } from './slider-number';
 
@@ -45,4 +46,5 @@ export const BaseControls = {
   "OptionsComponent": OptionsComponent, // 用于显示数据源的控件
   "CodeInput": CodeInput, // 值的输入框
   "CodeTextArea": CodeTextArea, // 值的输入框
+  "ColorPicker": ColorPicker, // 颜色选择器
 }

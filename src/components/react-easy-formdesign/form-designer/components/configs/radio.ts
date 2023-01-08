@@ -1,4 +1,8 @@
-import CommonProps from './common-props';
+import {
+  disabled,
+  initialValue,
+  size
+} from "./common";
 
 export default {
   id: 'radio',
@@ -8,10 +12,7 @@ export default {
     options: [{ label: '选项1', value: '1' }, { label: '选项2', value: '2' }]
   },
   settings: {
-    initialValue: {
-      label: '默认值',
-      type: 'CodeInput',
-    },
+    initialValue: initialValue,
     props: {
       compact: true,
       properties: {
@@ -21,7 +22,20 @@ export default {
           props: {
           }
         },
-        ...CommonProps
+        optionType: {
+          label: "样式",
+          type: "Radio.Group",
+          initialValue: 'default',
+          props: {
+            style: { width: '100%' },
+            options: [
+              { label: '默认', value: 'default' },
+              { label: '按钮', value: 'button' }
+            ]
+          }
+        },
+        size: size,
+        disabled: disabled,
       }
     }
   },

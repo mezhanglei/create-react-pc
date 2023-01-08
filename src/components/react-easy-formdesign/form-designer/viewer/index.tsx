@@ -45,7 +45,7 @@ function DesignViewer(props: DesignViewerProps, ref: any) {
       style={style}
       {...restProps}
       onClick={() => {
-        setEdit({ selected: { name: '#' } })
+        // setEdit({ selected: { name: '#' } })
       }}>
       <RenderForm
         store={designer}

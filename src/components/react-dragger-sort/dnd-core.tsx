@@ -103,7 +103,7 @@ export default function BuildDndSortable() {
 
     // 鼠标点击/触摸事件开始
     onStart: EventHandler = (e) => {
-      e.stopPropagation();
+      // e.stopPropagation();
       const currentTarget = e.currentTarget as HTMLElement;
       const dragItem = dndManager.getDragItem(currentTarget);
       if (currentTarget && dragItem) {
@@ -125,7 +125,7 @@ export default function BuildDndSortable() {
     // 鼠标点击/触摸事件结束
     onEnd: EventHandler = (e) => {
       if (!ismobile) return
-      e.stopPropagation();
+      // e.stopPropagation();
       if (this.dragged) {
         this.onEndHandle(e)
       }
@@ -133,7 +133,7 @@ export default function BuildDndSortable() {
 
     // 鼠标拖拽开始事件(鼠标端，并且触发时其他事件将不会再触发)
     onDragStart = (e: any) => {
-      e.stopPropagation();
+      // e.stopPropagation();
       const currentTarget = e.currentTarget as HTMLElement;
       if (currentTarget) {
         const ownerDocument = getOwnerDocument(this.parentEl);
@@ -155,7 +155,7 @@ export default function BuildDndSortable() {
 
     // 鼠标拖拽结束事件
     onEndHandle = (e: EventType) => {
-      e.stopPropagation();
+      // e.stopPropagation();
       // 拖拽元素
       const dragged = this.dragged;
       // 克隆拖拽元素
