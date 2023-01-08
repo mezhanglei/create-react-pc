@@ -118,6 +118,9 @@ const Demo1: React.FC<any> = (props) => {
       </div>
       <DndSortable
         onUpdate={onUpdate}
+        options={{
+          hiddenFrom: true
+        }}
         onAdd={onAdd}
       >
         {loopChildren(data)}

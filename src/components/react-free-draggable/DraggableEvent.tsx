@@ -26,7 +26,6 @@ class DraggableEvent extends React.Component<DraggableEventProps> {
   dragging: boolean;
   eventData: DragEventData | {};
   child: any;
-  initStyle: { width: string, height: string, left: number, top: number } | undefined
   handleRef: any;
   constructor(props: DraggableEventProps) {
     super(props);
