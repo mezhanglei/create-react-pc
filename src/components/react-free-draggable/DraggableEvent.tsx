@@ -1,5 +1,5 @@
 import React from 'react';
-import { matchParent, addEvent, removeEvent, getEventPosition, findElement, css, getClientXY, getWindow } from "@/utils/dom";
+import { matchParent, addEvent, removeEvent, getEventPosition, findElement, getWindow } from "@/utils/dom";
 import { isMobile, isEventTouch } from "@/utils/verify";
 import { DragDirection, DragDirectionCode, DragEventData, DraggableEventProps, EventType } from "./utils/types";
 import { MouseButton } from '@/utils/mouse';

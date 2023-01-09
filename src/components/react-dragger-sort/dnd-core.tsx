@@ -81,23 +81,21 @@ export default function BuildDndSortable() {
       });
     }
 
-    // 开始移动的事件处理
-    moveStartHandle = (e: EventType, currentTarget?: HTMLElement) => {
-      if (currentTarget) {
-        const cloneDragged = currentTarget.cloneNode(true) as HTMLElement;
-        this.dragged = currentTarget;
-        this.cloneDragged = cloneDragged;
-        const dragItem = dndManager.getDragItem(currentTarget);
-        if (dragItem) {
-          const params = {
-            e,
-            from: {
-              ...dragItem,
-              clone: cloneDragged
-            }
-          };
-          this.props.onStart && this.props.onStart(params);
-        }
+    handleMoveStart = (e: any, currentTarget: HTMLElement) => {
+      const cloneDragged = currentTarget.cloneNode(true) as HTMLElement;
+      insertAfter(cloneDragged, currentTarget);
+      this.dragged = currentTarget;
+      this.cloneDragged = cloneDragged;
+      const dragItem = dndManager.getDragItem(currentTarget);
+      if (dragItem) {
+        const params = {
+          e,
+          from: {
+            ...dragItem,
+            clone: cloneDragged
+          }
+        };
+        this.props.onStart && this.props.onStart(params);
       }
     }
 
@@ -113,7 +111,9 @@ export default function BuildDndSortable() {
         if (!disabledDrag) {
           currentTarget.draggable = true;
           this.lastDisplay = css(currentTarget)?.display;
-          this.moveStartHandle(e, currentTarget);
+          if (ismobile) {
+            this.handleMoveStart(e, currentTarget)
+          }
         }
       }
     }
@@ -138,9 +138,9 @@ export default function BuildDndSortable() {
       const target = e.target;
       const isCanDragStart = target === currentTarget;
       if (currentTarget && isCanDragStart) {
+        this.handleMoveStart(e, currentTarget);
         const ownerDocument = getOwnerDocument(this.parentEl);
         addEvent(ownerDocument, 'dragover', this.onDragOver);
-        this.moveStartHandle(e, currentTarget);
       }
     }
 
@@ -252,7 +252,7 @@ export default function BuildDndSortable() {
       const parentEl = this.parentEl;
       if (!dragged || !cloneDragged || !parentEl) return
       // 经过的节点
-      const isOverSelf = isMoveIn(e, cloneDragged);
+      const isOverSelf = isMoveIn(e, cloneDragged) || isMoveIn(e, dragged);
       const target = dndManager.findOver(e, dragged, isOverSelf);
       const dragItem = dndManager.getDragItem(dragged);
       // 触发目标
