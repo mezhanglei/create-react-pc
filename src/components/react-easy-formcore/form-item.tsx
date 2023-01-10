@@ -40,7 +40,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const currentPath = getCurrentPath(name, parent);
   const [error] = useFormError(store, currentPath);
-  const FieldComponent = component
+  const required = error ? true : rest?.required;
+  const FieldComponent = component;
 
   const childs = (
     <ItemCore
@@ -64,7 +65,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   return (
     FieldComponent ?
-      <FieldComponent {...rest} ref={ref} error={error}>
+      <FieldComponent {...rest} required={required} ref={ref} error={error}>
         {childs}
       </FieldComponent>
       : childs

@@ -51,12 +51,10 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
     ...rest
   } = itemProps
 
-  const isRequired = error ? true : required;
-
   const cls = classnames(
     classes.field,
     layout ? `${classes.field}--${layout}` : '',
-    isRequired ? classes.required : '',
+    required ? classes.required : '',
     compact ? classes.compact : '',
     error ? classes.error : '',
     inline ? classes.inline : '',
@@ -65,7 +63,7 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
 
   return (
     <div ref={ref} className={cls} style={style} {...rest}>
-      <Label colon={colon} gutter={gutter} labelWidth={labelWidth} labelAlign={labelAlign} required={isRequired} style={labelStyle}>
+      <Label colon={colon} gutter={gutter} labelWidth={labelWidth} labelAlign={labelAlign} required={required} style={labelStyle}>
         {label}
       </Label>
       <Control error={error} footer={footer} suffix={suffix}>

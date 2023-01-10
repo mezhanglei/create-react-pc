@@ -16,6 +16,8 @@ import CodeTextArea from './code-textarea';
 import ColorPicker from './color-picker';
 import OptionsComponent from './options';
 import { SliderNumber } from './slider-number';
+import FileUpload from "./file-upload";
+import ImageUpload from "./image-upload";
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const BaseControls = {
@@ -47,4 +49,6 @@ export const BaseControls = {
   "CodeInput": CodeInput, // 值的输入框
   "CodeTextArea": CodeTextArea, // 值的输入框
   "ColorPicker": ColorPicker, // 颜色选择器
+  "FileUpload": FileUpload, // 文件上传
+  "ImageUpload": ImageUpload, // 图片上传
 }

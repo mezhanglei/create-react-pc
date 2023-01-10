@@ -10,6 +10,8 @@ import DatePicker from './datePicker';
 import Slider from './sliderLine';
 import Rate from './rate';
 import ColorPicker from './colorPicker';
+import FileUpload from './fileUpload';
+import ImageUpload from './imageUpload';
 import table from './table';
 
 // 列表中的元素类型
@@ -31,7 +33,20 @@ export const TabsData = [{
     {
       title: '基础控件',
       elementType: '基础控件',
-      elements: [Input, Radio, Checkbox, Select, Switch, TimePicker, DatePicker, Slider, Rate, ColorPicker]
+      elements: [
+        Input,
+        Radio,
+        Checkbox,
+        Select,
+        Switch,
+        TimePicker,
+        DatePicker,
+        Slider,
+        Rate,
+        ColorPicker,
+        FileUpload,
+        ImageUpload
+      ]
     }
   ]
 }, {
