@@ -64,7 +64,7 @@ function RootDnd(props: RootDndProps, ref) {
 
   return (
     <DndSortable
-    ref={ref}
+      ref={ref}
       onUpdate={onUpdate}
       onAdd={onAdd}
       data-type="ignore"

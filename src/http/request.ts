@@ -2,7 +2,7 @@ import axios, { Method } from "axios";
 import { HTTP_STATUS, HTTP_CODE, HTTP_STATUS_MAP, HTTP_CODE_MAP, CancelPending, CustomConfig, ReuestInstance } from "./config";
 import { message } from "antd";
 import { loginOut, getToken } from "@/core/session";
-import { trimParams } from "@/utils/character";
+import { trimParams } from "@/utils/object";
 import Loader from "@/components/loader/index";
 import { IE11OrLess } from "@/utils/brower";
 
