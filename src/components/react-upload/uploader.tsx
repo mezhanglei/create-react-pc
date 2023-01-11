@@ -1,6 +1,7 @@
 import { UploadParams, Status, UploadChunk, AsyncQueues, QueueParams, UploadChunksParams } from "./types";
 import { calculateHashSample, createFileChunk } from "./utils";
 import CreateWorker from 'worker-loader!./md5-worker.js';
+import { from, mergeMap } from "rxjs";
 
 let id = 0
 
@@ -152,6 +153,32 @@ export class Uploader {
     });
   }
 
+  // rxjs并发执行请求
+  async handleConcurrent(queues: AsyncQueues[]) {
+    return from(queues).pipe(mergeMap((queue) => {
+      return new Promise((resolve, reject) => {
+        const fn = queue?.callback;
+        const chunkName = queue?.chunk?.chunkName;
+        queue.status = Status.uploading
+        const chunks = this.chunksMap[queue?.file?.name];
+        const chunkIndex = chunks?.findIndex((item) => item.chunkName === chunkName)
+        fn().then((res) => {
+          // 设置状态Status.done
+          queue.status = Status.done
+          // 进度更改
+          chunks[chunkIndex].progress = 100;
+          resolve(res);
+        }).catch((err) => {
+          // 设置状态Status.error
+          queue.status = Status.error;
+          // 进度报错
+          chunks[chunkIndex].progress = -1;
+          return reject(err)
+        })
+      })
+    }, 4))
+  }
+
   // 计算当前文件进度
   fileProgress(chunks: UploadChunk[], file: File) {
     const uploadSize = chunks?.reduce((prev, next) => prev + next.chunkSize * next.progress, 0)
@@ -174,7 +201,7 @@ export class Uploader {
         const progress = this.fileProgress(chunks, file);
         return this.uploading?.({ ...filAndChunk, progress, chunks })
       }, { chunks: chunks, file, fileHash, uploadedList });
-      await this.concurrentExe(queues);
+      await this.handleConcurrent(queues);
       // 结束后在计算一次进度
       this.fileProgress(chunks, file);
       if (uploadedList?.length + queues?.length === chunks?.length) {
@@ -187,14 +214,13 @@ export class Uploader {
     }
   }
 
-  // 合并分块请求
+  // 通知服务端合并分块请求
   async mergeRequest(file: File) {
     const params = {
       file: file,
       size: this.chunkSize,
       fileHash: this.hashMap[file.name]
     }
-    console.log('通知服务端合并分块请求')
     this.reset();
     this.afterUpload(params);
   }

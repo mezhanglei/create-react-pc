@@ -7,7 +7,13 @@ import { Button } from 'antd';
 import http from '@/http/request';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
-
+import { from, mergeMap } from 'rxjs';
+const array = [
+  'https://httpbin.org/ip', 
+  'https://httpbin.org/user-agent',
+  'https://httpbin.org/delay/3',
+];
+const source = from(array).pipe(mergeMap((url)=> new Promise(resolve => setTimeout(() => resolve(`Result: ${url}`), 2000)), 2)).subscribe(val => console.log(val));
 function DragAndDropElement(props: any): any {
     const [, setDragRef] = useDrag({
         collection: {}, // 这里可以填写任意你想传递给drop元素的消息，后面会通过参数的形式传递给drop元素
