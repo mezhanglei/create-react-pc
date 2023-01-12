@@ -3,30 +3,30 @@ export default {
   label: '表格布局',
   properties: [
     {
-      inside: {type: 'tr', props: {}},
+      fieldComponent: { type: 'Table.Row', props: {} },
       properties: {
         name1: {
-          outside: {type: 'td', props: {}},
+          fieldComponent: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
         name2: {
-          outside: {type: 'td', props: {}},
+          fieldComponent: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
       }
     },
     {
-      inside: {type: 'tr', props: {}},
+      fieldComponent: { type: 'Table.Row', props: {} },
       properties: {
         name1: {
-          outside: {type: 'td', props: {}},
+          fieldComponent: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
         name2: {
-          outside: {type: 'td', props: {}},
+          fieldComponent: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
@@ -34,6 +34,6 @@ export default {
     },
   ],
   settings: {
-    
+
   },
 }

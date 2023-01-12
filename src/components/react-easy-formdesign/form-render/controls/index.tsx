@@ -9,7 +9,8 @@ import {
   Select,
   Slider,
   Switch,
-  TimePicker
+  TimePicker,
+  Cascader
 } from 'antd';
 import CodeInput from './code-input';
 import CodeTextArea from './code-textarea';
@@ -44,6 +45,7 @@ export const BaseControls = {
   "Switch": Switch, // 切换组件
   "TimePicker": TimePicker, // 时分秒控件
   "TimePicker.RangePicker": TimePicker.RangePicker, // 时分秒范围控件
+  "Cascader": Cascader,
   // 自定义组件
   "OptionsComponent": OptionsComponent, // 用于显示数据源的控件
   "CodeInput": CodeInput, // 值的输入框

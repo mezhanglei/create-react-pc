@@ -4,7 +4,7 @@
 
 export const initialValue = {
   label: '默认值',
-  type: 'CodeInput'
+  type: 'CodeTextArea'
 }
 
 export const disabled = {
@@ -42,6 +42,6 @@ export const maxLength = {
 
 export const placeholder = {
   label: '占位字符',
-  type: 'CodeInput',
+  type: 'Input',
   initialValue: '请输入'
 }

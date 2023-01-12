@@ -8,12 +8,12 @@ import { getInitialValues } from '@/components/react-easy-formrender/utils/utils
 import { ConfigElementsMap, ELementProps } from '../components/configs';
 import { deepMergeObject } from '@/utils/object';
 
-export interface RootDndProps extends GeneratePrams<ELementProps> {
+export interface EditorDndProps extends GeneratePrams<ELementProps> {
   children?: any;
 }
 
 // 根节点的拖放控制
-function RootDnd(props: RootDndProps, ref) {
+function EditorDnd(props: EditorDndProps, ref) {
   const { children, store } = props;
 
   const onUpdate: DndProps['onUpdate'] = (params) => {
@@ -77,4 +77,4 @@ function RootDnd(props: RootDndProps, ref) {
   )
 };
 
-export default React.forwardRef(RootDnd);
+export default React.forwardRef(EditorDnd);

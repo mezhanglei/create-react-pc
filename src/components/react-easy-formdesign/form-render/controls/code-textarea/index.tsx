@@ -1,7 +1,8 @@
-import { evalString, uneval } from '@/utils/string';
+import { handleEvalString, handleStringify } from '@/components/react-easy-formdesign/utils/utils';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import { TextAreaRef } from 'antd/lib/input/TextArea';
+import js_beautify from 'js-beautify';
 import React, { CSSProperties, Ref, useEffect, useState } from 'react';
 
 // 函数代码编辑器
@@ -22,17 +23,12 @@ const CodeTextArea = React.forwardRef((props: CodeTextAreaProps, ref: Ref<TextAr
   const [curValue, setCurValue] = useState<string>();
 
   useEffect(() => {
-    setCurValue(toStr(value))
+    setCurValue(handleStringify(value))
   }, [value]);
-
-  // 接收外界的值
-  const toStr = (val: any) => {
-    return typeof val === 'string' ? val : uneval(val)
-  }
 
   const onBlur: TextAreaProps['onBlur'] = (e) => {
     const codeStr = e?.target?.value;
-    const code = evalString(codeStr);
+    const code = handleEvalString(codeStr);
     onChange && onChange(code);
   }
 
@@ -41,10 +37,14 @@ const CodeTextArea = React.forwardRef((props: CodeTextAreaProps, ref: Ref<TextAr
     setCurValue(codeStr)
   }
 
+  const formatStr = curValue && js_beautify(curValue, {
+    indent_size: 2
+  });
+
   return (
     <Input.TextArea
       ref={ref}
-      value={curValue}
+      value={formatStr}
       onBlur={onBlur}
       onChange={handleChange}
       {...rest}

@@ -35,7 +35,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   const { selected } = useFormDesign();
   const setEdit = useFormEdit();
   const selectedName = selected?.name;
-  const isSelected = name ? name === selectedName : false;
+  const isSelected = name ? name === selectedName && selected?.parent === parent : false;
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = designer?.getItemByPath(currentPath);
@@ -52,7 +52,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     e.stopPropagation();
     setEdit({
       selected: {
-        name: name,
+        name: name as string,
         parent: parent,
         field: field
       }
@@ -63,7 +63,7 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
 
   const cls = classnames('field-wrapper', className, {
     [`${prefixCls}-active`]: isSelected
-  })
+  });
 
   const Tool = (
     <div className='wrapper-tools'>

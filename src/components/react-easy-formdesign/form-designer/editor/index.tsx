@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import RenderForm, { getCurrentPath, RenderFormProps } from '../../form-render';
 import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
-import RootDnd from './root-dnd';
+import EditorDnd from './editor-dnd';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -40,12 +40,13 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   }
 
   return (
-    <div ref={ref}
+    <div
+      ref={ref}
       className={cls}
       style={style}
       {...restProps}
       onClick={() => {
-        // setEdit({ selected: { name: '#' } })
+        setEdit({ selected: { name: '#' } })
       }}>
       <RenderForm
         store={designer}
@@ -53,7 +54,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         properties={properties}
         onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}
-        inside={RootDnd}
+        inside={EditorDnd}
         renderItem={renderItem}
       />
     </div>
@@ -62,7 +63,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
 const renderItem = (params: FormItemWrapperProps) => {
   const { field } = params;
-  // 只针对单个表单域添加
+  // 针对
   if (!field?.properties) {
     return <FormItemWrapper {...params} />
   }

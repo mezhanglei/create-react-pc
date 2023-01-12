@@ -1,18 +1,19 @@
 import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
-import Input from './input';
-import Radio from './radio';
-import Checkbox from './checkbox';
-import Select from './select';
-import Switch from './switch';
-import TimePicker from './timePicker';
-import DatePicker from './datePicker';
-import Slider from './sliderLine';
-import Rate from './rate';
-import ColorPicker from './colorPicker';
-import FileUpload from './fileUpload';
-import ImageUpload from './imageUpload';
-import table from './table';
+import Input from './base/input';
+import Radio from './base/radio';
+import Checkbox from './base/checkbox';
+import Select from './base/select';
+import Switch from './base/switch';
+import TimePicker from './base/timePicker';
+import DatePicker from './base/datePicker';
+import Slider from './base/sliderLine';
+import Rate from './base/rate';
+import ColorPicker from './base/colorPicker';
+import FileUpload from './base/fileUpload';
+import ImageUpload from './base/imageUpload';
+import Cascader from './base/cascader';
+import table from './base/table';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
@@ -44,8 +45,15 @@ export const TabsData = [{
         Slider,
         Rate,
         ColorPicker,
+        Cascader,
         FileUpload,
         ImageUpload
+      ]
+    },
+    {
+      title: '业务组件',
+      elementType: '业务组件',
+      elements: [
       ]
     }
   ]
@@ -74,17 +82,3 @@ export const ConfigElements = TabsData.reduce((pre: ELementProps[], cur) => {
 
 // 所有元素列表转成的map结构
 export const ConfigElementsMap: ElementsType = getArrMap(ConfigElements, 'id');
-
-// import 'codemirror/lib/codemirror.css';
-// import CodeMirror from 'codemirror/lib/codemirror';
-// import 'codemirror/mode/javascript/javascript';
-// this.editor = CodeMirror(this.$refs.editor, {
-//   lineNumbers: true,
-//   mode: 'javascript',
-//   gutters: ['CodeMirror-lint-markers'],
-//   lint: true,
-//   line: true,
-//   tabSize: 2,
-//   lineWrapping: true,
-//   value: val || ''
-// });

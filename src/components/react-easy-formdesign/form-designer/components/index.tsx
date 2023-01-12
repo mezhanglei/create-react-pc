@@ -5,7 +5,7 @@ import './index.less';
 import { defaultGetId } from '../../utils/utils';
 import ComponentList from './list';
 import { endIsListItem, getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { ELementProps, TabsData } from '../components/configs';
+import { ELementProps, TabsData } from './configs';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
 import { deepMergeObject } from '@/utils/object';

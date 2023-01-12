@@ -2,6 +2,8 @@ import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { deepMergeObject } from '@/utils/object';
+import { evalString, uneval } from '@/utils/string';
+import moment, { isMoment } from 'moment';
 import { nanoid } from 'nanoid';
 import { ELementProps, ElementsType } from '../form-designer/components/configs';
 import CommonSettings, { CommonSettingsItem } from '../form-designer/components/settings';
@@ -105,4 +107,25 @@ export const getExpandSettings = (designer: FormRenderStore, path: string) => {
     expandSettings = { ...expandSettings, ...item };
   }
   return { ...curSettings, ...expandSettings }
+}
+
+// 执行解析字符串
+export const handleEvalString = (codeStr?: string) => {
+  if (!codeStr) return;
+  // 是否为纯字符串
+  const isonlyStr = codeStr?.indexOf('[') == -1 && codeStr?.indexOf('{') == -1;
+  if (!isonlyStr) {
+    return evalString(codeStr)
+  }
+  return codeStr;
+}
+
+export const handleStringify = (val: any) => {
+  if (typeof val === 'string') {
+    return val
+  } else if (isMoment(val)) {
+    return moment(val).format()
+  } else {
+    return uneval(val)
+  }
 }

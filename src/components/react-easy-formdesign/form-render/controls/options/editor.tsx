@@ -1,11 +1,12 @@
-import React, { CSSProperties, LegacyRef, Ref, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, LegacyRef, useEffect, useRef, useState } from "react";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
-import { evalString, uneval } from "@/utils/string";
 import classNames from 'classnames';
 import './editor.less';
 import { Button, Modal } from "antd";
+import { js_beautify } from 'js-beautify';
+import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/utils/utils";
 
 const prefixCls = 'options-codemirror';
 const classes = {
@@ -31,22 +32,22 @@ export const EditorCodeMirror = React.forwardRef((props: EditorCodeMirrorProps, 
     ...rest
   } = props;
 
-  // 接收外界的值
-  const toStr = (val: any) => {
-    return typeof val === 'string' ? val : uneval(val)
-  }
-
   const onBlur: IUnControlledCodeMirror['onBlur'] = (editor) => {
     const codeStr = editor.getValue();
-    const code = evalString(codeStr);
+    const code = handleEvalString(codeStr);
     onChange && onChange(code);
   }
+
+  const codeStr = handleStringify(value);
+  const formatStr = codeStr && js_beautify(codeStr, {
+    indent_size: 2
+  });
 
   return (
     <CodeMirror
       ref={ref}
       className={classNames(classes.editor, className, disabled ? classes.disabled : '')}
-      value={toStr(value)}
+      value={formatStr}
       options={{
         lineNumbers: true,
         mode: 'javascript',
@@ -82,13 +83,8 @@ export const EditorCodeMirrorModal = (
   const [codeStr, setCodeStr] = useState<string>('');
   const codemirrorRef = useRef<any>();
 
-  // 转化为字符串
-  const toStr = (val: any) => {
-    return typeof val === 'string' ? val : uneval(val)
-  }
-
   useEffect(() => {
-    const code = toStr(value)
+    const code = handleStringify(value)
     setCodeStr(code ?? '')
   }, [value])
 
@@ -101,9 +97,9 @@ export const EditorCodeMirrorModal = (
     const editor = codemirror?.editor;
     if (editor) {
       const codeStr = editor.getValue();
-      const code = evalString(codeStr);
-      onChange && onChange(code);
       setCodeStr(codeStr);
+      const code = handleEvalString(codeStr);
+      onChange && onChange(code);
     }
     closeModal()
   }
