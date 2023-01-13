@@ -1,7 +1,7 @@
 import DndSortable, { DndProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
-import './index.less';
+import './dnd.less';
 import { defaultGetId } from '../../utils/utils';
 import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';

@@ -3,7 +3,6 @@ import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
-import moment, { isMoment } from 'moment';
 import { nanoid } from 'nanoid';
 import { ELementProps, ElementsType } from '../form-designer/components/configs';
 import CommonSettings, { CommonSettingsItem } from '../form-designer/components/settings';
@@ -109,7 +108,7 @@ export const getExpandSettings = (designer: FormRenderStore, path: string) => {
   return { ...curSettings, ...expandSettings }
 }
 
-// 执行解析字符串
+// 代码编辑器执行解析字符串
 export const handleEvalString = (codeStr?: string) => {
   if (!codeStr) return;
   // 是否为纯字符串
@@ -120,11 +119,10 @@ export const handleEvalString = (codeStr?: string) => {
   return codeStr;
 }
 
+// 代码编辑器序列化目标为字符串
 export const handleStringify = (val: any) => {
   if (typeof val === 'string') {
     return val
-  } else if (isMoment(val)) {
-    return moment(val).format()
   } else {
     return uneval(val)
   }

@@ -1,9 +1,9 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import RenderForm, { getCurrentPath, RenderFormProps } from '../../form-render';
-import FormItemWrapper, { FormItemWrapperProps } from './form-item-wrapper';
 import './index.less';
-import EditorDnd from './editor-dnd';
+import EditorDnd from './dnd';
+import EditorSelection from './selection';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -30,7 +30,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     setEdit({ properties: newData })
   }
 
-  // 表单属性更改时回填属性初始值设置
+  // 编辑区域改动值
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
     const path = getCurrentPath(name, parent);
     // 回填setting表单的intialValue选项
@@ -61,13 +61,16 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   );
 };
 
-const renderItem = (params: FormItemWrapperProps) => {
-  const { field } = params;
-  // 针对
-  if (!field?.properties) {
-    return <FormItemWrapper {...params} />
+// 编辑区默认的选中框渲染
+const renderItem: RenderFormProps['renderList'] = (params) => {
+  const { children, parent } = params;
+  const isRoot = !parent;
+  if (isRoot) {
+    return (
+      <EditorSelection {...params} />
+    );
   }
-  return params?.children
+  return children;
 }
 
 DesignEditor.displayName = 'design-editor';

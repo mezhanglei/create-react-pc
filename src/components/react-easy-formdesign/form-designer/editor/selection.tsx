@@ -3,11 +3,11 @@ import { defaultGetId } from '../../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../../form-render';
-import './form-item-wrapper.less';
+import './selection.less';
 import { ELementProps } from '../components/configs';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
-export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
+export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
   style?: CSSProperties;
   className?: string;
@@ -18,7 +18,7 @@ export interface FormItemWrapperProps extends GeneratePrams<ELementProps> {
  * @param ref 
  * @returns 
  */
-function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
+function EditorSelection(props: EditorSelectionProps, ref: any) {
   const {
     children,
     style,
@@ -59,14 +59,14 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
     })
   }
 
-  const prefixCls = "field-wrapper";
+  const prefixCls = "editor-selection";
 
-  const cls = classnames('field-wrapper', className, {
+  const cls = classnames(prefixCls, className, {
     [`${prefixCls}-active`]: isSelected
   });
 
   const Tool = (
-    <div className='wrapper-tools'>
+    <div className='selection-tools'>
       <i className='iconfont icon-fuzhi' onClick={copyItem} />
       <i className='iconfont icon-shanchu' onClick={deleteItem} />
     </div>
@@ -80,4 +80,4 @@ function FormItemWrapper(props: FormItemWrapperProps, ref: any) {
   );
 };
 
-export default React.forwardRef(FormItemWrapper);
+export default React.forwardRef(EditorSelection);

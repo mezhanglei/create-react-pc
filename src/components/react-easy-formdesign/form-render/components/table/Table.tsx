@@ -32,7 +32,7 @@ export interface TableProps {
 }
 
 const Table: React.FC<TableProps> = React.forwardRef(({
-  columns,
+  columns = [],
   dataSource,
   className,
   style = {},
@@ -52,17 +52,6 @@ const Table: React.FC<TableProps> = React.forwardRef(({
     [rowKey]
   );
 
-  const childs = (
-    <>
-      <TableHead columns={columns}></TableHead>
-      <TableBody
-        getRowKey={getRowKey}
-        columns={columns}
-        dataSource={dataSource}
-      />
-    </>
-  )
-
   return (
     <table
       className={cx([Classes.Table, className])}
@@ -71,7 +60,13 @@ const Table: React.FC<TableProps> = React.forwardRef(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      {children ?? childs}
+      <TableHead columns={columns}></TableHead>
+      <TableBody
+        getRowKey={getRowKey}
+        columns={columns}
+        dataSource={dataSource}
+        children={children}
+      />
     </table>
   );
 });

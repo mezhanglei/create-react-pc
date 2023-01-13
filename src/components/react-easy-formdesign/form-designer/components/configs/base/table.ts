@@ -1,6 +1,7 @@
 export default {
   id: 'table',
   label: '表格布局',
+  inside: { type: 'Table', props: {} },
   properties: [
     {
       fieldComponent: { type: 'Table.Row', props: {} },
