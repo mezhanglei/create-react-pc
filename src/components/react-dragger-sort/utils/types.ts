@@ -65,7 +65,7 @@ export interface DndBaseProps {
 }
 
 // 拖拽容器组件的props
-export interface DndProps extends DndBaseProps {
+export interface DndSortableProps extends DndBaseProps {
   children: any;
   className?: string;
   style?: CSSProperties;

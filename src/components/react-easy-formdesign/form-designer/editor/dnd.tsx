@@ -1,4 +1,4 @@
-import DndSortable, { DndProps } from '@/components/react-dragger-sort';
+import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
@@ -16,7 +16,7 @@ export interface EditorDndProps extends GeneratePrams<ELementProps> {
 function EditorDnd(props: EditorDndProps, ref) {
   const { children, store } = props;
 
-  const onUpdate: DndProps['onUpdate'] = (params) => {
+  const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;
     console.log(params, '同域拖放');
     // 拖拽区域信息
@@ -33,7 +33,7 @@ function EditorDnd(props: EditorDndProps, ref) {
     store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
-  const onAdd: DndProps['onAdd'] = (params) => {
+  const onAdd: DndSortableProps['onAdd'] = (params) => {
     const { from, to } = params;
     console.log(params, '跨域拖放');
     // 拖拽区域信息

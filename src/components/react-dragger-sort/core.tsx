@@ -1,9 +1,9 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, RefObject } from 'react';
 import { DragDirectionCode, DraggableEvent, EventHandler } from "@/components/react-free-draggable";
-import { DndProps, DropEffect, DndParams, DndHandle, EventType } from "./utils/types";
+import { DndSortableProps, DropEffect, DndParams, DndHandle, EventType } from "./utils/types";
 import classNames from "classnames";
 import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, getOwnerDocument, getClientXY } from "@/utils/dom";
-import { DndManager } from './dnd-manager';
+import { DndManager } from './manager';
 import { createAnimate, isMoveIn } from './utils/dom';
 import { isMobile } from '@/utils/verify';
 import { isDisabledDrop, isDisabledSort, isDisabledDrag, isHiddenFrom, setMouseEvent } from './utils/utils';
@@ -14,29 +14,32 @@ export default function BuildDndSortable() {
 
   const dndManager = new DndManager();
 
-  return class DndCore extends React.Component<DndProps> {
-    parentEl?: HTMLDivElement;
+  return class DndSortable extends React.Component<DndSortableProps> {
+    parentElRef?: RefObject<HTMLDivElement>;
     dragged?: HTMLElement;
     cloneDragged?: HTMLElement;
     over?: HTMLElement;
     lastDisplay: CSSProperties['display'];
-    constructor(props: DndProps) {
+    constructor(props: DndSortableProps) {
       super(props);
+      this.parentElRef = React.createRef()
       this.state = {
       };
     }
 
     componentDidMount() {
-      this.initManagerData(this.parentEl);
+      const parentEl = this.parentElRef?.current;
+      this.initManagerData(parentEl);
     }
 
-    componentDidUpdate(prevProps: DndProps) {
+    componentDidUpdate(prevProps: DndSortableProps) {
       setTimeout(() => {
-        this.initManagerData(this.parentEl);
+        const parentEl = this.parentElRef?.current;
+        this.initManagerData(parentEl);
       }, 0);
     }
 
-    static getDerivedStateFromProps(nextProps: DndProps, prevState: any) {
+    static getDerivedStateFromProps(nextProps: DndSortableProps, prevState: any) {
       const optionsChanged = !isEqual(nextProps.options, prevState.prevOptions);
       if (optionsChanged) {
         return {
@@ -48,12 +51,13 @@ export default function BuildDndSortable() {
     }
 
     componentWillUnmount() {
-      const ownerDocument = getOwnerDocument(this.parentEl);
+      const parentEl = this.parentElRef?.current;
+      const ownerDocument = getOwnerDocument(parentEl);
       removeEvent(ownerDocument, 'dragover', this.onDragOver);
     }
 
     // 初始化manager的数据
-    initManagerData = (parentEl?: HTMLElement) => {
+    initManagerData = (parentEl?: HTMLElement | null) => {
       if (!parentEl) return;
       const props = this.props;
       const childNodes = parentEl?.children;
@@ -137,9 +141,10 @@ export default function BuildDndSortable() {
       const currentTarget = e.currentTarget as HTMLElement;
       const target = e.target;
       const isCanDragStart = target === currentTarget;
+      const parentEl = this.parentElRef?.current;
       if (currentTarget && isCanDragStart) {
         this.handleMoveStart(e, currentTarget);
-        const ownerDocument = getOwnerDocument(this.parentEl);
+        const ownerDocument = getOwnerDocument(parentEl);
         addEvent(ownerDocument, 'dragover', this.onDragOver);
       }
     }
@@ -164,7 +169,7 @@ export default function BuildDndSortable() {
       if (!cloneDragged) return;
       // 目标元素
       const over = this.over;
-      const parentEl = this.parentEl;
+      const parentEl = this.parentElRef?.current;
       const dragItem = dndManager.getDragItem(dragged);
       const toItem = over && dndManager.getDragItem(over);
       const toGroup = over && dndManager.getDropItem(over);
@@ -199,7 +204,7 @@ export default function BuildDndSortable() {
       const dragged = this.dragged;
       const cloneDragged = this.cloneDragged;
       const over = this.over;
-      const parentEl = this.parentEl;
+      const parentEl = this.parentElRef?.current;
       const toOptions = to?.group?.options;
       const overPreClass = toOptions?.sortPreClass || 'over-pre';
       const overNextClass = toOptions?.sortNextClass || 'over-next';
@@ -249,7 +254,7 @@ export default function BuildDndSortable() {
     moveHandle: EventHandler = (e) => {
       const dragged = this.dragged;
       const cloneDragged = this.cloneDragged;
-      const parentEl = this.parentEl;
+      const parentEl = this.parentElRef?.current;
       if (!dragged || !cloneDragged || !parentEl) return
       // 经过的节点
       const isOverSelf = isMoveIn(e, cloneDragged) || isMoveIn(e, dragged);
@@ -431,9 +436,9 @@ export default function BuildDndSortable() {
     render() {
       const { children, className, style } = this.props;
       const cls = classNames((children?.props?.className || ''), className);
-
+      const ref = this.parentElRef;
       return (
-        <div ref={(node: HTMLDivElement) => this.parentEl = node} className={cls} style={style}>
+        <div ref={ref} className={cls} style={style}>
           {
             React.Children.map(children, (child) => {
               if (child) {

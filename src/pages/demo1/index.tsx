@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import "./index.less";
 import Draggable from '@/components/react-free-draggable';
 import Button from '@/components/button';
-import DndSortable, { arrayMove, DndProps } from "@/components/react-dragger-sort";
+import DndSortable, { arrayMove, DndSortableProps } from "@/components/react-dragger-sort";
 import { addDragItem, getItem, indexToArray, removeDragItem } from './utils';
 import { deepClone } from '@/utils/object';
 
@@ -20,7 +20,7 @@ const Demo1: React.FC<any> = (props) => {
     // setY(data?.y)
   };
 
-  const onUpdate: DndProps['onUpdate'] = (params) => {
+  const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;
     console.log(params, '同区域');
     const dragIndex = from?.index;
@@ -44,7 +44,7 @@ const Demo1: React.FC<any> = (props) => {
   };
 
   // 先计算内层的数据再计算外层的数据
-  const onAdd: DndProps['onAdd'] = (params) => {
+  const onAdd: DndSortableProps['onAdd'] = (params) => {
     const { from, to } = params;
     console.log(params, '跨区域');
     const cloneData = deepClone(data);

@@ -1,4 +1,4 @@
-import BuildDndSortable from './dnd-core';
+import BuildDndSortable from './core';
 import { arrayMove } from '@/utils/array';
 
 const DndSortable = BuildDndSortable();
