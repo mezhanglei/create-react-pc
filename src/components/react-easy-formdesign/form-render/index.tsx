@@ -13,7 +13,10 @@ export function RenderFormChildren(props: RenderFormChildrenProps) {
 }
 
 // 完整表单组件
-export default function FormRender(props: RenderFormProps) {
+export interface RenderDesignFormProps extends RenderFormProps {
+  isEditor?: boolean; // 是否为编辑态
+}
+export default function FormRender(props: RenderDesignFormProps) {
   return (
     <RenderFormDefault {...props} controls={{ ...BaseControls, ...props?.controls }} components={{ ...BaseComponents, ...props?.components }} />
   );

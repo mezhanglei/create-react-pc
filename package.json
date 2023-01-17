@@ -69,6 +69,8 @@
     "style-loader": "^3.3.1",
     "stylelint": "^14.7.1",
     "stylelint-webpack-plugin": "^3.2.0",
+    "svg-sprite-loader": "^6.0.11",
+    "svgo-loader": "^3.0.3",
     "terser-webpack-plugin": "^5.3.1",
     "thread-loader": "^3.0.4",
     "typescript": "^4.4.4",
@@ -130,7 +132,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.6",
     "slick-carousel": "^1.8.1",
-    "spark-md5": "^3.0.2"
+    "spark-md5": "^3.0.2",
+    "tippy.js": "^6.3.7"
   },
   "browserslist": [
     "defaults",

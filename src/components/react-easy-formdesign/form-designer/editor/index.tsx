@@ -49,6 +49,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         setEdit({ selected: { name: '#' } })
       }}>
       <RenderForm
+        isEditor
         store={designer}
         form={designerForm}
         properties={properties}

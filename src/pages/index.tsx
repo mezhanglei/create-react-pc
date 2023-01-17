@@ -12,6 +12,8 @@ import "slick-carousel/slick/slick-theme.css";
 import "less/index.less";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+// 引入图标
+import "@/icons/index.js";
 
 // 只在开发环境下引入
 // if (process.env.NODE_ENV === 'development') {

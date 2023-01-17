@@ -1,6 +1,10 @@
 import classnames from 'classnames';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
 import './label.less';
+import Icon from '@/components/svg-icon';
 
 export interface LabelBaseProps {
   colon?: boolean;
@@ -9,6 +13,7 @@ export interface LabelBaseProps {
   labelAlign?: CSSProperties['textAlign'];
   labelStyle?: CSSProperties;
   gutter?: number;
+  tooltip?: string;
 }
 export interface LabelProps extends LabelBaseProps {
   children: any;
@@ -26,8 +31,20 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
     gutter,
     labelWidth,
     labelAlign,
+    tooltip,
     ...restProps
   } = props;
+
+  const iconRef = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    if (tooltip && iconRef.current) {
+      tippy(iconRef.current, {
+        theme: 'light',
+        content: tooltip,
+      });
+    }
+  }, [tooltip]);
 
   const prefix = 'item-label';
 
@@ -48,6 +65,7 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
     children !== undefined ? (
       <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon ? <>{children}:</> : children}
+        {tooltip && <Icon name="wenhao" ref={iconRef} className={`${prefix}__tooltip`} />}
       </label>
     ) : null
   );

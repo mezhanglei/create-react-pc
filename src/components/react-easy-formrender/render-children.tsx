@@ -7,7 +7,7 @@ import { isEqual } from '@/utils/object';
 import './iconfont/iconfont.css';
 import { isReactComponent, isValidElement } from '@/utils/ReactIs';
 
-// 不带Form容器的组件
+// 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const options = useContext(FormOptionsContext);
@@ -222,7 +222,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
     if (!field) return;
 
-    const commonParams = { name, field, parent, form: form, store: formRenderStore }; // 公共参数
+    const commonParams = { name, field: { ...options, ...field }, parent, form: form, store: formRenderStore }; // 公共参数
     const footerInstance = createInstance(footer, mergeComponents, commonParams);
     const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
     const fieldComponentParse = componentParse(fieldComponent, mergeComponents);

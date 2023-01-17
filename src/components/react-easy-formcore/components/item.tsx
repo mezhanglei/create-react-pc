@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import { Control, ControlBaseProps } from './control';
 import { Label, LabelBaseProps } from './label';
 import './item.less';
+import pickAttrs from '@/utils/pickAttrs';
 
 export type Layout = 'horizontal' | 'vertical' | string;
 export interface ItemProps extends LabelBaseProps, ControlBaseProps {
@@ -32,6 +33,7 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
     labelWidth,
     labelAlign,
     gutter,
+    tooltip,
     /** ControlBaseProps */
     error,
     suffix,
@@ -62,8 +64,15 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
   );
 
   return (
-    <div ref={ref} className={cls} style={style} {...rest}>
-      <Label colon={colon} gutter={gutter} labelWidth={labelWidth} labelAlign={labelAlign} required={required} style={labelStyle}>
+    <div ref={ref} className={cls} style={style} {...pickAttrs(rest, { aria: true, data: true })}>
+      <Label
+        tooltip={tooltip}
+        colon={colon}
+        gutter={gutter}
+        labelWidth={labelWidth}
+        labelAlign={labelAlign}
+        required={required}
+        style={labelStyle}>
         {label}
       </Label>
       <Control error={error} footer={footer} suffix={suffix}>
