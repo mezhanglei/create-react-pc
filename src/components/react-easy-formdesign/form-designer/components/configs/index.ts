@@ -51,6 +51,12 @@ export const TabsData = [{
       ]
     },
     {
+      title: '展示组件',
+      elementType: '展示组件',
+      elements: [
+      ]
+    },
+    {
       title: '业务组件',
       elementType: '业务组件',
       elements: [

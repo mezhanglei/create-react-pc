@@ -73,7 +73,7 @@ export const getCurSettings = (designer: FormRenderStore, path: string): Element
   const originSettings = selectedItem?.['settings'];
   let baseSettings = originSettings;
   // 非列表节点设置字段名
-  if (!endIsListItem(path)) {
+  if (!endIsListItem(path) && selectedItem?.dataType !== 'ignore') {
     baseSettings = {
       name: {
         label: '字段名',
