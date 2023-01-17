@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React, { CSSProperties, LegacyRef, useState } from "react";
 import { Form } from "../../";
 import { useFormDesign } from "../../../utils/hooks";
-import { updateDesignerItem } from "../../../utils/utils";
+import { getDesignerItem, updateDesignerItem } from "../../../utils/utils";
 import CodeTextArea from "../code-textarea";
 import { EditorCodeMirrorModal } from "./editor";
 
@@ -13,12 +13,17 @@ export interface RequestSourceConfig {
   requestType?: string; // 提交方式
   params?: any; // 参数
   headers?: any; // headers携带的信息
-  returnFn?: string; // 解析函数
+  returnFn?: string; // 解析函数字符串
 }
+
+export interface RequestResponseConfig extends Omit<RequestSourceConfig, 'returnFn'> {
+  returnFn?: (val: any) => any; // 解析函数
+}
+
 
 export interface RequestSourceProps {
   value?: RequestSourceConfig;
-  onChange?: (val?: RequestSourceConfig) => void;
+  onChange?: (val?: RequestResponseConfig) => void;
   className?: string;
   style?: CSSProperties;
 }
@@ -46,7 +51,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
   } = props;
 
   const labelWidth = 80;
-  const [requestConfig, setRequestConfig] = useState<RequestSourceConfig>({});
+  const [requestConfig, setRequestConfig] = useState<RequestResponseConfig>({});
   const { selectedPath, designer, designerForm } = useFormDesign();
 
   const configChange = (key: string, val: any) => {
@@ -54,7 +59,8 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
     newConfig[key] = val;
     setRequestConfig(newConfig);
     onChange && onChange(newConfig);
-    updateDesignerItem(designer, designerForm, selectedPath, { props: newConfig });
+    const oldProps = getDesignerItem(designer, selectedPath)?.props || {};
+    updateDesignerItem(designer, designerForm, selectedPath, { props: { ...oldProps, requestConfig: newConfig } });
   }
 
   return (
@@ -91,7 +97,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
       </Col>
       <Col span={24}>
         <Form.Item label="解析函数" layout="horizontal" labelWidth={labelWidth}>
-          <CodeTextArea style={{ width: '100%' }} onChange={(val) => configChange('returnFn', val)} />
+          <CodeTextArea style={{ width: '100%' }} value={'function (res){\n   return res.data;\n}'} onChange={(val) => configChange('returnFn', val)} />
         </Form.Item>
       </Col>
     </div>

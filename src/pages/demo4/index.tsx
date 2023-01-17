@@ -4,7 +4,7 @@ import "./index.less";
 import AddIcon from 'static/images/fail.png'
 import { Uploader } from '@/components/react-upload/uploader';
 import { Button } from 'antd';
-import http from '@/http/request';
+import request from '@/http/request';
 import { renderToStaticMarkup } from 'react-dom/server';
 import demo2 from '../demo2';
 import { from, mergeMap } from 'rxjs';
@@ -58,7 +58,7 @@ const demo4: React.FC<any> = (props) => {
     const uploadRef = useRef<Uploader>();
 
     const beforeUpload = useCallback(async (params) => {
-        const ret = await http.post({ url: '/verify', data: { filename: params?.file?.name, hash: params?.fileHash } });
+        const ret = await request.post({ url: '/verify', data: { filename: params?.file?.name, hash: params?.fileHash } });
         return { uploaded: ret?.uploaded, uploadedList: ret?.uploadedList };
     }, [])
 
@@ -68,11 +68,11 @@ const demo4: React.FC<any> = (props) => {
         data.append("hash", params?.chunk?.chunkName);
         data.append("filename", params?.file?.name);
         data.append("fileHash", params?.fileHash);
-        return http.post({ url: '/upload', data: data });
+        return request.post({ url: '/upload', data: data });
     }, [])
 
     const afterUpload = useCallback((params) => {
-        http.post({
+        request.post({
             url: '/merge', data: {
                 filename: params.file.name,
                 size: params.size,
