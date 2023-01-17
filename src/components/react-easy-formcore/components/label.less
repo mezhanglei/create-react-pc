@@ -5,12 +5,6 @@
     width: 120px;
     word-break: break-all;
     word-wrap: break-word;
-
-    &::before {
-      display: none;
-      content: "*";
-      color: red;
-    }
   }
 
   &__tooltip {
@@ -20,8 +14,12 @@
   }
 
   &--required&__header::before {
-    display: inline;
+    display: inline-block;
+    margin-inline-end: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun,sans-serif;
+    line-height: 1;
     content: "*";
-    color: red;
   }
 }
