@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { updateDesignerItem, getDesignerItem, isNoSelected, getCurSettings, getCommonSettingsList } from '../../utils/utils';
+import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, getNameSettings } from '../../utils/utils';
 import CustomCollapse from '../../form-render/components/collapse';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -22,8 +22,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const { selected, selectedPath, designer, designerForm } = useFormDesign();
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
-  const curSettings = useMemo(() => (getCurSettings(designer, selectedPath) || {}), [designer, selectedPath]);  // 主要配置表单
-  const commonSettingsList = useMemo(() => (getCommonSettingsList(designer, selectedPath) || []), [designer, selectedPath]); // 公共配置表单列表
+  const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath)?.id) || []), [designer, selectedPath]); // 配置表单列表
+  const nameSettings = useMemo(() => (getNameSettings(designer, selectedPath)), [designer, selectedPath]); // 表单的name设置
 
   useEffect(() => {
     // 根据selected回填数据
@@ -60,9 +60,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   const renderCommonList = () => {
-    if (!commonSettingsList?.length) return;
+    if (!settingsModule?.length) return;
     return (
-      commonSettingsList?.map((item) => {
+      settingsModule?.map((item) => {
         const [title, settings] = item;
         return (
           <CustomCollapse header={title} key={title} isOpened>
@@ -76,7 +76,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   return (
     <div ref={ref} className={cls} style={style}>
       <Form layout="vertical" store={form} onFieldsChange={onFieldsChange}>
-        <RenderFormChildren properties={curSettings} />
+        <RenderFormChildren properties={nameSettings} />
         {renderCommonList()}
       </Form>
     </div>

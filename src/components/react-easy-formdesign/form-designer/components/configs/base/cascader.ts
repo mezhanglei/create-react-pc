@@ -1,8 +1,3 @@
-import {
-  disabled,
-  initialValue
-} from "./common";
-
 export default {
   id: 'cascader',
   label: '级联选择器',
@@ -42,21 +37,5 @@ export default {
         ],
       },
     ]
-  },
-  settings: {
-    initialValue: initialValue,
-    props: {
-      compact: true,
-      properties: {
-        options: {
-          type: 'OptionsComponent',
-          label: '选项数据',
-          props: {
-            includes: ['json', 'request']
-          }
-        },
-        disabled: disabled,
-      }
-    }
-  },
+  }
 }

@@ -2,9 +2,9 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { Tabs } from 'antd';
 import './index.less';
-import { defaultGetId } from '../../utils/utils';
+import { defaultGetId, getConfigSettings, isIgnoreName } from '../../utils/utils';
 import ComponentList from './list';
-import { endIsListItem, getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
+import { getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ELementProps, TabsData } from './configs';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
@@ -30,10 +30,10 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const onChange = (item: ELementProps) => {
     const newIndex = getEndIndex(selectedName, properties, selectedParent) + 1; // 插入位置序号
-    const isListItem = endIsListItem(selectedPath);
-    const field = deepMergeObject(item, getInitialValues(item?.settings));
-    // 非数组项需要生成id
-    const addItem = isListItem ? field : { ...field, name: defaultGetId(item?.id) };
+    const isIgnoreItem = isIgnoreName(designer, selectedPath);
+    const configSettings = getConfigSettings(item?.id);
+    const field = deepMergeObject(item, getInitialValues(configSettings));
+    const addItem = isIgnoreItem ? field : { ...field, name: defaultGetId(item?.id) };
     designer?.addItemByIndex(addItem, newIndex, selectedParent);
   }
 

@@ -19,7 +19,6 @@ import table from './base/table';
 export interface ELementProps extends FormFieldProps {
   id?: string;
   icon?: string;
-  settings?: FormFieldProps['properties']; // 属性配置项
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 

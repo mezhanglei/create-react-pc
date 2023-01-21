@@ -27,6 +27,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
+    console.log(newData, '表单')
     setEdit({ properties: newData })
   }
 

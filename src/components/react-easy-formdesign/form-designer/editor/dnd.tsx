@@ -2,7 +2,7 @@ import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
-import { defaultGetId } from '../../utils/utils';
+import { defaultGetId, getConfigSettings } from '../../utils/utils';
 import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ConfigElementsMap, ELementProps } from '../components/configs';
@@ -53,7 +53,8 @@ function EditorDnd(props: EditorDndProps, ref) {
     if (fromCollection?.type === DndGroup) {
       const elementId = from?.id as string;
       const item = ConfigElementsMap[elementId];
-      const field = deepMergeObject(item, getInitialValues(item?.settings));
+      const configSettings = getConfigSettings(item?.id);
+      const field = deepMergeObject(item, getInitialValues(configSettings));
       const addItem = dropGroupIsList ? field : { ...field, name: defaultGetId(item?.id) };
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽

@@ -4,8 +4,7 @@ import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-
 import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
-import { ELementProps, ElementsType } from '../form-designer/components/configs';
-import CommonSettings, { CommonSettingsItem } from '../form-designer/components/settings';
+import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
@@ -20,12 +19,12 @@ export const isNoSelected = (path?: string) => {
 export const getDesignerItem = (designer: FormRenderStore, path: string) => {
   if (isNoSelected(path)) return;
   const curValues = designer.getItemByPath(path) || {};
-  if (!endIsListItem(path)) {
+  if (!isIgnoreName(designer, path)) {
     curValues['name'] = getPathEnd(path);
   }
-  const expandSettings = getExpandSettings(designer, path);
+  const configSettings = getConfigSettings(curValues?.id);
   // 从配置表单中获取初始属性
-  const initialValues = getInitialValues(expandSettings);
+  const initialValues = getInitialValues(configSettings);
   const result = deepMergeObject(initialValues, curValues);
   return result;
 }
@@ -66,46 +65,47 @@ export const setDesignerItem = (designer: FormRenderStore, designerForm: FormSto
   }
 }
 
-// 获取路径节点获取当前的属性配置(components/configs中控件的settings属性)
-export const getCurSettings = (designer: FormRenderStore, path: string): ElementsType | undefined => {
+// 根据id获取控件配置模块(components/settings配置其他属性)
+export const getSettingsModule = (id?: string): ConfigSettingsItem | undefined => {
+  if (!id) return;
+  const settingsModule = id ? ConfigSettings[id] : []
+  return settingsModule;
+}
+
+// 根据id获取控件的配置(components/settings配置其他属性)
+export const getConfigSettings = (id?: string) => {
+  if (!id) return;
+  const settingsModule = getSettingsModule(id);
+  if (!settingsModule?.length) return;
+  let totalSettings = {};
+  for (let i = 0; i < settingsModule?.length; i++) {
+    // 遍历获取当前的配置项
+    const item = settingsModule[i][1];
+    totalSettings = { ...totalSettings, ...item };
+  }
+  return totalSettings;
+}
+
+// 是否设置忽略name设置
+export const isIgnoreName = (designer: FormRenderStore, path: string) => {
   if (isNoSelected(path)) return;
   const selectedItem = designer.getItemByPath(path);
-  const originSettings = selectedItem?.['settings'];
-  let baseSettings = originSettings;
+  // 数组节点或标记ignore的忽略name设置
+  return endIsListItem(path) || selectedItem?.dataType == 'ignore'
+}
+
+// 动态设置name
+export const getNameSettings = (designer: FormRenderStore, path: string) => {
+  if (isNoSelected(path)) return;
   // 非列表节点设置字段名
-  if (!endIsListItem(path) && selectedItem?.dataType !== 'ignore') {
-    baseSettings = {
+  if (!isIgnoreName(designer, path)) {
+    return {
       name: {
         label: '字段名',
         type: 'Input'
-      },
-      ...originSettings
+      }
     };
   }
-  return baseSettings;
-}
-
-// 根据路径节点获取公共配置(components/settings配置其他属性)
-export const getCommonSettingsList = (designer: FormRenderStore, path: string): CommonSettingsItem | undefined => {
-  if (isNoSelected(path)) return;
-  const selectedItem = designer.getItemByPath(path) as ELementProps;
-  const commonSettingsList = selectedItem?.id ? CommonSettings[selectedItem?.id] : []
-  return commonSettingsList;
-}
-
-// 根据路径节点获取展平的配置
-export const getExpandSettings = (designer: FormRenderStore, path: string) => {
-  if (isNoSelected(path)) return;
-  const curSettings = getCurSettings(designer, path);
-  const commonSettingsList = getCommonSettingsList(designer, path);
-  if (!commonSettingsList?.length) return curSettings;
-  let expandSettings = {};
-  for (let i = 0; i < commonSettingsList?.length; i++) {
-    // 遍历获取当前的配置项
-    const item = commonSettingsList[i][1];
-    expandSettings = { ...expandSettings, ...item };
-  }
-  return { ...curSettings, ...expandSettings }
 }
 
 // 代码编辑器执行解析字符串
