@@ -67,10 +67,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 const renderItem: RenderFormProps['renderList'] = (params) => {
   const { children, parent } = params;
   const isRoot = !parent;
-  if (isRoot) {
-    return (
-      <EditorSelection {...params} />
-    );
+  // 最外围层级和具体控件才需要默认添加选区
+  if (params?.field?.type || isRoot) {
+    return <EditorSelection {...params} />
   }
   return children;
 }

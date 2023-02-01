@@ -4,6 +4,7 @@ import './Table.less';
 import { ColumnGroup } from "./columnGroup";
 import { TableHead } from "./tableHead";
 import { TableBody } from "./tableBody";
+import pickAttrs from "@/utils/pickAttrs";
 
 const prefix = "r-";
 export const Classes = {
@@ -56,7 +57,7 @@ const Table: React.FC<TableProps> = React.forwardRef(({
     <table
       className={cx([Classes.Table, className])}
       style={{ tableLayout: tableLayout, ...style }}
-      {...rest}
+      {...pickAttrs(rest, { aria: true, data: true })}
       ref={ref}
     >
       <ColumnGroup columns={columns} />

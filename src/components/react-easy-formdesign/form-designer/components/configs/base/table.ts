@@ -7,12 +7,12 @@ export default {
       fieldComponent: { type: 'Table.Row', props: {} },
       properties: {
         name1: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          outside: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
         name2: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          outside: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
@@ -22,12 +22,12 @@ export default {
       fieldComponent: { type: 'Table.Row', props: {} },
       properties: {
         name1: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          outside: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },
         name2: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          outside: { type: 'Table.Cell', props: {} },
           type: 'Input',
           props: {}
         },

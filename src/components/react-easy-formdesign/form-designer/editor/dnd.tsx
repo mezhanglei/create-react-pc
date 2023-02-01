@@ -13,7 +13,7 @@ export interface EditorDndProps extends GeneratePrams<ELementProps> {
 }
 
 // 根节点的拖放控制
-function EditorDnd(props: EditorDndProps, ref) {
+function EditorDnd(props: EditorDndProps, ref: any) {
   const { children, store } = props;
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
