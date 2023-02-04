@@ -27,6 +27,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     className,
     name,
     parent,
+    formparent,
     field,
     store: designer,
     form: designerForm,
@@ -56,6 +57,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       selected: {
         name: name as string,
         parent: parent,
+        formparent: formparent,
         field: field
       }
     })

@@ -216,14 +216,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成子元素
-  const generateChild = (name: string | number, field: FormFieldProps, parent?: string) => {
+  const generateChild = (name: string | number, field: FormFieldProps, parent?: string, formparent?: string) => {
     if (field?.hidden === true) {
       return;
     }
     const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
     if (!field) return;
 
-    const commonParams = { name, field: { ...options, ...field }, parent, form: form, store: formRenderStore }; // 公共参数
+    const commonParams = { name, field: { ...options, ...field }, parent, formparent, form: form, store: formRenderStore }; // 公共参数
     const footerInstance = createInstance(footer, mergeComponents, commonParams);
     const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
     const fieldComponentParse = componentParse(fieldComponent, mergeComponents);
@@ -266,8 +266,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 渲染children
   const renderChildrenList = (properties: FormFieldProps['properties'], inside: FieldUnionType | undefined, commonParams: GeneratePrams): any => {
-    const { name, parent } = commonParams;
+    const { name, parent, formparent, field } = commonParams;
     const currentPath = joinPath(parent, name);
+    const formPath = joinPath(formparent, field?.ignore ? undefined : name);
     const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
       const childName = formatName(key, properties instanceof Array);
       if (typeof childName === 'string' || typeof childName === 'number') {
@@ -276,7 +277,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         if (childField) {
           childField['index'] = index;
         }
-        return generateChild(childName, childField, currentPath);
+        return generateChild(childName, childField, currentPath, formPath);
       }
     });
     return withSide(childs, inside, renderList, commonParams)

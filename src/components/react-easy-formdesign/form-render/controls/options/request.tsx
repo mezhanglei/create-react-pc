@@ -52,7 +52,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
 
   const labelWidth = 80;
   const [requestConfig, setRequestConfig] = useState<RequestResponseConfig>({});
-  const { selectedPath, designer, designerForm } = useFormDesign();
+  const { selectedPath, designer } = useFormDesign();
 
   const configChange = (key: string, val: any) => {
     const newConfig = { ...requestConfig };
@@ -60,7 +60,7 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
     setRequestConfig(newConfig);
     onChange && onChange(newConfig);
     const oldProps = getDesignerItem(designer, selectedPath)?.props || {};
-    updateDesignerItem(designer, designerForm, selectedPath, { props: { ...oldProps, requestConfig: newConfig } });
+    updateDesignerItem(designer, selectedPath, { props: { ...oldProps, requestConfig: newConfig } });
   }
 
   return (

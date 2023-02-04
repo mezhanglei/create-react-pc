@@ -77,6 +77,7 @@ export interface GeneratePrams<T = FormFieldProps> {
   name?: string | number;
   field?: T;
   parent?: string;
+  formparent?: string;
   store?: FormRenderStore;
   form: FormStore;
   children?: any

@@ -29,14 +29,10 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string) => {
   return result;
 }
 
-// 更新节点的值和属性
-export const updateDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path?: string, settingValues?: FieldProps) => {
+// 更新节点的属性(不包括值)
+export const updateDesignerItem = (designer: FormRenderStore, path?: string, settingValues?: FieldProps) => {
   if (isNoSelected(path)) return;
   const { name, ...field } = settingValues || {};
-  // 同步控件的值
-  // if (field?.initialValue !== undefined) {
-  //   designerForm?.setFieldValue(path, field?.initialValue);
-  // }
   if (field) {
     // 更新控件的属性
     designer?.updateItemByPath(path, field);
@@ -47,14 +43,18 @@ export const updateDesignerItem = (designer: FormRenderStore, designerForm: Form
   }
 }
 
-// 覆盖设置节点的值和属性
-export const setDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path?: string, settingValues?: FieldProps) => {
+// 设置设计器区域的表单值
+export const setDesignerFormValue = (designerForm: FormStore, formPath?: string, initialValue?: any) => {
+  if (isNoSelected(formPath) || !formPath) return;
+  if (initialValue !== undefined) {
+    designerForm?.setFieldValue(formPath, initialValue);
+  }
+}
+
+// 覆盖设置节点的属性(不包括值)
+export const setDesignerItem = (designer: FormRenderStore, path?: string, settingValues?: FieldProps) => {
   if (isNoSelected(path)) return;
   const { name, ...field } = settingValues || {};
-  // 同步控件的值
-  // if (field?.initialValue !== undefined) {
-  //   designerForm?.setFieldValue(path, field?.initialValue);
-  // }
   // 覆盖设置控件的属性
   if (field) {
     designer?.setItemByPath(path, field);

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, getNameSettings } from '../../utils/utils';
+import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, getNameSettings, setDesignerFormValue } from '../../utils/utils';
 import CustomCollapse from '../../form-render/components/collapse';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -19,7 +19,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   } = props;
 
   const setEdit = useFormEdit();
-  const { selected, selectedPath, designer, designerForm } = useFormDesign();
+  const { selected, selectedPath, selectedFormPath, designer, designerForm } = useFormDesign();
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath)?.id) || []), [designer, selectedPath]); // 配置表单列表
@@ -34,7 +34,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
     if (isNoSelected(selectedPath)) return;
     const settingsValues = form.getFieldValue();
-    updateDesignerItem(designer, designerForm, selectedPath, settingsValues);
+    updateDesignerItem(designer, selectedPath, settingsValues);
+    setDesignerFormValue(designerForm, selectedFormPath, settingsValues?.initialValue);
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
@@ -56,7 +57,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     if (isNoSelected(path)) return;
     const curSettingsValues = getDesignerItem(designer, path); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值
-    updateDesignerItem(designer, designerForm, path, curSettingsValues); // 同步更新节点控件
+    updateDesignerItem(designer, path, curSettingsValues); // 同步更新节点控件
+    setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue);
   }
 
   const renderCommonList = () => {

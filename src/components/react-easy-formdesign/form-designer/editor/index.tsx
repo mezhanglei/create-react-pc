@@ -38,7 +38,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     // 回填designer的initialValue值
     selectedPath && designer?.updateItemByPath(selectedPath, { initialValue: value });
   }
-  console.log(designerForm.getFieldValue(), 2222)
+
   return (
     <div
       ref={ref}

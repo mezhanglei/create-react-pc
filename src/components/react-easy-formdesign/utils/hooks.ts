@@ -7,9 +7,12 @@ import { isEmpty } from "@/utils/type";
 export function useFormDesign() {
   const context = useContext(FormDesignContext);
   const selectedName = context?.selected?.name;
+  const selectedField = context?.selected?.field;
   const selectedParent = context?.selected?.parent;
+  const selectedFormParent = context?.selected?.formparent;
   const selectedPath = isEmpty(selectedName) ? undefined : joinPath(selectedParent, selectedName) as string;
-  return { ...context, selectedPath };
+  const selectedFormPath = isEmpty(selectedName) ? undefined : joinPath(selectedFormParent, selectedField?.ignore ? undefined : selectedName) as string;
+  return { ...context, selectedPath, selectedFormPath };
 }
 
 // 表单设计器的state
