@@ -6,11 +6,11 @@ import { RequestResponseConfig } from './request';
 /**
  * 包裹目标之后，会根据requestConfig参数自动请求远程数据并传递给目标控件
  * @param component 目标控件
- * @param requestKey 请求数据源的字段名
+ * @param codeStr 请求数据源的字段名
  * @returns 
  */
 
-export function bindRequest(component: any, requestKey: string = "options") {
+export function bindRequest(component: any, codeStr: string = "options") {
   const Component = component;
   return React.forwardRef((props: { requestConfig?: RequestResponseConfig }, ref) => {
     const {
@@ -47,8 +47,8 @@ export function bindRequest(component: any, requestKey: string = "options") {
     }
 
     // 赋值数据
-    const requestSet = requestConfig && requestKey && {
-      [requestKey]: response
+    const requestSet = requestConfig && codeStr && {
+      [codeStr]: response
     }
 
     return (
