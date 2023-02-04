@@ -4,6 +4,7 @@ import { getToken, loginOut } from "@/core/session";
 import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS_MAP } from './config';
 import { message } from 'antd';
 
+// 请求体结构
 export interface ResponseData {
   code?: HTTP_CODE;
   message?: string;
@@ -32,6 +33,7 @@ const request = CreateRequest({
       msgRes && message.info(msgRes);
     }
   },
+  // 处理状态码
   handleStatus: (status, msg) => {
     const msgRes = HTTP_STATUS_MAP[status] || msg
     msgRes && message.info(msgRes);
