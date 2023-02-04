@@ -37,10 +37,9 @@ export function bindRequest(component: any, requestKey: string = "options") {
       if (method && url) {
         const paramsKey = (method === 'get' || method === 'delete') ? 'params' : 'data';
         const data = requestType === 'formdata' ? objectToFormData(params) : params;
-        const result = await request[method]({
+        const result = await request[method](url, {
           [paramsKey]: data,
           headers,
-          url
         });
         const formatRes = typeof returnFn == 'function' ? returnFn(result) : result;
         setResponse(formatRes);

@@ -1,5 +1,5 @@
 import { Radio } from "antd";
-import React, { LegacyRef, useMemo, useState } from "react";
+import React, { LegacyRef, useEffect, useMemo, useState } from "react";
 import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
 import RequestSource from './request';
@@ -39,7 +39,11 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
     { value: 'request', label: '接口请求' },
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
 
-  const [tab, setTab] = useState<string>(buttons[0]?.value);
+  const [tab, setTab] = useState<string>();
+
+  useEffect(() => {
+    setTab(buttons[0]?.value)
+  }, [])
 
   const ComponentMap = {
     list: <OptionsList value={value} onChange={onChange} {...rest} />,
@@ -47,12 +51,12 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
     request: <RequestSource />,
   }
 
-  const Component = ComponentMap[tab]
+  const Component = tab && ComponentMap[tab]
 
   return (
     <>
       <div className={classes.tab}>
-        <Radio.Group defaultValue={tab} buttonStyle="solid" onChange={(e) => setTab(e?.target?.value)}>
+        <Radio.Group value={tab} buttonStyle="solid" onChange={(e) => setTab(e?.target?.value)}>
           {
             buttons?.map((item) => (<Radio.Button key={item?.value} value={item?.value}>{item?.label}</Radio.Button>))
           }

@@ -4,7 +4,5 @@ import { UserInfo } from './interface';
 
 // 获取用户信息
 export const getUserInfo = (): RequestResponse<UserInfo> => {
-  return request.post({
-    url: 'user/info'
-  });
+  return request.post('user/info');
 };

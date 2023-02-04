@@ -125,8 +125,7 @@ const FileUpload = React.forwardRef((props: FileUploadProps, ref) => {
       const formdata = objectToFormData(data);
       formdata.append(name, file);
       setLoading(true)
-      request.post({
-        url: action as string,
+      request.post(action as string, {
         data: formdata,
         headers: headers,
         onUploadProgress: (event) => {

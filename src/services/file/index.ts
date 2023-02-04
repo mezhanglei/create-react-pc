@@ -15,8 +15,7 @@ export interface UploadFilesRes {
 
 }
 export const uploadFiles = (data: FormData): RequestResponse<UploadFilesRes> => {
-  return request.post({
-    url: UploadFileUrl,
+  return request.post(UploadFileUrl, {
     data
   });
 };
