@@ -10,9 +10,9 @@ const settings = {
     initialValue: "horizontal",
     props: {
       style: { width: '100%' },
-      children: [
-        { type: "Radio", props: { key: 'horizontal', value: "horizontal", children: "同行" } },
-        { type: "Radio", props: { key: 'vertical', value: "vertical", children: "单独一行" } }
+      options: [
+        { key: 'horizontal', value: "horizontal", label: "水平" },
+        { key: 'vertical', value: "vertical", label: "垂直" },
       ]
     }
   },

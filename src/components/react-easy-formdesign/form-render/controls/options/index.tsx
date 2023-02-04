@@ -43,7 +43,7 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
 
   useEffect(() => {
     setTab(buttons[0]?.value)
-  }, [])
+  }, [buttons[0]?.value])
 
   const ComponentMap = {
     list: <OptionsList value={value} onChange={onChange} {...rest} />,

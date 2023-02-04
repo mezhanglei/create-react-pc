@@ -35,7 +35,7 @@ export function bindRequest(component: any, requestKey: string = "options") {
 
     const getRequest = async () => {
       if (method && url) {
-        const paramsKey = (method === 'get' || method === 'delete') ? 'params' : 'data';
+        const paramsKey = ['get', 'delete'].includes(method) ? 'params' : 'data';
         const data = requestType === 'formdata' ? objectToFormData(params) : params;
         const result = await request[method](url, {
           [paramsKey]: data,
