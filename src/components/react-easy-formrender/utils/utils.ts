@@ -1,17 +1,17 @@
 import { arrayMove } from "@/utils/array";
 import { FormFieldProps, PropertiesData } from "../types";
-import { getCurrentPath, pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
+import { pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 
 // 获取路径的末尾节点字符串(不带中括号)
-export const getPathEnd = (path: string) => {
+export const getPathEnd = (path?: string) => {
   const pathArr = pathToArr(path)
   const end = pathArr?.pop()
   return end;
 }
 
 // 根据路径返回父路径(兼容a[0],a.[0],a.b, a[0].b形式的路径)
-export const getParent = (path: string) => {
+export const getParent = (path?: string) => {
   const end = getPathEnd(path);
   if (typeof end === 'string' && path) {
     const endReg = new RegExp(`\\[\\d+\\]$|\\.${end}$|${end}$`)
@@ -28,7 +28,7 @@ export const endIsListItem = (path?: string) => {
 }
 
 // 判断字符串是否为路径的尾部
-export const isPathEnd = (path: string, name: string) => {
+export const isPathEnd = (path?: string, name?: string) => {
   if (path && !isEmpty(name)) {
     return path === name || new RegExp(`\\[\\d+\\]$|\\.${name}$|\\]${name}$`).test(path)
   }
@@ -38,13 +38,13 @@ export const isPathEnd = (path: string, name: string) => {
 export const changePathEnd = (oldPath: string, endName: string | number) => {
   if (!isEmpty(endName) && oldPath) {
     const parent = getParent(oldPath);
-    const newPath = joinPath(endName, parent);
+    const newPath = joinPath(parent, endName);
     return newPath;
   }
 }
 
 // 根据路径返回在父元素中的当前位置, 没有则返回-1;
-export const getPathEndIndex = (path: string, properties?: PropertiesData) => {
+export const getPathEndIndex = (path?: string, properties?: PropertiesData) => {
   const parentPath = getParent(path);
   const end = getPathEnd(path);
   return getEndIndex(end, properties, parentPath)
@@ -60,7 +60,7 @@ export const getEndIndex = (end?: string, properties?: PropertiesData, parentPat
 }
 
 // 根据路径更新数据
-export const updateItemByPath = (properties: PropertiesData, pathStr: string, data?: Partial<FormFieldProps>) => {
+export const updateItemByPath = (properties: PropertiesData, pathStr?: string, data?: Partial<FormFieldProps>) => {
   const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
@@ -92,7 +92,7 @@ export const updateItemByPath = (properties: PropertiesData, pathStr: string, da
 };
 
 // 设置指定路径的值
-export const setItemByPath = (properties: PropertiesData, pathStr: string, data?: Partial<FormFieldProps>) => {
+export const setItemByPath = (properties: PropertiesData, pathStr?: string, data?: Partial<FormFieldProps>) => {
   const pathArr = pathToArr(pathStr);
   const end = pathArr.pop();
   const pathLen = pathArr?.length;
@@ -146,7 +146,7 @@ export const getItemByPath = (properties?: PropertiesData, pathStr?: string) => 
   return temp;
 };
 
-// 根据index获取键值对
+// 根据index获取目标项
 export const getItemByIndex = (properties: PropertiesData, index: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
@@ -200,7 +200,7 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
 };
 
 // 更新指定路径的name
-export const updateName = (properties: PropertiesData, pathStr: string, newName?: string) => {
+export const updateName = (properties: PropertiesData, pathStr?: string, newName?: string) => {
   if (typeof newName !== 'string' || !pathStr || isPathEnd(pathStr, newName)) return properties;
   const parentPath = getParent(pathStr);
   const end = getPathEnd(pathStr)
@@ -278,7 +278,7 @@ export const moveDiffLevel = (properties: PropertiesData, from: { parent?: strin
   const fromIndex = from?.index;
   const fromParentPathArr = pathToArr(fromParentPath);
   const fromItem = getItemByIndex(properties, fromIndex, fromParentPath);
-  const fromPath = getCurrentPath(fromItem?.name, fromParentPath);
+  const fromPath = joinPath(fromParentPath, fromItem?.name);
   // 拖放源
   const toParentPath = to?.parent;
   const toIndex = to?.index;
@@ -314,7 +314,7 @@ export const getInitialValues = (properties?: PropertiesData) => {
           const childField = children[childKey];
           const childName = formatName(childKey, children instanceof Array);
           if (typeof childName === 'number' || typeof childName === 'string') {
-            const childPath = getCurrentPath(childName, path) as string;
+            const childPath = joinPath(path, childName) as string;
             deepHandle(childField, childPath);
           }
         }
@@ -326,7 +326,7 @@ export const getInitialValues = (properties?: PropertiesData) => {
     const formField = properties[key];
     const childName = formatName(key, properties instanceof Array);
     if (typeof childName === 'number' || typeof childName === 'string') {
-      const childPath = getCurrentPath(childName) as string;
+      const childPath = joinPath(childName) as string;
       deepHandle(formField, childPath);
     }
   }

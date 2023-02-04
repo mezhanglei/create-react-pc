@@ -3,7 +3,9 @@ import classnames from 'classnames';
 import './btn.less';
 import { FormFieldProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
-import { getCurrentPath } from '../../react-easy-formcore';
+import { joinPath } from '../../react-easy-formcore';
+import { isEmpty } from '@/utils/type';
+import Icon from '../../svg-icon';
 
 export interface DeleteBtnProps extends GeneratePrams {
   onClick?: () => void;
@@ -22,14 +24,14 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     ...restProps
   } = props;
 
-  const currentPath = getCurrentPath(name, parent);
+  const currentPath = isEmpty(name) ? undefined : joinPath(parent, name);
   const deleteItem = () => {
     currentPath && form?.setFieldValue(currentPath, undefined, false);
     currentPath && store?.delItemByPath(currentPath);
   }
 
-  const cls = classnames('iconfont icon-delete', className)
-  return <i onClick={deleteItem} className={cls} {...restProps} />
+  const cls = classnames('icon-delete', className)
+  return <Icon name="delete" onClick={deleteItem} className={cls} {...restProps} />
 }
 
 export interface AddBtnProps extends GeneratePrams {
@@ -51,13 +53,14 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     children,
     ...restProps
   } = props;
-  const currentPath = getCurrentPath(name, parent);
+
+  const currentPath = isEmpty(name) ? undefined : joinPath(parent, name);
 
   const addNewItem = () => {
     const properties = field?.properties;
     const nextIndex = typeof properties === 'object' && Object?.keys(properties)?.length || 0;
-    if (item) {
-      currentPath && store?.addItemByIndex(item, nextIndex, currentPath);
+    if (item && currentPath) {
+      store?.addItemByIndex(item, nextIndex, currentPath);
     }
     props?.onClick && props?.onClick();
   }

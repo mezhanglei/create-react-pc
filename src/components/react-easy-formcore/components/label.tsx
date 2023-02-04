@@ -9,7 +9,7 @@ import Icon from '@/components/svg-icon';
 export interface LabelBaseProps {
   colon?: boolean;
   required?: boolean;
-  labelWidth?: number;
+  labelWidth?: CSSProperties['width'];
   labelAlign?: CSSProperties['textAlign'];
   labelStyle?: CSSProperties;
   gutter?: number;

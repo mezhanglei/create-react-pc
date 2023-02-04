@@ -1,14 +1,16 @@
 import React, { cloneElement, useContext } from 'react';
 import { FormValuesContext, FormOptionsContext } from './form-context';
-import { getCurrentPath, isFormNode } from './utils/utils';
+import { joinPath, isFormNode } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
+import { isEmpty } from '@/utils/type';
 
 export interface ListCoreProps {
   name?: string | number;
   parent?: string;
   rules?: FormRule[];
   initialValue?: any[];
+  ignore?: boolean;
   children?: any;
 }
 
@@ -22,9 +24,11 @@ export const ListCore = (props: ListCoreProps) => {
     rules,
     parent,
     initialValue,
+    ignore
   } = fieldProps;
 
-  const currentPath = getCurrentPath(name, parent);
+  const formPath = ignore ? parent : joinPath(parent, name);
+  const currentPath = (isEmpty(name) || ignore) ? undefined : formPath;
   const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
 
   // 渲染子元素
@@ -55,7 +59,7 @@ export const ListCore = (props: ListCoreProps) => {
     const childRules = (rules || [])?.concat(child?.props?.rules);
     const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
     return child && cloneElement(child, {
-      parent: currentPath,
+      parent: formPath,
       name: currentIndex,
       rules: childRules,
       initialValue: childValue

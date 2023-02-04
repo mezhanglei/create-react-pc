@@ -6,6 +6,7 @@ import './index.less';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
 import { DOC_MIME_KEYS, DOC_MIME_VALUES } from '@/utils/mime';
+import Icon from '@/components/svg-icon';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
   fileSizeLimit: number; // 每个文件的限制上传大小
@@ -156,7 +157,7 @@ const FileUpload = React.forwardRef((props: FileUploadProps, ref) => {
       {...(!autoUpload ? handleUploadProps : autoUploadProps)}
       {...rest}
     >
-      <Button loading={loading}><i className="iconfont icon-upload"></i>上传文件</Button>
+      <Button loading={loading}><Icon name="upload" className="icon-upload"></Icon>上传文件</Button>
     </Upload>
   )
 });

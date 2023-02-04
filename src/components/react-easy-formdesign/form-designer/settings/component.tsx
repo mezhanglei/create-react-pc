@@ -43,7 +43,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 设置配置表单
-  const setSettingsForm = (path: string) => {
+  const setSettingsForm = (path?: string) => {
     if (isNoSelected(path)) {
       setEdit({ settingsForm: null });
       return;
@@ -52,7 +52,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 配置属性表单值
-  const setSettingsFormValue = (path: string) => {
+  const setSettingsFormValue = (path?: string) => {
     if (isNoSelected(path)) return;
     const curSettingsValues = getDesignerItem(designer, path); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值

@@ -21,23 +21,37 @@ const settings = {
         type: 'InputNumber',
         initialValue: 1
       },
-      vertical: {
-        label: '是否垂直',
-        type: 'Switch',
+    }
+  }
+}
+
+export default ['基础属性', settings] as [string, typeof settings]
+
+const operationSettings = {
+  props: {
+    compact: true,
+    inline: true,
+    properties: {
+      disabled: {
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '禁用' }
       },
       reverse: {
-        label: '反向轴',
-        type: 'Switch',
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '反向' }
       },
-      disabled: {
-        label: '禁用',
-        type: 'Switch',
+      vertical: {
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '垂直' }
       },
     }
   }
 }
 
-export default ['控件属性', settings] as [string, typeof settings]
+export const slider_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]

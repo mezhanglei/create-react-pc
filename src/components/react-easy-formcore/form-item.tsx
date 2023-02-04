@@ -1,17 +1,17 @@
 import React, { useContext, CSSProperties } from 'react';
 import { FormStoreContext, FormOptionsContext } from './form-context';
-import { getCurrentPath } from './utils/utils';
+import { joinPath } from './utils/utils';
 import { FormStore } from './form-store';
 import { useFormError } from './use-form';
 import { Item, ItemProps } from './components/item';
 import { ItemCore, ItemCoreProps } from './item-core';
+import { isEmpty } from '@/utils/type';
 
 export type FormItemProps<T = ItemProps> = T & ItemCoreProps & {
   className?: string;
   children?: React.ReactNode;
   style?: CSSProperties;
   component?: any;
-  ignore?: boolean;
 }
 
 export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
@@ -38,14 +38,15 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     ...rest
   } = fieldProps;
 
-  const currentPath = getCurrentPath(name, parent);
+  const currentPath = (isEmpty(name) || ignore) ? undefined : joinPath(parent, name);
   const [error] = useFormError(store, currentPath);
   const required = error ? true : rest?.required;
   const FieldComponent = component;
 
   const childs = (
     <ItemCore
-      name={ignore ? undefined : name}
+      ignore={ignore}
+      name={name}
       parent={parent}
       index={index}
       trigger={trigger}

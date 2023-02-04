@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData } from './types';
 import { defaultComponents } from './components';
-import { Form, formatName, FormOptionsContext, FormStore, FormStoreContext, getCurrentPath, ItemCoreProps } from '../react-easy-formcore';
+import { Form, formatName, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, joinPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
-import './iconfont/iconfont.css';
 import { isReactComponent, isValidElement } from '@/utils/ReactIs';
 
 // 表单元素渲染
@@ -97,19 +96,21 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formField: FormFieldProps, path: string) => {
       for (const propsKey in formField) {
-        if (propsKey !== 'properties') {
-          const propsValue = formField[propsKey];
-          const propsPath = getCurrentPath(propsKey, path) as string;
-          const result = evalExpression(propsValue, uneval);
-          fieldPropsMap[propsPath] = result;
-        } else {
-          const children = formField[propsKey];
-          for (const childKey in children) {
-            const childField = children[childKey];
-            const childName = formatName(childKey, children instanceof Array);
-            if (typeof childName === 'number' || typeof childName === 'string') {
-              const childPath = getCurrentPath(childName, path) as string;
-              deepHandle(childField, childPath);
+        if (typeof propsKey === 'string') {
+          if (propsKey !== 'properties') {
+            const propsValue = formField[propsKey];
+            const propsPath = joinPath(path, propsKey) as string;
+            const result = evalExpression(propsValue, uneval);
+            fieldPropsMap[propsPath] = result;
+          } else {
+            const children = formField[propsKey];
+            for (const childKey in children) {
+              const childField = children[childKey];
+              const childName = formatName(childKey, children instanceof Array);
+              if (typeof childName === 'number' || typeof childName === 'string') {
+                const childPath = joinPath(path, childName) as string;
+                deepHandle(childField, childPath);
+              }
             }
           }
         }
@@ -120,7 +121,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       const formField = properties[key];
       const childName = formatName(key, properties instanceof Array);
       if (typeof childName === 'number' || typeof childName === 'string') {
-        const childPath = getCurrentPath(childName) as string;
+        const childPath = joinPath(childName) as string;
         deepHandle(formField, childPath);
       }
     }
@@ -132,7 +133,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {
-          const currentPath = propsKey ? `${path}.${propsKey}` : undefined
+          const currentPath = propsKey && path ? `${path}.${propsKey}` : undefined
           const propsValue = (currentPath && fieldPropsMap[currentPath]) ?? field[propsKey]
           return [propsKey, propsValue];
         }
@@ -266,11 +267,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 渲染children
   const renderChildrenList = (properties: FormFieldProps['properties'], inside: FieldUnionType | undefined, commonParams: GeneratePrams): any => {
     const { name, parent } = commonParams;
-    const currentPath = getCurrentPath(name, parent);
+    const currentPath = joinPath(parent, name);
     const childs = Object.entries(properties || {})?.map(([key, formField], index: number) => {
       const childName = formatName(key, properties instanceof Array);
       if (typeof childName === 'string' || typeof childName === 'number') {
-        const childPath = getCurrentPath(childName, currentPath);
+        const childPath = joinPath(currentPath, childName);
         const childField = showCalcFieldProps(formField, childPath);
         if (childField) {
           childField['index'] = index;

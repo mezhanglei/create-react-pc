@@ -59,13 +59,7 @@ const settings = {
     type: 'Switch',
     valueProp: 'checked',
     initialValue: false,
-  },
-  required: {
-    label: '必填标志',
-    type: 'Switch',
-    valueProp: 'checked',
-    initialValue: false,
-  },
+  }
 }
 
 export default ['表单域设置', settings] as [string, typeof settings]

@@ -1,34 +1,34 @@
 import { ValueOf } from "@/components/react-easy-formrender";
 import DefaultFieldSettings from "./field";
-import InputSettings from "./input";
-import RadioSettings from "./radio";
-import CheckboxSettings from './checkbox';
-import SelectSettings from './select';
-import SwitchSettings from './switch';
-import TimePickerSettings from './timePicker';
-import DatePickerSettings from './datePicker';
-import SliderSettings from './sliderLine';
-import RateSettings from './rate';
-import ColorPickerSettings from './colorPicker';
-import FileUploadSettings from './fileUpload';
-import ImageUploadSettings from './imageUpload';
-import CascaderSettings from './cascader';
+import InputSettings, { input_operation } from "./input";
+import RadioSettings, { radio_operation } from "./radio";
+import CheckboxSettings, { checkbox_operation } from './checkbox';
+import SelectSettings, { select_operation } from './select';
+import SwitchSettings, { switch_operation } from './switch';
+import TimePickerSettings, { timePicker_operation } from './timePicker';
+import DatePickerSettings, { datePicker_operation } from './datePicker';
+import SliderSettings, { slider_operation } from './sliderLine';
+import RateSettings, { rate_operation } from './rate';
+import ColorPickerSettings, { colorPicker_operation } from './colorPicker';
+import FileUploadSettings, { fileUpload_operation } from './fileUpload';
+import ImageUploadSettings, { imageUpload_operation } from './imageUpload';
+import CascaderSettings, { cascader_operation } from './cascader';
 
 // 控件的属性配置, 以控件的id作为键
 const ConfigSettings = {
-  input: [InputSettings, DefaultFieldSettings],
-  radio: [RadioSettings, DefaultFieldSettings],
-  checkbox: [CheckboxSettings, DefaultFieldSettings],
-  select: [SelectSettings, DefaultFieldSettings],
-  switch: [SwitchSettings, DefaultFieldSettings],
-  timePicker: [TimePickerSettings, DefaultFieldSettings],
-  datePicker: [DatePickerSettings, DefaultFieldSettings],
-  slider: [SliderSettings, DefaultFieldSettings],
-  rate: [RateSettings, DefaultFieldSettings],
-  colorPicker: [ColorPickerSettings, DefaultFieldSettings],
-  fileupload: [FileUploadSettings, DefaultFieldSettings],
-  imageupload: [ImageUploadSettings, DefaultFieldSettings],
-  cascader: [CascaderSettings, DefaultFieldSettings],
+  input: [InputSettings, input_operation, DefaultFieldSettings],
+  radio: [RadioSettings, radio_operation, DefaultFieldSettings],
+  checkbox: [CheckboxSettings, checkbox_operation, DefaultFieldSettings],
+  select: [SelectSettings, select_operation, DefaultFieldSettings],
+  switch: [SwitchSettings, switch_operation, DefaultFieldSettings],
+  timePicker: [TimePickerSettings, timePicker_operation, DefaultFieldSettings],
+  datePicker: [DatePickerSettings, datePicker_operation, DefaultFieldSettings],
+  slider: [SliderSettings, slider_operation, DefaultFieldSettings],
+  rate: [RateSettings, rate_operation, DefaultFieldSettings],
+  colorPicker: [ColorPickerSettings, colorPicker_operation, DefaultFieldSettings],
+  fileupload: [FileUploadSettings, fileUpload_operation, DefaultFieldSettings],
+  imageupload: [ImageUploadSettings, imageUpload_operation, DefaultFieldSettings],
+  cascader: [CascaderSettings, cascader_operation, DefaultFieldSettings],
 }
 
 export type ConfigSettingsType = typeof ConfigSettings;

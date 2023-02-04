@@ -48,25 +48,37 @@ const settings = {
           ]
         }
       },
-      showSearch: {
-        label: '是否可以搜索',
-        type: 'Switch',
-        valueProp: 'checked',
-        initialValue: true
-      },
+    }
+  }
+}
+
+export default ['基础属性', settings] as [string, typeof settings]
+
+const operationSettings = {
+  props: {
+    compact: true,
+    inline: true,
+    properties: {
       disabled: {
-        label: '禁用',
-        type: 'Switch',
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '禁用' }
       },
       allowClear: {
-        label: '是否可以清除',
-        type: 'Switch',
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
-        initialValue: true
+        props: { children: '可清除' }
+      },
+      showSearch: {
+        type: 'Checkbox',
+        inline: true,
+        valueProp: 'checked',
+        props: { children: '可搜索' }
       },
     }
   }
 }
 
-export default ['控件属性', settings] as [string, typeof settings]
+export const select_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]

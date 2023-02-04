@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import RenderForm, { getCurrentPath, RenderFormProps } from '../../form-render';
+import RenderForm, { joinPath, RenderFormProps } from '../../form-render';
 import './index.less';
 import EditorDnd from './dnd';
 import EditorSelection from './selection';
@@ -15,7 +15,7 @@ const prefixCls = `${DesignprefixCls}-editor`;
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const { designer, designerForm, settingsForm, properties } = useFormDesign();
+  const { designer, designerForm, settingsForm, properties, selectedPath } = useFormDesign();
   const setEdit = useFormEdit();
 
   const {
@@ -31,15 +31,14 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     setEdit({ properties: newData })
   }
 
-  // 编辑区域改动值
-  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ parent, name, value }) => {
-    const path = getCurrentPath(name, parent);
+  // 监听选中项改动
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
     // 回填setting表单的intialValue选项
     settingsForm?.setFieldValue('initialValue', value);
     // 回填designer的initialValue值
-    path && designer?.updateItemByPath(path, { initialValue: value });
+    selectedPath && designer?.updateItemByPath(selectedPath, { initialValue: value });
   }
-
+  console.log(designerForm.getFieldValue(), 2222)
   return (
     <div
       ref={ref}

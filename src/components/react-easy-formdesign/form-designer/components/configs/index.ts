@@ -13,7 +13,7 @@ import ColorPicker from './base/colorPicker';
 import FileUpload from './base/fileUpload';
 import ImageUpload from './base/imageUpload';
 import Cascader from './base/cascader';
-import table from './base/table';
+import table from './layout/table';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
@@ -56,6 +56,13 @@ export const TabsData = [{
       ]
     },
     {
+      title: '展示组件',
+      elementType: '展示组件',
+      elements: [
+        table
+      ]
+    },
+    {
       title: '业务组件',
       elementType: '业务组件',
       elements: [
@@ -69,7 +76,7 @@ export const TabsData = [{
     {
       title: '',
       elementType: '',
-      elements: [table]
+      elements: []
     }
   ]
 }]

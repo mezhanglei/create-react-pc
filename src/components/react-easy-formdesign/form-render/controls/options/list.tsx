@@ -3,6 +3,7 @@ import { Button, Col, Input, message, Row } from "antd";
 import React, { ChangeEvent, LegacyRef, useEffect, useState } from "react";
 import { OptionsProps } from ".";
 import './list.less';
+import Icon from "@/components/svg-icon";
 
 export interface OptionsListProps extends OptionsProps {
 }
@@ -92,7 +93,7 @@ const OptionsList: React.FC<OptionsListProps> = React.forwardRef((props, ref: Le
                 <Input value={item?.value} onChange={(e) => valueChange(e, index)} placeholder="value" style={{ width: '100%' }} />
               </Col>
               <Col span={4}>
-                <i className="iconfont icon-delete" onClick={() => deleteItem(index)} />
+                <Icon name="delete" className="icon-delete" onClick={() => deleteItem(index)} />
               </Col>
             </Row>
           )

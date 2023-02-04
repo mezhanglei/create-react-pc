@@ -45,20 +45,20 @@ export const isWithBracket = (part?: any) => {
 // 是否为数组索引项
 export const isListIndex = (item?: any) => typeof item === 'number' && !isNaN(item);
 
-// 拼接当前项的path
-export function joinPath(name?: string | number, parent?: string) {
-  if (isEmpty(name)) return parent;
-  if (isListIndex(name) || isWithBracket(name)) {
-    const end = typeof name === 'number' ? `[${name}]` : name
-    return parent ? `${parent}${end}` : end;
-  } else {
-    return parent ? `${parent}.${name}` : `${name}`;
-  }
+// 由前到后拼接当前项的path
+export function joinPath(...args: Array<any>) {
+  const result = args?.reduce((pre, cur) => {
+    const curName = isEmpty(cur) ? '' : cur;
+    const parent = isEmpty(pre) ? '' : pre;
+    if (isListIndex(curName) || isWithBracket(curName)) {
+      const end = typeof curName === 'number' ? `[${curName}]` : curName
+      return parent ? (end ? `${parent}${end}` : parent) : end;
+    } else {
+      return parent ? (curName ? `${parent}.${curName}` : parent) : `${curName}`;
+    }
+  });
+  return result;
 };
-
-export function getCurrentPath(name?: string | number, parent?: string) {
-  return isEmpty(name) ? undefined : joinPath(name, parent)
-}
 
 // 是否为表单节点
 export const isFormNode = (child: any) => {

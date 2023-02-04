@@ -34,7 +34,7 @@ export class FormRenderStore {
   }
 
   // 更新指定路径的值
-  updateItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
+  updateItemByPath = (path?: string, data?: Partial<FormFieldProps>) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       let newProperties = updateItemByPath(cloneProperties, path, data);
@@ -43,7 +43,7 @@ export class FormRenderStore {
   }
 
   // 设置指定路径的值
-  setItemByPath = (path: string, data?: Partial<FormFieldProps>) => {
+  setItemByPath = (path?: string, data?: Partial<FormFieldProps>) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       let newProperties = setItemByPath(cloneProperties, path, data);
@@ -52,7 +52,7 @@ export class FormRenderStore {
   }
 
   // 更新键
-  updateNameByPath = (path: string, newName?: string) => {
+  updateNameByPath = (path?: string, newName?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       let newProperties = updateName(cloneProperties, path, newName);
@@ -70,7 +70,7 @@ export class FormRenderStore {
   }
 
   // 根据path删除一条
-  delItemByPath = (path: string) => {
+  delItemByPath = (path?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       let newProperties = setItemByPath(cloneProperties, path, undefined);
@@ -79,7 +79,7 @@ export class FormRenderStore {
   }
 
   // 获取指定路径的项
-  getItemByPath = (path: string) => {
+  getItemByPath = (path?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       return getItemByPath(cloneProperties, path);
@@ -117,7 +117,7 @@ export class FormRenderStore {
   }
 
   // 在目标路径后面插入数据
-  addAfterByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
+  addAfterByPath = (data: FormFieldProps | FormFieldProps[], path?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       const nextIndex = getPathEndIndex(path, cloneProperties) + 1;
@@ -128,7 +128,7 @@ export class FormRenderStore {
   }
 
   // 在目标路径前面插入数据
-  addBeforeByPath = (data: FormFieldProps | FormFieldProps[], path: string) => {
+  addBeforeByPath = (data: FormFieldProps | FormFieldProps[], path?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       const endIndex = getPathEndIndex(path, cloneProperties);

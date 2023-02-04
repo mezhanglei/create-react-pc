@@ -33,8 +33,7 @@ export function useFormError(store: FormStore, path?: string) {
 
 // 获取表单值
 export function useFormValues<T = unknown>(store: FormStore, path?: string | string[]) {
-  const initialValues = store.getFieldValue(path)
-  const [formValues, setFomValues] = useState<T>(initialValues)
+  const [formValues, setFomValues] = useState<T>();
 
   const subscribeList = (store: FormStore, path?: string | string[]) => {
     if (!path) return;
@@ -45,7 +44,8 @@ export function useFormValues<T = unknown>(store: FormStore, path?: string | str
       const item = pathList[i]
       queue?.push(store.subscribeFormGlobal(item, (newValue) => {
         if (typeof item == 'string' || typeof item == 'number') {
-          setFomValues((old) => ({ ...old, [item]: newValue }));
+          const oldValues = store.getFieldValue(path);
+          setFomValues(() => ({ ...oldValues, [item]: newValue }));
         }
       }))
     }

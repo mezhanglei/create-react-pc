@@ -2,6 +2,7 @@ import { Collapse } from 'react-collapse';
 import React, { useEffect, useState } from 'react';
 import "./index.less";
 import classNames from 'classnames';
+import Icon from '@/components/svg-icon';
 
 export interface CustomCollapseProps extends React.HtmlHTMLAttributes<HTMLElement> {
   header?: React.ReactNode;
@@ -33,9 +34,9 @@ const CustomCollapse: React.FC<CustomCollapseProps> = (props) => {
         <div>{header}</div>
         {
           isOpenedState ?
-            <i className='iconfont icon-jichu25-zhedie' />
+            <Icon name="zhedie-down" />
             :
-            <i className='iconfont icon-zhedie' />
+            <Icon name="zhedie-right" />
         }
       </div>
       <Collapse isOpened={isOpenedState} {...rest}>

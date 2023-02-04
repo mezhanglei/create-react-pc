@@ -3,15 +3,21 @@ import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
 import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
-import { deepGet, getCurrentPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
+import { deepGet, joinPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
 
 export type TriggerType = string;
+export interface FieldChangedParams {
+  parent: string;
+  name?: string;
+  value: any;
+}
 
 export interface ItemCoreProps {
   name?: string | number;
   parent?: string;
+  ignore?: boolean;
   index?: number;
   trigger?: TriggerType | TriggerType[]; // 设置收集字段值变更的时机
   validateTrigger?: TriggerType | TriggerType[];
@@ -21,8 +27,8 @@ export interface ItemCoreProps {
   rules?: FormRule[];
   initialValue?: any;
   errorClassName?: string;
-  onFieldsChange?: (obj: { parent: string, name?: string, value: any }, values?: unknown) => void;
-  onValuesChange?: (obj: { parent?: string, name?: string, value: any }, values?: unknown) => void;
+  onFieldsChange?: (obj: FieldChangedParams, values?: unknown) => void;
+  onValuesChange?: (obj: FieldChangedParams, values?: unknown) => void;
   children?: any
 }
 
@@ -43,10 +49,12 @@ export const ItemCore = (props: ItemCoreProps) => {
     onValuesChange,
     initialValue,
     trigger = 'onChange',
-    validateTrigger
+    validateTrigger,
+    ignore,
   } = fieldProps;
 
-  const currentPath = getCurrentPath(name, parent);
+  const formPath = ignore ? parent : joinPath(parent, name);
+  const currentPath = (isEmpty(name) || ignore) ? undefined : formPath;
   const storeValue = currentPath && store?.getFieldValue(currentPath);
   const initialItemValue = storeValue ?? initialValue ?? deepGet(initialValues, currentPath);
   const [value, setValue] = useState(storeValue);
@@ -154,7 +162,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     return React.Children.map(children, (child: any) => {
       if (isFormNode(child)) {
         return cloneElement(child, {
-          parent: currentPath
+          parent: formPath
         });
       } else {
         const childs = child?.props?.children;
@@ -174,7 +182,7 @@ export const ItemCore = (props: ItemCoreProps) => {
 
   const childs = getChildren(children);
 
-  return <>{childs}</>;
+  return childs;
 };
 
 ItemCore.displayName = "ItemCore";

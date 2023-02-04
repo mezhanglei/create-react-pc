@@ -20,13 +20,25 @@ const settings = {
           ]
         }
       },
+    }
+  }
+}
+
+export default ['基础属性', settings] as [string, typeof settings]
+
+const operationSettings = {
+  props: {
+    compact: true,
+    inline: true,
+    properties: {
       disabled: {
-        label: '禁用',
-        type: 'Switch',
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '禁用' }
       },
     }
   }
 }
 
-export default ['控件属性', settings] as [string, typeof settings]
+export const switch_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]

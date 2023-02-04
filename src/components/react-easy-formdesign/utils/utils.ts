@@ -16,7 +16,7 @@ export const isNoSelected = (path?: string) => {
 }
 
 // 获取节点的值和属性
-export const getDesignerItem = (designer: FormRenderStore, path: string) => {
+export const getDesignerItem = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   const curValues = designer.getItemByPath(path) || {};
   if (!isIgnoreName(designer, path)) {
@@ -30,13 +30,13 @@ export const getDesignerItem = (designer: FormRenderStore, path: string) => {
 }
 
 // 更新节点的值和属性
-export const updateDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path: string, settingValues: FieldProps) => {
+export const updateDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path?: string, settingValues?: FieldProps) => {
   if (isNoSelected(path)) return;
   const { name, ...field } = settingValues || {};
   // 同步控件的值
-  if (field?.initialValue !== undefined) {
-    designerForm?.setFieldValue(path, field?.initialValue);
-  }
+  // if (field?.initialValue !== undefined) {
+  //   designerForm?.setFieldValue(path, field?.initialValue);
+  // }
   if (field) {
     // 更新控件的属性
     designer?.updateItemByPath(path, field);
@@ -48,13 +48,13 @@ export const updateDesignerItem = (designer: FormRenderStore, designerForm: Form
 }
 
 // 覆盖设置节点的值和属性
-export const setDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path: string, settingValues: FieldProps) => {
+export const setDesignerItem = (designer: FormRenderStore, designerForm: FormStore, path?: string, settingValues?: FieldProps) => {
   if (isNoSelected(path)) return;
   const { name, ...field } = settingValues || {};
   // 同步控件的值
-  if (field?.initialValue !== undefined) {
-    designerForm?.setFieldValue(path, field?.initialValue);
-  }
+  // if (field?.initialValue !== undefined) {
+  //   designerForm?.setFieldValue(path, field?.initialValue);
+  // }
   // 覆盖设置控件的属性
   if (field) {
     designer?.setItemByPath(path, field);
@@ -87,7 +87,7 @@ export const getConfigSettings = (id?: string) => {
 }
 
 // 是否设置忽略name设置
-export const isIgnoreName = (designer: FormRenderStore, path: string) => {
+export const isIgnoreName = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   const selectedItem = designer.getItemByPath(path);
   // 数组节点或标记ignore的忽略name设置
@@ -95,7 +95,7 @@ export const isIgnoreName = (designer: FormRenderStore, path: string) => {
 }
 
 // 动态设置name
-export const getNameSettings = (designer: FormRenderStore, path: string) => {
+export const getNameSettings = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   // 非列表节点设置字段名
   if (!isIgnoreName(designer, path)) {

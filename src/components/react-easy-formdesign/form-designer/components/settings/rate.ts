@@ -11,24 +11,38 @@ const settings = {
         type: 'InputNumber',
         initialValue: 5
       },
-      allowHalf: {
-        label: '是否允许半选',
-        type: 'Switch',
+    }
+  }
+}
+
+export default ['基础属性', settings] as [string, typeof settings]
+
+const operationSettings = {
+  props: {
+    compact: true,
+    inline: true,
+    properties: {
+      disabled: {
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '禁用' }
       },
       allowClear: {
-        label: '是否允许再次点击后清除',
-        type: 'Switch',
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
         initialValue: true,
+        props: { children: '可清除' }
       },
-      disabled: {
-        label: '禁用',
-        type: 'Switch',
+      allowHalf: {
+        type: 'Checkbox',
+        inline: true,
         valueProp: 'checked',
+        props: { children: '可半选' }
       },
     }
   }
 }
 
-export default ['控件属性', settings] as [string, typeof settings]
+export const rate_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
