@@ -3,6 +3,15 @@ import { FormFieldProps, PropertiesData } from "../types";
 import { pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 
+// 匹配字符串表达式
+export const matchExpression = (value?: any) => {
+  if (typeof value === 'string') {
+    const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
+    const evalStr = value?.match(reg)?.[0];
+    return evalStr;
+  }
+}
+
 // 获取路径的末尾节点字符串(不带中括号)
 export const getPathEnd = (path?: string) => {
   const pathArr = pathToArr(path)

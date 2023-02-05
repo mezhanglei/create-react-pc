@@ -1,4 +1,4 @@
-import React, { useContext, CSSProperties } from 'react';
+import React, { useContext, CSSProperties, useMemo } from 'react';
 import { FormStoreContext, FormOptionsContext } from './form-context';
 import { joinPath } from './utils/utils';
 import { FormStore } from './form-store';
@@ -40,7 +40,8 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
 
   const currentPath = (isEmpty(name) || ignore) ? undefined : joinPath(parent, name);
   const [error] = useFormError(store, currentPath);
-  const required = error ? true : rest?.required;
+  const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required)), [rules]);
+  const required = isHaveRequired && !ignore ? true : rest?.required;
   const FieldComponent = component;
 
   const childs = (

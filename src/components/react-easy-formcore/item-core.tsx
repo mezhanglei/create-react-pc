@@ -117,6 +117,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     // 回填store.initialValues和回填store.values
     if (initialItemValue !== undefined) {
       store.setInitialValues(currentPath, initialItemValue);
+      onValuesChange && onValuesChange({ parent: parent, name: name, value: initialItemValue }, store?.getFieldValue());
     }
     setValue(initialItemValue)
     return () => {

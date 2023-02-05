@@ -24,13 +24,14 @@ export default function Demo5(props) {
   const [properties, setProperties] = useState({
     name1: {
       label: "只读展示",
-      required: true,
-      readOnly: true,
+      // required: true,
+      // readOnly: true,
       readOnlyRender: "只读展示组件",
       initialValue: 1111,
       outside: { type: 'col', props: { span: 6 } },
-      hidden: '{{$formvalues.name6 == true}}',
+      // hidden: '{{$formvalues.name6 == true}}',
       type: 'Input',
+      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message: "empty"}]}}',
       props: {}
     },
     name2: {

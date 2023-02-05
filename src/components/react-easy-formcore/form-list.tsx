@@ -1,4 +1,4 @@
-import React, { CSSProperties, useContext } from 'react';
+import React, { CSSProperties, useContext, useMemo } from 'react';
 import { joinPath } from './utils/utils';
 import { useFormError } from './use-form';
 import { Item, ItemProps } from './components/item';
@@ -17,7 +17,7 @@ export type FormListProps<T = ItemProps> = T & ListCoreProps & {
 
 export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
   const store = useContext<FormStore>(FormStoreContext)
-  const options = useContext(FormOptionsContext);
+  const options = useContext<any>(FormOptionsContext)
   const mergeProps = { ...options, ...props };
   const { children, ...fieldProps } = mergeProps;
   const {
@@ -42,6 +42,8 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   const currentPath = (isEmpty(name) || ignore) ? undefined : joinPath(parent, name);
   const [error] = useFormError(store, currentPath);
+  const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required)), [rules]);
+  const required = isHaveRequired && !ignore ? true : rest?.required;
   const FieldComponent = component
 
   const childs = (
@@ -58,7 +60,7 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   return (
     FieldComponent ?
-      <FieldComponent {...rest} ref={ref} error={error}>
+      <FieldComponent {...rest} required={required} ref={ref} error={error}>
         {childs}
       </FieldComponent>
       : childs

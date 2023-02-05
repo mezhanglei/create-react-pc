@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData } from './types';
 import { defaultComponents } from './components';
-import { Form, formatName, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, joinPath } from '../react-easy-formcore';
+import { Form, formatName, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import { isReactComponent, isValidElement } from '@/utils/ReactIs';
+import { matchExpression } from './utils/utils';
 
 // 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -90,6 +91,33 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     });
   }
 
+  // 遍历处理rules字段
+  const evalRules = (rules: FormRule[]) => {
+    if (!(rules instanceof Array)) return;
+    const newRules = rules?.map((rule) => {
+      const newRule = {};
+      if (rule) {
+        for (let key in rule) {
+          newRule[key] = evalExpression(rule[key], uneval)
+        }
+        return newRule;
+      }
+    });
+    return newRules;
+  }
+
+  // 遍历处理props字段
+  const evalProps = (val?: any) => {
+    const newProps = {};
+    if (val) {
+      for (let key in val) {
+        const propsItem = val?.[key];
+        newProps[key] = evalExpression(propsItem, uneval);
+      }
+      return newProps;
+    }
+  }
+
   // 递归遍历表单域的属性
   const handleFieldProps = () => {
     const fieldPropsMap = {};
@@ -100,7 +128,15 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           if (propsKey !== 'properties') {
             const propsValue = formField[propsKey];
             const propsPath = joinPath(path, propsKey) as string;
-            const result = evalExpression(propsValue, uneval);
+            let result = propsValue;
+            const evalStr = matchExpression(propsValue);
+            if (evalStr) {
+              result = evalExpression(propsValue, uneval);
+            } else if (propsKey === 'props') {
+              result = evalProps(propsValue);
+            } else if (propsKey === 'rules') {
+              result = evalRules(propsValue);
+            }
             fieldPropsMap[propsPath] = result;
           } else {
             const children = formField[propsKey];
@@ -128,8 +164,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     setFieldPropsMap(fieldPropsMap);
   }
 
-  // 展示计算完表达式之后的结果
-  const showCalcFieldProps = (field: FormFieldProps, path?: string) => {
+  // 获取计算完表达式之后的结果
+  const getEvalFieldProps = (field: FormFieldProps, path?: string) => {
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {
@@ -145,8 +181,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const evalExpression = (value?: string | boolean, uneval?: boolean) => {
     if (uneval) return value;
     if (typeof value === 'string') {
-      const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
-      const evalStr = value?.match(reg)?.[0];
+      const evalStr = matchExpression(value)
       if (evalStr) {
         let target = evalStr?.replace(/\{\{|\}\}|\s*/g, '');
         target = target?.replace(/\$formvalues/g, 'form && form.getFieldValue()');
@@ -273,7 +308,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       const childName = formatName(key, properties instanceof Array);
       if (typeof childName === 'string' || typeof childName === 'number') {
         const childPath = joinPath(currentPath, childName);
-        const childField = showCalcFieldProps(formField, childPath);
+        const childField = getEvalFieldProps(formField, childPath);
         if (childField) {
           childField['index'] = index;
         }

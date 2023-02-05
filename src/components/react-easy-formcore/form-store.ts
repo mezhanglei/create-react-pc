@@ -92,6 +92,9 @@ export class FormStore<T extends Object = any> {
     this.lastValues = deepClone(this.values);
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
+    setTimeout(() => {
+      this.notifyFormGlobal(path);
+    }, 0);
   }
 
   // 获取初始值
@@ -112,7 +115,7 @@ export class FormStore<T extends Object = any> {
       // 规则
       const fieldPropsMap = this.getFieldProps();
       const rules = fieldPropsMap?.[path]?.['rules'];
-      if (rules?.length) {
+      if (rules?.length && rules instanceof Array) {
         // 校验规则
         this.validate(path, type);
       }
@@ -170,7 +173,7 @@ export class FormStore<T extends Object = any> {
     if (path === undefined) {
       const result = await Promise.all(Object.keys(fieldProps)?.map((n) => {
         const rules = fieldProps?.[n]?.['rules'];
-        if (rules) {
+        if (rules instanceof Array) {
           return this.validate(n)
         }
       }))
@@ -183,8 +186,9 @@ export class FormStore<T extends Object = any> {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const value = this.getFieldValue(path);
+      const ignore = fieldProps?.ignore;
       const canTrigger = handleTrigger(type, fieldProps['validateTrigger']);
-      if (canTrigger) {
+      if (canTrigger && !ignore) {
         const message = await this.validator.start(path, value, type);
         if (message) {
           this.setFieldError(path, message);
