@@ -56,7 +56,7 @@ export const ListCore = (props: ListCoreProps) => {
   const renderFormItem = (child: any) => {
     const currentIndex = index;
     index++;
-    const childRules = (rules || [])?.concat(child?.props?.rules);
+    const childRules = rules instanceof Array ? rules?.concat(child?.props?.rules) : child?.props?.rules;
     const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
     return child && cloneElement(child, {
       parent: formPath,
