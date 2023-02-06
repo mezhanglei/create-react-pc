@@ -24,11 +24,12 @@ export default function Demo5(props) {
   const [properties, setProperties] = useState({
     name1: {
       label: "只读展示",
-      readOnly: true,
+      // readOnly: true,
       readOnlyRender: "只读展示组件",
       initialValue: 1111,
       outside: { type: 'col', props: { span: 6 } },
-      hidden: '{{$formvalues.name6 == true}}',
+      // hidden: '{{$formvalues.name6 == true}}',
+      rules: [{ required: '{{$formvalues.name6 == true}}', message: 'empty' }],
       type: 'Input',
       props: {}
     },
@@ -199,7 +200,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm inside={{ type: 'row' }} form={form} properties={properties} watch={watch} />
+      <RenderForm form={form} properties={properties} watch={watch} />
       {/* <Form store={form}>
         <div>
           <p>part1</p>

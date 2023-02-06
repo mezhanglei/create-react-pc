@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import './btn.less';
-import { FormFieldProps, GeneratePrams } from '../types';
+import { GenerateFieldProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
 import { joinPath } from '../../react-easy-formcore';
 import { isEmpty } from '@/utils/type';
@@ -38,7 +38,7 @@ export interface AddBtnProps extends GeneratePrams {
   onClick?: () => void;
   className?: string;
   style?: CSSProperties;
-  item?: FormFieldProps;
+  item?: GenerateFieldProps;
 }
 export const AddBtn: React.FC<AddBtnProps> = (props) => {
 

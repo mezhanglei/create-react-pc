@@ -22,7 +22,7 @@ export type UnionComponent<P> =
 // 表单上的组件联合类型
 export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function
 
-export interface BaseFieldProps extends FormComponent {
+export interface GenerateFieldProps extends FormComponent, FormItemProps {
   ignore?: boolean; // 忽略当前节点不会作为表单值
   fieldComponent?: FieldUnionType; // 表单域组件
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
@@ -30,18 +30,18 @@ export interface BaseFieldProps extends FormComponent {
   readOnly?: boolean; // 只读模式
   readOnlyRender?: FieldUnionType | ReactNode; // 只读模式下的组件
   typeRender?: any; // 表单控件自定义渲染
+  properties?: PropertiesData;
 }
 
 // 表单属性对象
 export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps[]
 
 // 表单域(绑定表单字段)
-export interface FormFieldProps extends Overwrite<FormItemProps, {
-  valueGetter?: string | ((...args: any[]) => any) | any;
-  valueSetter?: string | ((value: any) => any) | any;
-  rules?: FormRule[] | string;
-}>, BaseFieldProps {
-  properties?: PropertiesData; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
+export interface FormFieldProps extends Overwrite<GenerateFieldProps, {
+  valueGetter?: string | ((...args: any[]) => any);
+  valueSetter?: string | ((value: any) => any);
+  rules?: string | Array<FormRule | { [key in keyof FormRule]: any }>;
+}> {
 }
 
 export type WatchHandler = (newValue: any, oldValue: any) => void
@@ -74,7 +74,7 @@ export interface RenderFormChildrenProps extends BaseRenderProps {
 
 export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
-export interface GeneratePrams<T = FormFieldProps> {
+export interface GeneratePrams<T = GenerateFieldProps> {
   name?: string | number;
   field?: T;
   parent?: string;

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData } from './types';
+import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData, GenerateFieldProps } from './types';
 import { defaultComponents } from './components';
 import { Form, formatName, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './formrender-store';
@@ -251,7 +251,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 生成子元素
-  const generateChild = (name: string | number, field: FormFieldProps, parent?: string, formparent?: string) => {
+  const generateChild = (name: string | number, field: GenerateFieldProps, parent?: string, formparent?: string) => {
     if (field?.hidden === true) {
       return;
     }
