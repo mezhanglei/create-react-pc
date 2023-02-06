@@ -34,6 +34,11 @@ function ComponentList(props: ComponentListProps, ref: any) {
       <DndSortable
         className='elements-list'
         collection={{ type: DndGroup, tabKey: tabKey, elementType: elementType }}
+        options={{
+          disabledDrop: true,
+          hiddenFrom: true,
+          disabledSort: true
+        }}
       >
         {
           elements?.map((item, index) => {

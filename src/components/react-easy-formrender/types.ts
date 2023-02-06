@@ -22,6 +22,7 @@ export type UnionComponent<P> =
 // 表单上的组件联合类型
 export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function
 
+// 最终生成的表单域
 export interface GenerateFieldProps extends FormComponent, FormItemProps {
   ignore?: boolean; // 忽略当前节点不会作为表单值
   fieldComponent?: FieldUnionType; // 表单域组件
@@ -36,12 +37,11 @@ export interface GenerateFieldProps extends FormComponent, FormItemProps {
 // 表单属性对象
 export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps[]
 
-// 表单域(绑定表单字段)
-export interface FormFieldProps extends Overwrite<GenerateFieldProps, {
-  valueGetter?: string | ((...args: any[]) => any);
-  valueSetter?: string | ((value: any) => any);
-  rules?: string | Array<FormRule | { [key in keyof FormRule]: any }>;
-}> {
+// 表单域(支持字符串表达式)
+export type FormFieldProps = GenerateFieldProps & {
+  [key in keyof Omit<GenerateFieldProps, 'properties'>]: key extends 'rules' ?
+  (string | Array<{ [key in keyof FormRule]: FormRule[key] | string }> | GenerateFieldProps[key])
+  : (string | GenerateFieldProps[key])
 }
 
 export type WatchHandler = (newValue: any, oldValue: any) => void

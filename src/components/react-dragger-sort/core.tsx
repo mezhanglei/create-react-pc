@@ -87,7 +87,6 @@ export default function BuildDndSortable() {
 
     handleMoveStart = (e: any, currentTarget: HTMLElement) => {
       const cloneDragged = currentTarget.cloneNode(true) as HTMLElement;
-      insertAfter(cloneDragged, currentTarget);
       this.dragged = currentTarget;
       this.cloneDragged = cloneDragged;
       const dragItem = dndManager.getDragItem(currentTarget);
@@ -216,7 +215,6 @@ export default function BuildDndSortable() {
             dragged.style.display = this.lastDisplay;
           }
         }
-        cloneDragged.draggable = false;
         cloneDragged?.parentNode?.removeChild?.(cloneDragged);
       }
       // 重置被hover的元素样式
@@ -275,8 +273,9 @@ export default function BuildDndSortable() {
           to: to
         };
         const hiddenFrom = isHiddenFrom(params)
-        if (hiddenFrom) {
+        if (hiddenFrom && dragged.style.display !== 'none') {
           dragged.style.display = "none";
+          insertAfter(cloneDragged, dragged);
         }
         // 拖放行为是否在同域内
         if (dropGroup?.node === parentEl) {

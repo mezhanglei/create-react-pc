@@ -71,7 +71,6 @@ function EditorDnd(props: EditorDndProps, ref: any) {
       data-type="ignore"
       className='editor-dnd-root'
       options={{ hiddenFrom: true }}
-    // collection={{ path: '' }}
     >
       {children}
     </DndSortable>
