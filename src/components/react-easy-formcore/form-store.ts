@@ -47,10 +47,14 @@ export class FormStore<T extends Object = any> {
 
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
+    this.subscribeError = this.subscribeError.bind(this)
     this.subscribeFormItem = this.subscribeFormItem.bind(this)
     this.subscribeFormGlobal = this.subscribeFormGlobal.bind(this)
     this.unsubscribeFormGlobal = this.unsubscribeFormGlobal.bind(this)
-    this.subscribeError = this.subscribeError.bind(this)
+
+    this.notifyError = this.notifyError.bind(this)
+    this.notifyFormItem = this.notifyFormItem.bind(this)
+    this.notifyFormGlobal = this.notifyFormGlobal.bind(this)
   }
 
   // 获取
@@ -85,7 +89,7 @@ export class FormStore<T extends Object = any> {
     return path === undefined ? this.lastValues : deepGet(this.lastValues, path)
   }
 
-  // 设置初始值(不触发监听)
+  // 设置初始值
   public setInitialValues(path: string, initialValue: any) {
     this.initialValues = deepSet(this.initialValues, path, initialValue);
     // 旧表单值存储
@@ -93,7 +97,7 @@ export class FormStore<T extends Object = any> {
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
     setTimeout(() => {
-      this.notifyFormGlobal(path);
+      this.notifyFormGlobal(path)
     }, 0);
   }
 

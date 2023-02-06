@@ -30,8 +30,8 @@ export default function Demo5(props) {
       initialValue: 1111,
       outside: { type: 'col', props: { span: 6 } },
       // hidden: '{{$formvalues.name6 == true}}',
+      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
       type: 'Input',
-      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message: "empty"}]}}',
       props: {}
     },
     name2: {

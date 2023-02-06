@@ -44,7 +44,7 @@ export function useFormValues<T = unknown>(store: FormStore, path?: string | str
       const item = pathList[i]
       queue?.push(store.subscribeFormGlobal(item, (newValue) => {
         if (typeof item == 'string' || typeof item == 'number') {
-          const oldValues = store.getFieldValue(path);
+          const oldValues = store.getFieldValue(path) || {};
           setFomValues(() => ({ ...oldValues, [item]: newValue }));
         }
       }))
