@@ -65,6 +65,7 @@ export default class Validator {
   async start(path: string, value: any, type?: TriggerHandle) {
     this.setError(path);
     const rules = this.rulesMap[path];
+    if (!(rules instanceof Array)) return;
     for (let i = 0; i < rules?.length; i++) {
       const rule = rules?.[i];
       const { validateTrigger, ...rest } = rule || {};
@@ -96,7 +97,7 @@ const handleRule = async (rule: FormRule | undefined, value: any) => {
       // 校验结果
       return result === true ? defaultMessage : result;
       // 其他字段的校验，返回true表示报错
-    } else if (validatorsMap[ruleKey]?.(ruleValue, value)) {
+    } else if (validatorsMap[ruleKey]?.(ruleValue, value) === true) {
       return defaultMessage;
     }
   }

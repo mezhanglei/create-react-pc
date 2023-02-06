@@ -50,7 +50,7 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
 
   const cls = classnames(
     `${prefix}__header`,
-    required ? `${prefix}--required` : '',
+    required === true ? `${prefix}--required` : '',
     className ? className : ''
   );
 
@@ -64,7 +64,7 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
   return (
     children !== undefined ? (
       <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
-        {colon ? <>{children}:</> : children}
+        {colon === true ? <>{children}:</> : children}
         {tooltip && <Icon name="wenhao" ref={iconRef} className={`${prefix}__tooltip`} />}
       </label>
     ) : null

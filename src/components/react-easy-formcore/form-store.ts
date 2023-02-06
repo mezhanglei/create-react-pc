@@ -192,7 +192,7 @@ export class FormStore<T extends Object = any> {
       const value = this.getFieldValue(path);
       const ignore = fieldProps?.ignore;
       const canTrigger = handleTrigger(type, fieldProps['validateTrigger']);
-      if (canTrigger && !ignore) {
+      if (canTrigger && ignore !== true) {
         const message = await this.validator.start(path, value, type);
         if (message) {
           this.setFieldError(path, message);

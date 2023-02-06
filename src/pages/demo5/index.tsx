@@ -24,21 +24,18 @@ export default function Demo5(props) {
   const [properties, setProperties] = useState({
     name1: {
       label: "只读展示",
-      // required: true,
-      // readOnly: true,
+      readOnly: true,
       readOnlyRender: "只读展示组件",
       initialValue: 1111,
       outside: { type: 'col', props: { span: 6 } },
-      // hidden: '{{$formvalues.name6 == true}}',
-      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
+      hidden: '{{$formvalues.name6 == true}}',
       type: 'Input',
       props: {}
     },
     name2: {
       label: "输入框",
-      required: true,
       outside: { type: 'col', props: { span: 6 } },
-      rules: [{ required: true, validateTrigger: 'onBlur', message: 'name1空了' }],
+      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
       initialValue: 1,
       hidden: '{{$formvalues.name6 == true}}',
       type: 'Input',
@@ -46,13 +43,11 @@ export default function Demo5(props) {
     },
     name3: {
       label: "数组",
-      required: true,
       outside: { type: 'col', props: { span: 6 } },
       footer: {
         type: 'add',
         props: {
           item: {
-            required: true,
             rules: [{ required: true, message: 'name3[0]空了' }],
             suffix: { type: 'delete' },
             type: 'Select',
@@ -68,7 +63,6 @@ export default function Demo5(props) {
         }
       },
       properties: [{
-        required: true,
         suffix: { type: 'delete' },
         rules: [{ required: true, message: 'name3[0]空了' }],
         initialValue: { label: '选项1', value: '1', key: '1' },
@@ -82,7 +76,6 @@ export default function Demo5(props) {
           ]
         }
       }, {
-        required: true,
         suffix: { type: 'delete' },
         rules: [{ required: true, message: 'name3[1]空了' }],
         type: 'Select',
@@ -98,7 +91,6 @@ export default function Demo5(props) {
     },
     name4: {
       label: '对象嵌套',
-      required: true,
       outside: { type: 'col', props: { span: 6 } },
       properties: {
         first: {
@@ -157,7 +149,6 @@ export default function Demo5(props) {
     },
     name6: {
       label: 'name6',
-      required: true,
       valueProp: 'checked',
       initialValue: true,
       rules: [{ required: true, message: 'name6空了' }],
@@ -177,7 +168,6 @@ export default function Demo5(props) {
   const [properties1, setProperties1] = useState({
     part1: {
       label: "part1input",
-      required: true,
       outside: { type: 'col', props: { span: 6 } },
       rules: [{ required: true, message: 'name1空了' }],
       initialValue: 1,
@@ -190,7 +180,6 @@ export default function Demo5(props) {
   const [properties2, setProperties2] = useState({
     part2: {
       label: "part2input",
-      required: true,
       outside: { type: 'col', props: { span: 6 } },
       rules: [{ required: true, message: 'name1空了' }],
       initialValue: 1,

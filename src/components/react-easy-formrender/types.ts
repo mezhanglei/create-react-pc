@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { FormItemProps, FormProps, FormStore } from "../react-easy-formcore";
+import { FormItemProps, FormProps, FormRule, FormStore } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
 
 // 从原接口中提取属性，然后用新的替换它们
@@ -39,6 +39,7 @@ export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps
 export interface FormFieldProps extends Overwrite<FormItemProps, {
   valueGetter?: string | ((...args: any[]) => any) | any;
   valueSetter?: string | ((value: any) => any) | any;
+  rules?: FormRule[] | string;
 }>, BaseFieldProps {
   properties?: PropertiesData; // 嵌套的表单控件 为对象时表示对象嵌套，为数组类型时表示数组集合
 }

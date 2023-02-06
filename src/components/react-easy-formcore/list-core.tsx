@@ -27,8 +27,8 @@ export const ListCore = (props: ListCoreProps) => {
     ignore
   } = fieldProps;
 
-  const formPath = ignore ? parent : joinPath(parent, name);
-  const currentPath = (isEmpty(name) || ignore) ? undefined : formPath;
+  const formPath = ignore === true ? parent : joinPath(parent, name);
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : formPath;
   const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
 
   // 渲染子元素

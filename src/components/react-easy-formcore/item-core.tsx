@@ -53,8 +53,8 @@ export const ItemCore = (props: ItemCoreProps) => {
     ignore,
   } = fieldProps;
 
-  const formPath = ignore ? parent : joinPath(parent, name);
-  const currentPath = (isEmpty(name) || ignore) ? undefined : formPath;
+  const formPath = ignore === true ? parent : joinPath(parent, name);
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : formPath;
   const storeValue = currentPath && store?.getFieldValue(currentPath);
   const initialItemValue = storeValue ?? initialValue ?? deepGet(initialValues, currentPath);
   const [value, setValue] = useState(storeValue);
@@ -66,10 +66,12 @@ export const ItemCore = (props: ItemCoreProps) => {
   const ruleTriggers = useMemo(() => {
     const rules = fieldProps?.['rules'];
     const result = []
-    for (let i = 0; i < rules?.length; i++) {
-      const rule = rules?.[i];
-      if (rule?.validateTrigger) {
-        result.push(rule?.validateTrigger)
+    if (rules instanceof Array) {
+      for (let i = 0; i < rules?.length; i++) {
+        const rule = rules?.[i];
+        if (rule?.validateTrigger) {
+          result.push(rule?.validateTrigger)
+        }
       }
     }
     return result;
@@ -117,7 +119,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     // 回填store.initialValues和回填store.values
     if (initialItemValue !== undefined) {
       store.setInitialValues(currentPath, initialItemValue);
-      onValuesChange && onValuesChange({ parent: parent, name: name, value: initialItemValue }, store?.getFieldValue());
+      onValuesChange && onValuesChange({ parent: parent, name: name, value: initialItemValue }, store?.getFieldValue())
     }
     setValue(initialItemValue)
     return () => {

@@ -56,10 +56,10 @@ export const Item = React.forwardRef((props: ItemProps, ref: any) => {
   const cls = classnames(
     classes.field,
     layout ? `${classes.field}--${layout}` : '',
-    required ? classes.required : '',
-    compact ? classes.compact : '',
+    required === true ? classes.required : '',
+    compact === true ? classes.compact : '',
     error ? classes.error : '',
-    inline ? classes.inline : '',
+    inline === true ? classes.inline : '',
     className ? className : ''
   );
 

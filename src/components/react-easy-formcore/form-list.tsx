@@ -42,8 +42,8 @@ export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
 
   const currentPath = (isEmpty(name) || ignore) ? undefined : joinPath(parent, name);
   const [error] = useFormError(store, currentPath);
-  const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required)), [rules]);
-  const required = isHaveRequired && !ignore ? true : rest?.required;
+  const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
+  const required = isHaveRequired && ignore !== true ? true : rest?.required;
   const FieldComponent = component
 
   const childs = (
