@@ -30,6 +30,7 @@ export default function Demo5(props) {
       // hidden: '{{$formvalues.name6 == true}}',
       rules: [{ required: '{{$formvalues.name6 == true}}', message: 'empty' }],
       type: 'Input',
+      tooltip: '111',
       props: {}
     },
     name2: {

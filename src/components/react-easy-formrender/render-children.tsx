@@ -4,7 +4,7 @@ import { defaultComponents } from './components';
 import { Form, formatName, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
-import { isReactComponent, isValidElement } from '@/utils/ReactIs';
+import { isReactComponent, isValidChildren } from '@/utils/ReactIs';
 import { matchExpression } from './utils/utils';
 
 // 表单元素渲染
@@ -217,7 +217,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           </Child>
         );
       } else {
-        return isValidElement(target) ? target : null
+        return isValidChildren(target) ? target : null
       }
     }
   }

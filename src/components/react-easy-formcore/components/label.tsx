@@ -1,10 +1,9 @@
 import classnames from 'classnames';
-import React, { CSSProperties, useEffect, useRef } from 'react';
-import tippy from 'tippy.js';
-import 'tippy.js/dist/tippy.css';
-import 'tippy.js/themes/light.css';
+import React, { CSSProperties } from 'react';
 import './label.less';
 import Icon from '@/components/svg-icon';
+import Tooltip from '@/components/tooltip';
+import { isValidChildren } from '@/utils/ReactIs';
 
 export interface LabelBaseProps {
   colon?: boolean;
@@ -35,17 +34,6 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
     ...restProps
   } = props;
 
-  const iconRef = useRef<SVGSVGElement>(null)
-
-  useEffect(() => {
-    if (tooltip && iconRef.current) {
-      tippy(iconRef.current, {
-        theme: 'light',
-        content: tooltip,
-      });
-    }
-  }, [tooltip]);
-
   const prefix = 'item-label';
 
   const cls = classnames(
@@ -62,10 +50,14 @@ export const Label = React.forwardRef((props: LabelProps, ref: any) => {
   }
 
   return (
-    children !== undefined ? (
+    isValidChildren(children) ? (
       <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon === true ? <>{children}:</> : children}
-        {tooltip && <Icon name="wenhao" ref={iconRef} className={`${prefix}__tooltip`} />}
+        {tooltip && (
+          <Tooltip content={tooltip} theme="light">
+            <Icon name="wenhao" className={`${prefix}__tooltip`} />
+          </Tooltip>)
+        }
       </label>
     ) : null
   );

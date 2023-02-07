@@ -24,7 +24,7 @@ export type FieldUnionType = FormComponent | Array<FormComponent> | UnionCompone
 
 // 最终生成的表单域
 export interface GenerateFieldProps extends FormComponent, FormItemProps {
-  ignore?: boolean; // 忽略当前节点不会作为表单值
+  ignore?: boolean; // 标记当前节点为非表单节点
   fieldComponent?: FieldUnionType; // 表单域组件
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
   outside?: FieldUnionType; // 表单域组件外层嵌套组件

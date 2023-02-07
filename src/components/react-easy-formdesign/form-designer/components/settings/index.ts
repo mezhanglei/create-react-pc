@@ -13,10 +13,11 @@ import ColorPickerSettings, { colorPicker_operation } from './colorPicker';
 import FileUploadSettings, { fileUpload_operation } from './fileUpload';
 import ImageUploadSettings, { imageUpload_operation } from './imageUpload';
 import CascaderSettings, { cascader_operation } from './cascader';
+import RulesSettings from "./rules";
 
 // 控件的属性配置, 以控件的id作为键
 const ConfigSettings = {
-  input: [InputSettings, input_operation, DefaultFieldSettings],
+  input: [InputSettings, input_operation, DefaultFieldSettings, RulesSettings],
   radio: [RadioSettings, radio_operation, DefaultFieldSettings],
   checkbox: [CheckboxSettings, checkbox_operation, DefaultFieldSettings],
   select: [SelectSettings, select_operation, DefaultFieldSettings],
