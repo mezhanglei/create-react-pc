@@ -25,18 +25,17 @@ export default function Demo5(props) {
   const [properties, setProperties] = useState({
     name1: {
       label: "只读展示",
-      // readOnly: true,
+      readOnly: true,
       readOnlyRender: "只读展示组件",
       initialValue: 1111,
-      // hidden: '{{formvalues.name6 == true}}',
-      rules: [{ required: '{{formvalues.name6 == true}}', message: '2222{{moment().format("YYYY-MM-DD")}}' }],
+      hidden: '{{formvalues.name6 == true}}',
       type: 'Input',
       tooltip: '111',
       props: {}
     },
     name2: {
       label: "输入框",
-      rules: '{{formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
+      rules: '{{formvalues.name6 == true ? [] : [{required: true, message: moment().format("YYYY-MM-DD")}]}}',
       initialValue: 1,
       hidden: '{{formvalues.name6 == true}}',
       type: 'Input',
@@ -155,10 +154,6 @@ export default function Demo5(props) {
         style: { width: '100%' },
         children: '多选框'
       }
-    },
-    name7: {
-      label: 'Upload',
-      type: 'Upload'
     },
   })
 

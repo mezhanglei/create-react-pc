@@ -97,7 +97,8 @@ export class FormStore<T extends Object = any> {
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
     setTimeout(() => {
-      this.notifyFormGlobal(path)
+      this.notifyFormItem(path);
+      this.notifyFormGlobal(path);
     }, 0);
   }
 
