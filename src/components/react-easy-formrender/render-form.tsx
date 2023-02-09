@@ -17,12 +17,14 @@ export default function RenderForm(props: RenderFormProps) {
     renderList,
     inside,
     onPropertiesChange,
+    expressionImports,
     ...formOptions
   } = props;
 
   return (
     <Form store={form} {...formOptions}>
       <RenderFormChildren
+        expressionImports={expressionImports}
         uneval={uneval}
         store={store}
         properties={properties}

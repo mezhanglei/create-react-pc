@@ -1,4 +1,3 @@
-import { ValueOf } from "@/components/react-easy-formrender";
 import DefaultFieldSettings from "./field";
 import InputSettings, { input_operation } from "./input";
 import RadioSettings, { radio_operation } from "./radio";
@@ -32,6 +31,7 @@ const ConfigSettings = {
   cascader: [CascaderSettings, cascader_operation, DefaultFieldSettings],
 }
 
+type ValueOf<T> = T[keyof T];
 export type ConfigSettingsType = typeof ConfigSettings;
 export type ConfigSettingsItem = ValueOf<ConfigSettingsType>;
 export default ConfigSettings;

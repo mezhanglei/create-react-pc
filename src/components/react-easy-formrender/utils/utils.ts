@@ -6,9 +6,9 @@ import { isEmpty } from "@/utils/type";
 // 匹配字符串表达式
 export const matchExpression = (value?: any) => {
   if (typeof value === 'string') {
-    const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'gi');
-    const evalStr = value?.match(reg)?.[0];
-    return evalStr;
+    const reg = new RegExp('\{\{\s*.*?\s*\}\}', 'g');
+    const result = value?.match(reg)?.[0];
+    return result;
   }
 }
 

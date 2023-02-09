@@ -2,9 +2,6 @@ import { ReactNode } from "react";
 import { FormItemProps, FormProps, FormRule, FormStore } from "../react-easy-formcore";
 import { FormRenderStore } from "./formrender-store";
 
-// 从原接口中提取属性，然后用新的替换它们
-type Overwrite<T, U> = Omit<T, keyof U> & U;
-
 // 组件JSON描述
 export interface FormComponent {
   type?: string;
@@ -37,42 +34,39 @@ export interface GenerateFieldProps extends FormComponent, FormItemProps {
 // 表单属性对象
 export type PropertiesData = { [name: string]: FormFieldProps } | FormFieldProps[]
 
-// 表单域(支持字符串表达式)
-export type FormFieldProps = GenerateFieldProps & {
-  [key in keyof Omit<GenerateFieldProps, 'properties'>]: key extends 'rules' ?
+// 表单域(支持字符串表达式的表单域)
+export type FormFieldProps = {
+  [key in keyof GenerateFieldProps]: key extends 'rules' ?
   (string | Array<{ [key in keyof FormRule]: FormRule[key] | string }> | GenerateFieldProps[key])
-  : (string | GenerateFieldProps[key])
+  : (key extends 'properties' ? GenerateFieldProps[key] : (string | GenerateFieldProps[key]))
 }
 
 export type WatchHandler = (newValue: any, oldValue: any) => void
 
-export interface BaseRenderProps {
+// 不带form容器的渲染组件props
+export interface RenderFormChildrenProps {
+  // 给字符串表达式传入外部变量
+  expressionImports?: object;
   uneval?: boolean;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
   controls?: any;
   components?: any;
   inside?: FieldUnionType;
+  properties?: PropertiesData; // 渲染数据
   // 自定义渲染列表组件
   renderList?: (params: GeneratePrams<any>) => any;
   // 自定义渲染子表单域
   renderItem?: (params: GeneratePrams<any>) => any;
+  // 渲染数据回调函数
+  onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
+  store?: FormRenderStore
 }
 
 // 带form容器的渲染组件props
-export interface RenderFormProps extends Overwrite<FormProps, { store?: FormRenderStore }>, BaseRenderProps {
-  onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
-  properties?: PropertiesData; // 控件数据源的数据
+export interface RenderFormProps extends Omit<FormProps, 'store'>, RenderFormChildrenProps {
   form?: FormStore
 };
 
-// 不带form容器的渲染组件props
-export interface RenderFormChildrenProps extends BaseRenderProps {
-  onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
-  properties?: PropertiesData; // 控件数据源的数据
-  store?: FormRenderStore
-};
-
-export type ValueOf<T> = T[keyof T];
 // 组件公共的参数
 export interface GeneratePrams<T = GenerateFieldProps> {
   name?: string | number;

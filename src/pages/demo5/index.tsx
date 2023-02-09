@@ -5,6 +5,7 @@ import RenderForm, { RenderFormChildren, useFormRenderStore } from '@/components
 import { Form, useFormStore } from '@/components/react-easy-formcore';
 import './index.less'
 import Button from '@/components/button';
+import moment from 'moment'
 
 
 export default function Demo5(props) {
@@ -27,17 +28,17 @@ export default function Demo5(props) {
       // readOnly: true,
       readOnlyRender: "只读展示组件",
       initialValue: 1111,
-      // hidden: '{{$formvalues.name6 == true}}',
-      rules: [{ required: '{{$formvalues.name6 == true}}', message: 'empty' }],
+      // hidden: '{{formvalues.name6 == true}}',
+      rules: [{ required: '{{formvalues.name6 == true}}', message: '2222{{moment().format("YYYY-MM-DD")}}' }],
       type: 'Input',
       tooltip: '111',
       props: {}
     },
     name2: {
       label: "输入框",
-      rules: '{{$formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
+      rules: '{{formvalues.name6 == true ? [] : [{required: true, message:"222"}]}}',
       initialValue: 1,
-      hidden: '{{$formvalues.name6 == true}}',
+      hidden: '{{formvalues.name6 == true}}',
       type: 'Input',
       props: {}
     },
@@ -166,7 +167,7 @@ export default function Demo5(props) {
       label: "part1input",
       rules: [{ required: true, message: 'name1空了' }],
       initialValue: 1,
-      hidden: '{{$formvalues.name6 == true}}',
+      hidden: '{{formvalues.name6 == true}}',
       type: 'Input',
       props: {}
     },
@@ -177,7 +178,7 @@ export default function Demo5(props) {
       label: "part2input",
       rules: [{ required: true, message: 'name1空了' }],
       initialValue: 1,
-      hidden: '{{$formvalues.name6 == true}}',
+      hidden: '{{formvalues.name6 == true}}',
       type: 'Input',
       props: {}
     },
@@ -193,7 +194,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm form={form} properties={properties} watch={watch} />
+      <RenderForm form={form} properties={properties} watch={watch} expressionImports={{ moment }} />
       {/* <Form store={form}>
         <div>
           <p>part1</p>

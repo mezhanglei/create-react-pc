@@ -40,14 +40,25 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
 
   }
 
+  const addItem = () => {
+    
+  }
+
   const renderContent = () => {
     return (
       <div className={classes.tooltipContent}>
         <Row>
           <Col span={24}>
-            <Form.Item required label="启用" layout="horizontal" labelWidth={labelWidth}>
+            <Form.Item label="启用" layout="horizontal" labelWidth={labelWidth}>
               <Switch onChange={(val) => console.log(val)} />
             </Form.Item>
+          </Col>
+          <Col span={24}>
+            {/* <Form.Item label="联动条件" compact layout="horizontal" labelWidth={labelWidth}>
+              <Button type="link" onClick={addItem}>
+                添加选项
+              </Button>
+            </Form.Item> */}
           </Col>
         </Row>
       </div>
