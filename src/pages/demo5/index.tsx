@@ -151,7 +151,6 @@ export default function Demo5(props) {
       rules: [{ required: true, message: 'name6空了' }],
       type: 'Checkbox',
       props: {
-        style: { width: '100%' },
         children: '多选框'
       }
     },

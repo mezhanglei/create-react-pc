@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import RenderForm, { joinPath, RenderFormProps } from '../../form-render';
+import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
 import EditorDnd from './dnd';
 import EditorSelection from './selection';
@@ -66,7 +66,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 const renderItem: RenderFormProps['renderList'] = (params) => {
   const { children, parent } = params;
   const isRoot = !parent;
-  // 最外围层级和具体控件才需要默认添加选区
+  // 最外围层级和最内层输入控件才需要默认添加选区
   if (params?.field?.type || isRoot) {
     return <EditorSelection {...params} />
   }

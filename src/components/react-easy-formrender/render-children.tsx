@@ -23,7 +23,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     renderItem,
     renderList,
     inside,
-    properties: propertiesProps,
+    properties: initialProperties,
     store,
     expressionImports = {}
   } = props;
@@ -60,9 +60,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 收集properties到store中
   useEffect(() => {
     if (formRenderStore) {
-      formRenderStore.setProperties(propertiesProps)
+      formRenderStore.setProperties(initialProperties)
     }
-  }, [propertiesProps]);
+  }, [initialProperties]);
 
   // 变化时更新
   useEffect(() => {
