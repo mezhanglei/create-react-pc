@@ -1,10 +1,11 @@
 import { isEmpty } from "@/utils/type";
-import { Button, Col, Input, message, Row, Switch } from "antd";
+import { Button, Col, Input, message, Row, Select, Switch } from "antd";
 import React, { ChangeEvent, LegacyRef, useEffect, useRef, useState } from "react";
 import './required.less';
 import Icon from "@/components/svg-icon";
 import { Form } from "../..";
 import Tooltip from "@/components/tooltip";
+import RenderForm, { RenderFormProps, useFormStore } from '../../../form-render';
 
 export interface RequiredComponentProps {
   name?: string;
@@ -33,34 +34,46 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   } = props;
 
   const labelWidth = 80;
+  const SelectOptions = [{ label: '手动赋值', value: 1 }, { label: '联动赋值', value: 2 }]
   const iconRef = useRef<SVGSVGElement>(null)
   const [values, setValues] = useState();
+  const currentForm = useFormStore();
+  const [properties, setProperties] = useState({
+    selectType: {
+      label: '赋值方式',
+      layout: 'horizontal',
+      labelWidth: 80,
+      initialValue: 1,
+      type: 'Select',
+      props: {
+        style: { width: '100%' },
+        options: SelectOptions
+      }
+    },
+    switch: {
+      label: '启用',
+      layout: 'horizontal',
+      labelWidth: 80,
+      hidden: "{{formvalues && formvalues.selectType == 2}}",
+      type: 'Switch',
+      props: {
+      }
+    }
+  })
 
-  const handleChange = (key: string, val: any) => {
-
-  }
-
-  const addItem = () => {
-    
+  const handleChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
+    console.log(name, value, 2222)
   }
 
   const renderContent = () => {
     return (
       <div className={classes.tooltipContent}>
-        <Row>
-          <Col span={24}>
-            <Form.Item label="启用" layout="horizontal" labelWidth={labelWidth}>
-              <Switch onChange={(val) => console.log(val)} />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            {/* <Form.Item label="联动条件" compact layout="horizontal" labelWidth={labelWidth}>
-              <Button type="link" onClick={addItem}>
-                添加选项
-              </Button>
-            </Form.Item> */}
-          </Col>
-        </Row>
+        <RenderForm
+          tagName="div"
+          form={currentForm}
+          properties={properties}
+          onValuesChange={handleChange}
+        />
       </div>
     );
   }

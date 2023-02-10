@@ -225,6 +225,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 从参数中获取声明组件
   const componentParse = (target: FieldUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
+    if (isValidChildren(target)) return
     // 是否为类或函数组件声明
     if (isReactComponent(target)) {
       return target

@@ -1,11 +1,10 @@
-import { Col, Input, Row, Select } from "antd";
 import classNames from "classnames";
 import React, { CSSProperties, LegacyRef, useState } from "react";
-import { Form } from "../../";
 import { useFormDesign } from "../../../utils/hooks";
 import { getDesignerItem, updateDesignerItem } from "../../../utils/utils";
 import CodeTextArea from "../code-textarea";
 import { EditorCodeMirrorModal } from "./editor";
+import RenderForm, { RenderFormProps, useFormStore } from '../../../form-render';
 
 export interface RequestSourceConfig {
   url?: string; // 请求的路径
@@ -19,7 +18,6 @@ export interface RequestSourceConfig {
 export interface RequestResponseConfig extends Omit<RequestSourceConfig, 'returnFn'> {
   returnFn?: (val: any) => any; // 解析函数
 }
-
 
 export interface RequestSourceProps {
   value?: RequestSourceConfig;
@@ -50,56 +48,78 @@ const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref
     ...rest
   } = props;
 
-  const labelWidth = 80;
-  const [requestConfig, setRequestConfig] = useState<RequestResponseConfig>({});
   const { selectedPath, designer } = useFormDesign();
+  const requestForm = useFormStore();
+  const [properties, setProperties] = useState({
+    url: {
+      label: '接口',
+      layout: 'horizontal',
+      labelWidth: 80,
+      required: true,
+      type: 'Input',
+      props: {
+        style: { width: '100%' },
+      }
+    },
+    method: {
+      label: '请求方式',
+      layout: 'horizontal',
+      labelWidth: 80,
+      type: 'Select',
+      props: {
+        style: { width: '100%' },
+        options: methodOptions
+      }
+    },
+    requestType: {
+      label: '提交方式',
+      layout: 'horizontal',
+      labelWidth: 80,
+      hidden: "{{formvalues && formvalues.method === 'post'}}",
+      type: 'Select',
+      props: {
+        style: { width: '100%' },
+        options: requestTypeOptions
+      }
+    },
+    params: {
+      label: '请求参数',
+      layout: 'horizontal',
+      labelWidth: 80,
+      typeRender: <EditorCodeMirrorModal />,
+    },
+    headers: {
+      label: 'header信息',
+      layout: 'horizontal',
+      labelWidth: 80,
+      typeRender: <EditorCodeMirrorModal />,
+    },
+    returnFn: {
+      label: '解析函数',
+      layout: 'horizontal',
+      labelWidth: 80,
+      initialValue: 'function (res){\n   return res.data;\n}',
+      typeRender: <CodeTextArea style={{ width: '100%' }} />,
+    },
+  })
 
-  const configChange = (key: string, val: any) => {
-    const newConfig = { ...requestConfig };
-    newConfig[key] = val;
-    setRequestConfig(newConfig);
-    onChange && onChange(newConfig);
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
+    if (!name) return;
     const oldProps = getDesignerItem(designer, selectedPath)?.props || {};
+    const newConfig = oldProps?.requestConfig || {};
+    newConfig[name] = value;
+    onChange && onChange(newConfig);
     updateDesignerItem(designer, selectedPath, { props: { ...oldProps, requestConfig: newConfig } });
   }
 
   return (
     <div className={classNames(classes.cls, className)} {...rest}>
-      <Row>
-        <Col span={24}>
-          <Form.Item required label="接口" layout="horizontal" labelWidth={labelWidth}>
-            <Input style={{ width: '100%' }} onChange={(e) => configChange('url', e?.target?.value)} />
-          </Form.Item>
-        </Col>
-        <Col span={24}>
-          <Form.Item label="请求方式" layout="horizontal" labelWidth={labelWidth}>
-            <Select style={{ width: '100%' }} options={methodOptions} onChange={(val) => configChange('method', val)} />
-          </Form.Item>
-        </Col>
-        {
-          requestConfig['method'] === 'post' &&
-          <Col span={24}>
-            <Form.Item label="提交方式" layout="horizontal" labelWidth={labelWidth}>
-              <Select style={{ width: '100%' }} options={requestTypeOptions} onChange={(val) => configChange('requestType', val)} />
-            </Form.Item>
-          </Col>
-        }
-        <Col span={24}>
-          <Form.Item label="请求参数" layout="horizontal" labelWidth={labelWidth}>
-            <EditorCodeMirrorModal onChange={(val) => configChange('params', val)} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Col span={24}>
-        <Form.Item label="header信息" layout="horizontal" labelWidth={labelWidth}>
-          <EditorCodeMirrorModal onChange={(val) => configChange('headers', val)} />
-        </Form.Item>
-      </Col>
-      <Col span={24}>
-        <Form.Item label="解析函数" layout="horizontal" labelWidth={labelWidth}>
-          <CodeTextArea style={{ width: '100%' }} value={'function (res){\n   return res.data;\n}'} onChange={(val) => configChange('returnFn', val)} />
-        </Form.Item>
-      </Col>
+      <RenderForm
+        tagName="div"
+        form={requestForm}
+        properties={properties}
+        onFieldsChange={onFieldsChange}
+      />
     </div>
   );
 });

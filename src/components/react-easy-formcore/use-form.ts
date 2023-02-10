@@ -14,7 +14,7 @@ export function useValidator() {
 
 // 获取error信息
 export function useFormError(store: FormStore, path?: string) {
-  const storeError = path && store.getFieldError(path);
+  const storeError = path && store && store.getFieldError(path);
   const [error, setError] = useState(storeError);
   // 订阅组件更新错误的函数
   useEffect(() => {

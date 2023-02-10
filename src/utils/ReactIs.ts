@@ -33,10 +33,10 @@ export function isValidChildren(element: any) {
 
 // 是否为dom元素渲染结果
 export function isDOMTypeElement(element: any) {
-  return isValidChildren(element) && typeof element.type === 'string';
+  return isValidChildren(element) && typeof element?.type === 'string';
 }
 
 // 是否为函数或类的渲染结果
 export function isCompositeTypeElement(element: any) {
-  return isValidChildren(element) && typeof element.type === 'function';
+  return isValidChildren(element) && typeof element?.type === 'function';
 }

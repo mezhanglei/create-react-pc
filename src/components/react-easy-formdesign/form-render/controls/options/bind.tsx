@@ -47,7 +47,7 @@ export function bindRequest(component: any, codeStr: string = "options") {
     }
 
     // 赋值数据
-    const requestSet = requestConfig && codeStr && {
+    const requestSet = typeof requestConfig === 'object' && codeStr && {
       [codeStr]: response
     }
 
