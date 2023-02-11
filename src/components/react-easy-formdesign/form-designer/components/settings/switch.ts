@@ -2,7 +2,6 @@ const settings = {
   initialValue: {
     label: '默认值',
     type: 'Switch',
-    valueProp: 'checked',
   },
   props: {
     compact: true,

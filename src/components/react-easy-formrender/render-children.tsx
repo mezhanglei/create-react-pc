@@ -191,7 +191,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         const actionStr = "return " + target;
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function(...importsKeys, actionStr);
-        const result = action(form, formRenderStore, form && form.getFieldValue(), ...importsValues);
+        const result = action(form, formRenderStore, form && form.getFieldValue() || {}, ...importsValues);
         return result;
       } else {
         return value;

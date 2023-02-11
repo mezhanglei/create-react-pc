@@ -32,7 +32,7 @@ const settings = {
       maxTagCount: {
         label: '标签最大数量',
         type: 'InputNumber',
-        hidden: "{{formvalues.props.mode !== 'tags'}}",
+        hidden: "{{formvalues && formvalues.props && formvalues.props.mode !== 'tags'}}",
         initialValue: 10
       },
       size: {

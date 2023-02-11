@@ -1,17 +1,21 @@
-import { isEmpty } from "@/utils/type";
-import { Button, Col, Input, message, Row, Select, Switch } from "antd";
-import React, { ChangeEvent, LegacyRef, useEffect, useRef, useState } from "react";
+import React, { LegacyRef, useState } from "react";
 import './required.less';
 import Icon from "@/components/svg-icon";
-import { Form } from "../..";
 import Tooltip from "@/components/tooltip";
-import RenderForm, { RenderFormProps, useFormStore } from '../../../form-render';
+import RenderForm, { useFormStore } from '../../../form-render';
+import { Button } from "antd";
+
+
+interface CurrentValue {
+  required?: boolean | string;
+  message?: string
+}
 
 export interface RequiredComponentProps {
   name?: string;
   label?: string;
-  value?: boolean | string;
-  onChange?: (val: boolean | string) => void;
+  value?: CurrentValue;
+  onChange?: (val: CurrentValue) => void;
 }
 
 const prefixCls = 'required-item';
@@ -21,24 +25,22 @@ const classes = {
   text: `${prefixCls}-text`,
   tooltip: `${prefixCls}-tooltip`,
   tooltipContent: `${prefixCls}-tooltip-content`,
+  confirm: `${prefixCls}-confirm`,
 }
 
 const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLDivElement>) => {
 
   const {
     label,
-    value,
+    value = false,
     onChange,
     name,
     ...rest
   } = props;
 
-  const labelWidth = 80;
   const SelectOptions = [{ label: '手动赋值', value: 1 }, { label: '联动赋值', value: 2 }]
-  const iconRef = useRef<SVGSVGElement>(null)
-  const [values, setValues] = useState();
   const currentForm = useFormStore();
-  const [properties, setProperties] = useState({
+  const [properties, setProperties] = useState(name ? {
     selectType: {
       label: '赋值方式',
       layout: 'horizontal',
@@ -50,19 +52,41 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
         options: SelectOptions
       }
     },
-    switch: {
+    flag: {
       label: '启用',
       layout: 'horizontal',
+      initialValue: value,
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 2}}",
       type: 'Switch',
       props: {
       }
-    }
-  })
+    },
+    expression: {
+      label: '联动条件',
+      layout: 'horizontal',
+      initialValue: value,
+      labelWidth: 80,
+      hidden: "{{formvalues && formvalues.selectType == 1}}",
+      typeRender: '暂不开发'
+      // type: 'Input',
+      // props: {
+      // }
+    },
+    message: {
+      label: '提示信息',
+      layout: 'horizontal',
+      initialValue: '请输入',
+      labelWidth: 80,
+      type: 'Input',
+      props: {
+      }
+    },
+  } : undefined);
 
-  const handleChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
-    console.log(name, value, 2222)
+  const confirm = () => {
+    const { flag, expression, message } = currentForm.getFieldValue() || {}
+    name && onChange && onChange({ [name]: flag ?? expression, message })
   }
 
   const renderContent = () => {
@@ -72,8 +96,10 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
           tagName="div"
           form={currentForm}
           properties={properties}
-          onValuesChange={handleChange}
         />
+        <div className={classes.confirm}>
+          <Button onClick={confirm}>确认</Button>
+        </div>
       </div>
     );
   }
@@ -81,7 +107,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   return (
     <div className={classes.item} ref={ref}>
       <div className={classes.label}>{label}</div>
-      <div className={classes.text}>1111</div>
+      <div className={classes.text}></div>
       <Tooltip
         className={classes.tooltip}
         appendTo={document.body}
@@ -90,7 +116,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
         content={renderContent()}
         trigger="click"
       >
-        <Icon name="edit" ref={iconRef} />
+        <Icon name="edit" />
       </Tooltip>
     </div>
   );

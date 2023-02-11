@@ -27,8 +27,8 @@ export interface ItemCoreProps {
   rules?: FormRule[];
   initialValue?: any;
   errorClassName?: string;
-  onFieldsChange?: (obj: FieldChangedParams, values?: unknown) => void;
-  onValuesChange?: (obj: FieldChangedParams, values?: unknown) => void;
+  onFieldsChange?: (obj: FieldChangedParams, values?: any) => void;
+  onValuesChange?: (obj: FieldChangedParams, values?: any) => void;
   children?: any
 }
 
