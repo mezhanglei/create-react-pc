@@ -57,6 +57,7 @@ const settings = {
   colon: {
     label: '携带冒号',
     type: 'Switch',
+    valueProp: 'checked',
     initialValue: false,
   }
 }

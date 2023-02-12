@@ -2,16 +2,17 @@ import React, { LegacyRef, useState } from "react";
 import './style.less';
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
-import RenderForm, { useFormStore } from '../../../form-render';
+import RenderForm, { useFormStore } from '../..';
 import { Button } from "antd";
 
 
 interface CurrentValue {
-  required?: boolean | string;
+  max?: number | string;
+  min?: number | string;
   message?: string
 }
 
-export interface RequiredComponentProps {
+export interface MinOrMaxComponentProps {
   name?: string;
   label?: string;
   value?: CurrentValue;
@@ -29,7 +30,7 @@ const classes = {
   confirm: `${prefixCls}-confirm`,
 }
 
-const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLDivElement>) => {
+const MinOrMaxComponent: React.FC<MinOrMaxComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLDivElement>) => {
 
   const {
     label,
@@ -54,13 +55,12 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
       }
     },
     target: {
-      label: '启用',
+      label: '数值',
       layout: 'horizontal',
       initialValue: value?.[name],
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'linkage'}}",
-      valueProp: 'checked',
-      type: 'Switch',
+      type: 'InputNumber',
       props: {
       }
     },
@@ -78,7 +78,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     message: {
       label: '提示信息',
       layout: 'horizontal',
-      initialValue: value?.['message'] ?? '请输入',
+      initialValue: value?.['message'],
       labelWidth: 80,
       type: 'Input',
       props: {
@@ -127,4 +127,4 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   );
 });
 
-export default RequiredComponent;
+export default MinOrMaxComponent;
