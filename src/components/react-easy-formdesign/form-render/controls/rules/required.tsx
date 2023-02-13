@@ -39,7 +39,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     ...rest
   } = props;
 
-  const SelectOptions = [{ label: '手动赋值', value: 'handle' }, { label: '联动赋值', value: 'linkage' }]
+  const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }]
   const currentForm = useFormStore();
   const [properties, setProperties] = useState(name ? {
     selectType: {

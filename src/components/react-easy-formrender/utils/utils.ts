@@ -12,6 +12,13 @@ export const matchExpression = (value?: any) => {
   }
 }
 
+export const formatPath = (path?: string) => {
+  const pathArr = pathToArr(path)
+  if(!(pathArr instanceof Array)) return;
+  const result = joinPath(...pathArr)
+  return result;
+}
+
 // 获取路径的末尾节点字符串(不带中括号)
 export const getPathEnd = (path?: string) => {
   const pathArr = pathToArr(path)

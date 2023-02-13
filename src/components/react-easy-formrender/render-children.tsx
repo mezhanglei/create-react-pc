@@ -5,7 +5,7 @@ import { Form, formatName, FormOptionsContext, FormRule, FormStore, FormStoreCon
 import { useFormRenderStore } from './formrender-store';
 import { isEqual } from '@/utils/object';
 import { isReactComponent, isValidChildren } from '@/utils/ReactIs';
-import { matchExpression } from './utils/utils';
+import { formatPath, matchExpression } from './utils/utils';
 
 // 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -128,7 +128,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         if (typeof propsKey === 'string') {
           if (propsKey !== 'properties') {
             const propsValue = formField[propsKey];
-            const propsPath = joinPath(path, propsKey) as string;
             let result = propsValue;
             const matchStr = matchExpression(propsValue);
             if (matchStr) {
@@ -138,7 +137,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
             } else if (propsKey === 'rules') {
               result = evalRules(propsValue);
             }
-            fieldPropsMap[propsPath] = result;
+            const propsPath = joinPath(path, propsKey) as string;
+            const fieldKey = formatPath(propsPath);
+            fieldPropsMap[fieldKey] = result;
           } else {
             const children = formField[propsKey];
             for (const childKey in children) {
@@ -170,8 +171,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {
-          const currentPath = propsKey && path ? `${path}.${propsKey}` : undefined
-          const propsValue = (currentPath && fieldPropsMap[currentPath]) ?? field[propsKey]
+          const propsPath = joinPath(path, propsKey) as string;
+          const fieldKey = formatPath(propsPath);
+          const propsValue = (fieldKey && fieldPropsMap[fieldKey]) ?? field[propsKey]
           return [propsKey, propsValue];
         }
       )

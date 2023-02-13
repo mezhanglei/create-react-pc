@@ -16,7 +16,7 @@ import RulesSettings from "./rules";
 
 // 控件的属性配置, 以控件的id作为键
 const ConfigSettings = {
-  input: [InputSettings, input_operation, DefaultFieldSettings, RulesSettings],
+  input: [InputSettings, input_operation, RulesSettings, DefaultFieldSettings],
   radio: [RadioSettings, radio_operation, DefaultFieldSettings],
   checkbox: [CheckboxSettings, checkbox_operation, DefaultFieldSettings],
   select: [SelectSettings, select_operation, DefaultFieldSettings],

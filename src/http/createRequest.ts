@@ -73,7 +73,6 @@ export default function CreateRequest(params: CreateRequestParams) {
         data,
         trim,
         unique,
-        ...rest
       } = config || {};
 
       const newParams = trim ? trimParams(params) : params;

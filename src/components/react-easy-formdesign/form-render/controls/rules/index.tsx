@@ -46,7 +46,7 @@ const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, r
 
   const currentForm = useFormStore();
   const properties = useMemo(() => (
-    rulesList?.map((item, index) => {
+    rulesList?.map((item) => {
       const { component: Child, label, name } = item
       return {
         compact: true,

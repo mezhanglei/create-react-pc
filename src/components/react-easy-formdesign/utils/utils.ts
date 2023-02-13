@@ -1,7 +1,7 @@
 import { FieldProps, FormStore } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
-import { deepMergeObject } from '@/utils/object';
+import { deepMergeObject, deepClone } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
@@ -76,12 +76,13 @@ export const getSettingsModule = (id?: string): ConfigSettingsItem | undefined =
 export const getConfigSettings = (id?: string) => {
   if (!id) return;
   const settingsModule = getSettingsModule(id);
-  if (!settingsModule?.length) return;
+  const cloneModule = deepClone(settingsModule);
+  if (!cloneModule?.length) return;
   let totalSettings = {};
-  for (let i = 0; i < settingsModule?.length; i++) {
+  for (let i = 0; i < cloneModule?.length; i++) {
     // 遍历获取当前的配置项
-    const item = settingsModule[i][1];
-    totalSettings = { ...totalSettings, ...item };
+    const item = cloneModule[i][1];
+    totalSettings = deepMergeObject(totalSettings, item);
   }
   return totalSettings;
 }

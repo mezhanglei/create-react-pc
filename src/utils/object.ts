@@ -65,7 +65,7 @@ export function pathToArr(path?: string | string[]) {
 export function deepGet(obj: object | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
   if (keys instanceof Array) {
-    const result = {}
+    const result = obj instanceof Array ? [] : {}
     for (let key in keys) {
       const item = keys[key]
       result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
