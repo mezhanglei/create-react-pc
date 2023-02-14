@@ -1,6 +1,6 @@
 import { arrayMove } from "@/utils/array";
 import { FormFieldProps, PropertiesData } from "../types";
-import { pathToArr, deepSet, joinPath, formatName } from "../../react-easy-formcore";
+import { pathToArr, deepSet, joinFormPath } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 
 // 匹配字符串表达式
@@ -10,13 +10,6 @@ export const matchExpression = (value?: any) => {
     const result = value?.match(reg)?.[0];
     return result;
   }
-}
-
-export const formatPath = (path?: string) => {
-  const pathArr = pathToArr(path)
-  if(!(pathArr instanceof Array)) return;
-  const result = joinPath(...pathArr)
-  return result;
 }
 
 // 获取路径的末尾节点字符串(不带中括号)
@@ -54,7 +47,7 @@ export const isPathEnd = (path?: string, name?: string) => {
 export const changePathEnd = (oldPath: string, endName: string | number) => {
   if (!isEmpty(endName) && oldPath) {
     const parent = getParent(oldPath);
-    const newPath = joinPath(parent, endName);
+    const newPath = joinFormPath(parent, endName);
     return newPath;
   }
 }
@@ -294,7 +287,7 @@ export const moveDiffLevel = (properties: PropertiesData, from: { parent?: strin
   const fromIndex = from?.index;
   const fromParentPathArr = pathToArr(fromParentPath);
   const fromItem = getItemByIndex(properties, fromIndex, fromParentPath);
-  const fromPath = joinPath(fromParentPath, fromItem?.name);
+  const fromPath = joinFormPath(fromParentPath, fromItem?.name);
   // 拖放源
   const toParentPath = to?.parent;
   const toIndex = to?.index;
@@ -325,12 +318,12 @@ export const getInitialValues = (properties?: PropertiesData) => {
           initialValues = deepSet(initialValues, path, propsValue);
         }
       } else {
-        const children = formField[propsKey]
-        for (const childKey in children) {
-          const childField = children[childKey];
-          const childName = formatName(childKey, children instanceof Array);
+        const childProperties = formField[propsKey]
+        for (const childKey in childProperties) {
+          const childField = childProperties[childKey];
+          const childName = childKey;
           if (typeof childName === 'number' || typeof childName === 'string') {
-            const childPath = joinPath(path, childName) as string;
+            const childPath = joinFormPath(path, childName) as string;
             deepHandle(childField, childPath);
           }
         }
@@ -339,12 +332,47 @@ export const getInitialValues = (properties?: PropertiesData) => {
   };
 
   for (const key in properties) {
-    const formField = properties[key];
-    const childName = formatName(key, properties instanceof Array);
+    const childField = properties[key];
+    const childName = key;
     if (typeof childName === 'number' || typeof childName === 'string') {
-      const childPath = joinPath(childName) as string;
-      deepHandle(formField, childPath);
+      const childPath = joinFormPath(childName) as string;
+      deepHandle(childField, childPath);
     }
   }
   return initialValues;
+}
+
+// 展平properties中的控件，键为表单路径
+export const setExpandControl = (properties?: PropertiesData) => {
+  if (typeof properties !== 'object') return
+  let controlMap = {};
+  // 遍历处理对象树中的非properties字段
+  const deepHandle = (formField: FormFieldProps, path: string) => {
+    if (isEmpty(formField['properties'])) {
+      if (path) {
+        controlMap[path] = formField;
+      }
+    } else {
+      const parent = path;
+      const childProperties = formField['properties'];
+      for (const key in childProperties) {
+        const childField = childProperties[key];
+        const childName = key;
+        if (typeof childName === 'string') {
+          const childPath = joinFormPath(parent, childField?.ignore ? undefined : childName) as string;
+          deepHandle(childField, childPath);
+        }
+      }
+    }
+  };
+
+  for (const key in properties) {
+    const childField = properties[key];
+    const childName = key;
+    if (typeof childName === 'string') {
+      const childPath = joinFormPath(childField?.ignore ? undefined : childName) as string;
+      deepHandle(childField, childPath);
+    }
+  }
+  return controlMap;
 }

@@ -1,7 +1,6 @@
 import { pathToArr, deepGet, deepSet } from "@/utils/object";
-import { isEmpty } from "@/utils/type";
+import { isEmpty, isNumberStr } from "@/utils/type";
 import { TriggerType } from "../item-core";
-import { TriggerHandle } from "../validator";
 export { pathToArr, deepGet, deepSet };
 
 // 是否存在前缀
@@ -27,31 +26,21 @@ export function getValueFromEvent(...args: any[]) {
   return e && e.target ? (e.target.type === 'checkbox' ? e.target.checked : e.target.value) : e
 }
 
-// 格式化name, 返回正确类型的键(对象的键或者索引序号)
-export function formatName(str?: string | number, isList?: boolean) {
-  if (typeof str !== 'string' && typeof str !== 'number') return
-  // 如果为数字就是数组索引，直接返回
-  if (typeof str === 'number') return str;
-  // 如果是带中括号的数字字符串则去掉中括号
-  const end = str?.replace(/\[/g, '')?.replace(/\]/g, '')
-  return isList ? +end : end;
-}
-
 // 是否携带中括号
 export const isWithBracket = (part?: any) => {
   return typeof part === 'string' && (/\[(\d+)\]/gi.test(part))
 }
 
 // 是否为数组索引项
-export const isListIndex = (item?: any) => typeof item === 'number' && !isNaN(item);
+export const isValidNumber = (item?: any) => isNumberStr(item);
 
-// 由前到后拼接当前项的path
-export function joinPath(...args: Array<any>) {
+// 由前到后拼接当前项的表单的path
+export function joinFormPath(...args: Array<any>) {
   const result = args?.reduce((pre, cur) => {
     const curName = isEmpty(cur) ? '' : cur;
     const parent = isEmpty(pre) ? '' : pre;
-    if (isListIndex(curName) || isWithBracket(curName)) {
-      const end = typeof curName === 'number' ? `[${curName}]` : curName
+    if (isValidNumber(curName) || isWithBracket(curName)) {
+      const end = isValidNumber(curName) ? `[${curName}]` : curName
       return parent ? (end ? `${parent}${end}` : parent) : end;
     } else {
       return parent ? (curName ? `${parent}.${curName}` : parent) : `${curName}`;
@@ -68,19 +57,17 @@ export const isFormNode = (child: any) => {
   return formFields?.includes(displayName) && dataType !== 'ignore'
 };
 
-// 校验是否触发
-export const handleTrigger = (type?: TriggerHandle, validateTrigger?: TriggerType | TriggerType[],) => {
+// 是否触发校验规则
+export const validateTriggerCondition = (eventName?: TriggerType | boolean, validateTrigger?: TriggerType | TriggerType[],) => {
   // 不设置validateTrigger允许触发
-  if (!validateTrigger) return true;
-  // validateType传入布尔值则返回该布尔值
-  if (typeof type === 'boolean') return type;
-  // 没有值则默认可以触发
-  if (!type) return true;
+  if (validateTrigger === undefined || eventName === undefined) return true;
+  // 如果为布尔值则返回该值
+  if(typeof eventName === 'boolean') return eventName;
   if (typeof validateTrigger === 'string') {
-    return validateTrigger === type;
+    return validateTrigger === eventName;
   }
   if (validateTrigger instanceof Array) {
-    return validateTrigger?.includes(type)
+    return validateTrigger?.includes(eventName)
   }
 }
 

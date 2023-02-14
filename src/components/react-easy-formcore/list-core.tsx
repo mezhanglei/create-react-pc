@@ -1,6 +1,6 @@
 import React, { cloneElement, useContext } from 'react';
 import { FormValuesContext, FormOptionsContext } from './form-context';
-import { joinPath, isFormNode } from './utils/utils';
+import { joinFormPath, isFormNode } from './utils/utils';
 import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
@@ -27,8 +27,9 @@ export const ListCore = (props: ListCoreProps) => {
     ignore
   } = fieldProps;
 
-  const formPath = ignore === true ? parent : joinPath(parent, name);
-  const currentPath = (isEmpty(name) || ignore === true) ? undefined : formPath;
+  const joinPath = joinFormPath(parent, name);
+  const formPath = ignore === true ? parent : joinPath;
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
   const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
 
   // 渲染子元素

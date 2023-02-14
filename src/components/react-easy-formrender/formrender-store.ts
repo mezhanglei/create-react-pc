@@ -1,13 +1,8 @@
 import { deepClone } from "@/utils/object";
-import { useMemo } from "react";
 import { FormFieldProps, PropertiesData } from "./types";
 import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
-
-export function useFormRenderStore() {
-  return useMemo(() => new FormRenderStore(), [])
-}
 
 // 管理formrender过程中的数据
 export class FormRenderStore {
@@ -30,7 +25,9 @@ export class FormRenderStore {
   setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
     this.properties = data || {};
-    this.notifyProperties();
+    setTimeout(() => {
+      this.notifyProperties();
+    }, 0);
   }
 
   // 更新指定路径的值

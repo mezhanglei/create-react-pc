@@ -16,7 +16,7 @@ const settings = {
   },
   initialValue: {
     label: '默认值',
-    type: 'CodeTextArea'
+    type: 'Input'
   },
   // === 控件自身的props的设置
   props: {

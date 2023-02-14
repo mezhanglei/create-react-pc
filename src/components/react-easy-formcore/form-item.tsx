@@ -1,6 +1,6 @@
 import React, { useContext, CSSProperties, useMemo } from 'react';
 import { FormStoreContext, FormOptionsContext } from './form-context';
-import { joinPath } from './utils/utils';
+import { joinFormPath } from './utils/utils';
 import { FormStore } from './form-store';
 import { useFormError } from './use-form';
 import { Item, ItemProps } from './components/item';
@@ -38,7 +38,7 @@ export const FormItem = React.forwardRef((props: FormItemProps, ref: any) => {
     ...rest
   } = fieldProps;
 
-  const currentPath = (isEmpty(name) || ignore) ? undefined : joinPath(parent, name);
+  const currentPath = (isEmpty(name) || ignore) ? undefined : joinFormPath(parent, name);
   const [error] = useFormError(store, currentPath);
   const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
   const required = isHaveRequired && ignore !== true ? true : rest?.required;

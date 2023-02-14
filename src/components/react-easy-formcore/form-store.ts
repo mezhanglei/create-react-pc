@@ -1,6 +1,7 @@
-import { isExitPrefix, handleTrigger } from './utils/utils';
+import { isExitPrefix, validateTriggerCondition } from './utils/utils';
 import { deepClone, deepGet, deepSet } from '@/utils/object';
-import Validator, { FormRule, TriggerHandle } from './validator';
+import Validator, { FormRule } from './validator';
+import { TriggerType } from './item-core';
 
 export type FormListener = { path: string, onChange: (newValue?: any, oldValue?: any) => void }
 
@@ -59,10 +60,10 @@ export class FormStore<T extends Object = any> {
 
   // 获取
   public getFieldProps(path?: string) {
-    if (path) {
-      return this.fieldProps?.[path]
-    } else {
+    if (path === undefined) {
       return this.fieldProps
+    } else {
+      return this.fieldProps?.[path]
     }
   }
 
@@ -75,8 +76,8 @@ export class FormStore<T extends Object = any> {
       const lastField = this.fieldProps[path];
       const newField = { ...lastField, ...field };
       this.fieldProps[path] = newField;
-    }
-    this.validator.add(path, field?.['rules']);
+      this.validator.add(path, field?.['rules']);
+    };
   }
 
   // 获取所有表单值，或者单个表单值,或者多个表单值
@@ -108,7 +109,7 @@ export class FormStore<T extends Object = any> {
   }
 
   // 更新表单值，单个表单值或多个表单值
-  public setFieldValue(path: string | Partial<T>, value?: any, type?: TriggerHandle) {
+  public setFieldValue(path: string | Partial<T>, value?: any, eventName?: TriggerType | boolean) {
     if (typeof path === 'string') {
       // 旧表单值存储
       this.lastValues = deepClone(this.values);
@@ -118,11 +119,11 @@ export class FormStore<T extends Object = any> {
       this.notifyFormItem(path);
       this.notifyFormGlobal(path);
       // 规则
-      const fieldPropsMap = this.getFieldProps();
-      const rules = fieldPropsMap?.[path]?.['rules'];
+      const fieldProps = this.getFieldProps(path);
+      const rules = fieldProps?.['rules'];
       if (rules?.length && rules instanceof Array) {
         // 校验规则
-        this.validate(path, type);
+        this.validate(path, eventName);
       }
     } else if (typeof path === 'object') {
       Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
@@ -146,10 +147,10 @@ export class FormStore<T extends Object = any> {
 
   // 获取error信息
   public getFieldError(path?: string) {
-    if (path) {
-      return this.formErrors[path]
-    } else {
+    if (path === undefined) {
       return this.formErrors
+    } else {
+      return this.formErrors[path]
     }
   }
 
@@ -172,14 +173,15 @@ export class FormStore<T extends Object = any> {
 
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
-  public async validate(path: string, type?: TriggerHandle): Promise<string>
-  public async validate(path?: string, type?: TriggerHandle) {
-    const fieldProps = this.getFieldProps(path);
+  public async validate(path: string, eventName?: TriggerType | boolean): Promise<string>
+  public async validate(path?: string, eventName?: TriggerType | boolean) {
     if (path === undefined) {
-      const result = await Promise.all(Object.keys(fieldProps)?.map((n) => {
-        const rules = fieldProps?.[n]?.['rules'];
+      const fieldPropsMap = this.getFieldProps() || {};
+      const result = await Promise.all(Object.keys(fieldPropsMap)?.map((key) => {
+        const fieldProps = fieldPropsMap?.[key];
+        const rules = fieldProps?.['rules'];
         if (rules instanceof Array) {
-          return this.validate(n)
+          return this.validate(key)
         }
       }))
       const currentError = result?.filter((message) => message !== undefined)?.[0]
@@ -190,11 +192,12 @@ export class FormStore<T extends Object = any> {
     } else if (typeof path == 'string') {
       // 清空错误信息
       this.setFieldError(path, undefined);
+      const fieldProps = this.getFieldProps(path) || {};
       const value = this.getFieldValue(path);
       const ignore = fieldProps?.ignore;
-      const canTrigger = handleTrigger(type, fieldProps['validateTrigger']);
+      const canTrigger = validateTriggerCondition(eventName, fieldProps?.['validateTrigger']);
       if (canTrigger && ignore !== true) {
-        const message = await this.validator.start(path, value, type);
+        const message = await this.validator.start(path, value, eventName);
         if (message) {
           this.setFieldError(path, message);
         }

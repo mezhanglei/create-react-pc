@@ -1,5 +1,5 @@
 import { TriggerType } from "./item-core";
-import { handleTrigger } from "./utils/utils";
+import { validateTriggerCondition } from "./utils/utils";
 import { validatorsMap } from "./validate-rules";
 export type FormRule = {
   required?: boolean;
@@ -13,7 +13,6 @@ export type FormRule = {
 }
 export type FormValidatorCallBack = (message?: string) => void;
 export type FormValidator = (value: any, callBack?: FormValidatorCallBack) => any | Promise<any>;
-export type TriggerHandle = TriggerType | boolean;
 
 /*Validator类*/
 export default class Validator {
@@ -62,7 +61,7 @@ export default class Validator {
     this.errorsMap = {}
   }
 
-  async start(path: string, value: any, type?: TriggerHandle) {
+  async start(path: string, value: any, eventName?: TriggerType | boolean) {
     this.setError(path);
     const rules = this.rulesMap[path];
     if (!(rules instanceof Array)) return;
@@ -70,7 +69,7 @@ export default class Validator {
       const rule = rules?.[i];
       const { validateTrigger, ...rest } = rule || {};
       // 是否可以触发规则
-      const canTrigger = handleTrigger(type, validateTrigger);
+      const canTrigger = validateTriggerCondition(eventName, validateTrigger);
       if (canTrigger) {
         const message = await handleRule(rest, value);
         if (message) {

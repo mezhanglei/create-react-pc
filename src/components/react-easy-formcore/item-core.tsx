@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
 import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
-import { deepGet, joinPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
+import { deepGet, joinFormPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
 
@@ -53,8 +53,9 @@ export const ItemCore = (props: ItemCoreProps) => {
     ignore,
   } = fieldProps;
 
-  const formPath = ignore === true ? parent : joinPath(parent, name);
-  const currentPath = (isEmpty(name) || ignore === true) ? undefined : formPath;
+  const joinPath = joinFormPath(parent, name);
+  const formPath = ignore === true ? parent : joinPath;
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
   const storeValue = currentPath && store?.getFieldValue(currentPath);
   const initialItemValue = storeValue ?? initialValue ?? deepGet(initialValues, currentPath);
   const [value, setValue] = useState(storeValue);
