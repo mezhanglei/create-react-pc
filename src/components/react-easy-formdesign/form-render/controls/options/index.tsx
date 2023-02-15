@@ -1,4 +1,4 @@
-import { Radio } from "antd";
+import { Select } from "antd";
 import React, { LegacyRef, useEffect, useMemo, useState } from "react";
 import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
@@ -34,7 +34,7 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
   } = props;
 
   const buttons = useMemo(() => ([
-    { value: 'list', label: '表格数据' },
+    { value: 'list', label: '选项数据' },
     { value: 'json', label: '静态数据' },
     { value: 'request', label: '接口请求' },
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
@@ -56,11 +56,12 @@ const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((prop
   return (
     <>
       <div className={classes.tab}>
-        <Radio.Group value={tab} buttonStyle="solid" onChange={(e) => setTab(e?.target?.value)}>
+        <Select value={tab} style={{ width: "100%" }} options={buttons} onChange={(val) => setTab(val)} />
+        {/* <Radio.Group value={tab} buttonStyle="solid" onChange={(e) => setTab(e?.target?.value)}>
           {
             buttons?.map((item) => (<Radio.Button key={item?.value} value={item?.value}>{item?.label}</Radio.Button>))
           }
-        </Radio.Group>
+        </Radio.Group> */}
       </div>
       <div className={classes.component}>
         {Component}

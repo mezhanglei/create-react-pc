@@ -31,7 +31,7 @@ export function useExpandControl(store: FormRenderStore) {
   useEffect(() => {
     if (!store) return
     // 订阅目标控件
-    const uninstall = store.subscribeProperties((newValue, oldValue) => {
+    const uninstall = store.subscribeProperties((newValue) => {
       const result = setExpandControl(newValue);
       setControls(result)
     });

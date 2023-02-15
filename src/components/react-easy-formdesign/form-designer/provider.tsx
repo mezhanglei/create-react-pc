@@ -15,6 +15,7 @@ function Provider(props: ProviderProps) {
   const [state, setEdit] = useSet({
     designerForm: designerForm,
     designer: designerStore,
+    properties: {},
     selected: {},
     historyData: {
       index: -1,
@@ -23,7 +24,6 @@ function Provider(props: ProviderProps) {
     },
     mode: 'edit',
     settingsForm: null,
-    properties: {}
   });
 
   const {
