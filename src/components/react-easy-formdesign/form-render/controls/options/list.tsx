@@ -1,11 +1,14 @@
 import { isEmpty } from "@/utils/type";
 import { Button, Col, Input, message, Row } from "antd";
-import React, { ChangeEvent, LegacyRef, useEffect, useState } from "react";
-import { OptionsProps } from ".";
+import React, { ChangeEvent, LegacyRef } from "react";
 import './list.less';
 import Icon from "@/components/svg-icon";
+import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 
-export interface OptionsListProps extends OptionsProps {
+export interface OptionItem { label?: string, value?: string }
+export interface OptionsListProps {
+  value?: OptionItem[];
+  onChange?: (data?: OptionItem[]) => void;
 }
 
 const prefixCls = 'options-list';
@@ -24,13 +27,13 @@ const OptionsList: React.FC<OptionsListProps> = React.forwardRef((props, ref: Le
     ...rest
   } = props;
 
-  const intialItem = { label: '', value: '' };
-  const intialValue = [intialItem];
-  const [dataSource, setDataSource] = useState<any[]>(intialValue);
-
-  useEffect(() => {
-    setDataSource(value || intialValue);
-  }, [value]);
+  const intialValue = [{ label: '', value: '' }];
+  const {
+    dataSource,
+    addItem,
+    updateItem,
+    deleteItem
+  } = useTableData<OptionItem>(value || intialValue, onChange);
 
   const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
     const val = e?.target?.value;
@@ -42,64 +45,39 @@ const OptionsList: React.FC<OptionsListProps> = React.forwardRef((props, ref: Le
     updateItem(val, rowIndex, 'value');
   }
 
-  // 更新目标数据
-  const updateItem = (data: any, rowIndex: number, rowKey?: string) => {
-    const cloneData = dataSource ? [...dataSource] : [];
-    const item = cloneData?.[rowIndex] ?? {};
-    if (rowKey) {
-      item[rowKey] = data;
-    } else {
-      cloneData[rowIndex] = data;
-    }
-    setDataSource(cloneData);
-    dataSourceChange(cloneData);
-  }
-
-  // 新增一行
-  const addItem = () => {
+  const addNewItem = () => {
     const isHaveEmpty = dataSource?.find((item) => isEmpty(item?.label) || isEmpty(item?.value));
     if (isHaveEmpty) {
       message.info('请填写完整')
       return;
     }
-    const newData = dataSource?.concat(intialItem);
-    setDataSource(newData);
+    addItem(intialValue);
   }
 
-  // 删除一行
-  const deleteItem = (rowIndex: number) => {
-    if (!dataSource) return;
-    const newData = [...dataSource]
-    newData.splice(rowIndex, 1);
-    setDataSource(newData);
-    dataSourceChange(newData);
-  }
-
-  // dataSource变更
-  const dataSourceChange = (data: any[]) => {
-    onChange && onChange(data);
+  const renderItem = (item: OptionItem, index: number) => {
+    return (
+      <Row key={index} className={classes.item} gutter={12} align="middle">
+        <Col span={10}>
+          <Input value={item?.label} onChange={(e) => labelChange(e, index)} placeholder="label" style={{ width: '100%' }} />
+        </Col>
+        <Col span={10}>
+          <Input value={item?.value} onChange={(e) => valueChange(e, index)} placeholder="value" style={{ width: '100%' }} />
+        </Col>
+        <Col span={4}>
+          <Icon name="delete" className="icon-delete" onClick={() => deleteItem(index)} />
+        </Col>
+      </Row>
+    )
   }
 
   return (
     <div>
       {
         dataSource?.map((item, index) => {
-          return (
-            <Row key={index} className={classes.item} gutter={12}>
-              <Col span={10}>
-                <Input value={item?.label} onChange={(e) => labelChange(e, index)} placeholder="label" style={{ width: '100%' }} />
-              </Col>
-              <Col span={10}>
-                <Input value={item?.value} onChange={(e) => valueChange(e, index)} placeholder="value" style={{ width: '100%' }} />
-              </Col>
-              <Col span={4}>
-                <Icon name="delete" className="icon-delete" onClick={() => deleteItem(index)} />
-              </Col>
-            </Row>
-          )
+          return renderItem(item, index);
         })
       }
-      <Button type="link" onClick={addItem}>
+      <Button type="link" onClick={addNewItem}>
         添加选项
       </Button>
     </div>

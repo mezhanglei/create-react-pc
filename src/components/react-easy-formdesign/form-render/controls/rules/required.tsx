@@ -4,6 +4,7 @@ import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { useFormStore } from '../../../form-render';
 import { Button } from "antd";
+import { LinkageListModal } from "../linkage";
 
 
 interface CurrentValue {
@@ -70,10 +71,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
       initialValue: value?.[name],
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'handle'}}",
-      typeRender: '暂不开发'
-      // type: 'Input',
-      // props: {
-      // }
+      typeRender: <LinkageListModal />
     },
     message: {
       label: '提示信息',
@@ -120,6 +118,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
         theme="light"
         content={renderContent()}
         trigger="click"
+        hideOnClick="toggle"
       >
         <Icon className={classes.icon} name="edit" />
       </Tooltip>

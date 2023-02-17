@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData, GenerateFieldProps } from './types';
 import { defaultComponents } from './components';
 import { Form, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
@@ -45,17 +45,20 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 订阅更新properties的函数,将传值更新到state里面
   useEffect(() => {
     if (!formRenderStore) return
-    // 订阅目标控件
     const uninstall = formRenderStore.subscribeProperties((newValue, oldValue) => {
       setProperties(newValue);
       if (!isEqual(newValue, oldValue)) {
         onPropertiesChange && onPropertiesChange(newValue, oldValue)
       }
     })
+    return uninstall;
+  }, [formRenderStore, onPropertiesChange]);
+
+  useEffect(() => {
     return () => {
-      uninstall()
+      form?.unsubscribeFormGlobal();
     }
-  }, [onPropertiesChange]);
+  }, []);
 
   // 收集properties到store中
   useEffect(() => {
@@ -64,19 +67,10 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }, [initialProperties]);
 
-  // 变化时更新
-  useEffect(() => {
-    if (!properties) return;
-    handleFieldProps();
-    initWatch();
-    return () => {
-      form?.unsubscribeFormGlobal();
-    }
-  }, [properties]);
-
-  // 初始化监听
-  const initWatch = () => {
-    Object.entries(watch || {})?.map(([key, watcher]) => {
+  // 订阅监听函数
+  useMemo(() => {
+    if (!form || !watch) return;
+    return Object.entries(watch)?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
         form?.subscribeFormGlobal(key, watcher)
@@ -90,7 +84,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         }
       }
     });
-  }
+  }, [form, watch]);
+
+  // 变化时更新
+  useEffect(() => {
+    if (!properties) return;
+    handleFieldProps();
+  }, [properties]);
 
   // 遍历处理rules字段
   const evalRules = (rules: FormRule[]) => {
@@ -166,7 +166,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 获取计算表达式之后的结果
   const getEvalFieldProps = (field: FormFieldProps, path?: string) => {
-    if(!path) return;
+    if (!path) return;
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {

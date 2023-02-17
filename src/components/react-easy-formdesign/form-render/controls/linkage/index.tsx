@@ -1,23 +1,60 @@
 import { isEmpty } from "@/utils/type";
-import { Button, Col, Input, message, Modal, Row } from "antd";
+import { Button, Col, Select, Input, message, Modal, Row } from "antd";
 import React, { ChangeEvent, LegacyRef, useEffect, useRef, useState } from "react";
-import './list.less';
+import './index.less';
 import Icon from "@/components/svg-icon";
+import { useFormExpandControl, useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 
-export interface LinkageListProps {
+export interface LinkageRulesProps {
   value?: string;
   onChange?: (val?: string) => void
 }
 
-const prefixCls = 'linkage-list';
+// 集合类型
+type AssembleType = '&&' | '||'
+// 条件表达式
+export interface RuleCondition {
+  name: string;
+  condition: string;
+  value: any;
+}
+// 条件表达式集合
+type RuleConditionWithAssemble = [AssembleType, RuleCondition];
+
+const prefixCls = 'linkage-rules';
 const classes = {
   item: `${prefixCls}-item`
 }
 
+const assembleOptions = [{
+  label: '或',
+  value: '||'
+}, {
+  label: '且',
+  value: '&&'
+}];
+
+const conditionOptions = [{
+  label: '等于',
+  value: "equal",
+}, {
+  label: "大于",
+  value: "more",
+}, {
+  label: "小于",
+  value: "less",
+}, {
+  label: "包含",
+  value: "includes",
+}, {
+  label: "包含",
+  value: "excludes",
+}];
+
 /**
- * 生成联动校验规则
+ * 联动校验规则
  */
-const LinkageList: React.FC<LinkageListProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
 
   const {
     value,
@@ -25,11 +62,18 @@ const LinkageList: React.FC<LinkageListProps> = React.forwardRef((props, ref: Le
     ...rest
   } = props;
 
-  const [dataSource, setDataSource] = useState<any[]>();
+  const {
+    dataSource,
+    addItem,
+    updateItem,
+    deleteItem
+  } = useTableData<RuleConditionWithAssemble>(undefined, () => {
 
-  useEffect(() => {
-    setDataSource(value || intialValue);
-  }, [value]);
+  });
+
+  const controls = useFormExpandControl()
+  const controlOptions = Object.entries(controls || {})?.map(([path, field]) => ({ label: field?.label, value: path }));
+  console.log(controlOptions, 22222)
 
   const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
     const val = e?.target?.value;
@@ -41,47 +85,37 @@ const LinkageList: React.FC<LinkageListProps> = React.forwardRef((props, ref: Le
     updateItem(val, rowIndex, 'value');
   }
 
-  // 更新目标数据
-  const updateItem = (data: any, rowIndex: number, rowKey?: string) => {
-    const cloneData = dataSource ? [...dataSource] : [];
-    const item = cloneData?.[rowIndex] ?? {};
-    if (rowKey) {
-      item[rowKey] = data;
-    } else {
-      cloneData[rowIndex] = data;
-    }
-    setDataSource(cloneData);
-    dataSourceChange(cloneData);
-  }
-
-  // 新增一行
-  const addItem = () => {
-    const isHaveEmpty = dataSource?.find((item) => isEmpty(item?.label) || isEmpty(item?.value));
-    if (isHaveEmpty) {
-      message.info('请填写完整')
-      return;
-    }
-    const newData = dataSource?.concat(intialItem);
-    setDataSource(newData);
-  }
-
-  // 删除一行
-  const deleteItem = (rowIndex: number) => {
-    if (!dataSource) return;
-    const newData = [...dataSource]
-    newData.splice(rowIndex, 1);
-    setDataSource(newData);
-    dataSourceChange(newData);
-  }
-
-  // dataSource变更
-  const dataSourceChange = (data: any[]) => {
-    onChange && onChange(data);
+  const renderItem = (item: RuleConditionWithAssemble, index: number) => {
+    const [assemble, condition] = item || [];
+    return (
+      <Row key={index} className={classes.item} gutter={12} align="middle">
+        {
+          assemble ?
+            <Col>
+              <Select options={assembleOptions} />
+            </Col>
+            : null
+        }
+        {/* <Col>
+          <Select options={controlOptions} />
+        </Col> */}
+        <Col>
+          <Select options={conditionOptions} />
+        </Col>
+        <Col>
+          组件
+        </Col>
+        <Col span={4}>
+          <Icon name="add" className="icon-delete" onClick={() => deleteItem(index)} />
+        </Col>
+      </Row>
+    )
   }
 
   return (
     <div>
-      {
+      {renderItem()}
+      {/* {
         dataSource?.map((item, index) => {
           return (
             <Row key={index} className={classes.item} gutter={12}>
@@ -100,16 +134,14 @@ const LinkageList: React.FC<LinkageListProps> = React.forwardRef((props, ref: Le
       }
       <Button type="link" onClick={addItem}>
         添加选项
-      </Button>
+      </Button> */}
     </div>
   );
 });
 
-export default LinkageList;
-
 // 代码编辑器弹窗
 export const LinkageListModal = (
-  props: LinkageListProps & {
+  props: LinkageRulesProps & {
     onClose?: () => void;
     disabled?: boolean;
   }) => {
@@ -154,7 +186,7 @@ export const LinkageListModal = (
         visible={visible}
         onCancel={closeModal}
         onOk={handleOk}>
-        <LinkageList
+        <LinkageRules
           value={value}
           onChange={handleOnChange}
         />

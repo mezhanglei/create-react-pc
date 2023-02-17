@@ -10,34 +10,43 @@ export function useFormRenderStore() {
 // 获取properties的state数据
 export function useProperties(store: FormRenderStore) {
   const [properties, setProperties] = useState<PropertiesData>();
-  // 订阅组件更新错误的函数
-  useEffect(() => {
+
+  const uninstallMemo = useMemo(() => {
     if (!store) return
-    // 订阅目标控件
-    const uninstall = store.subscribeProperties((newValue, oldValue) => {
+    const uninstall = store.subscribeProperties((newValue) => {
       setProperties(newValue);
-    })
-    return () => {
-      uninstall();
-    };
+    });
+    return uninstall;
   }, [store]);
+
+  useEffect(() => {
+    return () => {
+      uninstallMemo?.();
+    };
+  }, []);
+
   return [properties, setProperties];
 }
 
 // 获取expandControl的state数据
 export function useExpandControl(store: FormRenderStore) {
   const [controls, setControls] = useState<{ [key: string]: FormFieldProps }>();
-  // 订阅组件更新错误的函数
-  useEffect(() => {
+
+  const uninstallMemo = useMemo(() => {
     if (!store) return
     // 订阅目标控件
     const uninstall = store.subscribeProperties((newValue) => {
       const result = setExpandControl(newValue);
-      setControls(result)
+      setControls(result);
     });
-    return () => {
-      uninstall();
-    };
+    return uninstall;
   }, [store]);
+
+  useEffect(() => {
+    return () => {
+      uninstallMemo?.();
+    };
+  }, []);
+
   return [controls, setControls];
 }

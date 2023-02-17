@@ -16,18 +16,23 @@ export function useValidator() {
 export function useFormError(store: FormStore, path?: string) {
   const storeError = path && store && store.getFieldError(path);
   const [error, setError] = useState(storeError);
-  // 订阅组件更新错误的函数
-  useEffect(() => {
+
+  const uninstallMemo = useMemo(() => {
     if (!path || !store) return
-    // 订阅目标控件
     const uninstall = store.subscribeError(path, () => {
       const error = store?.getFieldError(path);
       setError(error);
     });
+    return uninstall;
+  }, [store, path]);
+
+  // 订阅组件更新错误的函数
+  useEffect(() => {
     return () => {
-      uninstall();
+      uninstallMemo?.();
     };
-  }, [path, store]);
+  }, []);
+
   return [error, setError];
 }
 
@@ -35,8 +40,9 @@ export function useFormError(store: FormStore, path?: string) {
 export function useFormValues<T = unknown>(store: FormStore, path?: string | string[]) {
   const [formValues, setFomValues] = useState<T>();
 
-  const subscribeList = (store: FormStore, path?: string | string[]) => {
-    if (!path) return;
+  // 订阅目标控件
+  const uninstallListMemo = useMemo(() => {
+    if (!store || !path) return [];
     const queue = [];
     const isChar = typeof path == 'string' || typeof path == 'number';
     const pathList = isChar ? [path] : (path instanceof Array ? path : [])
@@ -44,24 +50,19 @@ export function useFormValues<T = unknown>(store: FormStore, path?: string | str
       const item = pathList[i]
       queue?.push(store.subscribeFormGlobal(item, (newValue) => {
         if (typeof item == 'string' || typeof item == 'number') {
-          const oldValues = store.getFieldValue(path) || {};
+          const oldValues = store.getFieldValue(path);
           setFomValues(() => ({ ...oldValues, [item]: newValue }));
         }
       }))
     }
     return queue;
-  }
+  }, [store, path]);
 
-  // 订阅更新值的函数
   useEffect(() => {
-    if (!path || !store) return
-    // 订阅目标控件
-    const uninstallList = subscribeList(store, path)
-
     return () => {
-      uninstallList?.map((uninstall) => uninstall?.())
+      uninstallListMemo?.map((uninstall) => uninstall?.())
     }
-  }, [path, store]);
+  }, []);
 
   return formValues;
 }

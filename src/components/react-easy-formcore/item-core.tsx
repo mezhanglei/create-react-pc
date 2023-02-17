@@ -1,4 +1,3 @@
-import { isEqual } from '@/utils/object';
 import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
@@ -105,7 +104,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     // 订阅目标控件
     const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
-      if (!isEqual(newValue, oldValue)) {
+      if (!(isEmpty(newValue) && isEmpty(oldValue))) {
         onValuesChange && onValuesChange({ parent: parent, name: name, value: newValue }, store?.getFieldValue())
       }
     });

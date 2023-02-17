@@ -25,9 +25,7 @@ export class FormRenderStore {
   setProperties(data?: PropertiesData) {
     this.lastProperties = this.properties;
     this.properties = data || {};
-    setTimeout(() => {
-      this.notifyProperties();
-    }, 0);
+    this.notifyProperties();
   }
 
   // 更新指定路径的值

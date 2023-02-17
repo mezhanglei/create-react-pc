@@ -39,7 +39,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
-      setEdit({ selected: { ...selected, name } })
+      setEdit({ selected: { ...selected, name } });
     }
   }
 

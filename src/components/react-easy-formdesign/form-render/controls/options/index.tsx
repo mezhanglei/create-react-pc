@@ -10,8 +10,8 @@ import './index.less';
  */
 
 export interface OptionsProps {
-  value?: { [x: string]: any }[]
-  onChange?: (val: { [x: string]: any }[]) => void;
+  value?: any;
+  onChange?: (val: any) => void;
 }
 
 export interface OptionsComponentProps extends OptionsProps {
