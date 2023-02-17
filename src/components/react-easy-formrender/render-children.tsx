@@ -6,6 +6,7 @@ import { useFormRenderStore } from './use-formrender';
 import { isEqual } from '@/utils/object';
 import { isReactComponent, isValidChildren } from '@/utils/ReactIs';
 import { matchExpression } from './utils/utils';
+import { isEmpty } from '@/utils/type';
 
 // 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -164,15 +165,38 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     setFieldPropsMap(fieldPropsMap);
   }
 
+  // 遍历对象获取
+  const getValueFromObject = (val?: Partial<FormFieldProps>, generateVal?: Partial<GenerateFieldProps>) => {
+    return Object.fromEntries(
+      Object.entries(val || {})?.map(
+        ([propsKey]) => {
+          const propsItem = val?.[propsKey];
+          const matchStr = matchExpression(propsItem)
+          const generateItem = generateVal?.[propsKey];
+          if (generateItem !== undefined) {
+            return [propsKey, generateItem]
+          } else if (!matchStr) {
+            return [propsKey, propsItem]
+          }
+          return [propsKey]
+        }
+      )
+    );
+  }
+
   // 获取计算表达式之后的结果
   const getEvalFieldProps = (field: FormFieldProps, path?: string) => {
-    if (!path) return;
+    if (!path || isEmpty(field)) return;
     return Object.fromEntries(
       Object.entries(field || {})?.map(
         ([propsKey]) => {
           const formPath = joinFormPath(path, propsKey);
-          const propsValue = (formPath && fieldPropsMap[formPath]) ?? field[propsKey]
-          return [propsKey, propsValue];
+          const propsValue = field[propsKey];
+          const generateValue = formPath && fieldPropsMap[formPath]
+          if (propsKey === 'props') {
+            return [propsKey, getValueFromObject(propsValue, generateValue)]
+          }
+          return [propsKey, generateValue ?? propsValue];
         }
       )
     );

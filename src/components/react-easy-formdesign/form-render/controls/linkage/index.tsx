@@ -14,12 +14,12 @@ export interface LinkageRulesProps {
 type AssembleType = '&&' | '||'
 // 条件表达式
 export interface RuleCondition {
-  name: string;
-  condition: string;
-  value: any;
+  name?: string;
+  condition?: string;
+  value?: any;
 }
 // 条件表达式集合
-type RuleConditionWithAssemble = [AssembleType, RuleCondition];
+type RuleConditionWithAssemble = [AssembleType | undefined, RuleCondition];
 
 const prefixCls = 'linkage-rules';
 const classes = {
@@ -62,18 +62,19 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
     ...rest
   } = props;
 
+  const initialValue: RuleConditionWithAssemble = [[, {}]]
+
   const {
     dataSource,
     addItem,
     updateItem,
     deleteItem
-  } = useTableData<RuleConditionWithAssemble>(undefined, () => {
+  } = useTableData<RuleConditionWithAssemble>(initialValue, () => {
 
   });
 
   const controls = useFormExpandControl()
   const controlOptions = Object.entries(controls || {})?.map(([path, field]) => ({ label: field?.label, value: path }));
-  console.log(controlOptions, 22222)
 
   const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
     const val = e?.target?.value;
@@ -88,7 +89,7 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
   const renderItem = (item: RuleConditionWithAssemble, index: number) => {
     const [assemble, condition] = item || [];
     return (
-      <Row key={index} className={classes.item} gutter={12} align="middle">
+      <div key={index}>
         {
           assemble ?
             <Col>
@@ -96,45 +97,36 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
             </Col>
             : null
         }
-        {/* <Col>
-          <Select options={controlOptions} />
-        </Col> */}
-        <Col>
-          <Select options={conditionOptions} />
-        </Col>
-        <Col>
-          组件
-        </Col>
-        <Col span={4}>
-          <Icon name="add" className="icon-delete" onClick={() => deleteItem(index)} />
-        </Col>
-      </Row>
+        <Row className={classes.item} gutter={12} align="middle">
+          <Col>
+            <Select options={controlOptions} />
+          </Col>
+          <Col>
+            <Select options={conditionOptions} />
+          </Col>
+          <Col>
+            组件
+          </Col>
+          {
+            index === 0 &&
+            <Col span={4}>
+              <Icon name="add" className="icon-delete" onClick={addNewItem} />
+            </Col>
+          }
+        </Row>
+      </div>
     )
+  }
+
+  const addNewItem = () => {
+    addItem([['||', {}]])
   }
 
   return (
     <div>
-      {renderItem()}
-      {/* {
-        dataSource?.map((item, index) => {
-          return (
-            <Row key={index} className={classes.item} gutter={12}>
-              <Col span={10}>
-                <Input value={item?.label} onChange={(e) => labelChange(e, index)} placeholder="label" style={{ width: '100%' }} />
-              </Col>
-              <Col span={10}>
-                <Input value={item?.value} onChange={(e) => valueChange(e, index)} placeholder="value" style={{ width: '100%' }} />
-              </Col>
-              <Col span={4}>
-                <Icon name="delete" className="icon-delete" onClick={() => deleteItem(index)} />
-              </Col>
-            </Row>
-          )
-        })
+      {
+        dataSource?.map((item, index) => renderItem(item, index))
       }
-      <Button type="link" onClick={addItem}>
-        添加选项
-      </Button> */}
     </div>
   );
 });
