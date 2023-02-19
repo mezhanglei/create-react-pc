@@ -3,7 +3,7 @@ import './style.less';
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { useFormStore } from '../../../form-render';
-import { Button } from "antd";
+import { Button, Switch } from "antd";
 import { LinkageListModal } from "../linkage";
 
 
@@ -40,7 +40,14 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     ...rest
   } = props;
 
-  const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }]
+  const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }];
+  // 设置值的控件
+  const currentControl = {
+    valueProp: 'checked',
+    type: 'Switch',
+    props: {
+    }
+  }
   const currentForm = useFormStore();
   const [properties, setProperties] = useState(name ? {
     selectType: {
@@ -54,16 +61,13 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
         options: SelectOptions
       }
     },
-    target: {
+    current: {
       label: '启用',
       layout: 'horizontal',
-      initialValue: value?.[name],
+      initialValue: name ? value?.[name] : undefined,
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'linkage'}}",
-      valueProp: 'checked',
-      type: 'Switch',
-      props: {
-      }
+      ...currentControl
     },
     expression: {
       label: '联动条件',
@@ -71,7 +75,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
       initialValue: value?.[name],
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'handle'}}",
-      typeRender: <LinkageListModal />
+      typeRender: <LinkageListModal currentControl={currentControl} />
     },
     message: {
       label: '提示信息',
@@ -85,9 +89,9 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   } : undefined);
 
   const confirm = () => {
-    const { target, expression, message } = currentForm.getFieldValue() || {}
+    const { current, expression, message } = currentForm.getFieldValue() || {}
     if (name) {
-      const result = { [name]: target ?? expression, message }
+      const result = { [name]: current ?? expression, message }
       onChange && onChange(result)
     }
   }

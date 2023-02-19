@@ -64,6 +64,7 @@ export interface RenderFormChildrenProps {
 
 // 带form容器的渲染组件props
 export interface RenderFormProps extends Omit<FormProps, 'store'>, RenderFormChildrenProps {
+  values?: any;
   form?: FormStore
 };
 

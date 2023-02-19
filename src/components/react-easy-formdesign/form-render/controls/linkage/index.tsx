@@ -1,29 +1,40 @@
 import { isEmpty } from "@/utils/type";
-import { Button, Col, Select, Input, message, Modal, Row } from "antd";
+import { Button, Col, Select, Input, message, Modal, Row, Card } from "antd";
 import React, { ChangeEvent, LegacyRef, useEffect, useRef, useState } from "react";
 import './index.less';
 import Icon from "@/components/svg-icon";
 import { useFormExpandControl, useTableData } from "@/components/react-easy-formdesign/utils/hooks";
+import RenderForm, { FieldChangedParams, Form, FormFieldProps, useFormStore } from "../..";
 
 export interface LinkageRulesProps {
   value?: string;
-  onChange?: (val?: string) => void
+  onChange?: (val?: string) => void;
+  currentControl: FormFieldProps;
 }
 
 // 集合类型
 type AssembleType = '&&' | '||'
-// 条件表达式
-export interface RuleCondition {
-  name?: string;
+// 规则条件的渲染数据类型
+type RuleData = [AssembleType | undefined, {
+  conditionName?: string;
   condition?: string;
-  value?: any;
-}
-// 条件表达式集合
-type RuleConditionWithAssemble = [AssembleType | undefined, RuleCondition];
+  conditionValue?: any;
+  currentControlValue?: any;
+}];
 
 const prefixCls = 'linkage-rules';
 const classes = {
-  item: `${prefixCls}-item`
+  cls: `${prefixCls}`,
+  modal: `${prefixCls}-modal`,
+  modalButton: `${prefixCls}-modal-button`,
+  item: `${prefixCls}-item`,
+  row: `${prefixCls}-item-row`,
+  assemble: `${prefixCls}-item-assemble`,
+  control: `${prefixCls}-item-control`,
+  itemPrefix: `${prefixCls}-item-prefix`,
+  itemSuffix: `${prefixCls}-item-suffix`,
+  youjiantou: `${prefixCls}-item-youjiantou`,
+  icon: `${prefixCls}-item-icon`,
 }
 
 const assembleOptions = [{
@@ -59,17 +70,18 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
   const {
     value,
     onChange,
+    currentControl,
     ...rest
   } = props;
 
-  const initialValue: RuleConditionWithAssemble = [[, {}]]
+  const initialValue: RuleData[] = [[, {}]]
 
   const {
     dataSource,
     addItem,
     updateItem,
     deleteItem
-  } = useTableData<RuleConditionWithAssemble>(initialValue, () => {
+  } = useTableData<RuleData>(initialValue, () => {
 
   });
 
@@ -81,37 +93,90 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
     updateItem(val, rowIndex, 'label');
   }
 
-  const valueChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
-    const val = e?.target?.value;
-    updateItem(val, rowIndex, 'value');
+  const assembleChange = (val: any, rowIndex: number) => {
+    updateItem(val, rowIndex, "[0]");
   }
 
-  const renderItem = (item: RuleConditionWithAssemble, index: number) => {
+  const conditionChange = (val: any, rowIndex: number) => {
+    updateItem(val, rowIndex, "[1].condition");
+  }
+
+  const nameChange = (val: any, rowIndex: number) => {
+    updateItem(val, rowIndex, "[1].conditionName");
+  }
+
+  const currentControlChange = ({ value }: FieldChangedParams, index: number) => {
+    updateItem(value, index, "[1].currentControlValue");
+  }
+
+  const conditionControlChange = ({ value }: FieldChangedParams, index: number) => {
+    updateItem(value, index, "[1].conditionValue");
+  }
+
+  const getConditionControl = (path?: string) => {
+    if (!path) return;
+    const conditionControl = controls?.[path];
+    const {
+      label,
+      layout,
+      initialValue,
+      labelWidth,
+      ...restField
+    } = conditionControl || {};
+    return restField;
+  }
+
+  const renderItem = (item: RuleData, index: number) => {
     const [assemble, condition] = item || [];
+    const conditionName = condition?.conditionName;
+    const conditionControl = getConditionControl(conditionName);
     return (
-      <div key={index}>
+      <div key={index} className={classes.item}>
         {
           assemble ?
-            <Col>
-              <Select options={assembleOptions} />
-            </Col>
+            <Select className={classes.assemble} value={assemble} options={assembleOptions} onChange={(val) => assembleChange(val, index)} />
             : null
         }
-        <Row className={classes.item} gutter={12} align="middle">
-          <Col>
-            <Select options={controlOptions} />
+        <Row gutter={8} className={classes.row} align="middle">
+          <Col span={1}>
+            <span className={classes.itemPrefix}>当</span>
           </Col>
-          <Col>
-            <Select options={conditionOptions} />
+          <Col span={6}>
+            <Select style={{ width: '100%' }} value={condition?.conditionName} options={controlOptions} onChange={(val) => nameChange(val, index)} />
           </Col>
-          <Col>
-            组件
+          <Col span={5}>
+            <Select style={{ width: '100%' }} value={condition?.condition} options={conditionOptions} onChange={(val) => conditionChange(val, index)} />
           </Col>
+          <Col span={9}>
+            {
+              conditionName && conditionControl ?
+                <RenderForm
+                  tagName="div"
+                  values={{ conditionValue: condition?.['conditionValue'] }}
+                  properties={{ conditionValue: { compact: true, ...conditionControl } }}
+                  onFieldsChange={(params) => conditionControlChange(params, index)}
+                />
+                :
+                <div className={classes.control}>--</div>
+            }
+          </Col>
+          <Col span={3}>
+            <span className={classes.itemSuffix}> 时，</span>
+          </Col>
+          <div className={classes.itemSuffix}>
+            <Icon name="youjiantou" className={classes.youjiantou} onClick={addNewItem} />设置为
+          </div>
+          <RenderForm
+            tagName="div"
+            values={{ currentControlValue: condition?.['currentControlValue'] }}
+            properties={{ currentControlValue: { compact: true, ...currentControl } }}
+            onFieldsChange={(params) => currentControlChange(params, index)}
+          />
           {
-            index === 0 &&
-            <Col span={4}>
-              <Icon name="add" className="icon-delete" onClick={addNewItem} />
-            </Col>
+            index === 0 ?
+              <Icon name="add" className={classes.icon} onClick={addNewItem} />
+              :
+              <Icon name="delete" className={classes.icon} onClick={() => deleteItem(index)} />
           }
         </Row>
       </div>
@@ -123,7 +188,7 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
   }
 
   return (
-    <div>
+    <div className={classes.cls}>
       {
         dataSource?.map((item, index) => renderItem(item, index))
       }
@@ -143,6 +208,7 @@ export const LinkageListModal = (
     onChange,
     onClose,
     disabled,
+    currentControl,
   } = props;
 
   const [visible, setVisible] = useState<boolean>()
@@ -170,9 +236,15 @@ export const LinkageListModal = (
     <>
       <div>
         <span>{codeStr}</span>
-        <Button type="link" disabled={disabled} onClick={showModal}>添加联动</Button>
+        {
+          codeStr ?
+            null
+            :
+            <Button type="link" className={classes.modalButton} disabled={disabled} onClick={showModal}>添加联动</Button>
+        }
       </div>
       <Modal
+        className={classes.modal}
         destroyOnClose
         title="添加联动"
         visible={visible}
@@ -181,6 +253,7 @@ export const LinkageListModal = (
         <LinkageRules
           value={value}
           onChange={handleOnChange}
+          currentControl={currentControl}
         />
       </Modal>
     </>

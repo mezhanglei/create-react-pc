@@ -9,7 +9,8 @@ const settings = {
     compact: true,
     props: {
       style: { width: "100%" },
-      options: "{{formvalues && formvalues.props ? formvalues.props.options : []}}"
+      options: "{{formvalues && formvalues.props ? formvalues.props.options : []}}",
+      mode: "{{formvalues && formvalues.props ? formvalues.props.mode : undefined}}",
     }
   },
   props: {

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { joinFormPath } from "../form-render";
+import { deepSet, joinFormPath } from "../form-render";
 import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
 import { isEmpty } from "@/utils/type";
 import { setExpandControl } from "@/components/react-easy-formrender/utils/utils";
@@ -34,11 +34,11 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
   const [dataSource, setDataSource] = useState<T[]>(intialValue || []);
 
   // 更新目标数据
-  const updateItem = (data: any, rowIndex: number, rowKey?: string) => {
+  const updateItem = (data: any, rowIndex: number, path?: string) => {
     const cloneData = dataSource ? [...dataSource] : [];
-    const item = cloneData?.[rowIndex] ?? {};
-    if (rowKey) {
-      item[rowKey] = data;
+    let item = cloneData?.[rowIndex] ?? {};
+    if (path) {
+      cloneData[rowIndex] = deepSet(item, path, data)
     } else {
       cloneData[rowIndex] = data;
     }
@@ -55,7 +55,7 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
   // 删除一行
   const deleteItem = (rowIndex: number) => {
     if (!dataSource) return;
-    const newData = [...dataSource]
+    const newData = [...dataSource];
     newData.splice(rowIndex, 1);
     setDataSource(newData);
     dataChange(newData);

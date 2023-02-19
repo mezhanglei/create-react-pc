@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RenderFormProps } from './types';
-import { Form } from '../react-easy-formcore';
+import { Form, useFormStore } from '../react-easy-formcore';
 import RenderFormChildren from './render-children';
 
 // 表单元素渲染
@@ -18,11 +18,18 @@ export default function RenderForm(props: RenderFormProps) {
     inside,
     onPropertiesChange,
     expressionImports,
+    values,
     ...formOptions
   } = props;
 
+  const formStore = form ?? useFormStore();
+
+  useEffect(() => {
+    formStore.setFieldsValue(values || formOptions?.initialValues);
+  }, [values]);
+
   return (
-    <Form store={form} {...formOptions}>
+    <Form store={formStore} {...formOptions}>
       <RenderFormChildren
         expressionImports={expressionImports}
         uneval={uneval}
