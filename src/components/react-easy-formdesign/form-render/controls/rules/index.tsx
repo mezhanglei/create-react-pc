@@ -44,7 +44,6 @@ const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, r
     { name: 'min', label: '下限', component: MinOrMaxComponent },
   ]?.filter((item) => includes?.includes(item?.name))), [includes]);
 
-  const currentForm = useFormStore();
   const properties = useMemo(() => (
     rulesList?.map((item) => {
       const { component: Child, label, name } = item
@@ -56,6 +55,7 @@ const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, r
   ), [rulesList]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = (_, values) => {
+    console.log(values, "校验规则更新")
     setRulesData(values);
     onChange && onChange(values);
   }
@@ -65,7 +65,6 @@ const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, r
       <RenderForm
         tagName="div"
         initialValues={rulesData}
-        form={currentForm}
         properties={properties}
         onFieldsChange={onFieldsChange}
       />

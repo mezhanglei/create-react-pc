@@ -1,9 +1,7 @@
 import React, { cloneElement, useContext } from 'react';
-import { FormValuesContext, FormOptionsContext } from './form-context';
+import { FormOptionsContext } from './form-context';
 import { joinFormPath, isFormNode } from './utils/utils';
-import { deepGet } from '@/utils/object';
 import { FormRule } from './validator';
-import { isEmpty } from '@/utils/type';
 
 export interface ListCoreProps {
   name?: string | number;
@@ -16,7 +14,6 @@ export interface ListCoreProps {
 
 export const ListCore = (props: ListCoreProps) => {
   const options = useContext(FormOptionsContext);
-  const initialValues = useContext(FormValuesContext);
   const mergeProps = { ...options, ...props };
   const { children, ...fieldProps } = mergeProps;
   const {
@@ -29,8 +26,7 @@ export const ListCore = (props: ListCoreProps) => {
 
   const joinPath = joinFormPath(parent, name);
   const formPath = ignore === true ? parent : joinPath;
-  const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
-  const initialListValue = initialValue ?? deepGet(initialValues, currentPath);
+  const initialListValue = initialValue;
 
   // 渲染子元素
   let index = 0;

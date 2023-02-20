@@ -1,10 +1,11 @@
-import React, { LegacyRef, useState } from "react";
+import React, { LegacyRef, useEffect, useState } from "react";
 import './style.less';
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { useFormStore } from '../../../form-render';
-import { Button, Switch } from "antd";
-import { LinkageListModal } from "../linkage";
+import { Button } from "antd";
+import { LinkageBtn } from "../linkage";
+import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 
 
 interface CurrentValue {
@@ -49,6 +50,18 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     }
   }
   const currentForm = useFormStore();
+
+  useEffect(() => {
+    if (name) {
+      const matchStr = matchExpression(value?.[name]);
+      if (matchStr) {
+        currentForm.setFieldValue({selectType: 'linkage', expression: value?.[name], message: value?.['message'] });
+      } else {
+        currentForm.setFieldValue({selectType: 'handle', current: value?.[name], message: value?.['message'] });
+      }
+    }
+  }, [value]);
+
   const [properties, setProperties] = useState(name ? {
     selectType: {
       label: '赋值方式',
@@ -64,7 +77,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     current: {
       label: '启用',
       layout: 'horizontal',
-      initialValue: name ? value?.[name] : undefined,
+      initialValue: value?.[name] == true ? true : false,
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'linkage'}}",
       ...currentControl
@@ -75,7 +88,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
       initialValue: value?.[name],
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'handle'}}",
-      typeRender: <LinkageListModal currentControl={currentControl} />
+      typeRender: <LinkageBtn currentControl={currentControl} />
     },
     message: {
       label: '提示信息',
@@ -114,7 +127,8 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   return (
     <div className={classes.item} ref={ref}>
       <div className={classes.label}>{label}</div>
-      <div className={classes.text}></div>
+      <div className={classes.text}>
+      </div>
       <Tooltip
         className={classes.tooltip}
         appendTo={document.body}

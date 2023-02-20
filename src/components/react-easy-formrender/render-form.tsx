@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { RenderFormProps } from './types';
 import { Form, useFormStore } from '../react-easy-formcore';
 import RenderFormChildren from './render-children';
@@ -18,15 +18,10 @@ export default function RenderForm(props: RenderFormProps) {
     inside,
     onPropertiesChange,
     expressionImports,
-    values,
     ...formOptions
   } = props;
 
   const formStore = form ?? useFormStore();
-
-  useEffect(() => {
-    formStore.setFieldsValue(values || formOptions?.initialValues);
-  }, [values]);
 
   return (
     <Form store={formStore} {...formOptions}>

@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
-import { FormStoreContext, FormValuesContext, FormOptionsContext } from './form-context';
+import { FormStoreContext, FormInitialValuesContext, FormOptionsContext, FormValuesContext } from './form-context';
 import { deepGet, joinFormPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
@@ -32,9 +32,10 @@ export interface ItemCoreProps {
 }
 
 export const ItemCore = (props: ItemCoreProps) => {
-  const store = useContext<FormStore>(FormStoreContext)
-  const initialValues = useContext(FormValuesContext)
-  const options = useContext(FormOptionsContext)
+  const store = useContext<FormStore>(FormStoreContext);
+  const initialValues = useContext(FormInitialValuesContext);
+  const contextValues = useContext(FormValuesContext);
+  const options = useContext(FormOptionsContext);
   const mergeProps = { ...options, ...props };
   const { children, ...fieldProps } = mergeProps;
   const {
@@ -55,9 +56,14 @@ export const ItemCore = (props: ItemCoreProps) => {
   const joinPath = joinFormPath(parent, name);
   const formPath = ignore === true ? parent : joinPath;
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
-  const storeValue = currentPath && store?.getFieldValue(currentPath);
+  const contextValue = deepGet(contextValues, currentPath);
+  const storeValue = contextValue ?? (currentPath && store?.getFieldValue(currentPath));
   const initialItemValue = storeValue ?? initialValue ?? deepGet(initialValues, currentPath);
   const [value, setValue] = useState(storeValue);
+
+  useEffect(() => {
+    setValue(contextValue);
+  }, [contextValue]);
 
   // 初始化获取初始props
   currentPath && store?.setFieldProps(currentPath, fieldProps);
@@ -120,7 +126,6 @@ export const ItemCore = (props: ItemCoreProps) => {
     if (initialItemValue !== undefined) {
       store.setInitialValues(currentPath, initialItemValue);
     }
-    setValue(initialItemValue)
     return () => {
       // 清除该表单域的props(在设置值的前面)
       currentPath && store?.setFieldProps(currentPath, undefined);

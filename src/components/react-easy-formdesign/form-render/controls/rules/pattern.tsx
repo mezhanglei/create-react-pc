@@ -59,7 +59,7 @@ const PatternComponent: React.FC<PatternComponentProps> = React.forwardRef((prop
       initialValue: value?.[name],
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'linkage'}}",
-      type: 'CodeTextArea',
+      type: 'Input.TextArea',
       props: {
       }
     },
@@ -70,9 +70,6 @@ const PatternComponent: React.FC<PatternComponentProps> = React.forwardRef((prop
       labelWidth: 80,
       hidden: "{{formvalues && formvalues.selectType == 'handle'}}",
       typeRender: '暂不开发'
-      // type: 'Input',
-      // props: {
-      // }
     },
     message: {
       label: '提示信息',

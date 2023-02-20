@@ -1,14 +1,15 @@
-import { isEmpty } from "@/utils/type";
-import { Button, Col, Select, Input, message, Modal, Row, Card } from "antd";
-import React, { ChangeEvent, LegacyRef, useEffect, useRef, useState } from "react";
+import { Button, Col, Select, Input, Modal, Row } from "antd";
+import React, { LegacyRef, useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/svg-icon";
-import { useFormExpandControl, useTableData } from "@/components/react-easy-formdesign/utils/hooks";
-import RenderForm, { FieldChangedParams, Form, FormFieldProps, useFormStore } from "../..";
+import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
+import RenderForm, { FieldChangedParams, FormFieldProps } from "../..";
+import { evalString } from "@/utils/string";
+
 
 export interface LinkageRulesProps {
   value?: string;
-  onChange?: (val?: string) => void;
+  onChange?: (codeStr?: string) => void;
   currentControl: FormFieldProps;
 }
 
@@ -16,9 +17,7 @@ export interface LinkageRulesProps {
 type AssembleType = '&&' | '||'
 // 规则条件的渲染数据类型
 type RuleData = [AssembleType | undefined, {
-  conditionName?: string;
   condition?: string;
-  conditionValue?: any;
   currentControlValue?: any;
 }];
 
@@ -33,7 +32,6 @@ const classes = {
   control: `${prefixCls}-item-control`,
   itemPrefix: `${prefixCls}-item-prefix`,
   itemSuffix: `${prefixCls}-item-suffix`,
-  youjiantou: `${prefixCls}-item-youjiantou`,
   icon: `${prefixCls}-item-icon`,
 }
 
@@ -45,25 +43,8 @@ const assembleOptions = [{
   value: '&&'
 }];
 
-const conditionOptions = [{
-  label: '等于',
-  value: "equal",
-}, {
-  label: "大于",
-  value: "more",
-}, {
-  label: "小于",
-  value: "less",
-}, {
-  label: "包含",
-  value: "includes",
-}, {
-  label: "包含",
-  value: "excludes",
-}];
-
 /**
- * 联动校验规则
+ * 联动规则设置
  */
 export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
 
@@ -78,58 +59,69 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
 
   const {
     dataSource,
+    setDataSource,
     addItem,
     updateItem,
     deleteItem
-  } = useTableData<RuleData>(initialValue, () => {
-
+  } = useTableData<RuleData>(initialValue, (newData) => {
+    let codeStr = newData?.reduce((preStr, current) => {
+      const assembleStr = current?.[0] || "";
+      const conditionStr = current?.[1]?.condition || "";
+      const controlValue = current?.[1]?.currentControlValue;
+      const currentStr = conditionStr ? `(${conditionStr} ? ${controlValue ?? "null"} : null)` : ""
+      return preStr + assembleStr + currentStr;
+    }, "");
+    codeStr = codeStr ? `{{${codeStr}}}` : "";
+    onChange && onChange(codeStr);
   });
 
-  const controls = useFormExpandControl()
-  const controlOptions = Object.entries(controls || {})?.map(([path, field]) => ({ label: field?.label, value: path }));
+  useEffect(() => {
+    if (value) {
+      const data = getRulesDataFromValue(value);
+      setDataSource(data);
+    }
+  }, [value])
 
-  const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
-    const val = e?.target?.value;
-    updateItem(val, rowIndex, 'label');
+  const getRulesDataFromValue = (value?: string) => {
+    if (!value) return [];
+    let result: RuleData[] = [];
+    // 将字符串转换为RuleData
+    const handleStr = (str: string) => {
+      if (typeof str !== 'string') return;
+      const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配集合符号
+      const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配带括号的目标
+      const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配无括号的目标
+      if (matchStr && matchStrWithBracket) {
+        const condition = matchStr.match(/(\S*.*?\s*)\?/)?.[1]; // 匹配问号前面的字符串, 即条件
+        const currentControlValueStr = matchStr.match(/\?(\S*.*?\s*)\:/)?.[1]; // 匹配问号后面的
+        const currentControlValue = currentControlValueStr && evalString(currentControlValueStr);
+        result.push([matchAssemble, { condition, currentControlValue }]);
+        const restStr = str?.replace(matchStrWithBracket, '')
+        if (restStr) {
+          handleStr(restStr);
+        }
+      }
+    }
+    const removedBracket = value?.replace(/\{\{|\}\}/g, '');
+    handleStr(removedBracket);
+    return result;
   }
 
   const assembleChange = (val: any, rowIndex: number) => {
     updateItem(val, rowIndex, "[0]");
   }
 
-  const conditionChange = (val: any, rowIndex: number) => {
+  const conditionOnchange = (val: any, rowIndex: number) => {
     updateItem(val, rowIndex, "[1].condition");
-  }
-
-  const nameChange = (val: any, rowIndex: number) => {
-    updateItem(val, rowIndex, "[1].conditionName");
   }
 
   const currentControlChange = ({ value }: FieldChangedParams, index: number) => {
     updateItem(value, index, "[1].currentControlValue");
   }
 
-  const conditionControlChange = ({ value }: FieldChangedParams, index: number) => {
-    updateItem(value, index, "[1].conditionValue");
-  }
-
-  const getConditionControl = (path?: string) => {
-    if (!path) return;
-    const conditionControl = controls?.[path];
-    const {
-      label,
-      layout,
-      initialValue,
-      labelWidth,
-      ...restField
-    } = conditionControl || {};
-    return restField;
-  }
-
   const renderItem = (item: RuleData, index: number) => {
-    const [assemble, condition] = item || [];
-    const conditionName = condition?.conditionName;
-    const conditionControl = getConditionControl(conditionName);
+    const [assemble, ruleItem] = item || [];
+    const condition = ruleItem?.condition;
     return (
       <div key={index} className={classes.item}>
         {
@@ -141,43 +133,28 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
           <Col span={1}>
             <span className={classes.itemPrefix}>当</span>
           </Col>
-          <Col span={6}>
-            <Select style={{ width: '100%' }} value={condition?.conditionName} options={controlOptions} onChange={(val) => nameChange(val, index)} />
+          <Col span={8}>
+            <Input.TextArea value={condition} onChange={(e) => conditionOnchange(e?.target?.value, index)} />
           </Col>
           <Col span={5}>
-            <Select style={{ width: '100%' }} value={condition?.condition} options={conditionOptions} onChange={(val) => conditionChange(val, index)} />
+            <span className={classes.itemSuffix}>时，设置为</span>
           </Col>
-          <Col span={9}>
+          <Col flex={1}>
+            <RenderForm
+              tagName="div"
+              values={{ currentControlValue: ruleItem?.['currentControlValue'] }}
+              properties={{ currentControlValue: { compact: true, ...currentControl } }}
+              onFieldsChange={(params) => currentControlChange(params, index)}
+            />
+          </Col>
+          <Col span={1}>
             {
-              conditionName && conditionControl ?
-                <RenderForm
-                  tagName="div"
-                  values={{ conditionValue: condition?.['conditionValue'] }}
-                  properties={{ conditionValue: { compact: true, ...conditionControl } }}
-                  onFieldsChange={(params) => conditionControlChange(params, index)}
-                />
+              index === 0 ?
+                <Icon name="add" className={classes.icon} onClick={addNewItem} />
                 :
-                <div className={classes.control}>--</div>
+                <Icon name="delete" className={classes.icon} onClick={() => deleteItem(index)} />
             }
           </Col>
-          <Col span={3}>
-            <span className={classes.itemSuffix}> 时，</span>
-          </Col>
-          <div className={classes.itemSuffix}>
-            <Icon name="youjiantou" className={classes.youjiantou} onClick={addNewItem} />设置为
-          </div>
-          <RenderForm
-            tagName="div"
-            values={{ currentControlValue: condition?.['currentControlValue'] }}
-            properties={{ currentControlValue: { compact: true, ...currentControl } }}
-            onFieldsChange={(params) => currentControlChange(params, index)}
-          />
-          {
-            index === 0 ?
-              <Icon name="add" className={classes.icon} onClick={addNewItem} />
-              :
-              <Icon name="delete" className={classes.icon} onClick={() => deleteItem(index)} />
-          }
         </Row>
       </div>
     )
@@ -201,6 +178,7 @@ export const LinkageListModal = (
   props: LinkageRulesProps & {
     onClose?: () => void;
     disabled?: boolean;
+    visible?: boolean;
   }) => {
 
   const {
@@ -214,9 +192,9 @@ export const LinkageListModal = (
   const [visible, setVisible] = useState<boolean>()
   const [codeStr, setCodeStr] = useState<string>();
 
-  const showModal = () => {
-    setVisible(true)
-  }
+  useEffect(() => {
+    setVisible(props?.visible)
+  }, [props?.visible]);
 
   const handleOk = () => {
     onChange && onChange(codeStr)
@@ -233,29 +211,71 @@ export const LinkageListModal = (
   }
 
   return (
+    <Modal
+      className={classes.modal}
+      destroyOnClose
+      title="添加联动"
+      visible={visible}
+      onCancel={closeModal}
+      onOk={handleOk}>
+      <LinkageRules
+        value={value}
+        onChange={handleOnChange}
+        currentControl={currentControl}
+      />
+    </Modal>
+  );
+};
+
+// 代码编辑器弹窗
+export const LinkageBtn = (
+  props: LinkageRulesProps & {
+    onClose?: () => void;
+    disabled?: boolean;
+  }) => {
+
+  const {
+    value,
+    onChange,
+    onClose,
+    disabled,
+    currentControl,
+  } = props;
+
+  const [visible, setVisible] = useState<boolean>()
+  const [codeStr, setCodeStr] = useState<string>();
+
+  useEffect(() => {
+    setCodeStr(value)
+  }, [value])
+
+  const showModal = () => {
+    setVisible(true)
+  }
+
+  const closeModal = () => {
+    setVisible(false);
+    onClose && onClose();
+  }
+
+  const handleOnChange = (val?: string) => {
+    setCodeStr(val);
+    onChange && onChange(val);
+  }
+
+  return (
     <>
       <div>
         <span>{codeStr}</span>
-        {
-          codeStr ?
-            null
-            :
-            <Button type="link" className={classes.modalButton} disabled={disabled} onClick={showModal}>添加联动</Button>
-        }
+        <Button type="link" className={classes.modalButton} disabled={disabled} onClick={showModal}>{codeStr ? "修改联动" : "添加联动"}</Button>
       </div>
-      <Modal
-        className={classes.modal}
-        destroyOnClose
-        title="添加联动"
+      <LinkageListModal
         visible={visible}
-        onCancel={closeModal}
-        onOk={handleOk}>
-        <LinkageRules
-          value={value}
-          onChange={handleOnChange}
-          currentControl={currentControl}
-        />
-      </Modal>
+        value={value}
+        currentControl={currentControl}
+        onClose={closeModal}
+        onChange={handleOnChange}
+      />
     </>
   );
 };
