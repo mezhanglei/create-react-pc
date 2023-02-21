@@ -111,13 +111,8 @@ export const getNameSettings = (designer: FormRenderStore, path?: string) => {
 
 // 代码编辑器执行解析字符串
 export const handleEvalString = (codeStr?: string) => {
-  if (!codeStr) return;
-  // 是否为纯字符串
-  const isonlyStr = codeStr?.indexOf('[') == -1 && codeStr?.indexOf('{') == -1;
-  if (!isonlyStr) {
-    return evalString(codeStr)
-  }
-  return codeStr;
+  if (typeof codeStr !== 'string') return;
+  return evalString(codeStr);
 }
 
 // 代码编辑器序列化目标为字符串

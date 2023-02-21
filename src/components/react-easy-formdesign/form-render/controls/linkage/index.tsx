@@ -76,14 +76,14 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
   });
 
   useEffect(() => {
-    if (value) {
+    if (typeof value === 'string') {
       const data = getRulesDataFromValue(value);
       setDataSource(data);
     }
   }, [value])
 
   const getRulesDataFromValue = (value?: string) => {
-    if (!value) return [];
+    if (typeof value !== 'string' || !value) return [];
     let result: RuleData[] = [];
     // 将字符串转换为RuleData
     const handleStr = (str: string) => {
@@ -139,7 +139,7 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
           <Col span={5}>
             <span className={classes.itemSuffix}>时，设置为</span>
           </Col>
-          <Col flex={1}>
+          <Col flex={1} style={{ width: '0' }}>
             <RenderForm
               tagName="div"
               values={{ currentControlValue: ruleItem?.['currentControlValue'] }}
@@ -147,7 +147,7 @@ export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props
               onFieldsChange={(params) => currentControlChange(params, index)}
             />
           </Col>
-          <Col span={1}>
+          <Col span={2}>
             {
               index === 0 ?
                 <Icon name="add" className={classes.icon} onClick={addNewItem} />
@@ -191,6 +191,10 @@ export const LinkageListModal = (
 
   const [visible, setVisible] = useState<boolean>()
   const [codeStr, setCodeStr] = useState<string>();
+
+  useEffect(() => {
+    setCodeStr(value)
+  }, [value]);
 
   useEffect(() => {
     setVisible(props?.visible)

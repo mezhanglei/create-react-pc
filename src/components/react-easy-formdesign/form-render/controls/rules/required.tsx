@@ -1,12 +1,11 @@
-import React, { LegacyRef, useEffect, useState } from "react";
-import './style.less';
+import React, { LegacyRef, useEffect } from "react";
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
-import RenderForm, { useFormStore } from '../../../form-render';
+import RenderForm, { useFormStore, useFormValues } from '../../../form-render';
 import { Button } from "antd";
 import { LinkageBtn } from "../linkage";
 import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
-
+import './style.less';
 
 interface CurrentValue {
   required?: boolean | string;
@@ -25,6 +24,7 @@ const classes = {
   item: prefixCls,
   label: `${prefixCls}-label`,
   text: `${prefixCls}-text`,
+  message: `${prefixCls}-message`,
   icon: `${prefixCls}-icon`,
   tooltip: `${prefixCls}-tooltip`,
   tooltipContent: `${prefixCls}-tooltip-content`,
@@ -42,69 +42,78 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
   } = props;
 
   const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }];
-  // 设置值的控件
+  const currentForm = useFormStore();
+  const formvalues = useFormValues<{ selectType: string }>(currentForm, ['selectType']);
+  const currentValue = name ? value?.[name] : undefined;
+  const currentMessage = value?.['message'];
+
+  useEffect(() => {
+    if (name) {
+      const matchStr = matchExpression(currentValue);
+      if (matchStr) {
+        currentForm.setFieldValue({ selectType: 'linkage', [name]: currentValue, message: currentMessage });
+      } else {
+        currentForm.setFieldValue({ selectType: 'handle', [name]: currentValue, message: currentMessage });
+      }
+    }
+  }, [value]);
+
+  const selectTypeChange = () => {
+    name && currentForm.setFieldValue(name, undefined);
+  }
+
+  // 目标设置值的控件
   const currentControl = {
     valueProp: 'checked',
     type: 'Switch',
     props: {
     }
-  }
-  const currentForm = useFormStore();
+  };
 
-  useEffect(() => {
-    if (name) {
-      const matchStr = matchExpression(value?.[name]);
-      if (matchStr) {
-        currentForm.setFieldValue({selectType: 'linkage', expression: value?.[name], message: value?.['message'] });
-      } else {
-        currentForm.setFieldValue({selectType: 'handle', current: value?.[name], message: value?.['message'] });
-      }
-    }
-  }, [value]);
-
-  const [properties, setProperties] = useState(name ? {
+  const properties = name ? {
     selectType: {
       label: '赋值方式',
       layout: 'horizontal',
       labelWidth: 80,
       initialValue: 'handle',
+      onFieldsChange: selectTypeChange,
       type: 'Select',
       props: {
         style: { width: '100%' },
         options: SelectOptions
       }
     },
-    current: {
-      label: '启用',
-      layout: 'horizontal',
-      initialValue: value?.[name] == true ? true : false,
-      labelWidth: 80,
-      hidden: "{{formvalues && formvalues.selectType == 'linkage'}}",
-      ...currentControl
-    },
-    expression: {
+    [name]: formvalues?.['selectType'] === 'linkage' ? {
       label: '联动条件',
       layout: 'horizontal',
-      initialValue: value?.[name],
+      initialValue: currentValue,
       labelWidth: 80,
-      hidden: "{{formvalues && formvalues.selectType == 'handle'}}",
       typeRender: <LinkageBtn currentControl={currentControl} />
+    } : {
+      label: '启用',
+      layout: 'horizontal',
+      initialValue: currentValue == true ? true : false,
+      labelWidth: 80,
+      ...currentControl
     },
     message: {
       label: '提示信息',
       layout: 'horizontal',
-      initialValue: value?.['message'] ?? '请输入',
+      initialValue: currentMessage ?? '请输入',
+      rules: [{ required: true, message: '请输入' }],
       labelWidth: 80,
       type: 'Input',
       props: {
       }
     },
-  } : undefined);
+  } : undefined;
 
-  const confirm = () => {
-    const { current, expression, message } = currentForm.getFieldValue() || {}
+  const confirm = async () => {
+    const { error, values } = await currentForm.validate();
+    if (error) return;
+    const { selectType, ...rest } = values || {}
     if (name) {
-      const result = { [name]: current ?? expression, message }
+      const result = rest;
       onChange && onChange(result)
     }
   }
@@ -128,6 +137,7 @@ const RequiredComponent: React.FC<RequiredComponentProps> = React.forwardRef((pr
     <div className={classes.item} ref={ref}>
       <div className={classes.label}>{label}</div>
       <div className={classes.text}>
+        <div className={classes.message} title={currentMessage}>{currentMessage}</div>
       </div>
       <Tooltip
         className={classes.tooltip}

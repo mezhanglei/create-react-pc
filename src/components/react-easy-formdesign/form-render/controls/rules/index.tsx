@@ -55,7 +55,6 @@ const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, r
   ), [rulesList]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = (_, values) => {
-    console.log(values, "校验规则更新")
     setRulesData(values);
     onChange && onChange(values);
   }
