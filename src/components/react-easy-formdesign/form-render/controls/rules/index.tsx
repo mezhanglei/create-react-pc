@@ -3,12 +3,11 @@ import './index.less';
 import RequiredComponent from "./required";
 import MinOrMaxComponent from "./minOrMax";
 import PatternComponent from "./pattern";
-import RenderForm, { FormFieldProps, RenderFormProps, useFormStore } from '../../../form-render';
+import RenderForm, { FormFieldProps, RenderFormProps } from '../../../form-render';
 
 /**
  * 校验规则的配置组件。
  */
-
 export interface RulesComponentProps {
   includes?: string;
   value?: FormFieldProps['rules'];
