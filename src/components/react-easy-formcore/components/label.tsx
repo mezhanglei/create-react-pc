@@ -20,7 +20,7 @@ export interface LabelProps extends LabelBaseProps {
   className?: string;
 }
 
-export const Label = React.forwardRef((props: LabelProps, ref: any) => {
+export const Label = React.forwardRef<any, LabelProps>((props, ref) => {
   const {
     children,
     style,

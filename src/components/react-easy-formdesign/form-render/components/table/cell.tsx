@@ -7,7 +7,7 @@ export interface TableCellProps extends React.HtmlHTMLAttributes<HTMLTableCellEl
   componentType?: "th" | "td"
 }
 
-export const TableCell: React.FC<TableCellProps> = React.forwardRef((props, ref: LegacyRef<HTMLTableCellElement>) => {
+export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>((props, ref) => {
   const {
     children,
     className,

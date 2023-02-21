@@ -46,7 +46,7 @@ const assembleOptions = [{
 /**
  * 联动规则设置
  */
-export const LinkageRules: React.FC<LinkageRulesProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((props, ref) => {
 
   const {
     value,

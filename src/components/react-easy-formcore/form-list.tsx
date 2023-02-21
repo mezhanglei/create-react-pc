@@ -15,7 +15,7 @@ export type FormListProps<T = ItemProps> = T & ListCoreProps & {
   ignore?: boolean;
 }
 
-export const FormList = React.forwardRef((props: FormListProps, ref: any) => {
+export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
   const store = useContext<FormStore>(FormStoreContext)
   const options = useContext<any>(FormOptionsContext)
   const mergeProps = { ...options, ...props };

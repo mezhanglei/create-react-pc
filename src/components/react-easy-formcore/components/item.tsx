@@ -25,7 +25,7 @@ const classes = {
   error: `${prefixCls}--error`
 };
 
-export const Item = React.forwardRef((props: ItemProps, ref: any) => {
+export const Item = React.forwardRef<any, ItemProps>((props, ref) => {
   const {
     /** LabelBaseProps */
     colon,

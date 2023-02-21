@@ -7,7 +7,7 @@ export interface ColorPickerProps extends ChromePickerProps {
   onChange?: (val: any) => any;
   disabled?: boolean;
 }
-const ColorPicker = React.forwardRef((props: ColorPickerProps, ref: LegacyRef<ChromePicker>) => {
+const ColorPicker = React.forwardRef<ChromePicker, ColorPickerProps>((props, ref) => {
   const {
     value,
     onChange,

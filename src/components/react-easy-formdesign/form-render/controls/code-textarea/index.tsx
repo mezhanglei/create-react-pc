@@ -11,7 +11,7 @@ export interface CodeTextAreaProps extends TextAreaProps {
   onChange?: (val: any) => void;
   style?: CSSProperties;
 }
-const CodeTextArea = React.forwardRef((props: CodeTextAreaProps, ref: Ref<TextAreaRef>) => {
+const CodeTextArea = React.forwardRef<TextAreaRef, CodeTextAreaProps>((props, ref) => {
 
   const {
     value,

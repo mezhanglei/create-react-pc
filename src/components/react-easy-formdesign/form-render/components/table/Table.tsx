@@ -32,7 +32,7 @@ export interface TableProps {
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
-const Table: React.FC<TableProps> = React.forwardRef(({
+const Table = React.forwardRef<HTMLTableElement, TableProps>(({
   columns = [],
   dataSource,
   className,
@@ -41,7 +41,7 @@ const Table: React.FC<TableProps> = React.forwardRef(({
   rowKey,
   children,
   ...rest
-}, ref: LegacyRef<HTMLTableElement>) => {
+}, ref) => {
   const getRowKey = useCallback(
     (record: { [x: string]: any }) => {
       if (typeof rowKey === "function") {

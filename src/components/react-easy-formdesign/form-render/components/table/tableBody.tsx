@@ -10,7 +10,7 @@ export interface TableBodyProps extends React.HtmlHTMLAttributes<HTMLTableSectio
   getRowKey: (record: { [x: string]: any }) => string;
 }
 
-export const TableBody: React.FC<TableBodyProps> = React.forwardRef((props, ref: LegacyRef<HTMLTableSectionElement>) => {
+export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>((props, ref) => {
   const { dataSource, columns, getRowKey, className, children, ...rest } = props;
 
   const childs = (

@@ -39,7 +39,7 @@ const requestTypeOptions = [
   { value: 'json', label: 'JSON' }
 ];
 
-const RequestSource: React.FC<RequestSourceProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, ref) => {
 
   const {
     value,

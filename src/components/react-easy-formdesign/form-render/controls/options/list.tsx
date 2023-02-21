@@ -19,7 +19,7 @@ const classes = {
 /**
  * 单选或多选编辑组件
  */
-const OptionsList: React.FC<OptionsListProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const OptionsList = React.forwardRef<HTMLElement, OptionsListProps>((props, ref) => {
 
   const {
     value,

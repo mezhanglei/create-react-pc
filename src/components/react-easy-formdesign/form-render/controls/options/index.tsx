@@ -24,7 +24,7 @@ const classes = {
   component: `${prefixCls}-component`
 }
 
-const OptionsComponent: React.FC<OptionsComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((props, ref) => {
 
   const {
     includes = ['list', 'json', 'request'],

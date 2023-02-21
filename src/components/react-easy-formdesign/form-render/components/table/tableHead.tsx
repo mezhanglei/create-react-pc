@@ -8,7 +8,7 @@ export interface TableHeadProps extends React.HtmlHTMLAttributes<HTMLTableSectio
   columns: ColumnType[]
 }
 
-export const TableHead: React.FC<TableHeadProps> = React.forwardRef((props, ref: LegacyRef<HTMLTableSectionElement>) => {
+export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProps>((props, ref) => {
   const {
     children,
     className,

@@ -12,7 +12,7 @@ import { RequestResponseConfig } from './request';
 
 export function bindRequest(component: any, codeStr: string = "options") {
   const Component = component;
-  return React.forwardRef((props: { requestConfig?: RequestResponseConfig }, ref) => {
+  return React.forwardRef<any, { requestConfig?: RequestResponseConfig }>((props, ref) => {
     const {
       requestConfig,
       ...rest

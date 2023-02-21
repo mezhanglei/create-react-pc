@@ -21,7 +21,7 @@ export interface EditorCodeMirrorProps extends IUnControlledCodeMirror {
   style?: CSSProperties;
 }
 // 代码编辑器(不可以编辑函数)
-export const EditorCodeMirror = React.forwardRef((props: EditorCodeMirrorProps, ref: LegacyRef<CodeMirror>) => {
+export const EditorCodeMirror = React.forwardRef<CodeMirror, EditorCodeMirrorProps>((props, ref) => {
 
   const {
     value,

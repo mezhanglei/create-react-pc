@@ -16,7 +16,7 @@ export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
 }
 // 扩展后的文件类型
 export type FileItem = UploadFile & RcFile;
-const FileUpload = React.forwardRef((props: FileUploadProps, ref) => {
+const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
   const {
     fileSizeLimit = 5,

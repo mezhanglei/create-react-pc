@@ -35,7 +35,7 @@ export interface GridRowProps extends RowProps, GeneratePrams {
   children: any;
 }
 // row组件
-export const GridRow = React.forwardRef((props: GridRowProps, ref: any) => {
+export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
   const {
     name,
     field,
@@ -58,7 +58,7 @@ export interface GridColProps extends FromColProps, GeneratePrams {
   children: any;
 }
 // col组件
-export const GridCol = React.forwardRef((props: GridColProps, ref: any) => {
+export const GridCol = React.forwardRef<any, GridColProps>((props, ref) => {
   const {
     name,
     field,

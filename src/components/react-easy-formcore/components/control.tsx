@@ -14,7 +14,7 @@ export interface ControlProps extends ControlBaseProps {
   className?: string;
 }
 
-export const Control = React.forwardRef((props: ControlProps, ref: any) => {
+export const Control = React.forwardRef<any, ControlProps>((props, ref) => {
   const {
     children,
     style,

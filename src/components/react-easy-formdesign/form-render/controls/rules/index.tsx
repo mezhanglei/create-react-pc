@@ -1,4 +1,4 @@
-import React, { LegacyRef, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import './index.less';
 import RequiredComponent from "./required";
 import MinOrMaxComponent from "./minOrMax";
@@ -21,7 +21,7 @@ const classes = {
   checkbox: `${prefixCls}-checkbox`
 }
 
-const RulesComponent: React.FC<RulesComponentProps> = React.forwardRef((props, ref: LegacyRef<HTMLElement>) => {
+const RulesComponent = React.forwardRef<HTMLElement, RulesComponentProps>((props, ref) => {
 
   const {
     includes = ['required', 'pattern', 'max', 'min'],

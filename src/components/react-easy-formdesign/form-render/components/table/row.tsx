@@ -6,7 +6,7 @@ import pickAttrs from "@/utils/pickAttrs";
 export interface TableRowProps extends React.HtmlHTMLAttributes<HTMLTableRowElement> {
 }
 
-export const TableRow: React.FC<TableRowProps> = React.forwardRef((props, ref: LegacyRef<HTMLTableRowElement>) => {
+export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>((props, ref) => {
   const {
     children,
     className,

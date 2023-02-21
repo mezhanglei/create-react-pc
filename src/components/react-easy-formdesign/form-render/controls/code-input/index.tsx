@@ -8,7 +8,7 @@ export interface CodeInputProps extends InputProps {
   onChange?: (val: any) => void;
   style?: CSSProperties;
 }
-const CodeInput = React.forwardRef((props: CodeInputProps, ref: Ref<InputRef>) => {
+const CodeInput = React.forwardRef<InputRef, CodeInputProps>((props, ref) => {
 
   const {
     value,
