@@ -57,9 +57,8 @@ const operationSettings = {
     inline: true,
     properties: {
       disabled: {
-        type: 'Checkbox',
+        type: 'LinkageCheckbox',
         inline: true,
-        valueProp: 'checked',
         props: { children: '禁用' }
       },
       allowClear: {

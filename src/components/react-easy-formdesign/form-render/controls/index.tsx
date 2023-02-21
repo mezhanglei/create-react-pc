@@ -21,6 +21,7 @@ import FileUpload from "./file-upload";
 import ImageUpload from "./image-upload";
 import { bindRequest } from './options/bind';
 import RulesComponent from './rules';
+import { LinkageCheckbox } from './linkage';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const BaseControls = {
@@ -56,4 +57,5 @@ export const BaseControls = {
   "ColorPicker": ColorPicker, // 颜色选择器
   "FileUpload": FileUpload, // 文件上传
   "ImageUpload": ImageUpload, // 图片上传
+  "LinkageCheckbox": LinkageCheckbox, // 携带联动设置的checkbox
 }

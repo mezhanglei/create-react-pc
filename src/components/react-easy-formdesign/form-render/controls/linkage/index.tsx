@@ -1,10 +1,11 @@
-import { Button, Col, Select, Input, Modal, Row } from "antd";
+import { Button, Col, Select, Input, Modal, Row, Checkbox, CheckboxProps, ButtonProps } from "antd";
 import React, { LegacyRef, useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/svg-icon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import RenderForm, { FieldChangedParams, FormFieldProps } from "../..";
 import { evalString } from "@/utils/string";
+import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 
 export interface LinkageRulesProps {
@@ -173,19 +174,17 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   );
 });
 
-// 代码编辑器弹窗
-export const LinkageListModal = (
-  props: LinkageRulesProps & {
-    onClose?: () => void;
-    disabled?: boolean;
-    visible?: boolean;
-  }) => {
+// 联动弹窗
+export interface LinkageModalProps extends LinkageRulesProps {
+  onClose?: () => void;
+  visible?: boolean;
+}
+export const LinkageModal = (props: LinkageModalProps) => {
 
   const {
     value,
     onChange,
     onClose,
-    disabled,
     currentControl,
   } = props;
 
@@ -231,19 +230,18 @@ export const LinkageListModal = (
   );
 };
 
-// 代码编辑器弹窗
-export const LinkageBtn = (
-  props: LinkageRulesProps & {
-    onClose?: () => void;
-    disabled?: boolean;
-  }) => {
+// 联动组件
+export interface LinkageModalWrapperProps extends LinkageModalProps {
+  children?: (showModal: () => void, codeStr?: string) => void;
+}
+export const LinkageWrapper = (props: LinkageModalWrapperProps) => {
 
   const {
     value,
     onChange,
     onClose,
-    disabled,
     currentControl,
+    children
   } = props;
 
   const [visible, setVisible] = useState<boolean>()
@@ -269,11 +267,11 @@ export const LinkageBtn = (
 
   return (
     <>
-      <div>
-        <span>{codeStr}</span>
-        <Button type="link" className={classes.modalButton} disabled={disabled} onClick={showModal}>{codeStr ? "修改联动" : "添加联动"}</Button>
-      </div>
-      <LinkageListModal
+      {
+        typeof children === 'function' &&
+        children(showModal, codeStr)
+      }
+      <LinkageModal
         visible={visible}
         value={value}
         currentControl={currentControl}
@@ -281,5 +279,91 @@ export const LinkageBtn = (
         onChange={handleOnChange}
       />
     </>
+  );
+};
+
+// 按钮点击联动弹窗
+export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
+
+  const {
+    value,
+    onChange,
+    currentControl,
+    ...rest
+  } = props;
+
+  return (
+    <LinkageWrapper value={value} onChange={onChange} currentControl={currentControl}>
+      {
+        (showModal: () => void, codeStr?: string) => (
+          <div>
+            <span>{codeStr}</span>
+            <Button type="link" className={classes.modalButton} onClick={showModal} {...rest}>{codeStr ? "修改联动" : "添加联动"}</Button>
+          </div>
+        )
+      }
+    </LinkageWrapper>
+  );
+};
+
+// checkbox点击联动弹窗
+export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { value?: boolean | string, onChange?: (val?: boolean | string) => void }) => {
+
+  const {
+    value,
+    checked,
+    onChange,
+    currentControl,
+    children,
+    ...rest
+  } = props;
+
+  const [codeStr, setCodeStr] = useState<string>();
+  const [checkboxValue, setCheckboxValue] = useState<boolean>();
+
+  useEffect(() => {
+    if (typeof value === 'boolean') {
+      setCheckboxValue(value)
+    }
+  }, [value])
+
+  const checkboxChange = (e: CheckboxChangeEvent) => {
+    const checked = e?.target?.checked;
+    if (codeStr) {
+      if (checked) {
+        setCheckboxValue(true);
+        onChange && onChange(codeStr);
+      } else {
+        setCheckboxValue(false);
+        onChange && onChange(false);
+      }
+    } else {
+      setCheckboxValue(checked);
+      onChange && onChange(checked);
+    }
+  }
+
+  const linkageOnChange = (codeStr?: string) => {
+    setCodeStr(codeStr);
+  }
+
+  const clearCodeStr = () => {
+    setCodeStr(undefined);
+  }
+
+  return (
+    <Checkbox checked={checkboxValue} onChange={checkboxChange} {...rest}>
+      {children}
+      <LinkageWrapper value={typeof value === 'string' ? value : undefined} onChange={linkageOnChange} currentControl={{ type: 'Switch' }}>
+        {
+          (showModal: () => void, codeStr?: string) => (
+            <>
+              <Icon className={classes.icon} onClick={showModal} name="edit" />
+              {codeStr && <Icon className={classes.icon} onClick={clearCodeStr} name="delete" />}
+            </>
+          )
+        }
+      </LinkageWrapper>
+    </Checkbox>
   );
 };

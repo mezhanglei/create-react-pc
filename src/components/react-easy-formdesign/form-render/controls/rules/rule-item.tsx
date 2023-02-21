@@ -1,4 +1,4 @@
-import React, { LegacyRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { FormFieldProps, useFormStore, useFormValues } from '../../../form-render';
