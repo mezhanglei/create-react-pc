@@ -207,7 +207,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 值兼容字符串表达式
-  const evalExpression = (value?: string | boolean, uneval?: boolean) => {
+  const evalExpression = (value?: string | boolean, uneval?: boolean): any => {
     if (uneval) return value;
     if (typeof value === 'string') {
       const matchStr = matchExpression(value)

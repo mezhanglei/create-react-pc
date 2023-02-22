@@ -73,6 +73,12 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
     setRuleValueMap((old) => ({ ...old, [type]: data }));
   }
 
+  const selectTypeChange = (key: string) => {
+    if (key && name) {
+      currentForm.setFieldValue({ [name]: ruleValueMap[key], });
+    }
+  }
+
   const properties = name ? {
     selectType: {
       label: '赋值方式',
@@ -80,6 +86,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
       labelWidth: 80,
       initialValue: 'handle',
       type: 'Select',
+      onFieldsChange: selectTypeChange,
       props: {
         style: { width: '100%' },
         options: SelectOptions

@@ -63,8 +63,11 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     }
   }
 
-  const selectTypeChange = (val?: string) => {
-    setTab(val);
+  const selectTypeChange = (key?: string) => {
+    setTab(key);
+    if (key) {
+      onChange && onChange(dataMap[key]);
+    }
   }
 
   const dataChange = (key: string, data: any) => {
