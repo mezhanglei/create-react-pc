@@ -4,6 +4,7 @@ import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../f
 import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, getNameSettings, setDesignerFormValue } from '../../utils/utils';
 import CustomCollapse from '../../form-render/components/collapse';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
+import './component.less';
 
 export interface SelectedSettingsProps {
   className?: string
