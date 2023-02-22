@@ -174,7 +174,7 @@ export const toList = (properties: PropertiesData) => {
   const temp = [];
   const isList = properties instanceof Array;
   if (typeof properties === 'object') {
-    for (let key in properties) {
+    for (let key of Object.keys(properties)) {
       const field = properties[key];
       if (isList) {
         temp.push(field);
@@ -190,7 +190,7 @@ export const toList = (properties: PropertiesData) => {
 const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
   const temp = isList ? [] : {};
   if (typeof dataList === 'object') {
-    for (let key in dataList) {
+    for (let key of Object.keys(dataList)) {
       const field = dataList[key];
       const name = field?.name;
       delete field['name'];
@@ -311,7 +311,7 @@ export const getInitialValues = (properties?: PropertiesData) => {
   let initialValues = {};
   // 遍历处理对象树中的非properties字段
   const deepHandle = (formField: FormFieldProps, path: string) => {
-    for (const propsKey in formField) {
+    for (const propsKey of Object.keys(formField)) {
       if (propsKey !== 'properties') {
         const propsValue = formField[propsKey]
         if (propsKey === 'initialValue' && propsValue !== undefined) {
@@ -319,19 +319,21 @@ export const getInitialValues = (properties?: PropertiesData) => {
         }
       } else {
         const childProperties = formField[propsKey]
-        for (const childKey in childProperties) {
-          const childField = childProperties[childKey];
-          const childName = childKey;
-          if (typeof childName === 'number' || typeof childName === 'string') {
-            const childPath = joinFormPath(path, childName) as string;
-            deepHandle(childField, childPath);
+        if (childProperties) {
+          for (const childKey of Object.keys(childProperties)) {
+            const childField = childProperties[childKey];
+            const childName = childKey;
+            if (typeof childName === 'number' || typeof childName === 'string') {
+              const childPath = joinFormPath(path, childName) as string;
+              deepHandle(childField, childPath);
+            }
           }
         }
       }
     }
   };
 
-  for (const key in properties) {
+  for (const key of Object.keys(properties)) {
     const childField = properties[key];
     const childName = key;
     if (typeof childName === 'number' || typeof childName === 'string') {
@@ -355,18 +357,20 @@ export const setExpandControl = (properties?: PropertiesData): { [key: string]: 
     } else {
       const parent = path;
       const childProperties = formField['properties'];
-      for (const key in childProperties) {
-        const childField = childProperties[key];
-        const childName = key;
-        if (typeof childName === 'string') {
-          const childPath = joinFormPath(parent, childField?.ignore ? undefined : childName) as string;
-          deepHandle(childField, childPath);
+      if (childProperties) {
+        for (const key of Object.keys(childProperties)) {
+          const childField = childProperties[key];
+          const childName = key;
+          if (typeof childName === 'string') {
+            const childPath = joinFormPath(parent, childField?.ignore ? undefined : childName) as string;
+            deepHandle(childField, childPath);
+          }
         }
       }
     }
   };
 
-  for (const key in properties) {
+  for (const key of Object.keys(properties)) {
     const childField = properties[key];
     const childName = key;
     if (typeof childName === 'string') {

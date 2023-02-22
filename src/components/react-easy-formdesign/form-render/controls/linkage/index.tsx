@@ -1,5 +1,5 @@
 import { Button, Col, Select, Input, Modal, Row, Checkbox, CheckboxProps, ButtonProps } from "antd";
-import React, { LegacyRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/svg-icon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
@@ -34,6 +34,9 @@ const classes = {
   itemPrefix: `${prefixCls}-item-prefix`,
   itemSuffix: `${prefixCls}-item-suffix`,
   icon: `${prefixCls}-item-icon`,
+  checkbox: `${prefixCls}-item-checkbox`,
+  addIcon: `${prefixCls}-item-add`,
+  clearIcon: `${prefixCls}-item-clear`,
 }
 
 const assembleOptions = [{
@@ -232,7 +235,7 @@ export const LinkageModal = (props: LinkageModalProps) => {
 
 // 联动组件
 export interface LinkageModalWrapperProps extends LinkageModalProps {
-  children?: (showModal: () => void, codeStr?: string) => void;
+  children?: (showModal: () => void, codeStr?: string) => void | any;
 }
 export const LinkageWrapper = (props: LinkageModalWrapperProps) => {
 
@@ -324,9 +327,12 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
   useEffect(() => {
     if (typeof value === 'boolean') {
       setCheckboxValue(value)
+    } else {
+      setCodeStr(value)
     }
   }, [value])
 
+  // checkbox的变化
   const checkboxChange = (e: CheckboxChangeEvent) => {
     const checked = e?.target?.checked;
     if (codeStr) {
@@ -343,27 +349,37 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
     }
   }
 
+  // 联动值的变化
   const linkageOnChange = (codeStr?: string) => {
+    if (checkboxValue) {
+      setCheckboxValue(true);
+      onChange && onChange(codeStr);
+    }
     setCodeStr(codeStr);
   }
 
   const clearCodeStr = () => {
+    if (checkboxValue) {
+      onChange && onChange(false);
+    }
     setCodeStr(undefined);
   }
 
   return (
-    <Checkbox checked={checkboxValue} onChange={checkboxChange} {...rest}>
-      {children}
-      <LinkageWrapper value={typeof value === 'string' ? value : undefined} onChange={linkageOnChange} currentControl={{ type: 'Switch' }}>
+    <span className={classes.checkbox}>
+      <Checkbox checked={checkboxValue} onChange={checkboxChange} {...rest}>
+        {children}
+      </Checkbox>
+      <LinkageWrapper value={codeStr} onChange={linkageOnChange} currentControl={{ type: 'Switch' }}>
         {
           (showModal: () => void, codeStr?: string) => (
             <>
-              <Icon className={classes.icon} onClick={showModal} name="edit" />
-              {codeStr && <Icon className={classes.icon} onClick={clearCodeStr} name="delete" />}
+              <Icon className={classes.addIcon} onClick={showModal} name="edit" title="编辑" />
+              {codeStr && <Icon className={classes.clearIcon} onClick={clearCodeStr} title="清除" name="qingchu" />}
             </>
           )
         }
       </LinkageWrapper>
-    </Checkbox>
+    </span>
   );
 };

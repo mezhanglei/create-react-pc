@@ -99,7 +99,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const newRules = rules?.map((rule) => {
       const newRule = {};
       if (rule) {
-        for (let key in rule) {
+        for (let key of Object.keys(rule)) {
           newRule[key] = evalExpression(rule[key], uneval)
         }
         return newRule;
@@ -112,7 +112,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const evalProps = (val?: any) => {
     const newProps = {};
     if (val) {
-      for (let key in val) {
+      for (let key of Object.keys(val)) {
         const propsItem = val?.[key];
         newProps[key] = evalExpression(propsItem, uneval);
       }
@@ -122,10 +122,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 递归遍历处理表单域的字符串表达式并存储解析后的信息
   const handleFieldProps = () => {
+    if(typeof properties !== 'object') return;
     const fieldPropsMap = {};
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formField: FormFieldProps, path: string) => {
-      for (const propsKey in formField) {
+      for (const propsKey of Object.keys(formField)) {
         if (typeof propsKey === 'string') {
           if (propsKey !== 'properties') {
             const propsValue = formField[propsKey];
@@ -142,12 +143,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
             fieldPropsMap[formPath] = result;
           } else {
             const childProperties = formField[propsKey];
-            for (const childKey in childProperties) {
-              const childField = childProperties[childKey];
-              const childName = childKey;
-              if (typeof childName === 'number' || typeof childName === 'string') {
-                const childPath = joinFormPath(path, childName) as string;
-                deepHandle(childField, childPath);
+            if (childProperties) {
+              for (const childKey of Object.keys(childProperties)) {
+                const childField = childProperties[childKey];
+                const childName = childKey;
+                if (typeof childName === 'number' || typeof childName === 'string') {
+                  const childPath = joinFormPath(path, childName) as string;
+                  deepHandle(childField, childPath);
+                }
               }
             }
           }
@@ -155,7 +158,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       }
     };
 
-    for (const key in properties) {
+    for (const key of Object.keys(properties)) {
       const childField = properties[key];
       const childName = key;
       if (typeof key === 'string') {
@@ -249,13 +252,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 从参数中获取声明组件
   const componentParse = (target: FieldUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
-    if (isValidChildren(target)) return
+    if (target === undefined) return;
+    if (isValidChildren(target)) return null;
     // 是否为类或函数组件声明
     if (isReactComponent(target)) {
       return target
     }
     // 是否为已注册的组件声明
-    if (typeof target === 'object') {
+    if (typeof target === 'object' && target) {
       const targetInfo = target as FormComponent;
       const hidden = evalExpression(targetInfo?.hidden, uneval);
       if (hidden === true) {
@@ -266,6 +270,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         return register
       }
     }
+    return null;
   }
 
   const ignoreTag = { "data-type": "ignore" }
