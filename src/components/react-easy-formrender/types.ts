@@ -17,7 +17,7 @@ export type UnionComponent<P> =
   | keyof React.ReactHTML;
 
 // 表单上的组件联合类型
-export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function
+export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function | null
 
 // 最终生成的表单域
 export interface GenerateFieldProps extends FormComponent, FormItemProps {

@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/svg-icon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
-import RenderForm, { FieldChangedParams, FormFieldProps } from "../..";
+import RenderForm, { FieldChangedParams } from "../..";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/utils/utils";
 
 export interface ControlFieldProps {
-  controlField?: FormFieldProps;
+  controlField?: any;
 }
 export interface LinkageRulesProps extends ControlFieldProps {
   value?: string;
