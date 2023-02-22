@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { deepSet, joinFormPath } from "../form-render";
 import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
 import { isEmpty } from "@/utils/type";
@@ -31,11 +31,23 @@ export function useFormExpandControl() {
 
 // 处理列表型的数据
 export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) => void) {
-  const [dataSource, setDataSource] = useState<T[]>(intialValue || []);
+  const [dataSource, setData] = useState<T[]>(intialValue || []);
+  const dataSourceRef = useRef<T[]>(intialValue || []);
+
+  const setDataSource = (data: T[]) => {
+    setData(data);
+    dataSourceRef.current = data;
+  }
+
+  // onChange事件
+  const dataChange = (data: T[]) => {
+    onChange && onChange(data);
+  }
 
   // 更新目标数据
   const updateItem = (data: any, rowIndex: number, path?: string) => {
-    const cloneData = dataSource ? [...dataSource] : [];
+    const oldData = dataSourceRef.current;
+    const cloneData = oldData ? [...oldData] : [];
     let item = cloneData?.[rowIndex] ?? {};
     if (path) {
       cloneData[rowIndex] = deepSet(item, path, data)
@@ -48,22 +60,19 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
 
   // 新增一行
   const addItem = (data: T[]) => {
-    const newData = dataSource?.concat(data);
+    const oldData = dataSourceRef.current;
+    const newData = oldData?.concat(data);
     setDataSource(newData);
   }
 
   // 删除一行
   const deleteItem = (rowIndex: number) => {
-    if (!dataSource) return;
-    const newData = [...dataSource];
+    const oldData = dataSourceRef.current;
+    if (!oldData) return;
+    const newData = [...oldData];
     newData.splice(rowIndex, 1);
     setDataSource(newData);
     dataChange(newData);
-  }
-
-  // onChange事件
-  const dataChange = (data: T[]) => {
-    onChange && onChange(data);
   }
 
   return {

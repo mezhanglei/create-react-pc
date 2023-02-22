@@ -6,12 +6,14 @@ import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import RenderForm, { FieldChangedParams, FormFieldProps } from "../..";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
+import { handleStringify } from "@/components/react-easy-formdesign/utils/utils";
 
-
-export interface LinkageRulesProps {
+export interface ControlFieldProps {
+  controlField?: FormFieldProps;
+}
+export interface LinkageRulesProps extends ControlFieldProps {
   value?: string;
   onChange?: (codeStr?: string) => void;
-  controlField?: FormFieldProps;
 }
 
 // 集合类型
@@ -72,7 +74,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
       const assembleStr = current?.[0] || "";
       const conditionStr = current?.[1]?.condition || "";
       const controlValue = current?.[1]?.currentControlValue;
-      const currentStr = conditionStr ? `(${conditionStr} ? ${controlValue ?? "null"} : null)` : ""
+      const currentStr = conditionStr ? `(${conditionStr} ? ${handleStringify(controlValue) ?? "null"} : null)` : ""
       return preStr + assembleStr + currentStr;
     }, "");
     codeStr = codeStr ? `{{${codeStr}}}` : "";

@@ -22,6 +22,7 @@ import ImageUpload from "./image-upload";
 import { bindRequest } from './options/bind';
 import RulesComponent from './rules';
 import { LinkageCheckbox } from './linkage';
+import { EditorCodeMirror } from './options/editor';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const BaseControls = {
@@ -53,7 +54,8 @@ export const BaseControls = {
   "OptionsComponent": OptionsComponent, // 用于显示数据源的控件
   "RulesComponent": RulesComponent, // 添加校验规则的控件
   "CodeInput": CodeInput, // 值的输入框
-  "CodeTextArea": CodeTextArea, // 值的输入框
+  "CodeTextArea": CodeTextArea, // 值的输入框(支持函数)
+  "EditorCodeMirror": EditorCodeMirror, // 值的输入框(不支持函数)
   "ColorPicker": ColorPicker, // 颜色选择器
   "FileUpload": FileUpload, // 文件上传
   "ImageUpload": ImageUpload, // 图片上传

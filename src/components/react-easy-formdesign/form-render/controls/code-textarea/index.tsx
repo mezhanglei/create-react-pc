@@ -2,8 +2,7 @@ import { handleEvalString, handleStringify } from '@/components/react-easy-formd
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import { TextAreaRef } from 'antd/lib/input/TextArea';
-import js_beautify from 'js-beautify';
-import React, { CSSProperties, Ref, useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 
 // 函数代码编辑器
 export interface CodeTextAreaProps extends TextAreaProps {
@@ -37,14 +36,10 @@ const CodeTextArea = React.forwardRef<TextAreaRef, CodeTextAreaProps>((props, re
     setCurValue(codeStr)
   }
 
-  const formatStr = curValue && js_beautify(curValue, {
-    indent_size: 2
-  });
-
   return (
     <Input.TextArea
       ref={ref}
-      value={formatStr}
+      value={curValue}
       onBlur={onBlur}
       onChange={handleChange}
       {...rest}

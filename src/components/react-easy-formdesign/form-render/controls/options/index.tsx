@@ -18,7 +18,6 @@ export interface OptionsProps {
 
 export interface OptionsComponentProps extends OptionsProps {
   includes?: string[]; // 当前可用模块
-  controlField?: FormFieldProps;
 }
 
 const prefixCls = 'option-source'
@@ -33,7 +32,6 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     includes = ['list', 'json', 'request', 'linkage'],
     value,
     onChange,
-    controlField,
     ...rest
   } = props;
 
@@ -54,7 +52,13 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     list: <OptionsList value={value} onChange={onChange} {...rest} />,
     json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
     request: <RequestSource />,
-    linkage: <LinkageBtn value={value} onChange={onChange} {...rest} controlField={controlField} />
+    linkage: <LinkageBtn
+      value={value} onChange={onChange} {...rest}
+      controlField={{
+        type: 'CodeTextArea',
+        props: {
+        }
+      }} />
   }
 
   const Component = tab && ComponentMap[tab]

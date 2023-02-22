@@ -3,7 +3,7 @@ import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { FormFieldProps, useFormStore, useFormValues } from '../../../form-render';
 import { Button } from "antd";
-import { LinkageBtn } from "../linkage";
+import { ControlFieldProps, LinkageBtn } from "../linkage";
 import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 import './style.less';
 
@@ -15,11 +15,10 @@ interface CurrentValue {
   message?: string
 }
 
-export interface RuleItemProps {
+export interface RuleItemProps extends ControlFieldProps {
   name?: string;
   label?: string;
   controlLabel: string;
-  controlField: FormFieldProps;
   value?: CurrentValue;
   onChange?: (val: CurrentValue) => void;
 }

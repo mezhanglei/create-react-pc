@@ -14,7 +14,7 @@ const settings = {
         type: 'OptionsComponent',
         label: '选项数据',
         props: {
-          includes: ['json', 'request']
+          includes: ['json', 'request', 'linkage']
         }
       },
     }
