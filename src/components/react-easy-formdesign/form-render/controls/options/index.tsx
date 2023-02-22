@@ -2,10 +2,10 @@ import { Select } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
-import RequestSource from './request';
+import RequestSource, { isRequestConfig } from './request';
 import './index.less';
 import { LinkageBtn } from "../linkage";
-import { FormFieldProps } from "../..";
+import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 
 /**
  * 数据源的配置组件。
@@ -43,17 +43,44 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
 
   const [tab, setTab] = useState<string>();
+  const [dataMap, setDataMap] = useState<any>({});
 
+  // 接受外部赋值
+  const defaultTab = buttons[0]?.value;
   useEffect(() => {
-    setTab(buttons[0]?.value)
-  }, [buttons[0]?.value])
+    const result = getTabFromValue(value) || defaultTab;
+    setTab(result);
+    setDataMap({ [result]: value });
+  }, [defaultTab]);
+
+  const getTabFromValue = (val?: any) => {
+    const matchStr = matchExpression(val);
+    if (matchStr) {
+      return "linkage"
+    };
+    if (isRequestConfig(val)) {
+      return 'request'
+    }
+  }
+
+  const selectTypeChange = (val?: string) => {
+    setTab(val);
+  }
+
+  const dataChange = (key: string, data: any) => {
+    setDataMap((old: any) => ({ ...old, [key]: data }));
+    onChange && onChange(data);
+    setTab(key);
+  }
 
   const ComponentMap = {
-    list: <OptionsList value={value} onChange={onChange} {...rest} />,
-    json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
+    list: <OptionsList value={dataMap['list']} onChange={(val) => dataChange('list', val)} {...rest} />,
+    json: <EditorCodeMirror value={dataMap['json']} onChange={(val) => dataChange('json', val)} {...rest} />,
     request: <RequestSource />,
     linkage: <LinkageBtn
-      value={value} onChange={onChange} {...rest}
+      {...rest}
+      value={dataMap['linkage']}
+      onChange={(val) => dataChange('linkage', val)}
       controlField={{
         type: 'CodeTextArea',
         props: {
@@ -61,12 +88,12 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
       }} />
   }
 
-  const Component = tab && ComponentMap[tab]
+  const Component = tab && ComponentMap[tab];
 
   return (
     <>
       <div className={classes.tab}>
-        <Select value={tab} style={{ width: "100%" }} options={buttons} onChange={(val) => setTab(val)} />
+        <Select value={tab} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
       </div>
       <div className={classes.component}>
         {Component}

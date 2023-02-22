@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
-import RenderForm, { FormFieldProps, useFormStore, useFormValues } from '../../../form-render';
+import RenderForm, { useFormStore, useFormValues } from '../../../form-render';
 import { Button } from "antd";
 import { ControlFieldProps, LinkageBtn } from "../linkage";
 import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
@@ -51,22 +51,26 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
   const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }];
   const currentForm = useFormStore();
   const formvalues = useFormValues<{ selectType: string }>(currentForm, ['selectType']);
-  const currentValue = name ? value?.[name] : undefined;
+  const selectType = formvalues?.['selectType'];
   const currentMessage = value?.['message'];
+  const ruleValue = name ? value?.[name] : undefined;
+  const [ruleValueMap, setRuleValueMap] = useState<{ [key: string]: any }>({});
 
   useEffect(() => {
     if (name) {
-      const matchStr = matchExpression(currentValue);
+      const matchStr = matchExpression(ruleValue);
       if (matchStr) {
-        currentForm.setFieldValue({ selectType: 'linkage', [name]: currentValue, message: currentMessage });
+        setRuleValueMap({ linkage: ruleValue });
+        currentForm.setFieldValue({ selectType: 'linkage', [name]: ruleValue, message: currentMessage });
       } else {
-        currentForm.setFieldValue({ selectType: 'handle', [name]: currentValue, message: currentMessage });
+        setRuleValueMap({ handle: ruleValue });
+        currentForm.setFieldValue({ selectType: 'handle', [name]: ruleValue, message: currentMessage });
       }
     }
   }, [value]);
 
-  const selectTypeChange = () => {
-    name && currentForm.setFieldValue(name, undefined);
+  const dataChange = (type: 'handle' | 'linkage', data: any) => {
+    setRuleValueMap((old) => ({ ...old, [type]: data }));
   }
 
   const properties = name ? {
@@ -75,23 +79,24 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
       layout: 'horizontal',
       labelWidth: 80,
       initialValue: 'handle',
-      onFieldsChange: selectTypeChange,
       type: 'Select',
       props: {
         style: { width: '100%' },
         options: SelectOptions
       }
     },
-    [name]: formvalues?.['selectType'] === 'linkage' ? {
+    [name]: selectType === 'linkage' ? {
       label: '联动条件',
       layout: 'horizontal',
-      initialValue: currentValue,
+      initialValue: ruleValueMap[selectType],
       labelWidth: 80,
+      onFieldsChange: (data: any) => dataChange('linkage', data),
       typeRender: <LinkageBtn controlField={controlField} />
     } : {
       label: controlLabel,
       layout: 'horizontal',
-      initialValue: currentValue,
+      initialValue: selectType && ruleValueMap[selectType],
+      onFieldsChange: (data: any) => dataChange('handle', data),
       labelWidth: 80,
       ...controlField
     },
@@ -113,7 +118,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
     const { selectType, ...rest } = values || {}
     if (name) {
       const result = rest;
-      onChange && onChange(result)
+      onChange && onChange(result);
     }
     setTooltipVisible(false);
   }

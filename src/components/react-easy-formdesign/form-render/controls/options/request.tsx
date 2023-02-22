@@ -26,6 +26,15 @@ export interface RequestSourceProps {
   style?: CSSProperties;
 }
 
+// 是否为请求配置
+export const isRequestConfig = (data: any) => {
+  if(typeof data === 'object') {
+    if(data?.url) {
+      return true;
+    }
+  }
+}
+
 const prefixCls = 'request-source';
 const classes = {
   cls: prefixCls

@@ -1,6 +1,6 @@
 import { isEmpty } from "@/utils/type";
 import { Button, Col, Input, message, Row } from "antd";
-import React, { ChangeEvent, LegacyRef } from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import './list.less';
 import Icon from "@/components/svg-icon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
@@ -30,10 +30,15 @@ const OptionsList = React.forwardRef<HTMLElement, OptionsListProps>((props, ref)
   const intialValue = [{ label: '', value: '' }];
   const {
     dataSource,
+    setDataSource,
     addItem,
     updateItem,
     deleteItem
   } = useTableData<OptionItem>(value || intialValue, onChange);
+
+  useEffect(() => {
+    setDataSource(value || []);
+  }, [value])
 
   const labelChange = (e: ChangeEvent<HTMLInputElement>, rowIndex: number) => {
     const val = e?.target?.value;

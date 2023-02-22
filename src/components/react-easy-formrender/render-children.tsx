@@ -114,7 +114,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (val) {
       for (let key of Object.keys(val)) {
         const propsItem = val?.[key];
-        newProps[key] = evalExpression(propsItem, uneval);
+        const generateItem = evalExpression(propsItem, uneval);
+        newProps[key] = generateItem;
       }
       return newProps;
     }
@@ -122,7 +123,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 递归遍历处理表单域的字符串表达式并存储解析后的信息
   const handleFieldProps = () => {
-    if(typeof properties !== 'object') return;
+    if (typeof properties !== 'object') return;
     const fieldPropsMap = {};
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formField: FormFieldProps, path: string) => {
@@ -219,7 +220,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function(...importsKeys, actionStr);
         const result = action(form, formRenderStore, form && form.getFieldValue() || {}, ...importsValues);
-        return result;
+        const matchResult = matchExpression(result);
+        if (matchResult) {
+          return evalExpression(result, uneval);
+        } else {
+          return result
+        }
       } else {
         return value;
       }

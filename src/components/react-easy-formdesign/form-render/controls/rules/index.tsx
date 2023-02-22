@@ -62,7 +62,7 @@ const RulesComponent = React.forwardRef<HTMLElement, RulesComponentProps>((props
     <div className={classes.rules}>
       <RenderForm
         tagName="div"
-        initialValues={rulesData}
+        values={rulesData}
         properties={properties}
         onFieldsChange={onFieldsChange}
       />

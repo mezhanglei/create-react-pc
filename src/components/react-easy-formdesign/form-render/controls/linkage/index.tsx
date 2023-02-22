@@ -74,7 +74,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
       const assembleStr = current?.[0] || "";
       const conditionStr = current?.[1]?.condition || "";
       const controlValue = current?.[1]?.currentControlValue;
-      const currentStr = conditionStr ? `(${conditionStr} ? ${handleStringify(controlValue) ?? "null"} : null)` : ""
+      const currentStr = conditionStr ? `(${conditionStr} && ${handleStringify(controlValue)})` : ""
       return preStr + assembleStr + currentStr;
     }, "");
     codeStr = codeStr ? `{{${codeStr}}}` : "";
@@ -98,8 +98,9 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
       const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配带括号的目标
       const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配无括号的目标
       if (matchStr && matchStrWithBracket) {
-        const condition = matchStr.match(/(\S*.*?\s*)\?/)?.[1]; // 匹配问号前面的字符串, 即条件
-        const currentControlValueStr = matchStr.match(/\?(\S*.*?\s*)\:/)?.[1]; // 匹配问号后面的
+        const splitList = matchStr?.split('&&');
+        const condition = splitList?.[0]; // 匹配问号前面的字符串, 即条件
+        const currentControlValueStr = splitList?.[1]; // 匹配问号后面的
         const currentControlValue = currentControlValueStr && evalString(currentControlValueStr);
         result.push([matchAssemble, { condition, currentControlValue }]);
         const restStr = str?.replace(matchStrWithBracket, '')

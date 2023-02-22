@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
-import { RequestResponseConfig } from './request';
+import { isRequestConfig, RequestResponseConfig } from './request';
 
 /**
  * 包裹目标之后，会根据requestConfig参数自动请求远程数据并传递给目标控件
@@ -47,7 +47,7 @@ export function bindRequest(component: any, codeStr: string = "options") {
     }
 
     // 赋值数据
-    const requestSet = typeof requestConfig === 'object' && codeStr && {
+    const requestSet = isRequestConfig(requestConfig) && codeStr && {
       [codeStr]: response
     }
 
