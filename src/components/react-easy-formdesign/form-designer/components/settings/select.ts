@@ -1,8 +1,4 @@
 const settings = {
-  // initialValue: {
-  //   label: '默认值',
-  //   type: 'CodeTextArea'
-  // },
   initialValue: {
     label: '默认值',
     type: 'Select',

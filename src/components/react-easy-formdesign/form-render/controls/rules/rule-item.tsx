@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Icon from "@/components/svg-icon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { FormFieldProps, useFormStore, useFormValues } from '../../../form-render';
@@ -48,6 +48,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
     ...rest
   } = props;
 
+  const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const SelectOptions = [{ label: '手动设置', value: 'handle' }, { label: '联动设置', value: 'linkage' }];
   const currentForm = useFormStore();
   const formvalues = useFormValues<{ selectType: string }>(currentForm, ['selectType']);
@@ -69,9 +70,6 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
     name && currentForm.setFieldValue(name, undefined);
   }
 
-  // 目标设置值的控件
-  const currentControl = controlField;
-
   const properties = name ? {
     selectType: {
       label: '赋值方式',
@@ -90,13 +88,13 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
       layout: 'horizontal',
       initialValue: currentValue,
       labelWidth: 80,
-      typeRender: <LinkageBtn currentControl={currentControl} />
+      typeRender: <LinkageBtn controlField={controlField} />
     } : {
       label: controlLabel,
       layout: 'horizontal',
       initialValue: currentValue,
       labelWidth: 80,
-      ...currentControl
+      ...controlField
     },
     message: {
       label: '提示信息',
@@ -118,6 +116,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
       const result = rest;
       onChange && onChange(result)
     }
+    setTooltipVisible(false);
   }
 
   const renderContent = () => {
@@ -135,6 +134,10 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
     );
   }
 
+  const showTooltip = () => {
+    setTooltipVisible(!tooltipVisible);
+  }
+
   return (
     <div className={classes.item} ref={ref}>
       <div className={classes.label}>{label}</div>
@@ -142,15 +145,14 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
         <div className={classes.message} title={currentMessage}>{currentMessage}</div>
       </div>
       <Tooltip
+        visible={tooltipVisible}
         className={classes.tooltip}
         appendTo={document.body}
         placement="left"
         theme="light"
         content={renderContent()}
-        trigger="click"
-        hideOnClick="toggle"
       >
-        <Icon className={classes.icon} name="edit" />
+        <Icon className={classes.icon} onClick={showTooltip} name="edit" />
       </Tooltip>
     </div>
   );

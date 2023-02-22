@@ -11,7 +11,7 @@ import { CheckboxChangeEvent } from "antd/lib/checkbox";
 export interface LinkageRulesProps {
   value?: string;
   onChange?: (codeStr?: string) => void;
-  currentControl: FormFieldProps;
+  controlField?: FormFieldProps;
 }
 
 // 集合类型
@@ -55,7 +55,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   const {
     value,
     onChange,
-    currentControl,
+    controlField,
     ...rest
   } = props;
 
@@ -147,7 +147,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
             <RenderForm
               tagName="div"
               values={{ currentControlValue: ruleItem?.['currentControlValue'] }}
-              properties={{ currentControlValue: { compact: true, ...currentControl } }}
+              properties={{ currentControlValue: { compact: true, ...(controlField || {}) } }}
               onFieldsChange={(params) => currentControlChange(params, index)}
             />
           </Col>
@@ -188,14 +188,18 @@ export const LinkageModal = (props: LinkageModalProps) => {
     value,
     onChange,
     onClose,
-    currentControl,
+    controlField,
   } = props;
 
   const [visible, setVisible] = useState<boolean>()
   const [codeStr, setCodeStr] = useState<string>();
 
   useEffect(() => {
-    setCodeStr(value)
+    if (typeof value === 'string') {
+      setCodeStr(value)
+    } else {
+      setCodeStr(undefined)
+    }
   }, [value]);
 
   useEffect(() => {
@@ -227,7 +231,7 @@ export const LinkageModal = (props: LinkageModalProps) => {
       <LinkageRules
         value={value}
         onChange={handleOnChange}
-        currentControl={currentControl}
+        controlField={controlField}
       />
     </Modal>
   );
@@ -243,7 +247,7 @@ export const LinkageWrapper = (props: LinkageModalWrapperProps) => {
     value,
     onChange,
     onClose,
-    currentControl,
+    controlField,
     children
   } = props;
 
@@ -251,7 +255,11 @@ export const LinkageWrapper = (props: LinkageModalWrapperProps) => {
   const [codeStr, setCodeStr] = useState<string>();
 
   useEffect(() => {
-    setCodeStr(value)
+    if (typeof value === 'string') {
+      setCodeStr(value)
+    } else {
+      setCodeStr(undefined)
+    }
   }, [value])
 
   const showModal = () => {
@@ -277,7 +285,7 @@ export const LinkageWrapper = (props: LinkageModalWrapperProps) => {
       <LinkageModal
         visible={visible}
         value={value}
-        currentControl={currentControl}
+        controlField={controlField}
         onClose={closeModal}
         onChange={handleOnChange}
       />
@@ -291,12 +299,12 @@ export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
   const {
     value,
     onChange,
-    currentControl,
+    controlField,
     ...rest
   } = props;
 
   return (
-    <LinkageWrapper value={value} onChange={onChange} currentControl={currentControl}>
+    <LinkageWrapper value={value} onChange={onChange} controlField={controlField}>
       {
         (showModal: () => void, codeStr?: string) => (
           <div>
@@ -316,7 +324,7 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
     value,
     checked,
     onChange,
-    currentControl,
+    controlField,
     children,
     ...rest
   } = props;
@@ -327,7 +335,7 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
   useEffect(() => {
     if (typeof value === 'boolean') {
       setCheckboxValue(value)
-    } else {
+    } else if (typeof codeStr === 'string') {
       setCodeStr(value)
     }
   }, [value])
@@ -370,7 +378,7 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
       <Checkbox checked={checkboxValue} onChange={checkboxChange} {...rest}>
         {children}
       </Checkbox>
-      <LinkageWrapper value={codeStr} onChange={linkageOnChange} currentControl={{ type: 'Switch' }}>
+      <LinkageWrapper value={codeStr} onChange={linkageOnChange} controlField={{ type: 'Switch' }}>
         {
           (showModal: () => void, codeStr?: string) => (
             <>

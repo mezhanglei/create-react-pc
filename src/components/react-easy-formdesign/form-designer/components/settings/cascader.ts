@@ -1,7 +1,11 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'CodeTextArea'
+    type: 'Cascader',
+    props: {
+      options: "{{formvalues.props && formvalues.props.options ? formvalues.props.options : []}}",
+      multiple: "{{formvalues.props && formvalues.props.multiple ? formvalues.props.multiple : undefined}}",
+    }
   },
   props: {
     compact: true,

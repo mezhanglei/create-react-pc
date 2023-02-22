@@ -1,7 +1,10 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'CodeTextArea'
+    type: 'Checkbox.Group',
+    props: {
+      options: "{{formvalues.props && formvalues.props.options ? formvalues.props.options : []}}",
+    },
   },
   props: {
     compact: true,
@@ -15,7 +18,6 @@ const settings = {
     }
   }
 }
-
 export default ['基础属性', settings] as [string, typeof settings]
 
 const operationSettings = {
@@ -37,7 +39,6 @@ const operationSettings = {
     }
   }
 }
-
 export const checkbox_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
 
 const rulesSettings = {
@@ -48,5 +49,4 @@ const rulesSettings = {
     }
   },
 }
-
 export const checkbox_rule = ['校验规则', rulesSettings] as [string, typeof rulesSettings]

@@ -1,9 +1,11 @@
 import { Select } from "antd";
-import React, { LegacyRef, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
 import RequestSource from './request';
 import './index.less';
+import { LinkageBtn } from "../linkage";
+import { FormFieldProps } from "../..";
 
 /**
  * 数据源的配置组件。
@@ -16,6 +18,7 @@ export interface OptionsProps {
 
 export interface OptionsComponentProps extends OptionsProps {
   includes?: string[]; // 当前可用模块
+  controlField?: FormFieldProps;
 }
 
 const prefixCls = 'option-source'
@@ -27,9 +30,10 @@ const classes = {
 const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((props, ref) => {
 
   const {
-    includes = ['list', 'json', 'request'],
+    includes = ['list', 'json', 'request', 'linkage'],
     value,
     onChange,
+    controlField,
     ...rest
   } = props;
 
@@ -37,6 +41,7 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     { value: 'list', label: '选项数据' },
     { value: 'json', label: '静态数据' },
     { value: 'request', label: '接口请求' },
+    { value: 'linkage', label: '联动设置' },
   ]?.filter((item) => includes?.includes(item?.value))), [includes])
 
   const [tab, setTab] = useState<string>();
@@ -49,6 +54,7 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     list: <OptionsList value={value} onChange={onChange} {...rest} />,
     json: <EditorCodeMirror value={value} onChange={onChange} {...rest} />,
     request: <RequestSource />,
+    linkage: <LinkageBtn value={value} onChange={onChange} {...rest} controlField={controlField} />
   }
 
   const Component = tab && ComponentMap[tab]
@@ -57,11 +63,6 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     <>
       <div className={classes.tab}>
         <Select value={tab} style={{ width: "100%" }} options={buttons} onChange={(val) => setTab(val)} />
-        {/* <Radio.Group value={tab} buttonStyle="solid" onChange={(e) => setTab(e?.target?.value)}>
-          {
-            buttons?.map((item) => (<Radio.Button key={item?.value} value={item?.value}>{item?.label}</Radio.Button>))
-          }
-        </Radio.Group> */}
       </div>
       <div className={classes.component}>
         {Component}

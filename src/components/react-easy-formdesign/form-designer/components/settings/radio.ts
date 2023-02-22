@@ -1,7 +1,10 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'CodeTextArea'
+    type: 'Radio.Group',
+    props: {
+      options: "{{formvalues.props && formvalues.props.options ? formvalues.props.options : []}}",
+    },
   },
   props: {
     compact: true,
