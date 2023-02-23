@@ -1,10 +1,7 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'Checkbox.Group',
-    props: {
-      options: "{{formvalues.props && formvalues.props.options ? formvalues.props.options : []}}",
-    },
+    type: 'CodeTextArea',
   },
   props: {
     compact: true,

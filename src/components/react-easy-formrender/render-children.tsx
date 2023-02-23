@@ -24,7 +24,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     renderItem,
     renderList,
     inside,
-    properties: initialProperties,
+    properties: propsProperties,
     store,
     expressionImports = {}
   } = props;
@@ -61,12 +61,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }, []);
 
-  // 收集properties到store中
+  // 从props中更新properties
   useEffect(() => {
-    if (formRenderStore) {
-      formRenderStore.setProperties(initialProperties)
-    }
-  }, [initialProperties]);
+    if (!formRenderStore) return;
+    formRenderStore.setProperties(propsProperties);
+  }, [propsProperties]);
 
   // 订阅监听函数
   useMemo(() => {
@@ -220,12 +219,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function(...importsKeys, actionStr);
         const result = action(form, formRenderStore, form && form.getFieldValue() || {}, ...importsValues);
-        const matchResult = matchExpression(result);
-        if (matchResult) {
-          return evalExpression(result, uneval);
-        } else {
-          return result
-        }
+        return evalExpression(result, uneval);
       } else {
         return value;
       }

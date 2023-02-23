@@ -2,6 +2,12 @@ const settings = {
   initialValue: {
     label: '默认值',
     type: 'DatePicker',
+    valueSetter: "{{(value)=> (value && moment(value, formvalues.props && formvalues.props.format || 'YYYY-MM-DD' ))}}",
+    valueGetter: "{{(value) => (value && moment(value).format(formvalues.props && formvalues.props.format || 'YYYY-MM-DD'))}}",
+    props: {
+      picker: "{{formvalues.props && formvalues.props.picker}}",
+      format: "{{formvalues.props && formvalues.props.format}}",
+    }
   },
   props: {
     compact: true,
@@ -23,6 +29,22 @@ const settings = {
             { label: '月', value: 'month' },
             { label: '季度', value: 'quarter' },
             { label: '年', value: 'year' },
+          ]
+        }
+      },
+      format: {
+        label: "显示格式",
+        type: "Select",
+        initialValue: 'YYYY-MM-DD',
+        props: {
+          style: { width: '100%' },
+          options: [
+            { label: '年月日', value: 'YYYY-MM-DD' },
+            { label: '年月', value: 'YYYY-MM' },
+            { label: '月日', value: 'MM-DD' },
+            { label: '年', value: 'YYYY' },
+            { label: '月', value: 'MM' },
+            { label: '日', value: 'DD' },
           ]
         }
       },

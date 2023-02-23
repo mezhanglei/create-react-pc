@@ -3,12 +3,6 @@ const settings = {
     label: '默认值',
     type: 'Input',
   },
-  // props: {
-  //   compact: true,
-  //   properties: {
-
-  //   }
-  // }
 }
 
 export default ['基础属性', settings] as [string, typeof settings]

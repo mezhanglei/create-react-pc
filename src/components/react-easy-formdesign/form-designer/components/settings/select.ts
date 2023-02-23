@@ -1,13 +1,7 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'Select',
-    compact: true,
-    props: {
-      style: { width: "100%" },
-      options: "{{formvalues && formvalues.props ? formvalues.props.options : []}}",
-      mode: "{{formvalues && formvalues.props ? formvalues.props.mode : undefined}}",
-    }
+    type: 'CodeTextArea',
   },
   props: {
     compact: true,

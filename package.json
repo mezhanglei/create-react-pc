@@ -105,7 +105,6 @@
     "dva-loading": "^3.0.22",
     "echarts": "^5.2.2",
     "file-saver": "^2.0.5",
-    "fingerprintjs2": "^2.1.0",
     "history": "^5.0.0",
     "html2pdf.js": "^0.10.1",
     "immer": "^9.0.14",

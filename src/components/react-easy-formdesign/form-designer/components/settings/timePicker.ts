@@ -6,7 +6,7 @@ const settings = {
     valueGetter: "{{(value) => (value && moment(value).format(formvalues.props && formvalues.props.format || 'HH:mm:ss'))}}",
     props: {
       format: "{{formvalues.props && formvalues.props.format}}",
-      use12Hours: "{{formvalues.props && formvalues.props.use12Hours}}",
+      use12Hours: "{{formvalues.props && formvalues.props.use12Hours || 'HH:mm:ss'}}",
     }
   },
   props: {
@@ -18,7 +18,7 @@ const settings = {
         initialValue: '请输入'
       },
       format: {
-        label: "格式化",
+        label: "显示格式",
         type: "Select",
         initialValue: 'HH:mm:ss',
         props: {
