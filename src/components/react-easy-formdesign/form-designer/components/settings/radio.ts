@@ -1,7 +1,7 @@
 const settings = {
   initialValue: {
     label: '默认值',
-    type: 'CodeTextArea',
+    type: 'Input',
   },
   props: {
     compact: true,
