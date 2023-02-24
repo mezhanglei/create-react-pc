@@ -19,11 +19,11 @@ const settings = {
       },
       mode: {
         label: '选择模式',
-        type: "Radio.Group",
+        type: "Select",
         props: {
           style: { width: '100%' },
+          allowClear: true,
           options: [
-            { label: '单选', },
             { label: '多选', value: 'multiple' },
             { label: '标签', value: 'tags' }
           ]

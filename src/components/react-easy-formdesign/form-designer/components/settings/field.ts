@@ -34,15 +34,16 @@ const settings = {
     }
   },
   labelAlign: {
-    label: "标签水平排列",
-    type: "Radio.Group",
+    label: '标签水平排列',
+    type: "Select",
     initialValue: 'right',
     props: {
       style: { width: '100%' },
-      children: [
-        { type: "Radio", props: { key: 'left', value: "left", children: "左边对齐" } },
-        { type: "Radio", props: { key: 'center', value: "center", children: "居中" } },
-        { type: "Radio", props: { key: 'right', value: "right", children: "右边对齐" } },
+      allowClear: true,
+      options: [
+        { label: '左边对齐', value: 'left' },
+        { label: '居中', value: 'center' },
+        { label: '右边对齐', value: 'right' },
       ]
     }
   },
