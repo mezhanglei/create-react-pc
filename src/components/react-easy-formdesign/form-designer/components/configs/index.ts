@@ -19,6 +19,7 @@ import table from './layout/table';
 export interface ELementProps extends FormFieldProps {
   id?: string;
   icon?: string;
+  disableEdit?: boolean;
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 

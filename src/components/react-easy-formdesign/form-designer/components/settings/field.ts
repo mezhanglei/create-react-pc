@@ -16,6 +16,20 @@ const settings = {
       ]
     }
   },
+  labelAlign: {
+    label: '标签水平排列',
+    type: "Select",
+    initialValue: 'right',
+    props: {
+      style: { width: '100%' },
+      allowClear: true,
+      options: [
+        { label: '左边对齐', value: 'left' },
+        { label: '居中', value: 'center' },
+        { label: '右边对齐', value: 'right' },
+      ]
+    }
+  },
   gutter: {
     label: '标签间距',
     type: 'InputNumber',
@@ -31,20 +45,6 @@ const settings = {
     props: {
       min: 0,
       max: 300
-    }
-  },
-  labelAlign: {
-    label: '标签水平排列',
-    type: "Select",
-    initialValue: 'right',
-    props: {
-      style: { width: '100%' },
-      allowClear: true,
-      options: [
-        { label: '左边对齐', value: 'left' },
-        { label: '居中', value: 'center' },
-        { label: '右边对齐', value: 'right' },
-      ]
     }
   },
   suffix: {

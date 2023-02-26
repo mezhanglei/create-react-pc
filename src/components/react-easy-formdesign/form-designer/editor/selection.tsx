@@ -66,8 +66,12 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const prefixCls = "editor-selection";
 
   const cls = classnames(prefixCls, className, {
-    [`${prefixCls}-active`]: isSelected
+    [`${prefixCls}-active`]: isSelected,
   });
+
+  const classes = {
+    mask: `${prefixCls}-mask`
+  }
 
   const Tool = (
     <div className='selection-tools'>
@@ -80,6 +84,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
       {isSelected ? Tool : null}
       {children}
+      {field?.disableEdit && <div className={classes.mask}></div>}
     </div>
   );
 };
