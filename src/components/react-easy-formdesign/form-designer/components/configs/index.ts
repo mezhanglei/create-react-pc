@@ -7,7 +7,7 @@ import Select from './base/select';
 import Switch from './base/switch';
 import TimePicker from './base/timePicker';
 import DatePicker from './base/datePicker';
-import Slider from './base/sliderLine';
+import Slider from './base/slider';
 import Rate from './base/rate';
 import ColorPicker from './base/colorPicker';
 import FileUpload from './base/fileUpload';

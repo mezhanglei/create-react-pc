@@ -40,8 +40,8 @@ let oldLocation: Location | null = null;
 const TransitionSwitch = withRouter(({ location, history, routes, children }: RouteComponentProps & ComponentType & { routes: MyRouteProps[], children: any }) => {
 
   // 转场动画应该都是采用当前页面的animationConfig，所以：
-  // push操作时，用新location匹配的路由的animationConfig
-  // pop操作时，用旧location匹配的路由的animationConfig
+  // push操作时，用新location匹配的路由的enter
+  // pop操作时，用旧location匹配的路由的exit
   let classNames = '';
   if (history.action === 'PUSH') {
     classNames = getAnimationConfig(location as Location, routes)?.enter || '';

@@ -1,7 +1,7 @@
 
 export default {
   id: 'slider',
-  label: '滑块',
+  label: '滑动输入',
   disableEdit: true,
   type: 'Slider',
   props: {

@@ -6,7 +6,7 @@ import SelectSettings, { select_operation, select_rule } from './select';
 import SwitchSettings, { switch_operation, switch_rule } from './switch';
 import TimePickerSettings, { timePicker_operation, timePicker_rule } from './timePicker';
 import DatePickerSettings, { datePicker_operation, datePicker_rule } from './datePicker';
-import SliderSettings, { slider_operation, slider_rule } from './sliderLine';
+import SliderSettings, { slider_operation, slider_rule } from './slider';
 import RateSettings, { rate_operation, rate_rule } from './rate';
 import ColorPickerSettings, { colorPicker_operation, colorPicker_rule } from './colorPicker';
 import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './fileUpload';
