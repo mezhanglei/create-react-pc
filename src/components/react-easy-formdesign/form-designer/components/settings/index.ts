@@ -1,20 +1,26 @@
 import DefaultFieldSettings from "./field";
-import InputSettings, { input_operation, input_rule } from "./input";
-import RadioSettings, { radio_operation, radio_rule } from "./radio";
-import CheckboxSettings, { checkbox_operation, checkbox_rule } from './checkbox';
-import SelectSettings, { select_operation, select_rule } from './select';
-import SwitchSettings, { switch_operation, switch_rule } from './switch';
-import TimePickerSettings, { timePicker_operation, timePicker_rule } from './timePicker';
-import DatePickerSettings, { datePicker_operation, datePicker_rule } from './datePicker';
-import SliderSettings, { slider_operation, slider_rule } from './slider';
-import RateSettings, { rate_operation, rate_rule } from './rate';
-import ColorPickerSettings, { colorPicker_operation, colorPicker_rule } from './colorPicker';
-import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './fileUpload';
-import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './imageUpload';
-import CascaderSettings, { cascader_operation, cascader_rule } from './cascader';
+// 基础控件
+import InputSettings, { input_operation, input_rule } from "./base/input";
+import RadioSettings, { radio_operation, radio_rule } from "./base/radio";
+import CheckboxSettings, { checkbox_operation, checkbox_rule } from './base/checkbox';
+import SelectSettings, { select_operation, select_rule } from './base/select';
+import SwitchSettings, { switch_operation, switch_rule } from './base/switch';
+import TimePickerSettings, { timePicker_operation, timePicker_rule } from './base/timePicker';
+import DatePickerSettings, { datePicker_operation, datePicker_rule } from './base/datePicker';
+import SliderSettings, { slider_operation, slider_rule } from './base/slider';
+import RateSettings, { rate_operation, rate_rule } from './base/rate';
+import ColorPickerSettings, { colorPicker_operation, colorPicker_rule } from './base/colorPicker';
+import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './base/fileUpload';
+import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './base/imageUpload';
+import CascaderSettings, { cascader_operation, cascader_rule } from './base/cascader';
+// 展示组件
+import AlertSettings, { alert_operation } from './display/alert';
+// 布局组件
+// 业务组件
 
 // 控件的属性配置, 以控件的id作为键
 const ConfigSettings = {
+  // 基础控件
   input: [InputSettings, input_operation, input_rule, DefaultFieldSettings],
   radio: [RadioSettings, radio_operation, radio_rule, DefaultFieldSettings],
   checkbox: [CheckboxSettings, checkbox_operation, checkbox_rule, DefaultFieldSettings],
@@ -28,6 +34,8 @@ const ConfigSettings = {
   fileupload: [FileUploadSettings, fileUpload_operation, fileUpload_rule, DefaultFieldSettings],
   imageupload: [ImageUploadSettings, imageUpload_operation, imageUpload_rule, DefaultFieldSettings],
   cascader: [CascaderSettings, cascader_operation, cascader_rule, DefaultFieldSettings],
+  // 展示组件
+  alert: [AlertSettings, alert_operation]
 }
 
 type ValueOf<T> = T[keyof T];

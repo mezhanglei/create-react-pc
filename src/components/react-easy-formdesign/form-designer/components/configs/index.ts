@@ -1,5 +1,6 @@
 import { getArrMap } from "@/utils/array";
 import { FormFieldProps } from "../../../form-render";
+// 基础控件
 import Input from './base/input';
 import Radio from './base/radio';
 import Checkbox from './base/checkbox';
@@ -13,13 +14,17 @@ import ColorPicker from './base/colorPicker';
 import FileUpload from './base/fileUpload';
 import ImageUpload from './base/imageUpload';
 import Cascader from './base/cascader';
+// 展示组件
+import Alert from './display/alert';
+// 布局容器
 import table from './layout/table';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
-  id?: string;
-  icon?: string;
-  disableEdit?: boolean;
+  id?: string; // 组件类型id，用于匹配组件
+  icon?: string; // 组件列表中的icon
+  componentLabel?: string; // 组件列表中的显示名字
+  editMask?: boolean; // 编辑区域是否遮罩层
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 
@@ -54,11 +59,12 @@ export const TabsData = [{
       title: '展示组件',
       elementType: '展示组件',
       elements: [
+        Alert,
       ]
     },
     {
-      title: '展示组件',
-      elementType: '展示组件',
+      title: '布局容器',
+      elementType: '布局容器',
       elements: [
         table
       ]

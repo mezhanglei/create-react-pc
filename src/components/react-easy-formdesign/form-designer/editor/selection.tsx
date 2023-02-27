@@ -84,7 +84,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
       {isSelected ? Tool : null}
       {children}
-      {field?.disableEdit && <div className={classes.mask}></div>}
+      {field?.editMask && <div className={classes.mask}></div>}
     </div>
   );
 };

@@ -1,5 +1,4 @@
 const settings = {
-  // == 表单域上的属性
   type: {
     label: "输入框类型",
     type: "Select",
