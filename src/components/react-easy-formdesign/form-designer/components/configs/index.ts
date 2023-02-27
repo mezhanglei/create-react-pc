@@ -14,8 +14,7 @@ import ColorPicker from './base/colorPicker';
 import FileUpload from './base/fileUpload';
 import ImageUpload from './base/imageUpload';
 import Cascader from './base/cascader';
-// 展示组件
-import Alert from './display/alert';
+import Alert from './base/alert';
 // 布局容器
 import table from './layout/table';
 
@@ -52,19 +51,13 @@ export const TabsData = [{
         ColorPicker,
         Cascader,
         FileUpload,
-        ImageUpload
-      ]
-    },
-    {
-      title: '展示组件',
-      elementType: '展示组件',
-      elements: [
+        ImageUpload,
         Alert,
       ]
     },
     {
-      title: '布局容器',
-      elementType: '布局容器',
+      title: '布局组件',
+      elementType: '布局组件',
       elements: [
         table
       ]

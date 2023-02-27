@@ -13,10 +13,11 @@ import ColorPickerSettings, { colorPicker_operation, colorPicker_rule } from './
 import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './base/fileUpload';
 import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './base/imageUpload';
 import CascaderSettings, { cascader_operation, cascader_rule } from './base/cascader';
-// 展示组件
-import AlertSettings, { alert_operation } from './display/alert';
+import AlertSettings, { alert_operation } from './base/alert';
 // 布局组件
+// import Settings, { _operation } from './layout/alert';
 // 业务组件
+// import Settings, { _operation } from './business/alert';
 
 // 控件的属性配置, 以控件的id作为键
 const ConfigSettings = {
@@ -34,8 +35,9 @@ const ConfigSettings = {
   fileupload: [FileUploadSettings, fileUpload_operation, fileUpload_rule, DefaultFieldSettings],
   imageupload: [ImageUploadSettings, imageUpload_operation, imageUpload_rule, DefaultFieldSettings],
   cascader: [CascaderSettings, cascader_operation, cascader_rule, DefaultFieldSettings],
-  // 展示组件
-  alert: [AlertSettings, alert_operation]
+  alert: [AlertSettings, alert_operation],
+  // 布局组件
+  // 业务组件
 }
 
 type ValueOf<T> = T[keyof T];
