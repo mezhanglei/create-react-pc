@@ -10,7 +10,7 @@ import './index.less';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Location } from "history";
 import { MyRouteProps } from '@/routes';
-import { BodyPortal } from '../body-portal';
+import CreatePortal from '../portal';
 
 // 支持的切换类名
 const TransitionName = {
@@ -79,11 +79,11 @@ export default React.memo(TransitionSwitch);
  * 使用方式: 传入路由，访问该路由时可以通过浮层的方式覆盖在上一个路由组件上
  * 注意: 路由不能懒加载，否则第一次进入页面动画不生效
  */
-export function TransitionLayer(props: { children: any, routes: MyRouteProps[], style?: CSSProperties, customPortal?: HTMLElement }) {
+export function TransitionLayer(props: { children: any, routes: MyRouteProps[], style?: CSSProperties, container?: HTMLElement }) {
   return (
     <div style={{ position: 'absolute', left: '0px', right: '0px', top: '0px', bottom: '0px' }}>
       {props?.children}
-      <BodyPortal style={props?.style} customPortal={props?.customPortal}>
+      <CreatePortal style={props?.style} container={props?.container}>
         <TransitionSwitch routes={props?.routes}>
           {
             props?.routes?.map((item) => (
@@ -91,7 +91,7 @@ export function TransitionLayer(props: { children: any, routes: MyRouteProps[], 
             ))
           }
         </TransitionSwitch>
-      </BodyPortal>
+      </CreatePortal>
     </div>
   )
 }
