@@ -1,4 +1,4 @@
-import { isMobile } from "@/utils/verify";
+import { isMobile } from "@/utils/brower";
 import { addEvent, removeEvent, getScreenXY } from "@/utils/dom";
 
 const eventsFor = {

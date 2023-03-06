@@ -1,4 +1,4 @@
-import { isMobile } from '@/utils/verify';
+import { isMobile } from '@/utils/brower';
 import React, { CSSProperties } from 'react';
 import { Direction, DirectionCode, PointerCode, DrawItemProps, DrawItemState, EventHandler, EventType, LastStyle } from './types';
 import "./index.less"

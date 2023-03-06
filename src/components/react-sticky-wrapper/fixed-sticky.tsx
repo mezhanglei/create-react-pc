@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, CSSProperties } from 'react';
 import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, css, getInsideRange, getRect, getWindow } from '@/utils/dom';
-import { isMobile } from '@/utils/verify';
+import { isMobile } from '@/utils/brower';
 import classNames from 'classnames';
 import ReactDOM from 'react-dom';
 

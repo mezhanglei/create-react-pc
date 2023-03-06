@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { css, addEvent, getChildrenIndex, insertAfter, insertBefore, removeEvent, getOwnerDocument, getClientXY } from "@/utils/dom";
 import { DndManager } from './manager';
 import { createAnimate, isMoveIn } from './utils/dom';
-import { isMobile } from '@/utils/verify';
+import { isMobile } from '@/utils/brower';
 import { isDisabledDrop, isDisabledSort, isDisabledDrag, isHiddenFrom, setMouseEvent } from './utils/utils';
 import { isEqual } from '@/utils/object';
 

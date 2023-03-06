@@ -3,7 +3,7 @@ import { ThresholdUnits, parseThreshold } from './utils/threshold';
 import Raf from "@/utils/requestAnimationFrame";
 import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent, getWindow } from "@/utils/dom";
 import { isDom } from "@/utils/type";
-import { isMobile } from '@/utils/verify';
+import { isMobile } from '@/utils/brower';
 
 type fn = () => any;
 type EventType = MouseEvent | TouchEvent;

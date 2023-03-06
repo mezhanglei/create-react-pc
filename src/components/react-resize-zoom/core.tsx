@@ -1,5 +1,5 @@
 import React from 'react';
-import { isMobile } from "./utils/verify";
+import { isMobile } from "@/utils/brower";
 import { addEvent, removeEvent, getEventPosition, getOffsetWH } from "./utils/dom";
 import { EventType, EventHandler, ResizeDirection, DragResizeProps, DragResizeState, ResizeDirectionCode, LastStyle, ResizeDragTypes, NowStyle } from "./type";
 import { getWindow } from '@/utils/dom';
