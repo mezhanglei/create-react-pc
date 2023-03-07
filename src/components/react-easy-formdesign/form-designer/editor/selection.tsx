@@ -35,10 +35,11 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   } = props;
 
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
-  const { selected } = useFormDesign();
   const setEdit = useFormEdit();
+  const { selected } = useFormDesign();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
+  
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = currentPath && designer?.getItemByPath(currentPath);
@@ -75,8 +76,8 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const Tool = (
     <div className='selection-tools'>
-      <Icon name="fuzhi" className='icon-fuzhi' onClick={copyItem} />
-      <Icon name="shanchu" className='icon-shanchu' onClick={deleteItem} />
+      <Icon name="fuzhi" onClick={copyItem} />
+      <Icon name="shanchu" onClick={deleteItem} />
     </div>
   );
 

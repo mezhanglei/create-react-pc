@@ -30,7 +30,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const onChange = (item: ELementProps) => {
     const newIndex = getEndIndex(selectedName, properties, selectedParent) + 1; // 插入位置序号
-    const isIgnoreItem = isIgnoreName(designer, selectedPath);
+    const isIgnoreItem = isIgnoreName(selectedPath);
     const configSettings = getConfigSettings(item?.id);
     const field = deepMergeObject(item, getInitialValues(configSettings));
     const addItem = isIgnoreItem ? field : { ...field, name: defaultGetId(item?.id) };

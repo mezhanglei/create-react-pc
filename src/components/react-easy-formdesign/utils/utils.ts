@@ -19,7 +19,7 @@ export const isNoSelected = (path?: string) => {
 export const getDesignerItem = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   const curValues = designer.getItemByPath(path) || {};
-  if (!isIgnoreName(designer, path)) {
+  if (!isIgnoreName(path)) {
     curValues['name'] = getPathEnd(path);
   }
   const configSettings = getConfigSettings(curValues?.id);
@@ -88,18 +88,17 @@ export const getConfigSettings = (id?: string) => {
 }
 
 // 是否设置忽略name设置
-export const isIgnoreName = (designer: FormRenderStore, path?: string) => {
+export const isIgnoreName = (path?: string) => {
   if (isNoSelected(path)) return;
-  const selectedItem = designer.getItemByPath(path);
-  // 数组节点或标记ignore的忽略name设置
-  return endIsListItem(path) || selectedItem?.dataType == 'ignore'
+  // 数组节点
+  return endIsListItem(path)
 }
 
 // 动态设置name
 export const getNameSettings = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   // 非列表节点设置字段名
-  if (!isIgnoreName(designer, path)) {
+  if (!isIgnoreName(path)) {
     return {
       name: {
         label: '字段名',

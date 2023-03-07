@@ -17,6 +17,7 @@ import Cascader from './base/cascader';
 import Alert from './base/alert';
 // 布局容器
 import table from './layout/table';
+import grid from './layout/grid';
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps {
@@ -59,7 +60,8 @@ export const TabsData = [{
       title: '布局组件',
       elementType: '布局组件',
       elements: [
-        table
+        table,
+        grid
       ]
     },
     {

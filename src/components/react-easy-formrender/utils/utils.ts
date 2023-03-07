@@ -193,9 +193,9 @@ const parseList = (dataList: FormFieldProps[], isList?: boolean) => {
     for (let key of Object.keys(dataList)) {
       const field = dataList[key];
       const name = field?.name;
-      delete field['name'];
       if (isList) {
         // 还原成数组
+        delete field['name'];
         temp[key] = field;
       } else {
         // 还原成对象

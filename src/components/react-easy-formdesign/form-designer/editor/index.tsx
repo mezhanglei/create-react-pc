@@ -66,8 +66,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 const renderItem: RenderFormProps['renderList'] = (params) => {
   const { children, parent } = params;
   const isRoot = !parent;
+  const isControl = params?.field?.type ? true : false;
   // 最外围层级和最内层输入控件才需要默认添加选区
-  if (params?.field?.type || isRoot) {
+  if (isControl || isRoot) {
     return <EditorSelection {...params} />
   }
   return children;
