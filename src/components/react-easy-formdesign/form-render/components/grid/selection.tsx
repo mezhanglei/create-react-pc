@@ -7,7 +7,7 @@ import Icon from '@/components/svg-icon';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { defaultGetId } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
 
 export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -36,15 +36,16 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
-  const { selected } = useFormDesign();
+  const { selected, selectedPath } = useFormDesign();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
 
   const addCol = () => {
-    // const nextIndex = (field?.index as number) + 1;
-    // const newField = currentPath && designer?.getItemByPath(currentPath);
-    // const addItem = isValidNumber(name) ? newField : { ...newField, name: defaultGetId(field?.id) }
-    // designer?.addItemByIndex(addItem, nextIndex, parent);
+    const nextIndex = (field?.index as number) + 1;
+    const newField = currentPath && designer?.getItemByPath(currentPath);
+    const isIgnoreItem = isIgnoreName(selectedPath);
+    const addItem = !isIgnoreItem && field?.id ? { ...newField, name: defaultGetId(field?.id) } : newField;
+    designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
   const deleteItem = () => {

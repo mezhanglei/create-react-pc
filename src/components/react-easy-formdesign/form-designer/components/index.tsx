@@ -33,7 +33,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const isIgnoreItem = isIgnoreName(selectedPath);
     const configSettings = getConfigSettings(item?.id);
     const field = deepMergeObject(item, getInitialValues(configSettings));
-    const addItem = isIgnoreItem ? field : { ...field, name: defaultGetId(item?.id) };
+    const addItem = !isIgnoreItem && field?.id ? { ...field, name: defaultGetId(field?.id) } : field;
     designer?.addItemByIndex(addItem, newIndex, selectedParent);
   }
 

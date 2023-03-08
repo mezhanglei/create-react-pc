@@ -28,7 +28,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
-    setEdit({ properties: newData })
+    setEdit({ properties: {...newData} })
   }
 
   // 监听选中项改动

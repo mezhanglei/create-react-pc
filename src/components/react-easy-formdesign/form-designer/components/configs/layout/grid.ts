@@ -1,12 +1,13 @@
 export default {
-  id: 'grid',
+  id: 'row',
   label: '栅格布局',
   outside: { type: 'Grid.Row', props: {} },
   component: null,
   ignore: true,
   properties: {
     col: {
-      outside: { type: 'Grid.Col', props: {} },
+      id: 'col',
+      outside: { type: 'Grid.Col', props: { span: 12 } },
       component: null,
       ignore: true,
       properties: {

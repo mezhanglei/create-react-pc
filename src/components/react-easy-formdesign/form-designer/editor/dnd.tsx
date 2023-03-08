@@ -55,7 +55,7 @@ function EditorDnd(props: EditorDndProps, ref: any) {
       const item = ConfigElementsMap[elementId];
       const configSettings = getConfigSettings(item?.id);
       const field = deepMergeObject(item, getInitialValues(configSettings));
-      const addItem = dropGroupIsList ? field : { ...field, name: defaultGetId(item?.id) };
+      const addItem = !dropGroupIsList && field?.id ? { ...field, name: defaultGetId(field?.id) } : field;
       store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
       // 容器内部拖拽
     } else {

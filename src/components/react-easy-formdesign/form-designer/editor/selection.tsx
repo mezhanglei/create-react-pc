@@ -1,5 +1,5 @@
-import { joinFormPath, isValidNumber } from '@/components/react-easy-formcore';
-import { defaultGetId } from '../../utils/utils';
+import { joinFormPath } from '@/components/react-easy-formcore';
+import { defaultGetId, isIgnoreName } from '../../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../../form-render';
@@ -36,14 +36,15 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
-  const { selected } = useFormDesign();
+  const { selected, selectedPath } = useFormDesign();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
   
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
+    const isIgnoreItem = isIgnoreName(selectedPath);
     const newField = currentPath && designer?.getItemByPath(currentPath);
-    const addItem = isValidNumber(name) ? newField : { ...newField, name: defaultGetId(field?.id) }
+    const addItem = !isIgnoreItem && newField?.id ? { ...newField, name: defaultGetId(newField?.id) } : newField;
     designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
