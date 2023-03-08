@@ -4,8 +4,8 @@ import { TableCell } from "./table/cell";
 import { TableRow } from "./table/row";
 import { TableBody } from './table/tableBody';
 import { TableHead } from './table/tableHead';
-import { Col } from './grid/col';
-import { Row } from './grid/row';
+import { GridCol } from './grid/col';
+import { GridRow } from './grid/row';
 
 // 表单中的其他组件
 export const BaseComponents = {
@@ -15,6 +15,6 @@ export const BaseComponents = {
   "Table.Row": TableRow,
   "Table.Head": TableHead,
   "Table.Body": TableBody,
-  "Row": Col,
-  "Col": Row,
+  "Grid.Row": GridRow,
+  "Grid.Col": GridCol,
 }

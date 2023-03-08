@@ -1,13 +1,13 @@
 export default {
   id: 'grid',
   label: '栅格布局',
-  outside: { type: 'Row', props: {} },
-  fieldComponent: null,
+  outside: { type: 'Grid.Row', props: {} },
+  component: null,
   ignore: true,
   properties: {
     col: {
-      outside: { type: 'Col', props: {} },
-      fieldComponent: null,
+      outside: { type: 'Grid.Col', props: {} },
+      component: null,
       ignore: true,
       properties: {
         name1: {

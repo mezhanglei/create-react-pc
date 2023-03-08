@@ -64,11 +64,10 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
 // 编辑区默认的选中框渲染
 const renderItem: RenderFormProps['renderList'] = (params) => {
-  const { children, parent } = params;
-  const isRoot = !parent;
+  const { children } = params;
   const isControl = params?.field?.type ? true : false;
-  // 最外围层级和最内层输入控件才需要默认添加选区
-  if (isControl || isRoot) {
+  // 只有输入控件才需要默认添加选区
+  if (isControl) {
     return <EditorSelection {...params} />
   }
   return children;

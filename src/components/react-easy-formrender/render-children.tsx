@@ -297,13 +297,13 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (field?.hidden === true) {
       return;
     }
-    const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, fieldComponent, inside, outside, ...restField } = field;
+    const { readOnly, readOnlyRender, hidden, props, type, typeRender, properties, footer, suffix, component, inside, outside, ...restField } = field;
     if (!field) return;
 
     const commonParams = { name, field: { ...options, ...field }, parent, formparent, form: form, store: formRenderStore }; // 公共参数
     const footerInstance = createInstance(footer, mergeComponents, commonParams);
     const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
-    const fieldComponentParse = componentParse(fieldComponent, mergeComponents);
+    const fieldParse = component !== undefined ? componentParse(component, mergeComponents) : undefined;
     // 表单域的传参
     const fieldProps = {
       key: name,
@@ -311,7 +311,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       onValuesChange: valuesCallback,
       footer: footerInstance,
       suffix: suffixInstance,
-      component: fieldComponentParse,
+      component: fieldParse,
       ignore: readOnly,
       ...restField
     }

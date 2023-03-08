@@ -4,20 +4,12 @@ import { GeneratePrams } from '../types';
 import './grid.less';
 import classnames from 'classnames';
 
-export interface FromColProps extends ColProps {
-  span?: number; // 所有屏幕显示列宽格数
-  xs?: number; // 屏幕 < 576px 响应式栅格
-  sm?: number; // 屏幕 ≥ 576px 响应式栅格
-  md?: number; // 屏幕 ≥ 768px 响应式栅格
-  lg?: number; // 屏幕 ≥ 992px 响应式栅格
-}
-
 // 列宽
-export const getColProps = (props: FromColProps, inline?: boolean) => {
+export const getColProps = (props: ColProps, inline?: boolean) => {
   const { xs, sm, md, lg, span, ...restProps } = props || {};
   const maxspan = 24;
   // 计算layout带来的影响
-  const getValue = (inline?: boolean, value?: number) => {
+  const getValue = (inline?: boolean, value?: any) => {
     if (!inline) {
       return value ?? (span || maxspan);
     }
@@ -54,7 +46,7 @@ export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
   );
 });
 
-export interface GridColProps extends FromColProps, GeneratePrams {
+export interface GridColProps extends ColProps, GeneratePrams {
   children: any;
 }
 // col组件

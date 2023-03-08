@@ -1,29 +1,41 @@
-import { GridCol, GridColProps } from '@/components/react-easy-formrender/components/grid';
+import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
+import { GridCol as BaseGridCol } from '@/components/react-easy-formrender/components/grid';
+import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
-import { CustomOptions } from '../..';
+import { GeneratePrams } from '../..';
+import Selection from './selection';
 
 // row组件
-export type CustomColProps = GridColProps & CustomOptions;
+export type CustomColProps = ColProps & GeneratePrams<ELementProps>;
 // col组件
-export const Col = React.forwardRef<any, CustomColProps>((props, ref) => {
+export const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   const {
     // name,
     // field,
     // parent,
     // store,
     // form,
-    isEditor,
     className,
     children,
+    style,
     ...rest
   } = props;
+
+  const { field } = rest || {};
+  const isEditor = field?.isEditor;
 
   const cls = classnames('grid-edit-col', className);
 
   return (
-    <GridCol ref={ref} className={cls} {...rest}>
-      {children}
-    </GridCol>
+    <BaseGridCol ref={ref} style={style} className={cls} {...rest}>
+      {isEditor ?
+        <Selection {...rest}>
+          {children}
+        </Selection>
+        :
+        children
+      }
+    </BaseGridCol>
   );
 });

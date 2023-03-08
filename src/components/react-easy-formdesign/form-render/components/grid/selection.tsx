@@ -41,10 +41,10 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
 
   const addCol = () => {
-    const nextIndex = (field?.index as number) + 1;
-    const newField = currentPath && designer?.getItemByPath(currentPath);
-    const addItem = isValidNumber(name) ? newField : { ...newField, name: defaultGetId(field?.id) }
-    designer?.addItemByIndex(addItem, nextIndex, parent);
+    // const nextIndex = (field?.index as number) + 1;
+    // const newField = currentPath && designer?.getItemByPath(currentPath);
+    // const addItem = isValidNumber(name) ? newField : { ...newField, name: defaultGetId(field?.id) }
+    // designer?.addItemByIndex(addItem, nextIndex, parent);
   }
 
   const deleteItem = () => {
@@ -54,7 +54,6 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
-    console.log(name, props)
     setEdit({
       selected: {
         name: name as string,

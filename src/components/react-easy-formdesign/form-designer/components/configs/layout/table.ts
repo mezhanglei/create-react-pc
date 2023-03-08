@@ -1,14 +1,14 @@
 export default {
   id: 'table',
   label: '表格布局',
-  fieldComponent: { type: 'Table', props: {} },
+  component: { type: 'Table', props: {} },
   ignore: true,
   properties: [
     {
-      fieldComponent: { type: 'Table.Row', props: {} },
+      component: { type: 'Table.Row', props: {} },
       properties: {
         td1: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          component: { type: 'Table.Cell', props: {} },
           ignore: true,
           properties: {
             name1: {
@@ -19,7 +19,7 @@ export default {
           }
         },
         td2: {
-          fieldComponent: { type: 'Table.Cell', props: {} },
+          component: { type: 'Table.Cell', props: {} },
           ignore: true,
           properties: {
             name2: {
@@ -32,10 +32,10 @@ export default {
       }
     },
     // {
-    //   fieldComponent: { type: 'Table.Row', props: {} },
+    //   component: { type: 'Table.Row', props: {} },
     //   properties: {
     //     td1: {
-    //       fieldComponent: { type: 'Table.Cell', props: {} },
+    //       component: { type: 'Table.Cell', props: {} },
     //       properties: {
     //         name1: {
     //           id: 'input',
@@ -45,7 +45,7 @@ export default {
     //       }
     //     },
     //     td2: {
-    //       fieldComponent: { type: 'Table.Cell', props: {} },
+    //       component: { type: 'Table.Cell', props: {} },
     //       properties: {
     //         name2: {
     //           id: 'input',

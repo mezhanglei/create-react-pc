@@ -26,7 +26,7 @@ const operationSettings = {
   props: {
     compact: true,
     inline: true,
-    fieldComponent: null,
+    component: null,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

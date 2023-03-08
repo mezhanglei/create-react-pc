@@ -22,7 +22,6 @@ export type FieldUnionType = FormComponent | Array<FormComponent> | UnionCompone
 // 最终生成的表单域
 export interface GenerateFieldProps extends FormComponent, FormItemProps {
   ignore?: boolean; // 标记当前节点为非表单节点
-  fieldComponent?: FieldUnionType; // 表单域组件
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
   outside?: FieldUnionType; // 表单域组件外层嵌套组件
   readOnly?: boolean; // 只读模式
@@ -68,9 +67,9 @@ export interface RenderFormProps extends Omit<FormProps, 'store'>, RenderFormChi
 };
 
 // 组件公共的参数
-export interface GeneratePrams<T = GenerateFieldProps> {
+export interface GeneratePrams<T = {}> {
   name?: string | number;
-  field?: T;
+  field?: T & GenerateFieldProps;
   parent?: string;
   formparent?: string;
   store?: FormRenderStore;
