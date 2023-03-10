@@ -1,19 +1,14 @@
 import { useContext, useRef, useState } from "react";
-import { deepSet, joinFormPath } from "../form-render";
+import { deepSet } from "../form-render";
 import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
-import { isEmpty } from "@/utils/type";
 import { setExpandControl } from "@/components/react-easy-formrender/utils/utils";
+import { getFromSelected } from "./utils";
 
 // 表单设计器的context
 export function useFormDesign() {
   const context = useContext(FormDesignContext);
-  const selectedName = context?.selected?.name;
-  const selectedField = context?.selected?.field;
-  const selectedParent = context?.selected?.parent;
-  const selectedFormParent = context?.selected?.formparent;
-  const selectedPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedParent, selectedName) as string;
-  const selectedFormPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedFormParent, selectedField?.ignore ? undefined : selectedName) as string;
-  return { ...context, selectedPath, selectedFormPath };
+  const fromSelected = getFromSelected(context?.selected);
+  return { ...context, ...fromSelected };
 }
 
 // 表单设计器的state

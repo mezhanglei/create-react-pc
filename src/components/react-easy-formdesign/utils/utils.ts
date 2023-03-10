@@ -1,10 +1,13 @@
-import { FieldProps, FormStore } from '@/components/react-easy-formcore';
+import { FieldProps, FormStore, joinFormPath } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
-import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
+import { endIsListItem, getEndIndex, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { deepMergeObject, deepClone } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
+import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
+import { ELementProps, FormDesignData } from '../form-designer/components/configs';
 import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
+import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (name?: string) => {
   return name ? `${name}_${nanoid(6)}` : '';
@@ -27,6 +30,24 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string) => {
   const initialValues = getInitialValues(configSettings);
   const result = deepMergeObject(initialValues, curValues);
   return result;
+}
+
+// 从selected中解构
+export const getFromSelected = (selected: SelectedType) => {
+  if (typeof selected !== 'object') return;
+  const selectedName = selected?.name;
+  const selectedField = selected?.field;
+  const selectedParent = selected?.parent;
+  const selectedFormParent = selected?.formparent;
+  const selectedPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedParent, selectedName) as string;
+  const selectedFormPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedFormParent, selectedField?.ignore ? undefined : selectedName) as string;
+  return { selected, selectedPath, selectedFormPath };
+}
+
+// 插入新节点
+export const insertDesignItem = (designer: FormRenderStore, field: ELementProps, dropIndex: number, parent?: string, isIgnoreItem?: boolean) => {
+  const newField = (!isIgnoreItem && field?.id) ? { ...field, name: defaultGetId(field?.id) } : field;
+  designer?.addItemByIndex(newField, dropIndex, parent);
 }
 
 // 更新节点的属性(不包括值)
@@ -94,7 +115,7 @@ export const isIgnoreName = (path?: string) => {
   return endIsListItem(path)
 }
 
-// 动态设置name
+// name的setting
 export const getNameSettings = (designer: FormRenderStore, path?: string) => {
   if (isNoSelected(path)) return;
   // 非列表节点设置字段名

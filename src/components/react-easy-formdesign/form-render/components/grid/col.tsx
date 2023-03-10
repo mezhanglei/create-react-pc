@@ -4,7 +4,7 @@ import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
 import { GeneratePrams } from '../..';
-import Selection from './selection';
+import Selection from './row-selection';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;

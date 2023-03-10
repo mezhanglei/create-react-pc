@@ -1,13 +1,13 @@
-import { joinFormPath, isValidNumber } from '@/components/react-easy-formcore';
+import { joinFormPath } from '@/components/react-easy-formcore';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
-import './selection.less';
+import './col-selection.less';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { defaultGetId, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
+import { insertDesignItem, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
 
 export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -44,8 +44,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     const nextIndex = (field?.index as number) + 1;
     const newField = currentPath && designer?.getItemByPath(currentPath);
     const isIgnoreItem = isIgnoreName(selectedPath);
-    const addItem = !isIgnoreItem && field?.id ? { ...newField, name: defaultGetId(field?.id) } : newField;
-    designer?.addItemByIndex(addItem, nextIndex, parent);
+    designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
   }
 
   const deleteItem = () => {

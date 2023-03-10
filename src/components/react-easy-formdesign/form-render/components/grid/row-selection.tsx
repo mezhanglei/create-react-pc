@@ -1,13 +1,13 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
-import { insertDesignItem, isIgnoreName } from '../../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
-import { GeneratePrams } from '../../form-render';
-import './selection.less';
-import { ELementProps } from '../components/configs';
-import { useFormDesign, useFormEdit } from '../../utils/hooks';
+import './row-selection.less';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
+import { GeneratePrams } from '../..';
+import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
+import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { insertDesignItem, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
 
 export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -39,11 +39,11 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const { selected, selectedPath } = useFormDesign();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
-  
-  const copyItem = () => {
+
+  const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
-    const isIgnoreItem = isIgnoreName(selectedPath);
     const newField = currentPath && designer?.getItemByPath(currentPath);
+    const isIgnoreItem = isIgnoreName(selectedPath);
     designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
   }
 
@@ -64,19 +64,15 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     })
   }
 
-  const prefixCls = "editor-selection";
+  const prefixCls = "row-selection";
 
   const cls = classnames(prefixCls, className, {
     [`${prefixCls}-active`]: isSelected,
   });
 
-  const classes = {
-    mask: `${prefixCls}-mask`
-  }
-
   const Tool = (
     <div className='selection-tools'>
-      <Icon name="fuzhi" onClick={copyItem} />
+      <Icon name="add" onClick={addCol} />
       <Icon name="shanchu" onClick={deleteItem} />
     </div>
   );
@@ -85,7 +81,6 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
       {isSelected ? Tool : null}
       {children}
-      {field?.editMask && <div className={classes.mask}></div>}
     </div>
   );
 };

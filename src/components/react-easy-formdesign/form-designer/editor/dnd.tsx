@@ -2,7 +2,7 @@ import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
-import { defaultGetId, getConfigSettings } from '../../utils/utils';
+import { getConfigSettings, insertDesignItem } from '../../utils/utils';
 import { DndGroup } from '../components/list';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ConfigElementsMap, ELementProps } from '../components/configs';
@@ -46,17 +46,16 @@ function EditorDnd(props: EditorDndProps, ref: any) {
     const dropGroup = to?.group;
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
-    const dropIndex = to?.index;
+    const dropIndex = to?.index || 0;
     const parentData = store?.getItemByPath(dropCollection?.path)
-    const dropGroupIsList = parentData instanceof Array;
+    const isIgnoreName = parentData instanceof Array; // 是否忽略name插入
     // 从侧边栏插入进来
     if (fromCollection?.type === DndGroup) {
       const elementId = from?.id as string;
       const item = ConfigElementsMap[elementId];
       const configSettings = getConfigSettings(item?.id);
       const field = deepMergeObject(item, getInitialValues(configSettings));
-      const addItem = !dropGroupIsList && field?.id ? { ...field, name: defaultGetId(field?.id) } : field;
-      store?.addItemByIndex(addItem, dropIndex, dropCollection?.path);
+      store && insertDesignItem(store, field, dropIndex, dropCollection?.path, isIgnoreName);
       // 容器内部拖拽
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });

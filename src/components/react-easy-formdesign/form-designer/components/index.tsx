@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { Tabs } from 'antd';
 import './index.less';
-import { defaultGetId, getConfigSettings, isIgnoreName } from '../../utils/utils';
+import { getConfigSettings, insertDesignItem, isIgnoreName } from '../../utils/utils';
 import ComponentList from './list';
 import { getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ELementProps, TabsData } from './configs';
@@ -33,8 +33,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const isIgnoreItem = isIgnoreName(selectedPath);
     const configSettings = getConfigSettings(item?.id);
     const field = deepMergeObject(item, getInitialValues(configSettings));
-    const addItem = !isIgnoreItem && field?.id ? { ...field, name: defaultGetId(field?.id) } : field;
-    designer?.addItemByIndex(addItem, newIndex, selectedParent);
+    insertDesignItem(designer, field, newIndex, selectedParent, isIgnoreItem);
   }
 
   return (

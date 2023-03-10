@@ -1,0 +1,40 @@
+@form-primary-color: #FF4040; // 全局主色
+
+.col-selection {
+  margin: 1px;
+  position: relative;
+  background-color: #fff;
+  border: 2px solid transparent;
+  width: 100%;
+  min-height: 60px;
+  height: 100%;
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  box-sizing: border-box;
+  outline: 1px dashed #b8b8b8;
+  overflow: hidden;
+
+  &-active {
+    border: 2px solid @form-primary-color;
+  }
+
+  .selection-tools {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    background-color: @form-primary-color;
+    z-index: 999;
+
+    svg {
+      font-size: 14px;
+      color: #fff;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  }
+}
