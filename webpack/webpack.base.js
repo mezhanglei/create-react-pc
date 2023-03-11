@@ -35,15 +35,6 @@ const cssModuleRegex = /\.module\.css$/;
 // node_modules正则表达式
 const nodeModulesRegex = /node_modules/;
 
-// webpack从manifest文件中读取到已预编译的文件, 然后忽略对其的编辑打包,多个dll文件则循环
-const dllList = paths.manifestPathArr.map((path) => {
-  return new webpack.DllReferencePlugin({
-    // 上下文环境路径(与dllplugin在同一目录)
-    context: paths.appRoot,
-    manifest: require(path),
-  });
-});
-
 const cssLoader = isDev ? 'style-loader' : {
   loader: MiniCssExtractPlugin.loader,
   options: {
@@ -297,7 +288,6 @@ module.exports = {
       // showErrors: true,
       // script引入的公共js文件
       commonJs: [
-        // 'static/dll/base_dll.js'
         // 'es6-shim.min.js'
       ],
       // link引入的公共css文件
@@ -327,6 +317,5 @@ module.exports = {
       }),
       ...(configs.isAnalyz ? [new BundleAnalyzerPlugin()] : [])
     ]),
-    ...dllList
   ]
 };

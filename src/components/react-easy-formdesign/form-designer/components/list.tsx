@@ -36,7 +36,7 @@ function ComponentList(props: ComponentListProps, ref: any) {
         collection={{ type: DndGroup, tabKey: tabKey, elementType: elementType }}
         options={{
           disabledDrop: true,
-          hiddenFrom: true,
+          hiddenFrom: false,
           disabledSort: true
         }}
       >

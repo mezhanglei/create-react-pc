@@ -42,8 +42,15 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
-    const newField = currentPath && designer?.getItemByPath(currentPath);
     const isIgnoreItem = isIgnoreName(selectedPath);
+    const newField = {
+      id: 'col',
+      inside: { type: 'Grid.Col', props: { span: 12 } },
+      component: null,
+      ignore: true,
+      properties: {
+      }
+    };
     designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
   }
 
@@ -64,7 +71,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     })
   }
 
-  const prefixCls = "row-selection";
+  const prefixCls = "col-selection";
 
   const cls = classnames(prefixCls, className, {
     [`${prefixCls}-active`]: isSelected,

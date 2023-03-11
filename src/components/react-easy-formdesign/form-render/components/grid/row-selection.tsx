@@ -7,7 +7,7 @@ import Icon from '@/components/svg-icon';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { insertDesignItem, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
+import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
 
 export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -36,15 +36,23 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
-  const { selected, selectedPath } = useFormDesign();
+  const { selected } = useFormDesign();
   const selectedName = selected?.name;
   const isSelected = name ? name === selectedName && selected?.parent === parent : false;
 
   const addCol = () => {
-    const nextIndex = (field?.index as number) + 1;
-    const newField = currentPath && designer?.getItemByPath(currentPath);
-    const isIgnoreItem = isIgnoreName(selectedPath);
-    designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
+    const currentItem = designer?.getItemByPath(currentPath);
+    const nextIndex = Object.keys(currentItem?.properties || {})?.length;
+    const isIgnoreItem = false;
+    const newField = {
+      id: 'col',
+      inside: { type: 'Grid.Col', props: { span: 12 } },
+      component: null,
+      ignore: true,
+      properties: {
+      }
+    };
+    designer && insertDesignItem(designer, newField, nextIndex, currentPath, isIgnoreItem);
   }
 
   const deleteItem = () => {

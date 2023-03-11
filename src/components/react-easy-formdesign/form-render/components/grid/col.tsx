@@ -4,18 +4,15 @@ import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
 import { GeneratePrams } from '../..';
-import Selection from './row-selection';
+import ColSelection from './col-selection';
+import './col.less';
+import EditorDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;
 // col组件
 export const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   const {
-    // name,
-    // field,
-    // parent,
-    // store,
-    // form,
     className,
     children,
     style,
@@ -25,14 +22,18 @@ export const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   const { field } = rest || {};
   const isEditor = field?.isEditor;
 
-  const cls = classnames('grid-edit-col', className);
+  const cls = classnames(className, {
+    'edit-col': isEditor
+  });
 
   return (
     <BaseGridCol ref={ref} style={style} className={cls} {...rest}>
       {isEditor ?
-        <Selection {...rest}>
-          {children}
-        </Selection>
+        <ColSelection {...rest}>
+          <EditorDnd {...rest}>
+            {children}
+          </EditorDnd>
+        </ColSelection>
         :
         children
       }

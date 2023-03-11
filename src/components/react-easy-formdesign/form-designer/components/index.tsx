@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import { Tabs } from 'antd';
+import { message, Tabs } from 'antd';
 import './index.less';
 import { getConfigSettings, insertDesignItem, isIgnoreName } from '../../utils/utils';
 import ComponentList from './list';
@@ -33,6 +33,12 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     const isIgnoreItem = isIgnoreName(selectedPath);
     const configSettings = getConfigSettings(item?.id);
     const field = deepMergeObject(item, getInitialValues(configSettings));
+    const parentField = designer.getItemByPath(selectedParent);
+    const parentIncludes = parentField?.includes;
+    if(parentIncludes && !parentIncludes.includes(field.id)) {
+      message.warning("当前不可插入")
+      return;
+    };
     insertDesignItem(designer, field, newIndex, selectedParent, isIgnoreItem);
   }
 

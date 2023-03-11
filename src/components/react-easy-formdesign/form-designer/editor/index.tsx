@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
 import EditorDnd from './dnd';
-import EditorSelection from './selection';
+import ControlSelection from './selection';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -28,7 +28,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
-    setEdit({ properties: {...newData} })
+    setEdit({ properties: newData })
   }
 
   // 监听选中项改动
@@ -68,7 +68,7 @@ const renderItem: RenderFormProps['renderList'] = (params) => {
   const isControl = params?.field?.type ? true : false;
   // 只有输入控件才需要默认添加选区
   if (isControl) {
-    return <EditorSelection {...params} />
+    return <ControlSelection {...params} />
   }
   return children;
 }

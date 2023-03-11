@@ -25,6 +25,7 @@ export interface ELementProps extends FormFieldProps, CustomOptions {
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
   editMask?: boolean; // 编辑区域是否遮罩层
+  includes?: string[]; // 允许嵌套的子元素id
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 

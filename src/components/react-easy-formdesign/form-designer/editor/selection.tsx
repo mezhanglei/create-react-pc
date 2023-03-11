@@ -64,7 +64,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     })
   }
 
-  const prefixCls = "editor-selection";
+  const prefixCls = "control-selection";
 
   const cls = classnames(prefixCls, className, {
     [`${prefixCls}-active`]: isSelected,

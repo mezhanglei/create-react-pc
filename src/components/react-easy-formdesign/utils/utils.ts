@@ -1,6 +1,6 @@
 import { FieldProps, FormStore, joinFormPath } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
-import { endIsListItem, getEndIndex, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
+import { endIsListItem, getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 import { deepMergeObject, deepClone } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { isEmpty } from '@/utils/type';

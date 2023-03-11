@@ -1,6 +1,6 @@
 import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
-import { GeneratePrams } from '../../form-render';
+import { GeneratePrams, joinFormPath } from '../../form-render';
 import './dnd.less';
 import { getConfigSettings, insertDesignItem } from '../../utils/utils';
 import { DndGroup } from '../components/list';
@@ -14,7 +14,14 @@ export interface EditorDndProps extends GeneratePrams<ELementProps> {
 
 // 根节点的拖放控制
 function EditorDnd(props: EditorDndProps, ref: any) {
-  const { children, store } = props;
+  const { children, store, ...rest } = props;
+
+  const {
+    name,
+    parent
+  } = rest;
+
+  const currentPath = joinFormPath(parent, name);
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -68,8 +75,9 @@ function EditorDnd(props: EditorDndProps, ref: any) {
       onUpdate={onUpdate}
       onAdd={onAdd}
       data-type="ignore"
-      className='editor-dnd-root'
+      className='editor-dnd'
       options={{ hiddenFrom: true }}
+      collection={{ path: currentPath }}
     >
       {children}
     </DndSortable>

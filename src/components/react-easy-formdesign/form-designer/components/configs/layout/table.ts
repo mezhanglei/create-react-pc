@@ -1,14 +1,17 @@
 export default {
   id: 'table',
   label: '表格布局',
-  component: { type: 'Table', props: {} },
+  inside: { type: 'Table', props: {} },
+  component: null,
   ignore: true,
   properties: [
     {
-      component: { type: 'Table.Row', props: {} },
+      inside: { type: 'Table.Row', props: {} },
+      component: null,
       properties: {
         td1: {
-          component: { type: 'Table.Cell', props: {} },
+          inside: { type: 'Table.Cell', props: {} },
+          component: null,
           ignore: true,
           properties: {
             name1: {
@@ -19,7 +22,8 @@ export default {
           }
         },
         td2: {
-          component: { type: 'Table.Cell', props: {} },
+          inside: { type: 'Table.Cell', props: {} },
+          component: null,
           ignore: true,
           properties: {
             name2: {
