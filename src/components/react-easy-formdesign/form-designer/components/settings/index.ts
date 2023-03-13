@@ -15,7 +15,8 @@ import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './
 import CascaderSettings, { cascader_operation, cascader_rule } from './base/cascader';
 import AlertSettings, { alert_operation } from './base/alert';
 // 布局组件
-// import Settings, { _operation } from './layout/alert';
+import RowSettings from './layout/row';
+import ColSettings from './layout/col';
 // 业务组件
 // import Settings, { _operation } from './business/alert';
 
@@ -37,6 +38,8 @@ const ConfigSettings = {
   cascader: [CascaderSettings, cascader_operation, cascader_rule, DefaultFieldSettings],
   alert: [AlertSettings, alert_operation],
   // 布局组件
+  row: [RowSettings],
+  col: [ColSettings],
   // 业务组件
 }
 

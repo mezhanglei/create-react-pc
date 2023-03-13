@@ -141,7 +141,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
             <span className={classes.itemPrefix}>当</span>
           </Col>
           <Col span={8}>
-            <Input.TextArea value={condition} onChange={(e) => conditionOnchange(e?.target?.value, index)} />
+            <Input.TextArea placeholder="formvalues['字段路径'] == 值" value={condition} onChange={(e) => conditionOnchange(e?.target?.value, index)} />
           </Col>
           <Col span={5}>
             <span className={classes.itemSuffix}>时，设置为</span>
