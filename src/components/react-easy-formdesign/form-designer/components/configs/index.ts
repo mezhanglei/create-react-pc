@@ -18,6 +18,7 @@ import Alert from './base/alert';
 // 布局容器
 import table from './layout/table';
 import grid from './layout/grid';
+import RichEditor from "./base/richEditor";
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps, CustomOptions {
@@ -55,6 +56,7 @@ export const TabsData = [{
         FileUpload,
         ImageUpload,
         Alert,
+        RichEditor
       ]
     },
     {
