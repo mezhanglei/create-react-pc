@@ -20,6 +20,7 @@ import RichText from "./base/richText";
 // 布局容器
 import table from './layout/table';
 import grid from './layout/grid';
+import formTable from "./layout/formTable";
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps, CustomOptions {
@@ -62,11 +63,12 @@ export const TabsData = [{
       ]
     },
     {
-      title: '布局组件',
-      elementType: '布局组件',
+      title: '容器组件',
+      elementType: '容器组件',
       elements: [
         table,
-        grid
+        grid,
+        formTable
       ]
     },
     {

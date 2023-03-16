@@ -240,7 +240,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 根据传递参数生成实例
-  const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: any, finalChildren?: any): any => {
+  const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams, finalChildren?: any): any => {
     if (target instanceof Array) {
       return target?.map((item) => {
         return createInstance(item, typeMap, commonProps, finalChildren);
@@ -286,7 +286,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const ignoreTag = { "data-type": "ignore" }
   // 目标套上其他组件
-  const withSide = (children: any, side?: FieldUnionType, render?: (params: GeneratePrams<any>) => any, commonProps?: any) => {
+  const withSide = (children: any, side?: FieldUnionType, render?: (params: GeneratePrams<any>) => any, commonProps?: GeneratePrams) => {
     const childs = render ? render?.({ ...commonProps, ...ignoreTag, children }) : children
     const childsWithSide = side ? createInstance(side, mergeComponents, { ...commonProps, ...ignoreTag }, childs) : childs;
     return childsWithSide;

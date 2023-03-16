@@ -73,6 +73,6 @@ export interface GeneratePrams<T = {}> {
   parent?: string;
   formparent?: string;
   store?: FormRenderStore;
-  form: FormStore;
+  form?: FormStore;
   children?: any
 };

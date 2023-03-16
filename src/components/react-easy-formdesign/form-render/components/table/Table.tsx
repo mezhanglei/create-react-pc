@@ -1,4 +1,4 @@
-import React, { CSSProperties, LegacyRef, useCallback } from "react";
+import React, { CSSProperties, useCallback } from "react";
 import cx from "classnames";
 import './Table.less';
 import { ColumnGroup } from "./columnGroup";
