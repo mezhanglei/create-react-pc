@@ -43,7 +43,7 @@ function ComponentList(props: ComponentListProps, ref: any) {
         {
           elements?.map((item, index) => {
             const id = item?.id as string;
-            return <Tag key={index} data-id={id} icon={item?.icon} onChange={() => onChange?.(item, elementType, tabKey)}>{item?.componentLabel || item.label}</Tag>
+            return <Tag key={index} data-id={id} icon={item?.icon} onChange={() => onChange?.(item, elementType, tabKey)}>{item?.componentLabel}</Tag>
           })
         }
       </DndSortable>

@@ -1,6 +1,6 @@
 export default {
   id: 'row',
-  label: '栅格布局',
+  componentLabel: '栅格布局',
   inside: { type: 'Grid.Row', props: {} },
   component: null,
   ignore: true,

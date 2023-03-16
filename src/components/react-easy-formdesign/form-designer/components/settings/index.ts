@@ -14,6 +14,7 @@ import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './bas
 import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './base/imageUpload';
 import CascaderSettings, { cascader_operation, cascader_rule } from './base/cascader';
 import AlertSettings, { alert_operation } from './base/alert';
+import RichTextSettings, { richText_operation } from './base/richText';
 // 布局组件
 import RowSettings from './layout/row';
 import ColSettings from './layout/col';
@@ -37,6 +38,8 @@ const ConfigSettings = {
   imageupload: [ImageUploadSettings, imageUpload_operation, imageUpload_rule, DefaultFieldSettings],
   cascader: [CascaderSettings, cascader_operation, cascader_rule, DefaultFieldSettings],
   alert: [AlertSettings, alert_operation],
+  richText: [RichTextSettings, richText_operation],
+  richEditor: [DefaultFieldSettings],
   // 布局组件
   row: [RowSettings],
   col: [ColSettings],

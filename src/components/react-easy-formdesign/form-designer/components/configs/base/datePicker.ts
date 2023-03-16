@@ -1,6 +1,7 @@
 
 export default {
   id: 'datePicker',
+  componentLabel: '日期选择器',
   label: '日期选择器',
   type: 'DatePicker',
   valueSetter: "{{(value)=> (value && moment(value, formvalues.props && formvalues.props.format || 'YYYY-MM-DD' ))}}",

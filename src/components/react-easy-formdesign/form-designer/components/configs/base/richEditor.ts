@@ -1,6 +1,7 @@
 
 export default {
-  id: 'rcihEditor',
+  id: 'richEditor',
+  componentLabel: '富文本编辑器',
   label: '富文本编辑器',
   type: 'RichEditor',
   props: {

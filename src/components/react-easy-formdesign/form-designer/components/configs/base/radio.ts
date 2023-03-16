@@ -1,6 +1,7 @@
 
 export default {
   id: 'radio',
+  componentLabel: '单选框',
   label: '单选框',
   type: 'Radio.Group',
   props: {

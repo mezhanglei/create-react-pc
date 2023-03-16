@@ -63,4 +63,4 @@ const settings = {
   }
 }
 
-export default ['表单域设置', settings] as [string, typeof settings]
+export default ['公共属性', settings] as [string, typeof settings];

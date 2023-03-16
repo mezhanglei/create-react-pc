@@ -1,5 +1,6 @@
 export default {
   id: 'cascader',
+  componentLabel: '级联选择器',
   label: '级联选择器',
   type: 'Cascader',
   props: {

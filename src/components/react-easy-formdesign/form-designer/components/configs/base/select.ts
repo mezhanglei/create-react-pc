@@ -1,6 +1,7 @@
 
 export default {
   id: 'select',
+  componentLabel: '下拉框',
   label: '下拉框',
   type: 'Select',
   props: {

@@ -25,6 +25,7 @@ import RulesComponent from './rules';
 import { LinkageCheckbox } from './linkage';
 import { EditorCodeMirror } from './options/editor';
 import RichEditor, { RichEditorModalBtn } from './rich-editor';
+import { RichText } from './rich-text';
 
 // 提供开发过程中的基础控件(控件需要满足具有value传参，onChange回调函数的props)
 export const BaseControls = {
@@ -64,5 +65,6 @@ export const BaseControls = {
   "ImageUpload": ImageUpload, // 图片上传
   "LinkageCheckbox": LinkageCheckbox, // 携带联动设置的checkbox
   "RichEditor": RichEditor, // 富文本编辑器
+  "RichText": RichText, // 富文本展示
   "RichEditorModalBtn": RichEditorModalBtn, // 富文本编辑器按钮弹窗
 }

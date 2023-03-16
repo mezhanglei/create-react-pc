@@ -303,7 +303,6 @@ export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
     value,
     onChange,
     controlField,
-    ...rest
   } = props;
 
   return (
@@ -312,7 +311,7 @@ export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
         (showModal: () => void, codeStr?: string) => (
           <div>
             <span>{codeStr}</span>
-            <Button type="link" className={classes.modalButton} onClick={showModal} {...rest}>{codeStr ? "修改联动" : "添加联动"}</Button>
+            <Button type="link" className={classes.modalButton} onClick={showModal}>{codeStr ? "修改联动" : "添加联动"}</Button>
           </div>
         )
       }
