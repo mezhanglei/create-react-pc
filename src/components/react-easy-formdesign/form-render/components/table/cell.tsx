@@ -1,4 +1,4 @@
-import React, { LegacyRef } from 'react';
+import React from 'react';
 import { Classes } from './Table';
 import classNames from 'classnames';
 import pickAttrs from "@/utils/pickAttrs";

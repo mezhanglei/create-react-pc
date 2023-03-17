@@ -23,7 +23,7 @@ export interface ColumnType {
   render?: (val: unknown, record?: unknown, index?: number) => any;
 }
 
-export interface TableProps {
+export interface TableProps extends React.HtmlHTMLAttributes<HTMLTableElement> {
   className?: string;
   style?: CSSProperties;
   columns?: ColumnType[];
@@ -42,6 +42,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
   children,
   ...rest
 }, ref) => {
+
   const getRowKey = useCallback(
     (record: { [x: string]: any }) => {
       if (typeof rowKey === "function") {

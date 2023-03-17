@@ -1,4 +1,4 @@
-import React, { LegacyRef } from 'react';
+import React from 'react';
 import { Classes } from './Table';
 import classNames from 'classnames';
 import pickAttrs from "@/utils/pickAttrs";
@@ -12,6 +12,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>((pr
     className,
     ...rest
   } = props;
+  
   return (
     <tr className={classNames(Classes.TableRow, className)} ref={ref} {...pickAttrs(rest, { aria: true, data: true })}>
       {children}

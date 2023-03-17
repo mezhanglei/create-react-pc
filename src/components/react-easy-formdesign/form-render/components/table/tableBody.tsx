@@ -1,4 +1,4 @@
-import React, { LegacyRef } from 'react';
+import React from 'react';
 import { Classes, ColumnType } from './Table';
 import classNames from 'classnames';
 import { TableCell } from './cell';
