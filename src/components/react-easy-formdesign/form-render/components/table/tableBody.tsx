@@ -16,10 +16,10 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   const childs = (
     dataSource?.map((record, rowIndex) => (
       <TableRow key={getRowKey(record)}>
-        {columns.map((cell) => {
-          const render = cell?.render;
-          const child = typeof render == 'function' ? render(record[cell.key], record, rowIndex) : record[cell.key];
-          return <TableCell key={cell.key}>{child}</TableCell>
+        {columns.map((col) => {
+          const render = col?.render;
+          const child = typeof render == 'function' ? render(record[col.key], record, rowIndex) : record[col.key];
+          return <TableCell key={col.key}>{child}</TableCell>
         })}
       </TableRow>
     ))

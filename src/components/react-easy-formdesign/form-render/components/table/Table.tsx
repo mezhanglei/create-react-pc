@@ -1,5 +1,5 @@
 import React, { CSSProperties, useCallback } from "react";
-import cx from "classnames";
+import classnames from "classnames";
 import './Table.less';
 import { ColumnGroup } from "./columnGroup";
 import { TableHead } from "./tableHead";
@@ -56,7 +56,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
 
   return (
     <table
-      className={cx([Classes.Table, className])}
+      className={classnames([Classes.Table, className])}
       style={{ tableLayout: tableLayout, ...style }}
       {...pickAttrs(rest, { aria: true, data: true })}
       ref={ref}

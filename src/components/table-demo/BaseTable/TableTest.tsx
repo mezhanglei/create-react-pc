@@ -1,4 +1,4 @@
-import Table from "./Table";
+import Table from "@/components/react-easy-formdesign/form-render/components/table/Table";
 
 const columns = [
   { key: "name", title: "name", width: 100 },
@@ -6,6 +6,7 @@ const columns = [
   { key: "year", title: "year" },
   { key: "address", title: "address" },
 ];
+
 const generateData = (num: number) => {
   return new Array(num).fill(0).map((ele, i) => ({
     key: i,
