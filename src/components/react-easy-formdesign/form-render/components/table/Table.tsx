@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback } from "react";
+import React, { CSSProperties } from "react";
 import classnames from "classnames";
 import './Table.less';
 import { ColumnGroup } from "./columnGroup";
@@ -23,36 +23,48 @@ export interface ColumnType {
   render?: (val: unknown, record?: unknown, index?: number) => any;
 }
 
-export interface TableProps extends React.HtmlHTMLAttributes<HTMLTableElement> {
+export type UnionComponent<P> =
+  | React.ComponentType<P>
+  | React.ForwardRefExoticComponent<P>
+  | React.FC<P>
+  | keyof React.ReactHTML;
+
+export type TableBodyOptions = {
+  dataSource?: { [x: string]: any }[];
+  rowKey?: string | ((record: { [x: string]: any }) => string);
+}
+
+export type RowAndCol = {
+  row?: any;
+  col?: any;
+}
+
+export type TableOptions = {
+  columns: ColumnType[];
+  components?: {
+    head?: RowAndCol;
+    body?: RowAndCol;
+    foot?: RowAndCol;
+  }
+}
+
+export interface TableProps extends React.HtmlHTMLAttributes<HTMLTableElement>, TableOptions, TableBodyOptions {
   className?: string;
   style?: CSSProperties;
-  columns?: ColumnType[];
-  dataSource?: { [x: string]: unknown }[];
-  rowKey?: string | ((record: { [x: string]: any }) => string);
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(({
   columns = [],
   dataSource,
+  rowKey,
   className,
   style = {},
   tableLayout,
-  rowKey,
+  components,
   children,
   ...rest
 }, ref) => {
-
-  const getRowKey = useCallback(
-    (record: { [x: string]: any }) => {
-      if (typeof rowKey === "function") {
-        return rowKey(record);
-      }
-      let key = typeof rowKey === "string" ? rowKey : "key";
-      return record[key] as string;
-    },
-    [rowKey]
-  );
 
   return (
     <table
@@ -62,12 +74,13 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      <TableHead columns={columns}></TableHead>
+      <TableHead columns={columns} components={components} />
       <TableBody
-        getRowKey={getRowKey}
+        rowKey={rowKey}
         columns={columns}
         dataSource={dataSource}
         children={children}
+        components={components}
       />
     </table>
   );

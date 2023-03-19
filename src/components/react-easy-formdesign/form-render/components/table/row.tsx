@@ -3,8 +3,7 @@ import { Classes } from './Table';
 import classNames from 'classnames';
 import pickAttrs from "@/utils/pickAttrs";
 
-export interface TableRowProps extends React.HtmlHTMLAttributes<HTMLTableRowElement> {
-}
+export type TableRowProps = React.HtmlHTMLAttributes<HTMLTableRowElement>;
 
 export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>((props, ref) => {
   const {

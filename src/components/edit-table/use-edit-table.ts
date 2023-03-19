@@ -160,6 +160,7 @@ export function useEditTable<T extends { key?: string }>(initialValue: T[], init
   }
 
   return {
+    tableConfig,
     dataSource,
     validator,
     getCurrent,
