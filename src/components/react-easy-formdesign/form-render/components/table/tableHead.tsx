@@ -11,25 +11,16 @@ export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProp
     children,
     className,
     columns,
-    components,
     ...rest
   } = props;
 
-  const { row: CutomRow, col: CustomCol } = components?.head || {};
-
   const childs = (
     columns.map((column, colIndex) => {
-      if (CustomCol) {
-        return (
-          <CustomCol key={column.key} column={column} colIndex={colIndex} />
-        )
-      }
       return <TableCell key={column.key}>{column.title}</TableCell>
     })
   );
 
   const renderChils = () => {
-    if (CutomRow) return <CutomRow columns={columns} />;
     return (
       <TableRow>
         {children ?? childs}

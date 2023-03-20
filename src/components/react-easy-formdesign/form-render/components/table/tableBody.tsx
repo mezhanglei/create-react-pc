@@ -7,8 +7,7 @@ import { TableRow } from './row';
 export type TableBodyProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions & TableBodyOptions;
 
 export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>((props, ref) => {
-  const { dataSource, columns, rowKey, components, className, children, ...rest } = props;
-  const { row: CutomRow, col: CustomCol } = components?.head || {};
+  const { dataSource, columns, rowKey, className, children, ...rest } = props;
 
   const getRowKey = useCallback(
     (record: { [x: string]: any }) => {
@@ -22,25 +21,16 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   );
 
   const renderCol = (record: any, rowIndex: number) => {
-    return columns.map((col, colIndex) => {
-      const render = col?.render;
-      const child = typeof render == 'function' ? render(record[col.key], record, rowIndex) : record[col.key];
-      if (CustomCol) return <CustomCol key={col.key} column={col} record={record} rowIndex={rowIndex} colIndex={colIndex} children={child} />
-      return <TableCell key={col.key}>{child}</TableCell>
+    return columns.map((column, colIndex) => {
+      const { render, key } = column || {};
+      const child = typeof render == 'function' ? render(record[key], record, rowIndex, colIndex) : record[key];
+      return <TableCell key={key}>{child}</TableCell>
     })
   };
 
   const childs = (
     dataSource?.map((record, rowIndex) => {
       const cols = renderCol(record, rowIndex);
-      if (CutomRow) {
-        return (
-          <CutomRow record={record} index={rowIndex}>
-            {cols}
-          </CutomRow>
-        );
-      };
-
       return (
         <TableRow key={getRowKey(record)}>
           {cols}

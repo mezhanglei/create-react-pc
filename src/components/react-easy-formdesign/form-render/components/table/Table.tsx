@@ -20,7 +20,7 @@ export interface ColumnType {
   title: string;
   width?: React.CSSProperties["width"];
   align?: React.CSSProperties["textAlign"];
-  render?: (val: unknown, record?: unknown, index?: number) => any;
+  render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 
 export type UnionComponent<P> =
@@ -34,18 +34,8 @@ export type TableBodyOptions = {
   rowKey?: string | ((record: { [x: string]: any }) => string);
 }
 
-export type RowAndCol = {
-  row?: any;
-  col?: any;
-}
-
 export type TableOptions = {
   columns: ColumnType[];
-  components?: {
-    head?: RowAndCol;
-    body?: RowAndCol;
-    foot?: RowAndCol;
-  }
 }
 
 export interface TableProps extends React.HtmlHTMLAttributes<HTMLTableElement>, TableOptions, TableBodyOptions {
@@ -61,7 +51,6 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
   className,
   style = {},
   tableLayout,
-  components,
   children,
   ...rest
 }, ref) => {
@@ -74,13 +63,12 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      <TableHead columns={columns} components={components} />
+      <TableHead columns={columns} />
       <TableBody
         rowKey={rowKey}
         columns={columns}
         dataSource={dataSource}
         children={children}
-        components={components}
       />
     </table>
   );
