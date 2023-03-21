@@ -3,10 +3,11 @@ import { FormRenderStore, FormStore } from '../form-render';
 import { ELementProps, FormDesignData } from './components/configs';
 
 export interface SelectedType {
-  name?: string; // 当前表单控件节点
+  name?: string; // 当前节点
+  attributeName?: string; // 当前选中节点的属性路径
   parent?: string; // 路径父节点
   formparent?: string; // 表单父节点
-  field?: ELementProps; // 所在组件的field
+  field?: ELementProps; // 节点的field
 }
 
 // 表单编辑器操作方法

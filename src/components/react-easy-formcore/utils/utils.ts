@@ -41,9 +41,9 @@ export function joinFormPath(...args: Array<any>) {
     const parent = isEmpty(pre) ? '' : pre;
     if (isValidNumber(curName) || isWithBracket(curName)) {
       const end = isValidNumber(curName) ? `[${curName}]` : curName
-      return parent ? (end ? `${parent}${end}` : parent) : end;
+      return parent && end ? `${parent}${end}` : (end || parent);
     } else {
-      return parent ? (curName ? `${parent}.${curName}` : parent) : `${curName}`;
+      return parent && curName ? `${parent}.${curName}` : (curName || parent);
     }
   });
   return result;

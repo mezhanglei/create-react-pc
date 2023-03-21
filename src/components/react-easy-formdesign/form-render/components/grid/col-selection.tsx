@@ -37,8 +37,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
   const { selected, selectedPath } = useFormDesign();
-  const selectedName = selected?.name;
-  const isSelected = name ? name === selectedName && selected?.parent === parent : false;
+  const isSelected = currentPath ? currentPath === joinFormPath(selectedPath, selected?.attributeName) : false;
 
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;

@@ -28,7 +28,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   useEffect(() => {
     // 根据selected回填数据
-    setSettingsForm(selectedPath);
+    setSettingsForm();
     setSettingsFormValue(selectedPath);
   }, [selectedPath]);
 
@@ -45,8 +45,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 设置配置表单
-  const setSettingsForm = (path?: string) => {
-    if (isNoSelected(path)) {
+  const setSettingsForm = () => {
+    if (isNoSelected(selectedPath)) {
       setEdit({ settingsForm: null });
       return;
     };
