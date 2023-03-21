@@ -4,6 +4,6 @@ export default {
   label: '表格组件',
   type: 'FormTable',
   props: {
-    // columns: []
+    columns: [{}]
   }
 }

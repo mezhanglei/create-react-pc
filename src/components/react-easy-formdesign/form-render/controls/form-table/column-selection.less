@@ -1,0 +1,41 @@
+@form-primary-color: #FF4040; // 全局主色
+
+.column-selection {
+  padding: 1px;
+  position: relative;
+  background-color: #fff;
+  border: 2px solid transparent;
+  flex-basis: 100%;
+  width: 100%;
+  min-height: 32px;
+  display: inline-block;
+
+  &-active {
+    border: 2px solid @form-primary-color;
+  }
+
+  .selection-tools {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    background-color: @form-primary-color;
+    z-index: 999;
+
+    svg {
+      font-size: 14px;
+      color: #fff;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  }
+  &-mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+  }
+}
