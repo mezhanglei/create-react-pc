@@ -18,6 +18,7 @@ export const Classes = {
 
 export interface ColumnType {
   key: string;
+  name: string;
   title: string;
   width?: React.CSSProperties["width"];
   align?: React.CSSProperties["textAlign"];

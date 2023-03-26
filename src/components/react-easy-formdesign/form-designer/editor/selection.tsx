@@ -42,7 +42,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const isIgnoreItem = isIgnoreName(selectedPath);
-    const newField = field || {};
+    const newField = currentPath && designer?.getItemByPath(currentPath);
     designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
   }
 
@@ -84,7 +84,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
       {isSelected ? Tool : null}
       {children}
-      {field?.editMask && <div className={classes.mask}></div>}
+      {field?.disabledEdit && <div className={classes.mask}></div>}
     </div>
   );
 };

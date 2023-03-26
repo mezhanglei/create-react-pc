@@ -1,11 +1,14 @@
 import { deepClone } from "@/utils/object";
-import { FormFieldProps, PropertiesData } from "./types";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent } from "./utils/utils";
+import { FieldUnionType, FormFieldProps, GeneratePrams, PropertiesData } from "./types";
+import createInstance from "./utils/createInstance";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent, parseFromField } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
 // 管理formrender过程中的数据
 export class FormRenderStore {
+  private controls: any;
+  private components: any;
   private properties: PropertiesData;
   private lastProperties: PropertiesData | undefined;
   private propertiesListeners: FormRenderListener[] = [];
@@ -14,6 +17,42 @@ export class FormRenderStore {
     this.lastProperties = undefined;
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
+    this.registry = this.registry.bind(this)
+    this.controlParse = this.controlParse.bind(this)
+    this.componentParse = this.componentParse.bind(this)
+    this.controlInstance = this.controlInstance.bind(this)
+    this.componentInstance = this.componentInstance.bind(this)
+    this.components = {};
+    this.controls = {};
+  }
+
+  // 注册controls或components
+  public registry(key: 'components' | 'controls', data: any) {
+    this[key] = data;
+  };
+
+  // 解析controls
+  public controlParse(target?: FieldUnionType) {
+    const typeMap = this.controls;
+    return parseFromField(target, typeMap);
+  }
+
+  // 解析components
+  public componentParse(target?: FieldUnionType) {
+    const typeMap = this.components;
+    return parseFromField(target, typeMap);
+  }
+
+  // 创建controls的实例
+  public controlInstance(target?: FieldUnionType, commonProps?: GeneratePrams, finalChildren?: any) {
+    const typeMap = this.controls;
+    return createInstance(target, typeMap, commonProps, finalChildren);
+  }
+
+  // 创建components的实例
+  public componentInstance(target?: FieldUnionType, commonProps?: GeneratePrams, finalChildren?: any) {
+    const typeMap = this.components;
+    return createInstance(target, typeMap, commonProps, finalChildren);
   }
 
   // 获取当前组件的properties

@@ -6,6 +6,7 @@ import { TableOptions } from "./formTable";
 import { TableProps } from ".";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
+import { joinFormPath } from "../..";
 
 export interface DesignTableProps extends TableOptions, TableProps {
   className?: string;
@@ -16,6 +17,8 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
   columns = [],
   className,
   style,
+  name,
+  parent,
   ...rest
 }, ref) => {
 
@@ -28,6 +31,8 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
     TableColBody: `${prefix}-col__body`,
   };
 
+  const currentPath = joinFormPath(parent, name);
+
   return (
     <div
       className={classnames([Classes.Table, className])}
@@ -39,7 +44,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
           columns?.map((column, colIndex) => {
             return (
               <div className={Classes.TableCol} key={colIndex}>
-                <ColumnSelection {...rest} colIndex={colIndex}>
+                <ColumnSelection parent={currentPath} name={column?.name} field={column} colIndex={colIndex}>
                   <div className={Classes.TableColHead}>
                     111111111111
                   </div>

@@ -10,21 +10,21 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   const { dataSource, columns, rowKey, className, children, ...rest } = props;
 
   const getRowKey = useCallback(
-    (record: { [x: string]: any }) => {
+    (record: { [x: string]: any }, rowIndex: number) => {
       if (typeof rowKey === "function") {
         return rowKey(record);
       }
       let key = typeof rowKey === "string" ? rowKey : "key";
-      return record[key] as string;
+      return record[key] || rowIndex;
     },
     [rowKey]
   );
 
   const renderCol = (record: any, rowIndex: number) => {
     return columns.map((column, colIndex) => {
-      const { render, key } = column || {};
-      const child = typeof render == 'function' ? render(record[key], record, rowIndex, colIndex) : record[key];
-      return <TableCell key={key}>{child}</TableCell>
+      const { render, name } = column || {};
+      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : record[name];
+      return <TableCell key={name}>{child}</TableCell>
     })
   };
 
@@ -32,7 +32,7 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
     dataSource?.map((record, rowIndex) => {
       const cols = renderCol(record, rowIndex);
       return (
-        <TableRow key={getRowKey(record)}>
+        <TableRow key={getRowKey(record, rowIndex)}>
           {cols}
         </TableRow>
       );

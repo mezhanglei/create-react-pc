@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, FormComponent, PropertiesData, GenerateFieldProps } from './types';
+import { FormFieldProps, RenderFormChildrenProps, GeneratePrams, FieldUnionType, PropertiesData, GenerateFieldProps } from './types';
 import { defaultComponents } from './components';
 import { Form, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './use-formrender';
 import { isEqual } from '@/utils/object';
-import { isReactComponent, isValidChildren } from '@/utils/ReactIs';
 import { matchExpression } from './utils/utils';
 import { isEmpty } from '@/utils/type';
 
@@ -31,8 +30,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const form = useContext<FormStore>(FormStoreContext);
   const formRenderStore = store || useFormRenderStore();
-
-  const mergeComponents = { ...defaultComponents, ...components };
+  formRenderStore.registry('components', { ...defaultComponents, ...components });
+  formRenderStore.registry('controls', controls);
 
   const {
     onValuesChange
@@ -239,56 +238,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     }
   }
 
-  // 根据传递参数生成实例
-  const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams, finalChildren?: any): any => {
-    if (target instanceof Array) {
-      return target?.map((item) => {
-        return createInstance(item, typeMap, commonProps, finalChildren);
-      });
-    } else {
-      const Child = componentParse(target, typeMap) as React.ElementType;
-      // 声明组件
-      if (Child) {
-        const { children, ...restProps } = (target as FormComponent)?.props || {};
-        return (
-          <Child {...commonProps} {...restProps}>
-            {children ? createInstance(children, typeMap, commonProps, finalChildren) : finalChildren}
-          </Child>
-        );
-      } else {
-        return isValidChildren(target) ? target : null
-      }
-    }
-  }
-
-  // 从参数中获取声明组件
-  const componentParse = (target: FieldUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
-    if (target === undefined) return;
-    if (isValidChildren(target)) return null;
-    // 是否为类或函数组件声明
-    if (isReactComponent(target)) {
-      return target
-    }
-    // 是否为已注册的组件声明
-    if (typeof target === 'object' && target) {
-      const targetInfo = target as FormComponent;
-      const hidden = evalExpression(targetInfo?.hidden, uneval);
-      if (hidden === true) {
-        return;
-      }
-      const register = typeMap && targetInfo?.type && typeMap[targetInfo?.type];
-      if (register) {
-        return register
-      }
-    }
-    return null;
-  }
-
   const ignoreTag = { "data-type": "ignore" }
   // 目标套上其他组件
   const withSide = (children: any, side?: FieldUnionType, render?: (params: GeneratePrams<any>) => any, commonProps?: GeneratePrams) => {
     const childs = render ? render?.({ ...commonProps, ...ignoreTag, children }) : children
-    const childsWithSide = side ? createInstance(side, mergeComponents, { ...commonProps, ...ignoreTag }, childs) : childs;
+    const childsWithSide = side ? formRenderStore.componentInstance(side, { ...commonProps, ...ignoreTag }, childs) : childs;
     return childsWithSide;
   }
 
@@ -301,9 +255,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (!field) return;
 
     const commonParams = { name, field: { ...options, ...field }, parent, formparent, form: form, store: formRenderStore }; // 公共参数
-    const footerInstance = createInstance(footer, mergeComponents, commonParams);
-    const suffixInstance = createInstance(suffix, mergeComponents, commonParams);
-    const fieldParse = component !== undefined ? componentParse(component, mergeComponents) : undefined;
+    const footerInstance = formRenderStore.componentInstance(footer, commonParams);
+    const suffixInstance = formRenderStore.componentInstance(suffix, commonParams);
+    const fieldParse = component !== undefined ? formRenderStore.componentParse(component) : undefined;
     // 表单域的传参
     const fieldProps = {
       key: name,
@@ -318,9 +272,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 表单域组件
     const FormField = properties instanceof Array ? Form.List : Form.Item;
     // 控件元素
-    const formItemChild = createInstance(typeRender || { type, props }, controls, commonParams)
+    const formItemChild = formRenderStore.controlInstance(typeRender || { type, props }, commonParams)
     // 只读显示
-    const readOnlyChild = createInstance(readOnlyRender, controls, commonParams)
+    const readOnlyChild = formRenderStore.controlInstance(readOnlyRender, commonParams)
     // 表单域包裹目标
     const fieldChild = readOnly === true ? readOnlyChild : formItemChild;
     // 容器传参

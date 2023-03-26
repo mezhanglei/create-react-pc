@@ -17,7 +17,7 @@ export type UnionComponent<P> =
   | keyof React.ReactHTML;
 
 // 表单上的组件联合类型
-export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function | null
+export type FieldUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function | ReactNode
 
 // 最终生成的表单域
 export interface GenerateFieldProps extends FormComponent, FormItemProps {
@@ -25,8 +25,8 @@ export interface GenerateFieldProps extends FormComponent, FormItemProps {
   inside?: FieldUnionType; // 表单域组件内层嵌套组件
   outside?: FieldUnionType; // 表单域组件外层嵌套组件
   readOnly?: boolean; // 只读模式
-  readOnlyRender?: FieldUnionType | ReactNode; // 只读模式下的组件
-  typeRender?: any; // 表单控件自定义渲染
+  readOnlyRender?: FieldUnionType; // 只读模式下的组件
+  typeRender?: FieldUnionType; // 表单控件自定义渲染
   properties?: PropertiesData;
 }
 
