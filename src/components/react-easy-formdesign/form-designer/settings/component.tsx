@@ -24,7 +24,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath)?.id) || []), [designer, selectedPath]); // 配置表单列表
-  const nameSettings = useMemo(() => (getNameSettings(designer, selectedPath)), [designer, selectedPath]); // 表单的name设置
+  const nameSettings = useMemo(() => (getNameSettings(selectedPath)), [selectedPath]); // 表单的name设置
 
   useEffect(() => {
     // 根据selected回填数据

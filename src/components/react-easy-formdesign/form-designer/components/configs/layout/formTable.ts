@@ -4,6 +4,9 @@ export default {
   label: '表格组件',
   type: 'FormTable',
   props: {
-    columns: [{}]
+    columns: [{
+      name: 'col1',
+      title: "第一列",
+    }]
   }
 }

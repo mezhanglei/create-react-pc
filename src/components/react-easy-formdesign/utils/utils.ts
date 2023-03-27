@@ -5,7 +5,7 @@ import { deepMergeObject, deepClone } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
-import { ELementProps, FormDesignData } from '../form-designer/components/configs';
+import { ELementProps } from '../form-designer/components/configs';
 import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
@@ -116,7 +116,7 @@ export const isIgnoreName = (path?: string) => {
 }
 
 // name的setting
-export const getNameSettings = (designer: FormRenderStore, path?: string) => {
+export const getNameSettings = (path?: string) => {
   if (isNoSelected(path)) return;
   // 非列表节点设置字段名
   if (!isIgnoreName(path)) {

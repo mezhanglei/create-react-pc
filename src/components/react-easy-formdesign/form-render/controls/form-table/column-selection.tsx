@@ -14,7 +14,7 @@ export interface ColumnSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
   style?: CSSProperties;
   className?: string;
-  colIndex: number
+  colIndex: number;
 }
 /**
  * 给表单中的控件外围添加选中框
@@ -37,42 +37,42 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     ...restProps
   } = props;
 
-  const currentAttributeName = `props.columns[${colIndex}]`;
+  const columns = field?.props?.columns || [];
+  const attributeName = `props.columns[${colIndex}]`;
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
-  const currentPathWithAttributeName = joinFormPath(currentPath, currentAttributeName);
+  const attributePath = joinFormPath(currentPath, attributeName);
   const setEdit = useFormEdit();
   const { selected, selectedPath } = useFormDesign();
-  const isSelected = currentPathWithAttributeName ? currentPathWithAttributeName === joinFormPath(selectedPath, selected?.attributeName) : false;
+  const isSelected = attributePath ? attributePath === joinFormPath(selectedPath, selected?.attributeName) : false;
 
   const addColumn = () => {
-    const nextIndex = colIndex + 1;
-    const currentField = { ...field };
-    const oldColumns = [...field?.props?.columns];
-    oldColumns.splice(nextIndex, 0, currentField);
-    const newField = deepSet(currentField, "props.columns", oldColumns);
+    const nextColIndex = colIndex + 1;
+    const copyColumn = columns[colIndex];
+    const oldColumns = [...columns];
+    oldColumns.splice(nextColIndex, 0, copyColumn);
+    const newField = deepSet(field, "props.columns", oldColumns);
     designer && updateDesignerItem(designer, currentPath, newField);
   }
 
-  const deleteItem = () => {
-    const currentField = { ...field };
-    const oldColumns = [...field?.props?.columns];
+  const deleteColumn = () => {
+    const oldColumns = [...columns];
     oldColumns.splice(colIndex, 1);
-    const newField = deepSet(currentField, "props.columns", oldColumns);
+    const newField = deepSet(field, "props.columns", oldColumns);
     designer && updateDesignerItem(designer, currentPath, newField);
     setEdit({ selected: {} });
   }
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
-    setEdit({
-      selected: {
-        name: name as string,
-        attributeName: currentAttributeName,
-        parent: parent,
-        formparent: formparent,
-        field: field
-      }
-    })
+    // setEdit({
+    //   selected: {
+    //     name: name as string,
+    //     attributeName: attributeName,
+    //     parent: parent,
+    //     formparent: formparent,
+    //     field: field
+    //   }
+    // })
   }
 
   const prefixCls = "column-selection";
@@ -88,7 +88,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const Tool = (
     <div className='selection-tools'>
       <Icon name="fuzhi" onClick={addColumn} />
-      <Icon name="shanchu" onClick={deleteItem} />
+      <Icon name="shanchu" onClick={deleteColumn} />
     </div>
   );
 

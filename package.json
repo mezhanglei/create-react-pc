@@ -128,6 +128,7 @@
     "react-responsive-modal": "^6.4.1",
     "react-router-dom": "^5.2.0",
     "react-slick": "^0.27.13",
+    "react-spinners": "^0.13.8",
     "react-transition-group": "^4.4.1",
     "redux": "^4.0.5",
     "reflect-metadata": "^0.1.13",
