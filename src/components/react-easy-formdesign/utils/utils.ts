@@ -116,10 +116,18 @@ export const isIgnoreName = (path?: string) => {
 }
 
 // name的setting
-export const getNameSettings = (path?: string) => {
+export const getNameSettings = (path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   // 非列表节点设置字段名
   if (!isIgnoreName(path)) {
+    if (attributeName) {
+      return {
+        [attributeName]: {
+          label: '字段名',
+          type: 'Input'
+        }
+      };
+    }
     return {
       name: {
         label: '字段名',

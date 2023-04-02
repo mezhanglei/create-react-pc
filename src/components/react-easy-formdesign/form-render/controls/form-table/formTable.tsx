@@ -22,6 +22,7 @@ export interface ColumnType {
   title: string;
   width?: React.CSSProperties["width"];
   align?: React.CSSProperties["textAlign"];
+  type?: string;
   render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 

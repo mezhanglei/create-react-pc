@@ -2,14 +2,16 @@ import React, { CSSProperties } from "react";
 import classnames from "classnames";
 import './designTable.less';
 import pickAttrs from "@/utils/pickAttrs";
-import { TableOptions } from "./formTable";
 import { TableProps } from ".";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
+import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
 
-export interface DesignTableProps extends TableOptions, TableProps {
+export type DesignColumn = ELementProps;
+export interface DesignTableProps extends TableProps {
   className?: string;
   style?: CSSProperties;
+  columns?: DesignColumn[];
 }
 
 const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
@@ -37,14 +39,15 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
       <TableDnd {...rest}>
         {
           columns?.map((column, colIndex) => {
+            const columnControl = rest?.store && rest.store.controlInstance(column);
             return (
               <div className={Classes.TableCol} key={colIndex}>
                 <ColumnSelection {...rest} colIndex={colIndex}>
                   <div className={Classes.TableColHead}>
-                    111111111111
+                    {column?.label}
                   </div>
                   <div className={Classes.TableColBody}>
-                    <input />
+                    {columnControl}
                   </div>
                 </ColumnSelection>
               </div>

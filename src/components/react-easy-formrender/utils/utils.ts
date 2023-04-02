@@ -3,6 +3,7 @@ import { FieldUnionType, FormComponent, FormFieldProps, PropertiesData } from ".
 import { pathToArr, deepSet, joinFormPath } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
 import { isReactComponent, isValidChildren } from "@/utils/ReactIs";
+import React from "react";
 
 // 匹配字符串表达式
 export const matchExpression = (value?: any) => {
@@ -388,7 +389,7 @@ export const parseFromField = (target: FieldUnionType | undefined, typeMap?: { [
   if (isValidChildren(target)) return null;
   // 是否为类或函数组件声明
   if (isReactComponent(target)) {
-    return target
+    return target as any
   }
   // 是否为已注册的组件声明
   if (typeof target === 'object' && target) {

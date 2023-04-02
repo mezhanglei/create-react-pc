@@ -24,13 +24,13 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath)?.id) || []), [designer, selectedPath]); // 配置表单列表
-  const nameSettings = useMemo(() => (getNameSettings(selectedPath)), [selectedPath]); // 表单的name设置
+  const nameSettings = useMemo(() => (getNameSettings(selectedPath, selected?.attributeName)), [selectedPath, selected?.attributeName]); // 节点的字段设置
 
   useEffect(() => {
     // 根据selected回填数据
     setSettingsForm();
     setSettingsFormValue(selectedPath);
-  }, [selectedPath]);
+  }, [selectedPath, selected?.attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
     if (isNoSelected(selectedPath)) return;
@@ -59,7 +59,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     const curSettingsValues = getDesignerItem(designer, path); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值
     updateDesignerItem(designer, path, curSettingsValues); // 同步更新节点控件
-    setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue);
+    setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue); // 节点控件
+    // TODO：设置节点属性
   }
 
   const renderCommonList = () => {

@@ -6,7 +6,8 @@ export default {
   props: {
     columns: [{
       name: 'col1',
-      title: "第一列",
+      label: "第一列",
+      type: 'Input'
     }]
   }
 }

@@ -56,5 +56,3 @@ if (token) {
     document.getElementById("root")
   );
 }
-
-

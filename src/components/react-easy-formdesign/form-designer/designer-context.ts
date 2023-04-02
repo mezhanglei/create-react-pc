@@ -4,10 +4,11 @@ import { ELementProps, FormDesignData } from './components/configs';
 
 export interface SelectedType {
   name?: string; // 当前节点
-  attributeName?: string; // 当前选中节点的属性路径
   parent?: string; // 路径父节点
   formparent?: string; // 表单父节点
   field?: ELementProps; // 节点的field
+  attributeName?: string; // 当前选中节点的属性路径
+  attributeField?: ELementProps; // 当前选中节点的属性
 }
 
 // 表单编辑器操作方法

@@ -7,7 +7,7 @@ import Icon from '@/components/svg-icon';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
 
 export interface ColumnSelectionProps extends GeneratePrams<ELementProps> {
@@ -38,7 +38,8 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   } = props;
 
   const columns = field?.props?.columns || [];
-  const attributeName = `props.columns[${colIndex}]`;
+  const column = columns[colIndex];
+  const attributeName = joinFormPath(`props.columns[${colIndex}]`, column.name);
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const attributePath = joinFormPath(currentPath, attributeName);
   const setEdit = useFormEdit();
@@ -47,9 +48,13 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const addColumn = () => {
     const nextColIndex = colIndex + 1;
-    const copyColumn = columns[colIndex];
     const oldColumns = [...columns];
-    oldColumns.splice(nextColIndex, 0, copyColumn);
+    const newColumn = {
+      ...column,
+      id: 'column',
+      name: defaultGetId('column')
+    }
+    oldColumns.splice(nextColIndex, 0, newColumn);
     const newField = deepSet(field, "props.columns", oldColumns);
     designer && updateDesignerItem(designer, currentPath, newField);
   }
@@ -64,15 +69,15 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
-    // setEdit({
-    //   selected: {
-    //     name: name as string,
-    //     attributeName: attributeName,
-    //     parent: parent,
-    //     formparent: formparent,
-    //     field: field
-    //   }
-    // })
+    setEdit({
+      selected: {
+        name: name as string,
+        attributeName: attributeName,
+        parent: parent,
+        formparent: formparent,
+        field: field
+      }
+    })
   }
 
   const prefixCls = "column-selection";
