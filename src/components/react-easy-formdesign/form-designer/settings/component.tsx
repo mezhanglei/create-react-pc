@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, getNameSettings, setDesignerFormValue } from '../../utils/utils';
+import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, setDesignerFormValue } from '../../utils/utils';
 import CustomCollapse from '../../form-render/components/collapse';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
@@ -23,20 +23,22 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const { selected, selectedPath, selectedFormPath, designer, designerForm } = useFormDesign();
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
-  const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath)?.id) || []), [designer, selectedPath]); // 配置表单列表
-  const nameSettings = useMemo(() => (getNameSettings(selectedPath, selected?.attributeName)), [selectedPath, selected?.attributeName]); // 节点的字段设置
+  const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath, selected?.attributeName)?.id) || []), [selectedPath, selected?.attributeName]); // 配置表单列表
 
   useEffect(() => {
     // 根据selected回填数据
     setSettingsForm();
-    setSettingsFormValue(selectedPath);
+    setSettingsFormValue(selectedPath, selected?.attributeName);
   }, [selectedPath, selected?.attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
     if (isNoSelected(selectedPath)) return;
     const settingsValues = form.getFieldValue();
-    updateDesignerItem(designer, selectedPath, settingsValues);
-    setDesignerFormValue(designerForm, selectedFormPath, settingsValues?.initialValue);
+    updateDesignerItem(designer, selectedPath, { attributeName: selected?.attributeName, attributeData: settingsValues, field: settingsValues });
+    // 只设置控件默认值
+    if (!selected?.attributeName) {
+      setDesignerFormValue(designerForm, selectedFormPath, settingsValues?.initialValue);
+    }
     // 当前字段名更改则同步更改selected
     const { name } = settingsValues;
     if (name) {
@@ -54,13 +56,15 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   // 配置属性表单值
-  const setSettingsFormValue = (path?: string) => {
+  const setSettingsFormValue = (path?: string, attributeName?: string) => {
     if (isNoSelected(path)) return;
-    const curSettingsValues = getDesignerItem(designer, path); // 获取节点控件已有的值
+    const curSettingsValues = getDesignerItem(designer, path, attributeName); // 获取节点控件已有的值
     form?.reset(curSettingsValues); // 设置配置表单值
-    updateDesignerItem(designer, path, curSettingsValues); // 同步更新节点控件
-    setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue); // 节点控件
-    // TODO：设置节点属性
+    updateDesignerItem(designer, path, { attributeName: attributeName, attributeData: curSettingsValues, field: curSettingsValues }); // 同步更新节点控件
+    // 只设置控件默认值
+    if (!attributeName) {
+      setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue);
+    }
   }
 
   const renderCommonList = () => {
@@ -80,7 +84,6 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   return (
     <div ref={ref} className={cls} style={style}>
       <Form layout="vertical" store={form} onFieldsChange={onFieldsChange}>
-        <RenderFormChildren properties={nameSettings} />
         {renderCommonList()}
       </Form>
     </div>

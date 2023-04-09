@@ -8,7 +8,7 @@ export interface SelectedType {
   formparent?: string; // 表单父节点
   field?: ELementProps; // 节点的field
   attributeName?: string; // 当前选中节点的属性路径
-  attributeField?: ELementProps; // 当前选中节点的属性
+  attributeData?: any; // 当前选中节点的属性
 }
 
 // 表单编辑器操作方法

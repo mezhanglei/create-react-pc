@@ -54,15 +54,13 @@ function EditorDnd(props: EditorDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
-    const parentData = store?.getItemByPath(dropCollection?.path)
-    const isIgnoreName = parentData instanceof Array; // 是否忽略name插入
     // 从侧边栏插入进来
     if (fromCollection?.type === DndGroup) {
       const elementId = from?.id as string;
       const item = ConfigElementsMap[elementId];
       const configSettings = getConfigSettings(item?.id);
       const field = deepMergeObject(item, getInitialValues(configSettings));
-      store && insertDesignItem(store, field, dropIndex, dropCollection?.path, isIgnoreName);
+      store && insertDesignItem(store, dropCollection?.path, { field, index: dropIndex });
       // 容器内部拖拽
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });

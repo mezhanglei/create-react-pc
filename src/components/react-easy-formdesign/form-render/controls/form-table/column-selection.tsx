@@ -38,8 +38,9 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   } = props;
 
   const columns = field?.props?.columns || [];
+  const columnsPath = `props.columns`;
   const column = columns[colIndex];
-  const attributeName = joinFormPath(`props.columns[${colIndex}]`, column.name);
+  const attributeName = joinFormPath(`${columnsPath}[${colIndex}]`, column.name);
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const attributePath = joinFormPath(currentPath, attributeName);
   const setEdit = useFormEdit();
@@ -53,17 +54,14 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
       ...column,
       id: 'column',
       name: defaultGetId('column')
-    }
+    };
     oldColumns.splice(nextColIndex, 0, newColumn);
-    const newField = deepSet(field, "props.columns", oldColumns);
-    designer && updateDesignerItem(designer, currentPath, newField);
+    const newField = deepSet(field, columnsPath, oldColumns);
+    designer && updateDesignerItem(designer, currentPath, { field: newField });
   }
 
   const deleteColumn = () => {
-    const oldColumns = [...columns];
-    oldColumns.splice(colIndex, 1);
-    const newField = deepSet(field, "props.columns", oldColumns);
-    designer && updateDesignerItem(designer, currentPath, newField);
+    designer && updateDesignerItem(designer, currentPath, { attributeName: `${columnsPath}[${colIndex}]` });
     setEdit({ selected: {} });
   }
 

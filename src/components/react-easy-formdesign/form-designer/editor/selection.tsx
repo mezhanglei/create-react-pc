@@ -1,5 +1,5 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
-import { insertDesignItem, isIgnoreName } from '../../utils/utils';
+import { insertDesignItem } from '../../utils/utils';
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../../form-render';
@@ -38,12 +38,11 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const setEdit = useFormEdit();
   const { selected, selectedPath } = useFormDesign();
   const isSelected = currentPath ? currentPath === joinFormPath(selectedPath, selected?.attributeName) : false;
-  
+
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
-    const isIgnoreItem = isIgnoreName(selectedPath);
     const newField = currentPath && designer?.getItemByPath(currentPath);
-    designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
+    designer && insertDesignItem(designer, parent, { field: newField, index: nextIndex });
   }
 
   const deleteItem = () => {

@@ -42,7 +42,6 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const addCol = () => {
     const currentItem = designer?.getItemByPath(currentPath);
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
-    const isIgnoreItem = false;
     const newField = {
       id: 'col',
       inside: { type: 'Grid.Col', props: { span: 12 } },
@@ -51,7 +50,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, newField, nextIndex, currentPath, isIgnoreItem);
+    designer && insertDesignItem(designer, currentPath, { field: newField, index: nextIndex });
   }
 
   const deleteItem = () => {

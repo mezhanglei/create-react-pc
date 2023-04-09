@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { CSSProperties, LegacyRef, useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { useFormDesign } from "../../../utils/hooks";
 import { getDesignerItem, updateDesignerItem } from "../../../utils/utils";
 import CodeTextArea from "../code-textarea";
@@ -28,8 +28,8 @@ export interface RequestSourceProps {
 
 // 是否为请求配置
 export const isRequestConfig = (data: any) => {
-  if(typeof data === 'object') {
-    if(data?.url) {
+  if (typeof data === 'object') {
+    if (data?.url) {
       return true;
     }
   }
@@ -118,7 +118,7 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
     const newConfig = oldProps?.requestConfig || {};
     newConfig[name] = value;
     onChange && onChange(newConfig);
-    updateDesignerItem(designer, selectedPath, { props: { ...oldProps, requestConfig: newConfig } });
+    updateDesignerItem(designer, selectedPath, { attributeName: 'props.requestConfig', attributeData: newConfig })
   }
 
   return (

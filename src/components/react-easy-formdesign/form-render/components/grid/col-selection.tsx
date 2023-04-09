@@ -7,7 +7,7 @@ import Icon from '@/components/svg-icon';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { insertDesignItem, isIgnoreName } from '@/components/react-easy-formdesign/utils/utils';
+import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
 
 export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -41,7 +41,6 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
-    const isIgnoreItem = isIgnoreName(selectedPath);
     const newField = {
       id: 'col',
       inside: { type: 'Grid.Col', props: { span: 12 } },
@@ -50,7 +49,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, newField, nextIndex, parent, isIgnoreItem);
+    designer && insertDesignItem(designer, parent, { field: newField, index: nextIndex });
   }
 
   const deleteItem = () => {
