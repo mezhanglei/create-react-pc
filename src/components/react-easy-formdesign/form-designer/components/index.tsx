@@ -23,14 +23,14 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { selected, selectedPath, designer, properties } = useFormDesign();
+  const { selected, designer, properties } = useFormDesign();
   const selectedName = selected?.name;
   const selectedParent = selected?.parent;
   const attributeName = selected?.attributeName;
-  const attributeData = selected?.attributeData;
   const cls = classnames(prefixCls, className);
 
   const onChange = (item: ELementProps) => {
+    if (attributeName) return;
     const newIndex = getEndIndex(selectedName, properties, selectedParent) + 1; // 插入位置序号
     const configSettings = getConfigSettings(item?.id);
     const field = deepMergeObject(item, getInitialValues(configSettings));

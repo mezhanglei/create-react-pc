@@ -7,6 +7,7 @@ import { GeneratePrams, joinFormPath } from '../..';
 import { ConfigElementsMap, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { DndGroup } from '@/components/react-easy-formdesign/form-designer/components/list';
 import { getConfigSettings, insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
+import { useFormDesign } from '@/components/react-easy-formdesign/utils/hooks';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -21,6 +22,9 @@ function TableDnd(props: TableDndProps, ref: any) {
     parent
   } = rest;
 
+  const { selected } = useFormDesign();
+  const attributeName = selected?.attributeName;
+  const attributeData = selected?.attributeData;
   const currentPath = joinFormPath(parent, name);
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
@@ -37,7 +41,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    // store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -60,10 +64,10 @@ function TableDnd(props: TableDndProps, ref: any) {
       const item = ConfigElementsMap[elementId];
       const configSettings = getConfigSettings(item?.id);
       const field = deepMergeObject(item, getInitialValues(configSettings));
-      store && insertDesignItem(store, dropCollection?.path, { field, index: dropIndex });
+      // store && insertDesignItem(store, dropCollection?.path, { field, index: dropIndex });
       // 容器内部拖拽
     } else {
-      store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      // store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 
