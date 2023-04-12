@@ -17,10 +17,11 @@ import Cascader from './base/cascader';
 import Alert from './base/alert';
 import RichEditor from "./base/richEditor";
 import RichText from "./base/richText";
-// 布局容器
-import table from './layout/table';
+// 布局组件
+import tableLayout from './layout/table';
 import grid from './layout/grid';
-import formTable from "./layout/formTable";
+// 容器字段
+import formTable from "./container/table";
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps, CustomOptions {
@@ -28,7 +29,7 @@ export interface ELementProps extends FormFieldProps, CustomOptions {
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
   disabledEdit?: boolean; // 禁止编辑
-  includes?: string[]; // 允许嵌套的子元素id
+  includes?: string[]; // 限制可以添加的子元素id
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 
@@ -40,6 +41,21 @@ export const TabsData = [{
   key: 'base',
   tab: '基础组件',
   children: [
+    {
+      title: '布局组件',
+      elementType: '布局组件',
+      elements: [
+        tableLayout,
+        grid,
+      ]
+    },
+    {
+      title: '容器组件',
+      elementType: '容器组件',
+      elements: [
+        formTable
+      ]
+    },
     {
       title: '基础控件',
       elementType: '基础控件',
@@ -60,15 +76,6 @@ export const TabsData = [{
         Alert,
         RichEditor,
         RichText,
-      ]
-    },
-    {
-      title: '容器组件',
-      elementType: '容器组件',
-      elements: [
-        table,
-        grid,
-        formTable
       ]
     },
     {

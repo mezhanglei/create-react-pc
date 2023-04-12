@@ -125,7 +125,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const fieldPropsMap = {};
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formField: FormFieldProps, path: string) => {
-      for (const propsKey of Object.keys(formField)) {
+      for (const propsKey of Object.keys(formField || {})) {
         if (typeof propsKey === 'string') {
           if (propsKey !== 'properties') {
             const propsValue = formField[propsKey];

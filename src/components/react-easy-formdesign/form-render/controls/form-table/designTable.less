@@ -3,18 +3,19 @@
   border: 1px inset rgba(0, 0, 0, .1);
   background: #fff;
   flex: 1;
+  width: 0;
   margin: 0;
   overflow: auto;
   position: relative;
-  display: flex;
-  width: 0;
+  white-space: nowrap;
 
   &-col {
     border: 1px solid #ebeef5;
     width: 200px;
     height: 100%;
     position: relative;
-    display: block;
+    display: inline-block;
+    flex-shrink: 0;
 
     &__head {
       padding: 12px 10px;

@@ -1,11 +1,11 @@
-import { FieldProps, FormStore, joinFormPath } from '@/components/react-easy-formcore';
+import { FormStore, isValidNumber, joinFormPath } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { deepMergeObject, deepClone, deepSet, deepGet } from '@/utils/object';
+import { deepMergeObject, deepClone } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
-import { ELementProps } from '../form-designer/components/configs';
+import { ConfigElementsMap, ELementProps } from '../form-designer/components/configs';
 import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
@@ -30,13 +30,42 @@ export const getFromSelected = (selected: SelectedType) => {
   return { selected, selectedPath, selectedFormPath };
 }
 
+// name的setting
+export const getNameSettings = (selected?: SelectedType) => {
+  if (isNoSelected(selected?.name)) return;
+  // 非数组节点以及非属性节点可以设置name
+  if (!isValidNumber(selected?.name) && !selected?.attributeName) {
+    return {
+      name: {
+        label: '字段名',
+        type: 'Input'
+      }
+    };
+  }
+}
+
+// 获取当前选中位置序号
+export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedType) => {
+  const parent = designer.getItemByPath(selected?.parent);
+  const childProperties = selected?.parent ? parent?.properties : parent;
+  const keys = Object.keys(childProperties || {});
+  const index = selected?.name ? keys?.indexOf(selected?.name) : -1;
+  return index;
+}
+
+// 根据id获取对应的配置的field
+export const getConfigField = (id?: string) => {
+  if (!id) return;
+  const item = ConfigElementsMap[id];
+  const configSettings = getConfigSettings(item?.id);
+  const field = deepMergeObject(item, getInitialValues(configSettings));
+  return field;
+}
+
 // 获取节点的值和属性
 export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
-  let curValues = designer.getItemByPath(path) || {};
-  if (attributeName) {
-    curValues = deepGet(curValues, attributeName);
-  }
+  let curValues = designer.getItemByPath(path, attributeName) || {};
   const configSettings = getConfigSettings(curValues?.id);
   // 从配置表单中获取初始属性
   const initialValues = getInitialValues(configSettings);
@@ -45,26 +74,30 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string, attrib
 }
 
 // 插入新节点
-export const insertDesignItem = (designer: FormRenderStore, path: string | undefined, data: { index: number, field: ELementProps }) => {
-  const { field, index } = data || {};
-  // 设置表单节点
-  const newField = field?.id ? { ...field, name: defaultGetId(field?.id) } : field;
-  designer?.addItemByIndex(newField, index, path);
+export const insertDesignItem = (designer: FormRenderStore, path: string | undefined, index?: number, data?: ELementProps) => {
+  const parentField = designer && designer.getItemByPath(path);
+  const isInArray = parentField?.properties instanceof Array || parentField instanceof Array;
+  if (isInArray) {
+    designer?.addItemByIndex(data, index, path);
+  } else {
+    if (data?.id) {
+      const dataKey = defaultGetId(data?.id);
+      const newData = { [dataKey]: data };
+      designer?.addItemByIndex(newData, index, path);
+    }
+  }
 }
 
 // 更新节点的属性(不包括值)
-export const updateDesignerItem = (designer: FormRenderStore, path: string | undefined, data: { attributeName?: string; attributeData?: any, field?: FieldProps }) => {
-  const { field, attributeName, attributeData } = data || {};
+export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   if (attributeName) {
     // 设置attribute节点
-    const oldField = getDesignerItem(designer, path);
-    const newField = deepSet(oldField, attributeName, attributeData);
-    designer?.updateItemByPath(path, newField);
+    designer?.updateItemByPath(data, path, attributeName);
   } else {
-    const { name, ...rest } = field || {};
+    const { name, ...rest } = data || {};
     if (rest) {
-      designer?.updateItemByPath(path, rest);
+      designer?.updateItemByPath(rest, path);
     }
     if (name) {
       designer?.updateNameByPath(path, name);
@@ -73,19 +106,16 @@ export const updateDesignerItem = (designer: FormRenderStore, path: string | und
 }
 
 // 覆盖设置节点的属性(不包括值)
-export const setDesignerItem = (designer: FormRenderStore, path: string | undefined, data: { attributeName?: string; attributeData?: any, field?: FieldProps }) => {
-  const { field, attributeName, attributeData } = data || {};
+export const setDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   if (attributeName) {
     // 设置attribute节点
-    const oldField = getDesignerItem(designer, path);
-    const newField = deepSet(oldField, attributeName, attributeData);
-    designer?.setItemByPath(path, newField);
+    designer?.setItemByPath(data, path, attributeName);
   } else {
-    const { name, ...rest } = field || {};
+    const { name, ...rest } = data || {};
     // 覆盖设置控件的属性
     if (rest) {
-      designer?.setItemByPath(path, rest);
+      designer?.setItemByPath(rest, path);
     }
     // 更新控件的字段名
     if (name) {

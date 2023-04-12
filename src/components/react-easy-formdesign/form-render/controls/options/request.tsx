@@ -118,7 +118,7 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
     const newConfig = oldProps?.requestConfig || {};
     newConfig[name] = value;
     onChange && onChange(newConfig);
-    updateDesignerItem(designer, selectedPath, { attributeName: 'props.requestConfig', attributeData: newConfig })
+    updateDesignerItem(designer, newConfig, selectedPath, 'props.requestConfig')
   }
 
   return (

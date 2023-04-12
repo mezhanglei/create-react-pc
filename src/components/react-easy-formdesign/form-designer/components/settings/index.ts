@@ -18,10 +18,12 @@ import RichTextSettings, { richText_operation } from './base/richText';
 // 布局组件
 import RowSettings from './layout/row';
 import ColSettings from './layout/col';
+// 容器组件
+import FormTableColumnSettings from './container/table-column';
 // 业务组件
 // import Settings, { _operation } from './business/alert';
 
-// 控件的属性配置, 以控件的id作为键
+// 属性配置, 以目标节点的id作为键
 const ConfigSettings = {
   // 基础控件
   input: [InputSettings, input_operation, input_rule, DefaultFieldSettings],
@@ -43,7 +45,8 @@ const ConfigSettings = {
   // 布局组件
   row: [RowSettings],
   col: [ColSettings],
-  // 业务组件
+  // 容器组件
+  formTableColumn: [FormTableColumnSettings]
 }
 
 type ValueOf<T> = T[keyof T];

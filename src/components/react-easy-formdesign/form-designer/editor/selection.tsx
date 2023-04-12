@@ -42,7 +42,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = currentPath && designer?.getItemByPath(currentPath);
-    designer && insertDesignItem(designer, parent, { field: newField, index: nextIndex });
+    designer && insertDesignItem(designer, parent, nextIndex, newField);
   }
 
   const deleteItem = () => {

@@ -36,7 +36,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     // 回填setting表单的intialValue选项
     settingsForm?.setFieldValue('initialValue', value);
     // 回填designer的initialValue值
-    selectedPath && designer?.updateItemByPath(selectedPath, { initialValue: value });
+    selectedPath && designer?.updateItemByPath({ initialValue: value }, selectedPath);
   }
 
   return (

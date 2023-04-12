@@ -49,7 +49,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, parent, { field: newField, index: nextIndex });
+    designer && insertDesignItem(designer, parent, nextIndex, newField);
   }
 
   const deleteItem = () => {

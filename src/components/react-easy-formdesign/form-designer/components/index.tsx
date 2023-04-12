@@ -2,14 +2,11 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { message, Tabs } from 'antd';
 import './index.less';
-import { getConfigSettings, insertDesignItem } from '../../utils/utils';
+import { getConfigField, getSelectedIndex, insertDesignItem } from '../../utils/utils';
 import ComponentList from './list';
-import { getEndIndex, getInitialValues } from '@/components/react-easy-formrender/utils/utils';
 import { ELementProps, TabsData } from './configs';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
-import { deepMergeObject } from '@/utils/object';
-
 
 export interface DesignComponentsProps {
   className?: string
@@ -23,24 +20,22 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className
   } = props;
 
-  const { selected, designer, properties } = useFormDesign();
-  const selectedName = selected?.name;
+  const { selected, designer } = useFormDesign();
   const selectedParent = selected?.parent;
   const attributeName = selected?.attributeName;
   const cls = classnames(prefixCls, className);
 
   const onChange = (item: ELementProps) => {
     if (attributeName) return;
-    const newIndex = getEndIndex(selectedName, properties, selectedParent) + 1; // 插入位置序号
-    const configSettings = getConfigSettings(item?.id);
-    const field = deepMergeObject(item, getInitialValues(configSettings));
+    const newIndex = getSelectedIndex(designer, selected) + 1; // 插入位置序号
+    const field = getConfigField(item?.id);
     const parentField = designer.getItemByPath(selectedParent);
     const parentIncludes = parentField?.includes;
     if (parentIncludes && !parentIncludes.includes(field.id)) {
       message.warning("当前不可插入")
       return;
     };
-    insertDesignItem(designer, selectedParent, { field, index: newIndex });
+    insertDesignItem(designer, selectedParent, newIndex, field);
   }
 
   return (

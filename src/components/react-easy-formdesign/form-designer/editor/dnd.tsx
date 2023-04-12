@@ -2,11 +2,9 @@ import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams, joinFormPath } from '../../form-render';
 import './dnd.less';
-import { getConfigSettings, insertDesignItem } from '../../utils/utils';
+import { getConfigField, insertDesignItem } from '../../utils/utils';
 import { DndGroup } from '../components/list';
-import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { ConfigElementsMap, ELementProps } from '../components/configs';
-import { deepMergeObject } from '@/utils/object';
+import { ELementProps } from '../components/configs';
 
 export interface EditorDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -57,10 +55,8 @@ function EditorDnd(props: EditorDndProps, ref: any) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndGroup) {
       const elementId = from?.id as string;
-      const item = ConfigElementsMap[elementId];
-      const configSettings = getConfigSettings(item?.id);
-      const field = deepMergeObject(item, getInitialValues(configSettings));
-      store && insertDesignItem(store, dropCollection?.path, { field, index: dropIndex });
+      const field = getConfigField(elementId);
+      store && insertDesignItem(store, dropCollection?.path, dropIndex, field);
       // 容器内部拖拽
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });

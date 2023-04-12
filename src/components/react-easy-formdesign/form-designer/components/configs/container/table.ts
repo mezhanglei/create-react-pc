@@ -5,7 +5,7 @@ export default {
   type: 'FormTable',
   props: {
     columns: [{
-      id: 'column',
+      id: 'formTableColumn',
       name: 'col1',
       label: "第一列",
       type: 'Input'
