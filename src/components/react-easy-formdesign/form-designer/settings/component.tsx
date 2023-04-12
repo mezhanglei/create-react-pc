@@ -60,10 +60,10 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   // 配置属性表单值
   const setSettingsFormValue = (path?: string, attributeName?: string) => {
     if (isNoSelected(path)) return;
-    const curSettingsValues = getDesignerItem(designer, path, attributeName); // 获取节点控件已有的值
-    form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: selected?.name }); // 回填数据
-    updateDesignerItem(designer, curSettingsValues, path, attributeName); // 同步更新节点控件
-    // 只设置控件默认值
+    const curSettingsValues = getDesignerItem(designer, path, attributeName);
+    form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: selected?.name }); // 回填属性区域数据
+    updateDesignerItem(designer, curSettingsValues, path, attributeName); // 同步编辑区域
+    // 回填编辑区默认值
     if (!attributeName) {
       setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue);
     }
