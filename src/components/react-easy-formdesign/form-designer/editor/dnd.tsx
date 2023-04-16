@@ -57,7 +57,6 @@ function EditorDnd(props: EditorDndProps, ref: any) {
       const elementId = from?.id as string;
       const field = getConfigField(elementId);
       store && insertDesignItem(store, dropCollection?.path, dropIndex, field);
-      // 容器内部拖拽
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }

@@ -63,10 +63,12 @@ export function hideTelephone(phone: number | string) {
   return phone.replace(reg, "$1****$2");
 }
 
-// 过滤富文本中的标签和空格，提取文本
-export function richTextFilter(str: string) {
-  // return str.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, '').replace(/&nbsp;/ig, '');
-  return (str.replace(/<[^<>]+>/g, '').replace(/&nbsp;/ig, ''));
+// 过滤标签，提取文本
+export function filterHtmlTag(str: string) {
+  if (typeof str !== 'string') return;
+  // const cssReg = new RegExp('<style[\\s\\S]+?</style>', 'g');
+  // const scriptReg = new RegExp('<script[\\s\\S]+?</script>', 'g');
+  return (str.replace(/<[^\\>]*>/g, '').replace(/&nbsp;/ig, '')).replace(/(\n|\r|\r\n|↵)/g, '');
 }
 
 // 2~36转十进制

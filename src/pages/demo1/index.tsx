@@ -82,7 +82,7 @@ const Demo1: React.FC<any> = (props) => {
           <div key={index}>
             <DndSortable
               options={{
-                hiddenFrom: true
+                hiddenFrom: true,
               }}
               collection={{ path: path }}
               style={{ display: 'flex', flexWrap: 'wrap', background: item.backgroundColor, width: '200px', marginTop: '10px' }}

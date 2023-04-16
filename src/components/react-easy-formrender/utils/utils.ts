@@ -175,7 +175,7 @@ export const getItemByPath = (properties?: PropertiesData, path?: string, attrib
 export const getKeyValueByIndex = (properties: PropertiesData, index: number, parentPath?: string) => {
   const parent = getItemByPath(properties, parentPath);
   const childs = parentPath ? parent?.properties : parent;
-  const childKeys = Object.keys(childs);
+  const childKeys = Object.keys(childs || {});
   const isList = childs instanceof Array;
   const key = isList ? index : childKeys[index];
   const data = childs[key];

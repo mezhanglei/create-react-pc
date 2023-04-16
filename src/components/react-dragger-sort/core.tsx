@@ -108,10 +108,11 @@ export default function BuildDndSortable() {
       const target = e.target as HTMLElement;
       const dragItem = dndManager.getDragItem(currentTarget);
       const targetItem = dndManager.getDragItem(target);
-      const isCanStart = dragItem && (targetItem ? target === currentTarget : true);
-      if (currentTarget && isCanStart) {
+      if (currentTarget && dragItem) {
+        // 是否正在拖拽的目标
+        const isTarget = targetItem ? target === currentTarget : currentTarget.contains(target);
         const disabledDrag = isDisabledDrag({ e, from: dragItem });
-        if (!disabledDrag) {
+        if (!disabledDrag && isTarget) {
           currentTarget.draggable = true;
           this.lastDisplay = css(currentTarget)?.display;
           if (ismobile) {
@@ -139,9 +140,9 @@ export default function BuildDndSortable() {
     onDragStart = (e: any) => {
       const currentTarget = e.currentTarget as HTMLElement;
       const target = e.target;
-      const isCanDragStart = target === currentTarget;
+      const isTarget = target === currentTarget;
       const parentEl = this.parentElRef?.current;
-      if (currentTarget && isCanDragStart) {
+      if (currentTarget && isTarget) {
         this.handleMoveStart(e, currentTarget);
         const ownerDocument = getOwnerDocument(parentEl);
         addEvent(ownerDocument, 'dragover', this.onDragOver);
@@ -248,6 +249,19 @@ export default function BuildDndSortable() {
       }
     }
 
+    handleDisabledSort(params: DndParams) {
+      const cloneDragged = this.cloneDragged;
+      if (!cloneDragged) return;
+      const disabledSort = isDisabledSort(params);
+      if (disabledSort) {
+        if (cloneDragged.style.display !== 'none') {
+          cloneDragged.style.display = "none";
+        }
+      } else {
+        cloneDragged.style.display = this.lastDisplay || ''
+      }
+    }
+
     // 移动过程中的事件处理
     moveHandle: EventHandler = (e) => {
       const dragged = this.dragged;
@@ -277,19 +291,21 @@ export default function BuildDndSortable() {
           dragged.style.display = "none";
           insertAfter(cloneDragged, dragged);
         }
-        // 拖放行为是否在同域内
-        if (dropGroup?.node === parentEl) {
-          if (!isOverSelf) {
+        if (!isOverSelf) {
+          // 拖放行为是否在同域内
+          if (dropGroup?.node === parentEl) {
+            this.handleDisabledSort(params);
             if (toItem) {
               this.sortInSameArea(params);
             } else {
               this.setDropEndChild(params);
             }
-          }
-        } else if (dropGroup) {
-          const disabledDrop = isDisabledDrop(params);
-          if (!disabledDrop && !isOverSelf) {
-            this.addNewOver(params);
+          } else if (dropGroup) {
+            const disabledDrop = isDisabledDrop(params);
+            if (!disabledDrop) {
+              this.handleDisabledSort(params);
+              this.addNewOver(params);
+            }
           }
         }
         this.props.onMove && this.props.onMove(params);
@@ -304,23 +320,18 @@ export default function BuildDndSortable() {
       const oldOver = this.over;
       const newOver = to?.node;
       // 只允许一个动画
-      if (!newOver || !cloneDragged || newOver?.animated) return;
+      if (!newOver || !cloneDragged || newOver?.animated || newOver === oldOver) return;
       // 移动前创建动画实例记录位置和dom
       const executeAnimation = createAnimate(cloneDragged?.parentNode?.children);
       // 位置序号
       const draggedIndex = getChildrenIndex(cloneDragged, [dragged]);
       const newOverIndex = getChildrenIndex(newOver, [dragged]);
       const oldOverIndex = getChildrenIndex(oldOver, [dragged]);
-      const disabledSort = isDisabledSort(params);
       if (draggedIndex < newOverIndex) {
-        if (!disabledSort) {
-          insertAfter(cloneDragged, newOver);
-        }
+        insertAfter(cloneDragged, newOver);
         this.over = newOver;
       } else if (draggedIndex > newOverIndex) {
-        if (!disabledSort) {
-          insertBefore(cloneDragged, newOver);
-        }
+        insertBefore(cloneDragged, newOver);
         this.over = newOver;
       }
       this.handleDragOverClass({ draggedIndex, oldOverIndex, oldOver, newOver, newOverIndex }, params);
@@ -334,19 +345,18 @@ export default function BuildDndSortable() {
       const dropGroup = to?.group;
       const dropGroupNode = dropGroup?.node;
       const cloneDragged = this.cloneDragged;
-      if (!dropGroup || !cloneDragged) return;
       const oldOver = this.over;
       const sortableOver = to?.node;
-      const disabledSort = isDisabledSort(params);
+      if (!dropGroup || !cloneDragged) return;
       if (!dropGroupNode?.contains(cloneDragged)) {
         if (sortableOver) {
           const animateInstance = createAnimate([sortableOver, cloneDragged]);
-          !disabledSort && insertBefore(cloneDragged, sortableOver)
+          insertBefore(cloneDragged, sortableOver)
           this.over = sortableOver
           animateInstance()
         } else {
           const animateInstance = createAnimate([cloneDragged]);
-          !disabledSort && dropGroupNode?.appendChild(cloneDragged);
+          dropGroupNode?.appendChild(cloneDragged);
           this.over = dropGroupNode;
           animateInstance();
         }
@@ -354,7 +364,7 @@ export default function BuildDndSortable() {
       } else {
         if (sortableOver) {
           // 只允许一个动画
-          if (sortableOver?.animated) return;
+          if (sortableOver?.animated || sortableOver === oldOver) return;
           // 创建动画实例记录移动前的dom和位置
           const executeAnimation = createAnimate(cloneDragged?.parentNode?.children);
           // 位置序号
@@ -363,14 +373,10 @@ export default function BuildDndSortable() {
           const oldOverIndex = getChildrenIndex(oldOver);
           // 交换位置
           if (draggedIndex < newOverIndex) {
-            if (!disabledSort) {
-              insertAfter(cloneDragged, sortableOver)
-            }
+            insertAfter(cloneDragged, sortableOver)
             this.over = sortableOver;
           } else if (draggedIndex > newOverIndex) {
-            if (!disabledSort) {
-              insertBefore(cloneDragged, sortableOver);
-            }
+            insertBefore(cloneDragged, sortableOver);
             this.over = sortableOver;
           }
           this.handleDragOverClass({ draggedIndex, oldOverIndex, oldOver, newOver: sortableOver, newOverIndex }, params);
@@ -388,17 +394,15 @@ export default function BuildDndSortable() {
       const { e, from, to } = params;
       const cloneDragged = from.clone as HTMLElement & { animated?: boolean };
       const dropGroup = to?.group;
-      if (!dropGroup) return;
-      // 当正在运动时禁止
-      if (cloneDragged?.animated) return;
       const parent = dropGroup?.node;
+      const oldOver = this.over;
+      if (!parent || cloneDragged?.animated || parent === oldOver) return;
       const lastChild = parent.lastChild as HTMLElement;
       if (cloneDragged !== lastChild && lastChild) {
         const lastChildRect = lastChild.getBoundingClientRect();
         const cloneRect = cloneDragged.getBoundingClientRect();
         const eventRect = getClientXY(e);
-        const disabledSort = isDisabledSort(params);
-        if (!disabledSort && eventRect) {
+        if (eventRect) {
           const isToBttomTail = cloneRect?.top < lastChildRect?.top && eventRect?.y > lastChildRect?.top;
           const isToRightTail = cloneRect?.left < lastChildRect?.left && eventRect?.x > lastChildRect?.left;
           if (isToBttomTail || isToRightTail) {
@@ -407,7 +411,6 @@ export default function BuildDndSortable() {
             executeAnimation();
           }
         }
-        const oldOver = this.over;
         oldOver && dropGroup.onUnHover && dropGroup.onUnHover(oldOver);
         this.over = parent;
       }
