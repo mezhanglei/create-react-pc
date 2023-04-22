@@ -1,7 +1,8 @@
 import { deepClone } from "@/utils/object";
+import { joinFormPath } from "../react-easy-formcore";
 import { FieldUnionType, GeneratePrams, PropertiesData } from "./types";
 import createInstance from "./utils/createInstance";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, addItemByIndex, updateName, getPathEndIndex, getParent, parseFromField, AddItem } from "./utils/utils";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, insertItemByIndex, updateName, parseFromField, InsertItemType, getKeyValueByIndex } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
@@ -85,6 +86,18 @@ export class FormRenderStore {
     }
   }
 
+  // 设置指定路径的值
+  setItemByIndex = (data?: any, index?: number, parent?: { path?: string, attributeName?: string }) => {
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      const [key] = getKeyValueByIndex(cloneProperties, index, parent);
+      const { path, attributeName } = parent || {};
+      const formPath = attributeName ? path : joinFormPath(path, key);
+      let newProperties = setItemByPath(cloneProperties, data, formPath, attributeName);
+      this.setProperties(newProperties);
+    }
+  }
+
   // 更新节点的键
   updateNameByPath = (path?: string, newName?: string) => {
     const cloneProperties = this.getProperties();
@@ -95,10 +108,10 @@ export class FormRenderStore {
   }
 
   // 插入值，默认末尾
-  addItemByIndex = (data: AddItem, index?: number, parent?: string) => {
+  insertItemByIndex = (data: InsertItemType, index?: number, parent?: { path?: string, attributeName?: string }) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
-      let newProperties = addItemByIndex(cloneProperties, data, index, parent);
+      let newProperties = insertItemByIndex(cloneProperties, data, index, parent);
       this.setProperties(newProperties);
     }
   }
@@ -117,6 +130,15 @@ export class FormRenderStore {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
       return getItemByPath(cloneProperties, path, attributeName);
+    }
+  }
+
+  // 获取指定index的项
+  getItemByIndex = (index: number, parent: { path?: string, attributeName?: string }) => {
+    const cloneProperties = this.getProperties();
+    if (cloneProperties) {
+      const [, value] = getKeyValueByIndex(cloneProperties, index, parent);
+      return value;
     }
   }
 
@@ -148,28 +170,5 @@ export class FormRenderStore {
       const cloneProperties = this.getProperties()
       onChange && onChange(cloneProperties, this.lastProperties);
     })
-  }
-
-  // 在目标路径后面插入数据
-  addAfterByPath = (data: AddItem, path?: string) => {
-    const cloneProperties = this.getProperties();
-    if (cloneProperties) {
-      const nextIndex = getPathEndIndex(path, cloneProperties) + 1;
-      const parent = getParent(path);
-      let newProperties = addItemByIndex(cloneProperties, data, nextIndex, parent);
-      this.setProperties(newProperties);
-    }
-  }
-
-  // 在目标路径前面插入数据
-  addBeforeByPath = (data: AddItem, path?: string) => {
-    const cloneProperties = this.getProperties();
-    if (cloneProperties) {
-      const endIndex = getPathEndIndex(path, cloneProperties);
-      const beforeIndex = endIndex > 0 ? endIndex - 1 : 0;
-      const parent = getParent(path);
-      let newProperties = addItemByIndex(cloneProperties, data, beforeIndex, parent);
-      this.setProperties(newProperties);
-    }
   }
 }

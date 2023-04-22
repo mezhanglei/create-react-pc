@@ -2,8 +2,7 @@ import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
 import { deepSet, GeneratePrams, joinFormPath } from '../..';
-import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { DndGroup } from '@/components/react-easy-formdesign/form-designer/components/list';
+import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { defaultGetId, getConfigField, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { useFormDesign } from '@/components/react-easy-formdesign/utils/hooks';
 
@@ -57,27 +56,30 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
+    let formField;
     // 从侧边栏插入进来
-    if (fromCollection?.type === DndGroup) {
+    if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
-      const formField = getConfigField(elementId);
-      // 拼接columns
-      const newColumn = {
-        type: formField?.type,
-        props: formField?.props,
-        label: formField?.label,
-        id: 'formTableColumn',
-        name: defaultGetId('formTableColumn'),
-      }
-      const columnsPath = `props.columns`;
-      const columns = field?.props?.columns || [];
-      const oldColumns = [...columns];
-      oldColumns.splice(dropIndex, 0, newColumn);
-      const newField = deepSet(field, columnsPath, oldColumns);
-      store && updateDesignerItem(store, newField, currentPath);
+      formField = getConfigField(elementId);
+      // 从表单节点中插入
     } else {
-      // store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      formField = store && store.getItemByIndex(fromIndex, { path: fromCollection?.path });
+      store && store.setItemByIndex(undefined, fromIndex, fromCollection?.path);
     }
+    // 拼接columns
+    const newColumn = {
+      type: formField?.type,
+      props: formField?.props,
+      label: formField?.label,
+      id: 'formTableColumn',
+      name: defaultGetId('formTableColumn'),
+    }
+    const columnsPath = `props.columns`;
+    const columns = field?.props?.columns || [];
+    const oldColumns = [...columns];
+    oldColumns.splice(dropIndex, 0, newColumn);
+    const newField = deepSet(field, columnsPath, oldColumns);
+    store && updateDesignerItem(store, newField, currentPath);
   }
 
   return (
@@ -89,7 +91,7 @@ function TableDnd(props: TableDndProps, ref: any) {
         data-type="ignore"
         className='table-dnd'
         options={{ hiddenFrom: true }}
-        collection={{ path: currentPath }}
+        collection={{ path: currentPath, attributeName }}
       >
         {children}
       </DndSortable>

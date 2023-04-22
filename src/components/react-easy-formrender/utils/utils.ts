@@ -38,36 +38,13 @@ export const endIsListItem = (path?: string) => {
   }
 }
 
-// 判断字符串是否为路径的尾部
-export const isPathEnd = (path?: string, name?: string) => {
-  if (path && !isEmpty(name)) {
-    return path === name || new RegExp(`\\[\\d+\\]$|\\.${name}$|\\]${name}$`).test(path)
-  }
-}
-
-// 更改path的末尾项
+// 更改当前的表单字段
 export const changePathEnd = (oldPath: string, endName: string | number) => {
   if (!isEmpty(endName) && oldPath) {
     const parent = getParent(oldPath);
     const newPath = joinFormPath(parent, endName);
     return newPath;
   }
-}
-
-// 根据路径返回在父元素中的当前位置, 没有则返回-1;
-export const getPathEndIndex = (path?: string, properties?: PropertiesData) => {
-  const parentPath = getParent(path);
-  const end = getPathEnd(path);
-  return getEndIndex(end, properties, parentPath)
-}
-
-// 返回在父元素中的当前位置, 没有则返回-1;
-export const getEndIndex = (end?: string, properties?: PropertiesData, parentPath?: string) => {
-  const parent = getItemByPath(properties, parentPath);
-  const childProperties = parentPath ? parent?.properties : properties;
-  const keys = Object.keys(childProperties || {});
-  const index = end ? keys?.indexOf(end) : -1;
-  return index;
 }
 
 // 根据路径更新数据
@@ -172,18 +149,16 @@ export const getItemByPath = (properties?: PropertiesData, path?: string, attrib
 };
 
 // 根据index获取目标项
-export const getKeyValueByIndex = (properties: PropertiesData, index: number, parentPath?: string) => {
-  const parent = getItemByPath(properties, parentPath);
-  const childs = parentPath ? parent?.properties : parent;
+export const getKeyValueByIndex = (properties: PropertiesData, index?: number, parent?: { path?: string; attributeName?: string }) => {
+  if (typeof properties != 'object' || typeof index !== 'number') return [];
+  const { path, attributeName } = parent || {};
+  const parentItem = getItemByPath(properties, path, attributeName);
+  const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
   const childKeys = Object.keys(childs || {});
   const isList = childs instanceof Array;
   const key = isList ? index : childKeys[index];
-  const data = childs[key];
-  return {
-    key: key,
-    data: isList ? data : { [key]: data }
-  }
-};
+  return [key, childs[key]];
+}
 
 // 转化为有序列表
 export const toEntries = (data: any) => {
@@ -221,9 +196,9 @@ const parseEntries = (entriesData?: { entries: Array<[string, any]>, isList?: bo
 
 // 更新指定路径的name
 export const updateName = (properties: PropertiesData, pathStr?: string, newName?: string) => {
-  if (typeof newName !== 'string' || !pathStr || isPathEnd(pathStr, newName)) return properties;
+  const end = getPathEnd(pathStr);
+  if (typeof newName !== 'string' || !pathStr || end === newName) return properties;
   const parentPath = getParent(pathStr);
-  const end = getPathEnd(pathStr)
   const parent = getItemByPath(properties, parentPath);
   const childProperties = parentPath ? parent?.properties : parent;
   const entriesData = toEntries(childProperties);
@@ -245,10 +220,11 @@ export const updateName = (properties: PropertiesData, pathStr?: string, newName
 }
 
 // 插入数据
-export type AddItem = Array<any> | Object | any;
-export const addItemByIndex = (properties: PropertiesData, data: AddItem, index?: number, parentPath?: string) => {
-  const parent = getItemByPath(properties, parentPath);
-  const childs = parentPath ? parent?.properties : parent;
+export type InsertItemType = Array<any> | Object | any;
+export const insertItemByIndex = (properties: PropertiesData, data: InsertItemType, index?: number, parent?: { path?: string; attributeName?: string }) => {
+  const { path, attributeName } = parent || {};
+  const parentItem = getItemByPath(properties, path, attributeName);
+  const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
   const entriesData = toEntries(childs);
   const isList = entriesData?.isList;
   const startIndex = index === undefined ? childs?.length : index;
@@ -266,12 +242,17 @@ export const addItemByIndex = (properties: PropertiesData, data: AddItem, index?
   } else {
     entriesData?.entries?.push(...addItems);
   }
-  const result = parseEntries(entriesData);
-  if (parentPath) {
-    parent.properties = result;
-    return properties;
+  const changedChilds = parseEntries(entriesData);
+  if (path) {
+    if(attributeName) {
+      const result = setItemByPath(properties, changedChilds, path, attributeName);
+      return result;
+    } else {
+      parentItem.properties = changedChilds;
+      return properties;
+    }
   } else {
-    return result;
+    return changedChilds;
   }
 };
 
@@ -308,10 +289,8 @@ export const moveDiffLevel = (properties: PropertiesData, from: { parent?: strin
   const fromParentPath = from?.parent;
   const fromIndex = from?.index;
   const fromParentPathArr = pathToArr(fromParentPath);
-  const fromKeyValue = getKeyValueByIndex(properties, fromIndex, fromParentPath);
-  const fromItem = fromKeyValue?.data;
-  const fromKey = fromKeyValue?.key;
-  const parent = getItemByPath(properties, fromParentPath);
+  const [fromKey, fromValue] = getKeyValueByIndex(properties, fromIndex, { path: fromParentPath });
+  const insertItem = typeof fromKey === 'number' ? fromValue : (fromKey && { [fromKey]: fromValue });
   const fromPath = joinFormPath(fromParentPath, fromKey);
   // 拖放源
   const toParentPath = to?.parent;
@@ -321,10 +300,10 @@ export const moveDiffLevel = (properties: PropertiesData, from: { parent?: strin
   // 先计算内部变动，再计算外部变动
   if (fromParentPathArr?.length > toParentPathArr?.length || !toParentPathArr?.length) {
     setItemByPath(properties, undefined, fromPath);
-    const result = addItemByIndex(properties, fromItem, toIndex, toParentPath);
+    const result = insertItemByIndex(properties, insertItem, toIndex, { path: toParentPath });
     return result;
   } else {
-    const result = addItemByIndex(properties, fromItem, toIndex, toParentPath);
+    const result = insertItemByIndex(properties, insertItem, toIndex, { path: toParentPath });
     result && setItemByPath(result, undefined, fromPath);
     return result;
   }

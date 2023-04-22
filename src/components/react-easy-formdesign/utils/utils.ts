@@ -78,12 +78,12 @@ export const insertDesignItem = (designer: FormRenderStore, path: string | undef
   const parentField = designer && designer.getItemByPath(path);
   const isInArray = parentField?.properties instanceof Array || parentField instanceof Array;
   if (isInArray) {
-    designer?.addItemByIndex(data, index, path);
+    designer?.insertItemByIndex(data, index, { path });
   } else {
     if (data?.id) {
       const dataKey = defaultGetId(data?.id);
       const newData = { [dataKey]: data };
-      designer?.addItemByIndex(newData, index, path);
+      designer?.insertItemByIndex(newData, index, { path });
     }
   }
 }

@@ -38,7 +38,7 @@ export interface DndParams {
 export type DndHandle = (params: DndParams) => void;
 
 // 拖拽条件函数
-export type DndCondition = (params: DndParams) => boolean;
+export type DndCondition = (params: DndParams) => boolean | undefined;
 export type UnionCondition = boolean | (HTMLElement | string)[] | DndCondition;
 
 export interface DndBaseProps {

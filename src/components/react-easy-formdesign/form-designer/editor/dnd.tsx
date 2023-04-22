@@ -1,10 +1,9 @@
-import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
+import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import { GeneratePrams, joinFormPath } from '../../form-render';
 import './dnd.less';
 import { getConfigField, insertDesignItem } from '../../utils/utils';
-import { DndGroup } from '../components/list';
-import { ELementProps } from '../components/configs';
+import { DndType, ELementProps } from '../components/configs';
 
 export interface EditorDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -53,12 +52,20 @@ function EditorDnd(props: EditorDndProps, ref: any) {
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
     // 从侧边栏插入进来
-    if (fromCollection?.type === DndGroup) {
+    if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
       const field = getConfigField(elementId);
       store && insertDesignItem(store, dropCollection?.path, dropIndex, field);
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    }
+  }
+
+  const disabledDrop: DndCondition = (param) => {
+    // 禁止自定义属性被拖拽进来
+    const fromCollection = param?.from?.group?.collection;
+    if (fromCollection?.attributeName) {
+      return true
     }
   }
 
@@ -69,7 +76,7 @@ function EditorDnd(props: EditorDndProps, ref: any) {
       onAdd={onAdd}
       data-type="ignore"
       className='editor-dnd'
-      options={{ hiddenFrom: true }}
+      options={{ hiddenFrom: true, disabledDrop: disabledDrop }}
       collection={{ path: currentPath }}
     >
       {children}

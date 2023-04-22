@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './list.less';
-import { ELementProps } from './configs/index';
+import { DndType, ELementProps } from './configs/index';
 
 export interface ComponentListProps {
   className?: string;
@@ -14,7 +14,6 @@ export interface ComponentListProps {
   tabKey: string;
   onChange?: (item: ELementProps, elementType?: string, tabKey?: string) => void;
 }
-export const DndGroup = 'components'
 const prefixCls = 'components-list';
 function ComponentList(props: ComponentListProps, ref: any) {
   const {
@@ -33,7 +32,7 @@ function ComponentList(props: ComponentListProps, ref: any) {
     return (
       <DndSortable
         className='elements-list'
-        collection={{ type: DndGroup, tabKey: tabKey, elementType: elementType }}
+        collection={{ type: DndType.Components, tabKey: tabKey, elementType: elementType }}
         options={{
           disabledDrop: true,
           hiddenFrom: false,

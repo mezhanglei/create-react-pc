@@ -60,7 +60,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     const properties = field?.properties;
     const nextIndex = typeof properties === 'object' && Object?.keys(properties)?.length || 0;
     if (item && currentPath) {
-      store?.addItemByIndex(item, nextIndex, currentPath);
+      store?.insertItemByIndex(item, nextIndex, { path: currentPath });
     }
     props?.onClick && props?.onClick();
   }

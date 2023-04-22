@@ -110,3 +110,7 @@ export const ConfigElements = TabsData.reduce((pre: ELementProps[], cur) => {
 
 // 所有元素列表转成的map结构
 export const ConfigElementsMap: ElementsType = getArrMap(ConfigElements, 'id');
+// 可拖拽的区域类型
+export enum DndType  {
+  Components ='components'
+}
