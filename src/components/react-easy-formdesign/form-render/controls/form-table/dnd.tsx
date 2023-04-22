@@ -1,4 +1,4 @@
-import DndSortable, { DndSortableProps } from '@/components/react-dragger-sort';
+import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
 import { deepSet, GeneratePrams, joinFormPath } from '../..';
@@ -22,7 +22,6 @@ function TableDnd(props: TableDndProps, ref: any) {
 
   const { selected } = useFormDesign();
   const attributeName = selected?.attributeName;
-  const attributeData = selected?.attributeData;
   const currentPath = joinFormPath(parent, name);
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
@@ -54,7 +53,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 拖放区域的信息
     const dropGroup = to?.group;
     // 额外传递的信息
-    const dropCollection = dropGroup?.collection;
+    // const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
     let formField;
     // 从侧边栏插入进来
@@ -82,6 +81,14 @@ function TableDnd(props: TableDndProps, ref: any) {
     store && updateDesignerItem(store, newField, currentPath);
   }
 
+  const disabledDrop: DndCondition = (param) => {
+    // 禁止自定义属性被拖拽进来
+    const fromCollection = param?.from?.group?.collection;
+    if (fromCollection?.attributeName) {
+      return true
+    }
+  }
+
   return (
     <div>
       <DndSortable
@@ -90,7 +97,7 @@ function TableDnd(props: TableDndProps, ref: any) {
         onAdd={onAdd}
         data-type="ignore"
         className='table-dnd'
-        options={{ hiddenFrom: true }}
+        options={{ hiddenFrom: true, disabledDrop: disabledDrop }}
         collection={{ path: currentPath, attributeName }}
       >
         {children}
