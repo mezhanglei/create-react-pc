@@ -1,8 +1,8 @@
 import React from 'react';
 import { Classes, TableOptions } from './formTable';
 import classNames from 'classnames';
-import { TableCell } from './cell';
-import { TableRow } from './row';
+import { TableCell, TableRow } from './components';
+import pickAttrs from "@/utils/pickAttrs";
 
 export type TableHeadProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions;
 
@@ -16,7 +16,7 @@ export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProp
 
   const childs = (
     columns.map((column, colIndex) => {
-      return <TableCell key={column.key}>{column.title}</TableCell>
+      return <TableCell key={colIndex}>{column.label}</TableCell>
     })
   );
 
@@ -29,7 +29,7 @@ export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProp
   }
 
   return (
-    <thead className={classNames(Classes.TableHead, className)} ref={ref} {...rest}>
+    <thead className={classNames(Classes.TableHead, className)} ref={ref} {...pickAttrs(rest, { aria: true, data: true })}>
       {renderChils()}
     </thead>
   );

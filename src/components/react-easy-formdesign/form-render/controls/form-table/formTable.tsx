@@ -19,7 +19,7 @@ export const Classes = {
 export interface ColumnType {
   key: string;
   name: string;
-  title: string;
+  label: string;
   width?: React.CSSProperties["width"];
   align?: React.CSSProperties["textAlign"];
   type?: string;
@@ -49,7 +49,7 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
-  dataSource,
+  dataSource = [{}, {}],
   rowKey,
   className,
   style = {},
@@ -68,6 +68,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       <ColumnGroup columns={columns} />
       <TableHead columns={columns} />
       <TableBody
+        {...rest}
         rowKey={rowKey}
         columns={columns}
         dataSource={dataSource}

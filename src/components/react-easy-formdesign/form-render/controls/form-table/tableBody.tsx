@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
-import { TableCell } from './cell';
-import { TableRow } from './row';
+import { TableCell, TableRow, Tbody } from './components';
 import { Classes, TableBodyOptions, TableOptions } from './formTable';
+import { TableProps } from '.';
+import { Form } from '../..';
 
-export type TableBodyProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions & TableBodyOptions;
+export type TableBodyProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions & TableBodyOptions & TableProps;
 
 export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>((props, ref) => {
-  const { dataSource, columns, rowKey, className, children, ...rest } = props;
+  const { dataSource, columns, rowKey, className, children, store, ...rest } = props;
 
   const getRowKey = useCallback(
     (record: { [x: string]: any }, rowIndex: number) => {
@@ -23,8 +24,13 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   const renderCol = (record: any, rowIndex: number) => {
     return columns.map((column, colIndex) => {
       const { render, name } = column || {};
-      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : record[name];
-      return <TableCell key={name}>{child}</TableCell>
+      const columnControl = store && store.controlInstance(column);
+      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnControl || record[name]);
+      return (
+        <Form.Item component={TableCell} name={name} key={name}>
+          {child}
+        </Form.Item>
+      );
     })
   };
 
@@ -32,16 +38,16 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
     dataSource?.map((record, rowIndex) => {
       const cols = renderCol(record, rowIndex);
       return (
-        <TableRow key={getRowKey(record, rowIndex)}>
+        <Form.Item component={TableRow} key={getRowKey(record, rowIndex)}>
           {cols}
-        </TableRow>
+        </Form.Item>
       );
     })
   );
 
   return (
-    <tbody className={classNames(Classes.TableBody, className)} ref={ref} {...rest}>
+    <Form.List component={Tbody} className={classNames(Classes.TableBody, className)} ref={ref} {...rest}>
       {children ?? childs}
-    </tbody>
+    </Form.List>
   );
 });
