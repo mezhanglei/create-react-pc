@@ -67,7 +67,7 @@ export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
 
   return (
     FieldComponent ?
-      <FieldComponent {...rest} required={required} ref={ref} error={error}>
+      <FieldComponent {...fieldProps} required={required} ref={ref} error={error}>
         {childs}
       </FieldComponent>
       : childs

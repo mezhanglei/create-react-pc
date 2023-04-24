@@ -57,9 +57,10 @@ export const ItemCore = (props: ItemCoreProps) => {
   const formPath = ignore === true ? parent : joinPath;
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
   const contextValue = deepGet(contextValues, currentPath);
-  const storeValue = contextValue ?? (currentPath && store?.getFieldValue(currentPath));
-  const initialItemValue = storeValue ?? initialValue ?? deepGet(initialValues, currentPath);
-  const [value, setValue] = useState(storeValue);
+  const initValue = initialValue ?? deepGet(initialValues, currentPath);
+  const storeValue = store && store.getFieldValue(currentPath);
+  const initialItemValue = contextValue ?? storeValue ?? initValue;
+  const [value, setValue] = useState(initialItemValue);
 
   useEffect(() => {
     setValue(contextValue);

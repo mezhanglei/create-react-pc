@@ -8,6 +8,7 @@ import { isValidChildren } from '@/utils/ReactIs';
 export interface LabelBaseProps {
   colon?: boolean;
   required?: boolean;
+  showLabel?: boolean;
   labelWidth?: CSSProperties['width'];
   labelAlign?: CSSProperties['textAlign'];
   labelStyle?: CSSProperties;
@@ -31,6 +32,7 @@ export const Label = React.forwardRef<any, LabelProps>((props, ref) => {
     labelWidth,
     labelAlign,
     tooltip,
+    showLabel = true,
     ...restProps
   } = props;
 
@@ -50,7 +52,7 @@ export const Label = React.forwardRef<any, LabelProps>((props, ref) => {
   }
 
   return (
-    isValidChildren(children) ? (
+    isValidChildren(children) && showLabel ? (
       <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon === true ? <>{children}:</> : children}
         {tooltip && (

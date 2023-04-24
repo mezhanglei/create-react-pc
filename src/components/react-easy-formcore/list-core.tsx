@@ -26,7 +26,6 @@ export const ListCore = (props: ListCoreProps) => {
 
   const joinPath = joinFormPath(parent, name);
   const formPath = ignore === true ? parent : joinPath;
-  const initialListValue = initialValue;
 
   // 渲染子元素
   let index = 0;
@@ -54,7 +53,7 @@ export const ListCore = (props: ListCoreProps) => {
     const currentIndex = index;
     index++;
     const childRules = rules instanceof Array ? rules?.concat(child?.props?.rules) : child?.props?.rules;
-    const childValue = child?.props?.initialValue ?? initialListValue?.[currentIndex];
+    const childValue = child?.props?.initialValue ?? initialValue?.[currentIndex];
     return child && cloneElement(child, {
       parent: formPath,
       name: currentIndex,
