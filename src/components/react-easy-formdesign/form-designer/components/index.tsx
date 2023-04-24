@@ -35,7 +35,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
       message.warning("当前不可插入")
       return;
     };
-    insertDesignItem(designer, selectedParent, newIndex, field);
+    insertDesignItem(designer, field, newIndex, { path: selectedParent });
   }
 
   return (

@@ -55,7 +55,7 @@ function EditorDnd(props: EditorDndProps, ref: any) {
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
       const field = getConfigField(elementId);
-      store && insertDesignItem(store, dropCollection?.path, dropIndex, field);
+      store && insertDesignItem(store, field, dropIndex, { path: dropCollection?.path });
     } else {
       store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }

@@ -186,7 +186,9 @@ const parseEntries = (entriesData?: { entries: Array<[string, any]>, isList?: bo
       const itemKey = item?.[0];
       const itemData = item?.[1];
       // 还原数据
-      if (typeof itemKey === 'string' || isList) {
+      if (isList) {
+        temp[key] = itemData;
+      } else if (typeof itemKey === 'string') {
         temp[itemKey] = itemData;
       }
     }
@@ -232,7 +234,7 @@ export const insertItemByIndex = (properties: PropertiesData, data: InsertItemTy
   if (isList) {
     // 数组添加选项
     const dataList = data instanceof Array ? data : [data];
-    addItems = dataList?.map((item, i) => [`${startIndex + i}`, item])
+    addItems = dataList?.map((item, i) => [`${i}`, item]);
   } else {
     // 对象添加属性
     addItems = Object.entries(data || {});
@@ -244,7 +246,7 @@ export const insertItemByIndex = (properties: PropertiesData, data: InsertItemTy
   }
   const changedChilds = parseEntries(entriesData);
   if (path) {
-    if(attributeName) {
+    if (attributeName) {
       const result = setItemByPath(properties, changedChilds, path, attributeName);
       return result;
     } else {

@@ -50,7 +50,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, parent, nextIndex, newField);
+    designer && insertDesignItem(designer, newField, nextIndex, { path: parent });
   }
 
   const deleteItem = () => {

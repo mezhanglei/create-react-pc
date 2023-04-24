@@ -1,9 +1,8 @@
-import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
+import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { defaultGetId, getConfigField, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
-import { useFormDesign } from '@/components/react-easy-formdesign/utils/hooks';
+import { getConfigField, insertDesignItem, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet, GeneratePrams, joinFormPath } from '../../..';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
@@ -20,25 +19,20 @@ function TableDnd(props: TableDndProps, ref: any) {
     field
   } = rest;
 
-  const { selected } = useFormDesign();
-  const attributeName = selected?.attributeName;
+  const attributeName = `props.columns`;
   const currentPath = joinFormPath(parent, name);
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;
     console.log(params, '同域拖放');
-    // 拖拽区域信息
-    const fromGroup = from.group;
-    // 额外传递的信息
-    const fromCollection = fromGroup?.collection;
     const fromIndex = from?.index;
-    if (typeof fromIndex != 'number') return
-    // 拖放区域的信息
-    const dropGroup = to?.group;
-    // 额外传递的信息
-    const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    // store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    if(typeof fromIndex != 'number' || typeof dropIndex !== 'number') return;
+    const columns = field?.props?.columns || [];
+    const oldColumns = [...columns];
+    const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
+    const newField = deepSet(field, attributeName, newColumns);
+    store && updateDesignerItem(store, newField, currentPath);
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -51,7 +45,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const fromIndex = from?.index;
     if (typeof fromIndex != 'number') return
     // 拖放区域的信息
-    const dropGroup = to?.group;
+    // const dropGroup = to?.group;
     // 额外传递的信息
     // const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
@@ -71,14 +65,8 @@ function TableDnd(props: TableDndProps, ref: any) {
       props: formField?.props,
       label: formField?.label,
       id: 'formTableColumn',
-      name: defaultGetId('formTableColumn'),
     }
-    const columnsPath = `props.columns`;
-    const columns = field?.props?.columns || [];
-    const oldColumns = [...columns];
-    oldColumns.splice(dropIndex, 0, newColumn);
-    const newField = deepSet(field, columnsPath, oldColumns);
-    store && updateDesignerItem(store, newField, currentPath);
+    store && insertDesignItem(store, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
   }
 
   const disabledDrop: DndCondition = (param) => {

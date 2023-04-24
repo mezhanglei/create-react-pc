@@ -74,16 +74,17 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string, attrib
 }
 
 // 插入新节点
-export const insertDesignItem = (designer: FormRenderStore, path: string | undefined, index?: number, data?: ELementProps) => {
-  const parentField = designer && designer.getItemByPath(path);
+export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
+  const { path, attributeName } = parent || {};
+  const parentField = designer && designer.getItemByPath(path, attributeName);
   const isInArray = parentField?.properties instanceof Array || parentField instanceof Array;
   if (isInArray) {
-    designer?.insertItemByIndex(data, index, { path });
+    designer?.insertItemByIndex(data, index, parent);
   } else {
     if (data?.id) {
       const dataKey = defaultGetId(data?.id);
       const newData = { [dataKey]: data };
-      designer?.insertItemByIndex(newData, index, { path });
+      designer?.insertItemByIndex(newData, index, parent);
     }
   }
 }
@@ -132,7 +133,7 @@ export const setDesignerFormValue = (designerForm: FormStore, formPath?: string,
   }
 }
 
-// 根据id获取控件配置模块(components/settings配置其他属性)
+// 根据id获取控件配置模块(components/settings)
 export const getSettingsModule = (id?: string): ConfigSettingsItem | undefined => {
   if (!id) return;
   const settingsModule = id ? ConfigSettings[id] : []

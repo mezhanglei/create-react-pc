@@ -51,7 +51,7 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, currentPath, nextIndex, newField);
+    designer && insertDesignItem(designer, newField, nextIndex, { path: currentPath });
   }
 
   const deleteItem = () => {
