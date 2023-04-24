@@ -4,11 +4,11 @@ import React, { CSSProperties } from 'react';
 import './column-selection.less';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
-import { GeneratePrams } from '../..';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { defaultGetId, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
+import { GeneratePrams } from '../../..';
 
 export interface ColumnSelectionProps extends GeneratePrams<ELementProps> {
   children?: any;

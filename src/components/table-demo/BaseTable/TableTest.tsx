@@ -1,4 +1,4 @@
-import Table from "@/components/react-easy-formdesign/form-render/components/table/Table";
+import Table from "./Table";
 
 const columns = [
   { key: "name", title: "name", width: 100 },

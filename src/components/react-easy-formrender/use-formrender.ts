@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FormRenderStore } from './formrender-store';
 import { FormFieldProps, PropertiesData } from './types';
-import { setExpandControl } from './utils/utils';
+import { setExpandComponents } from './utils/utils';
 
 export function useFormRenderStore() {
   return useMemo(() => new FormRenderStore(), [])
@@ -28,16 +28,16 @@ export function useProperties(store: FormRenderStore) {
   return [properties, setProperties];
 }
 
-// 获取expandControl的state数据
-export function useExpandControl(store: FormRenderStore) {
-  const [controls, setControls] = useState<{ [key: string]: FormFieldProps }>();
+// 展平开来的组件
+export function useExpandComponents(store: FormRenderStore) {
+  const [components, setComponents] = useState<{ [key: string]: FormFieldProps }>();
 
   const uninstallMemo = useMemo(() => {
     if (!store) return
     // 订阅目标控件
     const uninstall = store.subscribeProperties((newValue) => {
-      const result = setExpandControl(newValue);
-      setControls(result);
+      const result = setExpandComponents(newValue);
+      setComponents(result);
     });
     return uninstall;
   }, [store]);
@@ -48,5 +48,5 @@ export function useExpandControl(store: FormRenderStore) {
     };
   }, []);
 
-  return [controls, setControls];
+  return [components, setComponents];
 }

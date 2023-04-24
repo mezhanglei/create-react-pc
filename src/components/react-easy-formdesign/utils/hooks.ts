@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react";
 import { deepSet } from "../form-render";
 import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
-import { setExpandControl } from "@/components/react-easy-formrender/utils/utils";
+import { setExpandComponents } from "@/components/react-easy-formrender/utils/utils";
 import { getFromSelected } from "./utils";
 
 // 表单设计器的context
@@ -18,9 +18,9 @@ export function useFormEdit() {
 }
 
 // 表单设计器的展开的控件
-export function useFormExpandControl() {
+export function useExpandComponents() {
   const { properties } = useContext(FormDesignContext);
-  const result = setExpandControl(properties);
+  const result = setExpandComponents(properties);
   return result;
 }
 

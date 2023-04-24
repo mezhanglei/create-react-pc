@@ -10,7 +10,6 @@ export default function RenderForm(props: RenderFormProps) {
     form,
     uneval,
     properties,
-    controls,
     components,
     watch,
     renderItem,
@@ -30,7 +29,6 @@ export default function RenderForm(props: RenderFormProps) {
         uneval={uneval}
         store={store}
         properties={properties}
-        controls={controls}
         components={components}
         watch={watch}
         renderItem={renderItem}

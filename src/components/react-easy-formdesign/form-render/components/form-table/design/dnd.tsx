@@ -1,10 +1,10 @@
 import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { deepSet, GeneratePrams, joinFormPath } from '../..';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { defaultGetId, getConfigField, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { useFormDesign } from '@/components/react-easy-formdesign/utils/hooks';
+import { deepSet, GeneratePrams, joinFormPath } from '../../..';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;

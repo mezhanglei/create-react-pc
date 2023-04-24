@@ -2,10 +2,10 @@ import React, { CSSProperties } from "react";
 import classnames from "classnames";
 import './formTable.less';
 import { ColumnGroup } from "./columnGroup";
-import { TableHead } from "./tableHead";
-import { TableBody } from "./tableBody";
+import { FormTableHead } from "./formTableHead";
+import { FormTableBody } from "./formTableBody";
 import pickAttrs from "@/utils/pickAttrs";
-import { TableProps } from ".";
+import { TableProps } from "..";
 
 const prefix = "form-table";
 export const Classes = {
@@ -49,7 +49,7 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
-  dataSource = [{}, {}],
+  dataSource = [],
   rowKey,
   className,
   style = {},
@@ -66,8 +66,8 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      <TableHead columns={columns} />
-      <TableBody
+      <FormTableHead columns={columns} />
+      <FormTableBody
         {...rest}
         rowKey={rowKey}
         columns={columns}

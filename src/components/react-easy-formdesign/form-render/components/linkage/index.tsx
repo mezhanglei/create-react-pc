@@ -32,7 +32,7 @@ const classes = {
   item: `${prefixCls}-item`,
   row: `${prefixCls}-item-row`,
   assemble: `${prefixCls}-item-assemble`,
-  control: `${prefixCls}-item-control`,
+  component: `${prefixCls}-item-component`,
   itemPrefix: `${prefixCls}-item-prefix`,
   itemSuffix: `${prefixCls}-item-suffix`,
   icon: `${prefixCls}-item-icon`,

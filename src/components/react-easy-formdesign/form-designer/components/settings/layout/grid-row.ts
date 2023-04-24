@@ -1,5 +1,5 @@
 const settings = {
-  "inside.props": {
+  props: {
     compact: true,
     properties: {
       gutter: {

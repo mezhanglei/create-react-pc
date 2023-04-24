@@ -16,8 +16,8 @@ import CascaderSettings, { cascader_operation, cascader_rule } from './base/casc
 import AlertSettings, { alert_operation } from './base/alert';
 import RichTextSettings, { richText_operation } from './base/richText';
 // 布局组件
-import RowSettings from './layout/row';
-import ColSettings from './layout/col';
+import GridRowSettings from './layout/grid-row';
+import GridColSettings from './layout/grid-col';
 // 容器组件
 import FormTableColumnSettings from './container/table-column';
 // 业务组件
@@ -43,8 +43,8 @@ const ConfigSettings = {
   richText: [RichTextSettings, richText_operation],
   richEditor: [DefaultFieldSettings],
   // 布局组件
-  row: [RowSettings],
-  col: [ColSettings],
+  gridRow: [GridRowSettings],
+  gridCol: [GridColSettings],
   // 容器组件
   formTableColumn: [FormTableColumnSettings]
 }

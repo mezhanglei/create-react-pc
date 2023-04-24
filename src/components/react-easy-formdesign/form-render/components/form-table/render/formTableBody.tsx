@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
-import { TableCell, TableRow, Tbody } from './components';
+import { TableCell, TableRow, TableBody } from './components';
 import { Classes, TableBodyOptions, TableOptions } from './formTable';
-import { TableProps } from '.';
-import { Form } from '../..';
+import { TableProps } from '..';
+import { Form } from '../../..';
 
-export type TableBodyProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions & TableBodyOptions & TableProps;
+export type FormTableBodyProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions & TableBodyOptions & TableProps;
 
-export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>((props, ref) => {
+export const FormTableBody = React.forwardRef<HTMLTableSectionElement, FormTableBodyProps>((props, ref) => {
   const { dataSource, columns, rowKey, className, children, store, ...rest } = props;
 
   const getRowKey = useCallback(
@@ -24,8 +24,8 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   const renderCol = (record: any, rowIndex: number) => {
     return columns.map((column, colIndex) => {
       const { render, name } = column || {};
-      const columnControl = store && store.controlInstance(column);
-      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnControl || record[name]);
+      const columnInstance = store && store.componentInstance(column);
+      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
       return (
         <Form.Item component={TableCell} name={name} key={name}>
           {child}
@@ -46,7 +46,7 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProp
   );
 
   return (
-    <Form.List component={Tbody} className={classNames(Classes.TableBody, className)} ref={ref} {...rest}>
+    <Form.List component={TableBody} className={classNames(Classes.TableBody, className)} ref={ref} {...rest}>
       {children ?? childs}
     </Form.List>
   );

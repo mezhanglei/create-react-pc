@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { TableCell, TableRow } from './components';
 import pickAttrs from "@/utils/pickAttrs";
 
-export type TableHeadProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions;
+export type FormTableHeadProps = React.HtmlHTMLAttributes<HTMLTableSectionElement> & TableOptions;
 
-export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProps>((props, ref) => {
+export const FormTableHead = React.forwardRef<HTMLTableSectionElement, FormTableHeadProps>((props, ref) => {
   const {
     children,
     className,

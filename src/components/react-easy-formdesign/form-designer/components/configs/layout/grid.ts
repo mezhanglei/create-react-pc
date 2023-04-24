@@ -1,26 +1,25 @@
 export default {
-  id: 'row',
+  id: 'gridRow',
   componentLabel: '栅格布局',
-  // inside: { type: 'Grid.Row', props: {} },
-  // component: null,
   ignore: true,
+  component: null,
   type: 'Grid.Row',
   includes: ['col'],
   properties: {
     col1: {
-      id: 'col',
-      type: 'Grid.Col',
-      // inside: { type: 'Grid.Col', props: { span: 12 } },
+      id: 'gridCol',
       component: null,
+      type: 'Grid.Col',
+      props: { span: 12 },
       ignore: true,
       properties: {
       }
     },
     col2: {
-      id: 'col',
+      id: 'gridCol',
+      component: null,
       type: 'Grid.Col',
-      // inside: { type: 'Grid.Col', props: { span: 12 } },
-      // component: null,
+      props: { span: 12 },
       ignore: true,
       properties: {
       }

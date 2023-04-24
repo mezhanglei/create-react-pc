@@ -38,7 +38,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>((pr
   );
 });
 
-export const Tbody = React.forwardRef<HTMLTableSectionElement, React.HtmlHTMLAttributes<HTMLTableSectionElement>>((props, ref) => {
+export const TableBody = React.forwardRef<HTMLTableSectionElement, React.HtmlHTMLAttributes<HTMLTableSectionElement>>((props, ref) => {
   const {
     children,
     className,

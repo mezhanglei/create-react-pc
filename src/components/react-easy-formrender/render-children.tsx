@@ -16,7 +16,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const {
     uneval,
-    controls,
     components,
     watch,
     onPropertiesChange,
@@ -31,7 +30,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const form = useContext<FormStore>(FormStoreContext);
   const formRenderStore = store || useFormRenderStore();
   formRenderStore.registry('components', { ...defaultComponents, ...components });
-  formRenderStore.registry('controls', controls);
 
   const {
     onValuesChange
@@ -241,8 +239,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const ignoreTag = { "data-type": "ignore" }
   // 目标套上其他组件
   const withSide = (children: any, side?: FieldUnionType, render?: (params: GeneratePrams<any>) => any, commonProps?: GeneratePrams) => {
-    const childs = render ? render?.({ ...commonProps, ...ignoreTag, children }) : children
-    const childsWithSide = side ? formRenderStore.componentInstance(side, { ...commonProps, ...ignoreTag }, childs) : childs;
+    const childs = render ? render?.({ ...commonProps, ...ignoreTag, children }) : children;
+    const sideInstance = side && formRenderStore.componentInstance(side, { ...commonProps, ...ignoreTag });
+    const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, { children: childs } as any) : childs;
     return childsWithSide;
   }
 
@@ -272,9 +271,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     // 表单域组件
     const FormField = properties instanceof Array ? Form.List : Form.Item;
     // 控件元素
-    const formItemChild = formRenderStore.controlInstance(typeRender || { type, props }, commonParams)
+    const formItemChild = formRenderStore.componentInstance(typeRender || { type, props }, commonParams)
     // 只读显示
-    const readOnlyChild = formRenderStore.controlInstance(readOnlyRender, commonParams)
+    const readOnlyChild = formRenderStore.componentInstance(readOnlyRender, commonParams)
     // 表单域包裹目标
     const fieldChild = readOnly === true ? readOnlyChild : formItemChild;
     // 容器传参
@@ -283,6 +282,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     let fieldChildren;
     if (typeof properties === 'object') {
       fieldChildren = renderChildrenList(properties, inside, commonParams)
+      if (React.isValidElement(fieldChild)) {
+        fieldChildren = React.cloneElement(fieldChild, { children: fieldChildren } as any)
+      }
     } else {
       fieldChildren = fieldChild
     }

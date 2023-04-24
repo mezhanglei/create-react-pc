@@ -4,10 +4,10 @@ import { FormComponent, GeneratePrams } from "../types";
 import { parseFromField } from "./utils";
 
 // 生成组件实例
-const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams, finalChildren?: any): any => {
+const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams): any => {
   if (target instanceof Array) {
     return target?.map((item) => {
-      return createInstance(item, typeMap, commonProps, finalChildren);
+      return createInstance(item, typeMap, commonProps);
     });
   } else {
     const Child = parseFromField(target, typeMap) as React.ElementType;
@@ -16,7 +16,7 @@ const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementTy
       const { children, ...restProps } = (target as FormComponent)?.props || {};
       return (
         <Child {...commonProps} {...restProps}>
-          {children ? createInstance(children, typeMap, commonProps, finalChildren) : finalChildren}
+          {createInstance(children, typeMap, commonProps)}
         </Child>
       );
     } else {

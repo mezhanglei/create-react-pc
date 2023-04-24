@@ -43,9 +43,10 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     const currentItem = designer?.getItemByPath(currentPath);
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
     const newField = {
-      id: 'col',
-      inside: { type: 'Grid.Col', props: { span: 12 } },
+      id: 'gridCol',
       component: null,
+      type: 'Grid.Col',
+      props: { span: 12 },
       ignore: true,
       properties: {
       }

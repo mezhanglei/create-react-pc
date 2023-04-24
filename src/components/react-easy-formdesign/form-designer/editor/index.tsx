@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
 import EditorDnd from './dnd';
-import ControlSelection from './selection';
+import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 
@@ -65,10 +65,10 @@ console.log(designerForm.getFieldValue(), '表单值')
 // 编辑区默认的选中框渲染
 const renderItem: RenderFormProps['renderList'] = (params) => {
   const { children } = params;
-  const isControl = params?.field?.type ? true : false;
+  const isControl = params?.field?.component !== null ? true : false;
   // 只有输入控件才需要默认添加选区
   if (isControl) {
-    return <ControlSelection {...params} />
+    return <ComponentSelection {...params} />
   }
   return children;
 }

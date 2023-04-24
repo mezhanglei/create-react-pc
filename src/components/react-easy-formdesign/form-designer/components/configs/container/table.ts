@@ -4,6 +4,7 @@ export default {
   label: '表格组件',
   type: 'FormTable',
   props: {
+    dataSource: [],
     columns: [{
       id: 'formTableColumn',
       name: 'col1',

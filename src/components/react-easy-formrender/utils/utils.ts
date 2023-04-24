@@ -349,14 +349,14 @@ export const getInitialValues = (properties?: PropertiesData) => {
 }
 
 // 展平properties中的控件，键为表单路径
-export const setExpandControl = (properties?: PropertiesData): { [key: string]: FormFieldProps } | undefined => {
+export const setExpandComponents = (properties?: PropertiesData): { [key: string]: FormFieldProps } | undefined => {
   if (typeof properties !== 'object') return
-  let controlMap = {};
+  let componentsMap = {};
   // 遍历处理对象树中的非properties字段
   const deepHandle = (formField: FormFieldProps, path: string) => {
     if (isEmpty(formField['properties'])) {
       if (path) {
-        controlMap[path] = formField;
+        componentsMap[path] = formField;
       }
     } else {
       const parent = path;
@@ -382,7 +382,7 @@ export const setExpandControl = (properties?: PropertiesData): { [key: string]: 
       deepHandle(childField, childPath);
     }
   }
-  return controlMap;
+  return componentsMap;
 }
 
 // 解析组件

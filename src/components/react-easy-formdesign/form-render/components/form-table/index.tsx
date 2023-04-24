@@ -1,8 +1,8 @@
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import React from 'react';
 import { GeneratePrams } from '../..';
-import DesignTable from './designTable';
-import FormTable from './formTable';
+import DesignTable from './design/designTable';
+import FormTable from './render/formTable';
 
 export type TableProps = {
   value?: any;
@@ -18,7 +18,7 @@ const Table = React.forwardRef<any, TableProps>((props, ref) => {
   const columns = field?.props?.columns;
 
   return (
-    false ? <DesignTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
+    isEditor ? <DesignTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
   );
 });
 

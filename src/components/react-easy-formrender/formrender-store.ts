@@ -8,7 +8,6 @@ export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
 // 管理formrender过程中的数据
 export class FormRenderStore {
-  private controls: any;
   private components: any;
   private properties: PropertiesData;
   private lastProperties: PropertiesData | undefined;
@@ -19,24 +18,15 @@ export class FormRenderStore {
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
     this.registry = this.registry.bind(this)
-    this.controlParse = this.controlParse.bind(this)
     this.componentParse = this.componentParse.bind(this)
-    this.controlInstance = this.controlInstance.bind(this)
     this.componentInstance = this.componentInstance.bind(this)
     this.components = {};
-    this.controls = {};
   }
 
-  // 注册controls或components
-  public registry(key: 'components' | 'controls', data: any) {
+  // 注册components
+  public registry(key: 'components', data: any) {
     this[key] = data;
   };
-
-  // 解析controls
-  public controlParse(target?: FieldUnionType) {
-    const typeMap = this.controls;
-    return parseFromField(target, typeMap);
-  }
 
   // 解析components
   public componentParse(target?: FieldUnionType) {
@@ -44,16 +34,10 @@ export class FormRenderStore {
     return parseFromField(target, typeMap);
   }
 
-  // 创建controls的实例
-  public controlInstance(target?: FieldUnionType, commonProps?: GeneratePrams, finalChildren?: any) {
-    const typeMap = this.controls;
-    return createInstance(target, typeMap, commonProps, finalChildren);
-  }
-
   // 创建components的实例
-  public componentInstance(target?: FieldUnionType, commonProps?: GeneratePrams, finalChildren?: any) {
+  public componentInstance(target?: FieldUnionType, commonProps?: GeneratePrams) {
     const typeMap = this.components;
-    return createInstance(target, typeMap, commonProps, finalChildren);
+    return createInstance(target, typeMap, commonProps);
   }
 
   // 获取当前组件的properties

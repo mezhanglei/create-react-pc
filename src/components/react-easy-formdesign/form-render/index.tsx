@@ -1,7 +1,6 @@
 import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
 import React from 'react';
 import { BaseComponents } from './components';
-import { BaseControls } from './controls';
 import moment from 'moment';
 
 export * from '@/components/react-easy-formrender';
@@ -11,7 +10,6 @@ export function RenderFormChildren(props: RenderFormChildrenProps) {
   return (
     <RenderFormChilds
       {...props}
-      controls={{ ...BaseControls, ...props?.controls }}
       components={{ ...BaseComponents, ...props?.components }}
       expressionImports={{ moment }}
     />
@@ -27,7 +25,6 @@ export default function FormRender(props: RenderDesignFormProps) {
   return (
     <RenderFormDefault
       {...props}
-      controls={{ ...BaseControls, ...props?.controls }}
       components={{ ...BaseComponents, ...props?.components }}
       expressionImports={{ moment }}
     />

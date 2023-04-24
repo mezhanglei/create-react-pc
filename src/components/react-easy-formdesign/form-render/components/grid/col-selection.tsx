@@ -42,9 +42,10 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = {
-      id: 'col',
-      inside: { type: 'Grid.Col', props: { span: 12 } },
+      id: 'gridCol',
       component: null,
+      type: 'Grid.Col',
+      props: { span: 12 },
       ignore: true,
       properties: {
       }

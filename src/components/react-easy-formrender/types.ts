@@ -48,7 +48,6 @@ export interface RenderFormChildrenProps {
   expressionImports?: object;
   uneval?: boolean;
   watch?: { [key: string]: { immediate?: boolean, handler: WatchHandler } | WatchHandler };
-  controls?: any;
   components?: any;
   inside?: FieldUnionType;
   properties?: PropertiesData; // 渲染数据
