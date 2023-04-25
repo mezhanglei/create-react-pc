@@ -1,5 +1,5 @@
 import React from 'react';
-import { Classes } from './formTable';
+import { Classes } from './Table';
 import classNames from 'classnames';
 import pickAttrs from "@/utils/pickAttrs";
 

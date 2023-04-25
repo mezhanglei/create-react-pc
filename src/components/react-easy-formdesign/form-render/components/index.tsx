@@ -29,12 +29,9 @@ import { RichText } from './rich-text';
 import FormTable from './form-table';
 import Collapse from './collapse';
 import Table from './layout-table/Table';
-import { TableCell } from "./layout-table/cell";
-import { TableRow } from "./layout-table/row";
-import { TableBody } from './layout-table/tableBody';
-import { TableHead } from './layout-table/tableHead';
 import { GridCol } from './grid/col';
 import { GridRow } from './grid/row';
+import { TableBody, TableCell, TableHead, TableRow } from './layout-table/components';
 
 // 提供开发过程中的基础组件
 export const BaseComponents = {

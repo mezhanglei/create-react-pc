@@ -2,8 +2,8 @@ import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/compon
 import React from 'react';
 import './dnd.less';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { getConfigField, insertDesignItem, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
-import { deepSet, GeneratePrams, joinFormPath } from '../../..';
+import { defaultGetId, getConfigField, insertDesignItem, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { GeneratePrams, joinFormPath } from '../../..';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -31,8 +31,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const columns = field?.props?.columns || [];
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
-    const newField = deepSet(field, attributeName, newColumns);
-    store && updateDesignerItem(store, newField, currentPath);
+    store && updateDesignerItem(store, newColumns, currentPath, attributeName);
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -65,6 +64,7 @@ function TableDnd(props: TableDndProps, ref: any) {
       props: formField?.props,
       label: formField?.label,
       id: 'formTableColumn',
+      name: defaultGetId('formTableColumn')
     }
     store && insertDesignItem(store, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
   }

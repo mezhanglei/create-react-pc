@@ -28,6 +28,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
     TableCol: `${prefix}-col`,
     TableColHead: `${prefix}-col__head`,
     TableColBody: `${prefix}-col__body`,
+    TableDnd: `${prefix}-dnd`,
   };
 
   return (
@@ -36,7 +37,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
       {...pickAttrs(rest, { aria: true, data: true })}
       style={style}
       ref={ref}>
-      <TableDnd {...rest}>
+      <TableDnd  {...rest}>
         {
           columns?.map((column, colIndex) => {
             const columnInstance = rest?.store && rest.store.componentInstance(column);

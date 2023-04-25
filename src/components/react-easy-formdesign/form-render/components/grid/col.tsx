@@ -6,7 +6,7 @@ import React from 'react';
 import { GeneratePrams } from '../..';
 import ColSelection from './col-selection';
 import './col.less';
-import EditorDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
+import ControlDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;
@@ -30,9 +30,9 @@ export const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
     <BaseGridCol ref={ref} style={style} className={cls} {...rest}>
       {isEditor ?
         <ColSelection {...rest}>
-          <EditorDnd {...rest}>
+          <ControlDnd {...rest}>
             {children}
-          </EditorDnd>
+          </ControlDnd>
         </ColSelection>
         :
         children

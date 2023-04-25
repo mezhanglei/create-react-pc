@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
-import EditorDnd from './dnd';
+import ControlDnd from './dnd';
 import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
@@ -55,7 +55,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         properties={properties}
         onPropertiesChange={onPropertiesChange}
         onFieldsChange={onFieldsChange}
-        inside={EditorDnd}
+        inside={ControlDnd}
         renderItem={renderItem}
       />
     </div>

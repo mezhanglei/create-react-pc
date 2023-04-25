@@ -1,10 +1,9 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useCallback } from "react";
 import classnames from "classnames";
 import './Table.less';
 import { ColumnGroup } from "./columnGroup";
-import { TableHead } from "./tableHead";
-import { TableBody } from "./tableBody";
 import pickAttrs from "@/utils/pickAttrs";
+import { TableBody, TableCell, TableHead, TableRow } from "./components";
 
 const prefix = "r-";
 export const Classes = {
@@ -56,6 +55,38 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
   ...rest
 }, ref) => {
 
+  const getRowKey = useCallback(
+    (record: { [x: string]: any }, rowIndex: number) => {
+      if (typeof rowKey === "function") {
+        return rowKey(record);
+      }
+      let key = typeof rowKey === "string" ? rowKey : "key";
+      return record[key] || rowIndex;
+    },
+    [rowKey]
+  );
+
+  const renderCol = (record: any, rowIndex: number) => {
+    return columns.map((column, colIndex) => {
+      const { render, name } = column || {};
+      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : record[name];
+      return <TableCell key={name}>{child}</TableCell>
+    })
+  };
+
+  const childs = (
+    <TableBody>
+      {dataSource?.map((record, rowIndex) => {
+        const cols = renderCol(record, rowIndex);
+        return (
+          <TableRow key={getRowKey(record, rowIndex)}>
+            {cols}
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  )
+
   return (
     <table
       className={classnames([Classes.Table, className])}
@@ -64,13 +95,14 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      <TableHead columns={columns} />
-      <TableBody
-        rowKey={rowKey}
-        columns={columns}
-        dataSource={dataSource}
-        children={children}
-      />
+      <TableHead>
+        <TableRow>
+          {columns.map((column, colIndex) => {
+            return <TableCell key={column.key}>{column.title}</TableCell>
+          })}
+        </TableRow>
+      </TableHead>
+      {children ?? childs}
     </table>
   );
 });

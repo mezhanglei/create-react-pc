@@ -5,12 +5,12 @@ import './dnd.less';
 import { getConfigField, insertDesignItem } from '../../utils/utils';
 import { DndType, ELementProps } from '../components/configs';
 
-export interface EditorDndProps extends GeneratePrams<ELementProps> {
+export interface ControlDndProps extends GeneratePrams<ELementProps> {
   children?: any;
 }
 
-// 根节点的拖放控制
-function EditorDnd(props: EditorDndProps, ref: any) {
+// 控件的拖放控制
+function ControlDnd(props: ControlDndProps, ref: any) {
   const { children, store, ...rest } = props;
 
   const {
@@ -84,4 +84,4 @@ function EditorDnd(props: EditorDndProps, ref: any) {
   )
 };
 
-export default React.forwardRef(EditorDnd);
+export default React.forwardRef(ControlDnd);

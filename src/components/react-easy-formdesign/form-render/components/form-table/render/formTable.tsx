@@ -1,11 +1,11 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useCallback } from "react";
 import classnames from "classnames";
 import './formTable.less';
 import { ColumnGroup } from "./columnGroup";
-import { FormTableHead } from "./formTableHead";
-import { FormTableBody } from "./formTableBody";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableProps } from "..";
+import { TableBody, TableCell, TableHead, TableRow } from "./components";
+import { Form } from "../../..";
 
 const prefix = "form-table";
 export const Classes = {
@@ -55,8 +55,46 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   style = {},
   tableLayout,
   children,
+  store,
   ...rest
 }, ref) => {
+
+  const getRowKey = useCallback(
+    (record: { [x: string]: any }, rowIndex: number) => {
+      if (typeof rowKey === "function") {
+        return rowKey(record);
+      }
+      let key = typeof rowKey === "string" ? rowKey : "key";
+      return record[key] || rowIndex;
+    },
+    [rowKey]
+  );
+
+  const renderCol = (record: any, rowIndex: number) => {
+    return columns.map((column, colIndex) => {
+      const { render, name } = column || {};
+      const columnInstance = store && store.componentInstance(column);
+      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
+      return (
+        <Form.Item component={TableCell} name={name} key={name}>
+          {child}
+        </Form.Item>
+      );
+    })
+  };
+
+  const childs = (
+    <Form.List component={TableBody}>
+      {dataSource?.map((record, rowIndex) => {
+        const cols = renderCol(record, rowIndex);
+        return (
+          <Form.Item component={TableRow} key={getRowKey(record, rowIndex)}>
+            {cols}
+          </Form.Item>
+        )
+      })}
+    </Form.List>
+  )
 
   return (
     <table
@@ -66,14 +104,14 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       ref={ref}
     >
       <ColumnGroup columns={columns} />
-      <FormTableHead columns={columns} />
-      <FormTableBody
-        {...rest}
-        rowKey={rowKey}
-        columns={columns}
-        dataSource={dataSource}
-        children={children}
-      />
+      <TableHead>
+        <TableRow>
+          {columns.map((column, colIndex) => {
+            return <TableCell key={column.key}>{column.label}</TableCell>
+          })}
+        </TableRow>
+      </TableHead>
+      {children ?? childs}
     </table>
   );
 });
