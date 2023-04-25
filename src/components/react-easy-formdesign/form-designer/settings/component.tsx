@@ -2,9 +2,9 @@ import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
 import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, setDesignerFormValue, getNameSettings } from '../../utils/utils';
-import CustomCollapse from '../../form-render/components/collapse';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
+import CustomCollapse from '../../form-render/components/collapse';
 
 export interface SelectedSettingsProps {
   className?: string
