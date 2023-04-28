@@ -4,7 +4,7 @@ import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
-import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
+import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import classnames from 'classnames';
 import './row-selection.less';
 

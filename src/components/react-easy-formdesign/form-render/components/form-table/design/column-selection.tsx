@@ -5,7 +5,7 @@ import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
-import BaseSelection, { CommonSelectionProps } from '../../../../form-designer/editor/baseSelection';
+import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {

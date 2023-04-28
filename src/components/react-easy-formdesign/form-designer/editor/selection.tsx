@@ -4,7 +4,7 @@ import React, { CSSProperties } from 'react';
 import { useFormEdit } from '../../utils/hooks';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
-import BaseSelection, { CommonSelectionProps } from './BaseSelection';
+import BaseSelection, { CommonSelectionProps } from './baseSelection';
 
 export interface ControlSelectionProps extends CommonSelectionProps {
   children?: any;
