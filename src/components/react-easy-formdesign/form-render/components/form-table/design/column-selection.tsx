@@ -5,7 +5,7 @@ import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
-import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
+import BaseSelection, { CommonSelectionProps } from '../../../../form-designer/editor/baseSelection';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
@@ -58,11 +58,11 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   return (
     <BaseSelection
-    ref={ref}
-    {...props}
-    componentLabel="表格列"
-    attributeName={attributeName}
-    tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
+      ref={ref}
+      {...props}
+      componentLabel="表格列"
+      attributeName={attributeName}
+      tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
       {children}
     </BaseSelection>
   );
