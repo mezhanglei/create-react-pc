@@ -1,18 +1,12 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
-import classnames from 'classnames';
-import React, { CSSProperties } from 'react';
-import './col-selection.less';
+import React from 'react';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
-import { GeneratePrams } from '../..';
-import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
+import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
 
-export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
-  children?: any;
-  style?: CSSProperties;
-  className?: string;
+export interface ColSelectionProps extends CommonSelectionProps {
 }
 /**
  * 给表单中的控件外围添加选中框
@@ -20,7 +14,7 @@ export interface EditorSelectionProps extends GeneratePrams<ELementProps> {
  * @param ref 
  * @returns 
  */
-function EditorSelection(props: EditorSelectionProps, ref: any) {
+function ColSelection(props: ColSelectionProps, ref: any) {
   const {
     children,
     style,
@@ -36,8 +30,6 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
 
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
-  const { selected, selectedPath } = useFormDesign();
-  const isSelected = currentPath ? currentPath === joinFormPath(selectedPath, selected?.attributeName) : false;
 
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
@@ -58,37 +50,11 @@ function EditorSelection(props: EditorSelectionProps, ref: any) {
     setEdit({ selected: {} })
   }
 
-  const chooseItem = (e: any) => {
-    e.stopPropagation();
-    setEdit({
-      selected: {
-        name: name as string,
-        parent: parent,
-        formparent: formparent,
-        field: field
-      }
-    })
-  }
-
-  const prefixCls = "col-selection";
-
-  const cls = classnames(prefixCls, className, {
-    [`${prefixCls}-active`]: isSelected,
-  });
-
-  const Tool = (
-    <div className='selection-tools'>
-      <Icon name="add" onClick={addCol} />
-      <Icon name="shanchu" onClick={deleteItem} />
-    </div>
-  );
-
   return (
-    <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
-      {isSelected ? Tool : null}
+    <BaseSelection ref={ref} {...props} tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}
-    </div>
+    </BaseSelection>
   );
 };
 
-export default React.forwardRef(EditorSelection);
+export default React.forwardRef(ColSelection);

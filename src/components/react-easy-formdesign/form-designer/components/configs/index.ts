@@ -18,7 +18,7 @@ import Alert from './base/alert';
 import RichEditor from "./base/richEditor";
 import RichText from "./base/richText";
 // 布局组件
-import tableLayout from './layout/table';
+// import tableLayout from './layout/table';
 import grid from './layout/grid';
 // 容器字段
 import formTable from "./container/table";
@@ -45,7 +45,7 @@ export const TabsData = [{
       title: '布局组件',
       elementType: '布局组件',
       elements: [
-        tableLayout,
+        // tableLayout,
         grid,
       ]
     },

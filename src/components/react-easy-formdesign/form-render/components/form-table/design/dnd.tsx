@@ -58,12 +58,10 @@ function TableDnd(props: TableDndProps, ref: any) {
       formField = store && store.getItemByIndex(fromIndex, { path: fromCollection?.path });
       store && store.setItemByIndex(undefined, fromIndex, fromCollection?.path);
     }
-    // 拼接columns
+    // 拼接column
     const newColumn = {
-      type: formField?.type,
-      props: formField?.props,
-      label: formField?.label,
-      id: formField.id,
+      ...formField,
+      showLabel: false,
       name: defaultGetId(formField.id)
     }
     store && insertDesignItem(store, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });

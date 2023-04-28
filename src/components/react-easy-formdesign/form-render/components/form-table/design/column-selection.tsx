@@ -1,19 +1,13 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
-import classnames from 'classnames';
-import React, { CSSProperties } from 'react';
-import './column-selection.less';
+import React from 'react';
 import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
-import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { defaultGetId, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
-import { GeneratePrams } from '../../..';
+import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
 
-export interface ColumnSelectionProps extends GeneratePrams<ELementProps> {
-  children?: any;
-  style?: CSSProperties;
-  className?: string;
+export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;
 }
 /**
@@ -39,13 +33,10 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const columns = field?.props?.columns || [];
   const columnsPath = `props.columns`;
-  const attributeName = `${columnsPath}[${colIndex}]`;
   const column = columns[colIndex];
+  const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
-  const attributePath = joinFormPath(currentPath, attributeName);
   const setEdit = useFormEdit();
-  const { selected, selectedPath } = useFormDesign();
-  const isSelected = attributePath ? attributePath === joinFormPath(selectedPath, selected?.attributeName) : false;
 
   const addColumn = () => {
     const nextColIndex = colIndex + 1;
@@ -63,42 +54,10 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     setEdit({ selected: {} });
   }
 
-  const chooseItem = (e: any) => {
-    e.stopPropagation();
-    setEdit({
-      selected: {
-        name: name as string,
-        attributeName: attributeName,
-        parent: parent,
-        formparent: formparent,
-        field: field
-      }
-    })
-  }
-
-  const prefixCls = "column-selection";
-
-  const cls = classnames(prefixCls, className, {
-    [`${prefixCls}-active`]: isSelected,
-  });
-
-  const classes = {
-    mask: `${prefixCls}-mask`
-  }
-
-  const Tool = (
-    <div className='selection-tools'>
-      <Icon name="fuzhi" onClick={addColumn} />
-      <Icon name="shanchu" onClick={deleteColumn} />
-    </div>
-  );
-
   return (
-    <div ref={ref} className={cls} style={style} onClick={chooseItem} {...restProps}>
-      {isSelected ? Tool : null}
+    <BaseSelection ref={ref} {...props} attributeName={attributeName} tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
       {children}
-      {field?.disabledEdit && <div className={classes.mask}></div>}
-    </div>
+    </BaseSelection>
   );
 };
 
