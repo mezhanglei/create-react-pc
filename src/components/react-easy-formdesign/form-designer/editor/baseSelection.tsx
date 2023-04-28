@@ -58,6 +58,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   const prefixCls = "editor-selection";
   const overCls = `${prefixCls}-enter`;
   const handleMouseEnter = (e: any) => {
+    e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.add(overCls);
@@ -66,6 +67,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   }
 
   const handleMouseLeave = (e: any) => {
+    e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.remove(overCls);

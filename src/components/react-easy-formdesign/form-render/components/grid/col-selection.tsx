@@ -5,6 +5,8 @@ import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
+import classnames from 'classnames';
+import './col-selection.less';
 
 export interface ColSelectionProps extends CommonSelectionProps {
 }
@@ -50,8 +52,11 @@ function ColSelection(props: ColSelectionProps, ref: any) {
     setEdit({ selected: {} })
   }
 
+  const prefixCls = "col-selection";
+  const cls = classnames(prefixCls, className);
+
   return (
-    <BaseSelection ref={ref} {...props} tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
+    <BaseSelection ref={ref} {...props} className={cls} tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}
     </BaseSelection>
   );

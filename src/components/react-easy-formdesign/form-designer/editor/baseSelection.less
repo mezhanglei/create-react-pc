@@ -10,16 +10,6 @@
   min-height: 32px;
   display: inline-block;
 
-  &-enter {
-    background-color: #f5f5f5;
-    outline: 1px solid @form-primary-color;
-  }
-
-  &-active {
-    // border: 2px solid @form-primary-color;
-    outline: 2px solid @form-primary-color;
-  }
-
   &-tools {
     position: absolute;
     z-index: 1;
@@ -44,4 +34,14 @@
     top: 0;
     z-index: 1;
   }
+}
+
+.editor-selection.editor-selection-enter {
+  background-color: #f5f5f5;
+  outline: 1px solid @form-primary-color;
+}
+
+.editor-selection.editor-selection-active {
+  // border: 2px solid @form-primary-color;
+  outline: 2px solid @form-primary-color;
 }
