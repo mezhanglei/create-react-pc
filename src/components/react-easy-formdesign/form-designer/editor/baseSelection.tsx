@@ -20,7 +20,6 @@ export interface EditorSelectionProps extends CommonSelectionProps {
  * @returns 
  */
 function BaseSelection(props: EditorSelectionProps, ref: any) {
-  console.log(1111111)
   const {
     children,
     style,
