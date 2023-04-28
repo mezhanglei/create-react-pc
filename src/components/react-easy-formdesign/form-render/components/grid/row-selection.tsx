@@ -57,7 +57,12 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   return (
-    <BaseSelection ref={ref} {...props} className={cls} tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
+    <BaseSelection
+      ref={ref}
+      {...props}
+      componentLabel="栅格布局"
+      className={cls}
+      tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}
     </BaseSelection>
   );

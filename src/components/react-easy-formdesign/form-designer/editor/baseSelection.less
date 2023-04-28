@@ -10,9 +10,18 @@
   min-height: 32px;
   display: inline-block;
 
+  &-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    background-color: @form-primary-color;
+    z-index: 999;
+    color: #fff;
+    opacity: 0.5;
+  }
   &-tools {
     position: absolute;
-    z-index: 1;
     right: 0;
     bottom: 0;
     cursor: pointer;

@@ -46,7 +46,12 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
   }
 
   return (
-    <BaseSelection ref={ref} {...props} tools={[<Icon key="fuzhi" name="fuzhi" onClick={copyItem} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
+    <BaseSelection
+      ref={ref}
+      {...props}
+      componentLabel={field?.componentLabel}
+      tools={[<Icon key="fuzhi" name="fuzhi" onClick={copyItem} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}
+    >
       {children}
     </BaseSelection>
   );

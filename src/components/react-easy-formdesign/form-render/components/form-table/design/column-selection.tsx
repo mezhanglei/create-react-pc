@@ -6,9 +6,11 @@ import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/BaseSelection';
+import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;
+  column: ELementProps;
 }
 /**
  * 给表单中的控件外围添加选中框
@@ -28,12 +30,12 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     store: designer,
     form: designerForm,
     colIndex,
+    column,
     ...restProps
   } = props;
 
   const columns = field?.props?.columns || [];
   const columnsPath = `props.columns`;
-  const column = columns[colIndex];
   const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
   const setEdit = useFormEdit();
@@ -55,7 +57,12 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   }
 
   return (
-    <BaseSelection ref={ref} {...props} attributeName={attributeName} tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
+    <BaseSelection
+    ref={ref}
+    {...props}
+    componentLabel="表格列"
+    attributeName={attributeName}
+    tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
       {children}
     </BaseSelection>
   );

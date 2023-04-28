@@ -43,7 +43,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
             const columnInstance = rest?.store && rest.store.componentInstance(column);
             return (
               <div className={Classes.TableCol} key={colIndex}>
-                <ColumnSelection {...rest} colIndex={colIndex}>
+                <ColumnSelection {...rest} column={column} colIndex={colIndex}>
                   <div className={Classes.TableColHead}>
                     {column?.label}
                   </div>

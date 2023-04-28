@@ -56,7 +56,12 @@ function ColSelection(props: ColSelectionProps, ref: any) {
   const cls = classnames(prefixCls, className);
 
   return (
-    <BaseSelection ref={ref} {...props} className={cls} tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
+    <BaseSelection
+      ref={ref}
+      {...props}
+      componentLabel="栅格列"
+      className={cls}
+      tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}
     </BaseSelection>
   );

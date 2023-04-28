@@ -1,6 +1,6 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
 import classnames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './baseSelection.less';
 import { ELementProps } from '../components/configs';
@@ -12,6 +12,7 @@ export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLA
 export interface EditorSelectionProps extends CommonSelectionProps {
   tools?: any[]; // 工具栏
   attributeName?: string; // 属性路径
+  componentLabel?: string; // 当前组件的名字
 }
 /**
  * 基础选择框组件
@@ -34,9 +35,11 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     tools,
     onMouseOver,
     onMouseOut,
+    componentLabel,
     ...restProps
   } = props;
 
+  const [isOver, setIsOver] = useState<boolean>(false);
   const setEdit = useFormEdit();
   const { selected, selectedPath } = useFormDesign();
   const completePath = isEmpty(name) ? attributeName : joinFormPath(parent, name, attributeName) as string;
@@ -62,6 +65,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.add(overCls);
+      setIsOver(true);
     }
     onMouseOver && onMouseOver(e);
   }
@@ -71,6 +75,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.remove(overCls);
+      setIsOver(false);
     }
     onMouseOut && onMouseOut(e);
   }
@@ -81,17 +86,14 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   const classes = {
     mask: `${prefixCls}-mask`,
-    tools: `${prefixCls}-tools`
+    tools: `${prefixCls}-tools`,
+    label: `${prefixCls}-label`,
   }
 
   return (
     <div ref={ref} className={cls} style={style} onClick={chooseItem} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} {...pickAttrs(restProps, { aria: true, data: true })}>
-      {
-        isSelected &&
-        <div className={classes.tools}>
-          {tools}
-        </div>
-      }
+      {isOver && !isSelected && componentLabel && <div className={classes.label}>{componentLabel}</div>}
+      {isSelected && <div className={classes.tools}>{tools}</div>}
       {children}
       {field?.disabledEdit && <div className={classes.mask}></div>}
     </div>
