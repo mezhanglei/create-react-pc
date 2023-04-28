@@ -19,8 +19,8 @@ export const isNoSelected = (path?: string) => {
 }
 
 // 从selected中解构
-export const getFromSelected = (selected: SelectedType) => {
-  if (typeof selected !== 'object') return;
+export const getFromSelected = (selected?: SelectedType) => {
+  if (typeof selected !== 'object') return {};
   const selectedName = selected?.name;
   const selectedField = selected?.field;
   const selectedParent = selected?.parent;
@@ -31,10 +31,15 @@ export const getFromSelected = (selected: SelectedType) => {
 }
 
 // name的setting
-export const getNameSettings = (selected?: SelectedType) => {
-  if (isNoSelected(selected?.name)) return;
-  // 非数组节点以及非属性节点可以设置name
-  if (!isValidNumber(selected?.name)) {
+export const getNameSettings = (designer: FormRenderStore, selected?: SelectedType) => {
+  const { selectedPath } = getFromSelected(selected);
+  const attributeName = selected?.attributeName;
+  const item = designer && getDesignerItem(designer, selectedPath, attributeName);
+  // 获取选中的name值
+  const name = attributeName ? item?.name : selected?.name;
+  if (isNoSelected(name)) return;
+  // 非数组节点可以设置name
+  if (!isValidNumber(name)) {
     return {
       name: {
         label: '字段名',
@@ -76,8 +81,9 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string, attrib
 // 插入新节点
 export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
   const { path, attributeName } = parent || {};
-  const parentField = designer && designer.getItemByPath(path, attributeName);
-  const isInArray = parentField?.properties instanceof Array || parentField instanceof Array;
+  const parentItem = designer && designer.getItemByPath(path, attributeName);
+  const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
+  const isInArray = childs instanceof Array;
   if (isInArray) {
     designer?.insertItemByIndex(data, index, parent);
   } else {
@@ -93,9 +99,10 @@ export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps,
 export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   if (attributeName) {
-    // 设置attribute节点
+    // 设置属性节点
     designer?.updateItemByPath(data, path, attributeName);
   } else {
+    // 更新表单节点
     const { name, ...rest } = data || {};
     if (rest) {
       designer?.updateItemByPath(rest, path);
@@ -110,15 +117,14 @@ export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: 
 export const setDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   if (attributeName) {
-    // 设置attribute节点
+    // 设置属性节点
     designer?.setItemByPath(data, path, attributeName);
   } else {
+    // 设置表单节点
     const { name, ...rest } = data || {};
-    // 覆盖设置控件的属性
     if (rest) {
       designer?.setItemByPath(rest, path);
     }
-    // 更新控件的字段名
     if (name) {
       designer?.updateNameByPath(name, path);
     }

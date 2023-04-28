@@ -229,7 +229,6 @@ export const insertItemByIndex = (properties: PropertiesData, data: InsertItemTy
   const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
   const entriesData = toEntries(childs);
   const isList = entriesData?.isList;
-  const startIndex = index === undefined ? childs?.length : index;
   let addItems: Array<[string, any]> = [];
   if (isList) {
     // 数组添加选项

@@ -18,8 +18,6 @@ import RichTextSettings, { richText_operation } from './base/richText';
 // 布局组件
 import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
-// 容器组件
-import FormTableColumnSettings from './container/table-column';
 // 业务组件
 // import Settings, { _operation } from './business/alert';
 
@@ -45,8 +43,6 @@ const ConfigSettings = {
   // 布局组件
   gridRow: [GridRowSettings],
   gridCol: [GridColSettings],
-  // 容器组件
-  formTableColumn: [FormTableColumnSettings]
 }
 
 type ValueOf<T> = T[keyof T];
