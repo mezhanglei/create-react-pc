@@ -34,7 +34,7 @@ export const getFromSelected = (selected: SelectedType) => {
 export const getNameSettings = (selected?: SelectedType) => {
   if (isNoSelected(selected?.name)) return;
   // 非数组节点以及非属性节点可以设置name
-  if (!isValidNumber(selected?.name) && !selected?.attributeName) {
+  if (!isValidNumber(selected?.name)) {
     return {
       name: {
         label: '字段名',
@@ -101,7 +101,7 @@ export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: 
       designer?.updateItemByPath(rest, path);
     }
     if (name) {
-      designer?.updateNameByPath(path, name);
+      designer?.updateNameByPath(name, path);
     }
   }
 }
@@ -120,7 +120,7 @@ export const setDesignerItem = (designer: FormRenderStore, data: any, path?: str
     }
     // 更新控件的字段名
     if (name) {
-      designer?.updateNameByPath(path, name);
+      designer?.updateNameByPath(name, path);
     }
   }
 }

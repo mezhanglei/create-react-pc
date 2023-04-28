@@ -197,7 +197,7 @@ const parseEntries = (entriesData?: { entries: Array<[string, any]>, isList?: bo
 };
 
 // 更新指定路径的name
-export const updateName = (properties: PropertiesData, pathStr?: string, newName?: string) => {
+export const updateName = (properties: PropertiesData, newName?: string, pathStr?: string) => {
   const end = getPathEnd(pathStr);
   if (typeof newName !== 'string' || !pathStr || end === newName) return properties;
   const parentPath = getParent(pathStr);

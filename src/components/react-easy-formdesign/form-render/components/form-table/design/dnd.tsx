@@ -63,8 +63,8 @@ function TableDnd(props: TableDndProps, ref: any) {
       type: formField?.type,
       props: formField?.props,
       label: formField?.label,
-      id: 'formTableColumn',
-      name: defaultGetId('formTableColumn')
+      id: formField.id,
+      name: defaultGetId(formField.id)
     }
     store && insertDesignItem(store, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
   }
