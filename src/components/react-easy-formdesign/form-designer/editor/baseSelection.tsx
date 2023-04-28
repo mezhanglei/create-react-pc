@@ -32,8 +32,8 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     store: designer,
     form: designerForm,
     tools,
-    onMouseEnter,
-    onMouseLeave,
+    onMouseOver,
+    onMouseOut,
     ...restProps
   } = props;
 
@@ -56,23 +56,23 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   }
 
   const prefixCls = "editor-selection";
-  const overCls = `${prefixCls}-enter`;
-  const handleMouseEnter = (e: any) => {
+  const overCls = `${prefixCls}-over`;
+  const handleMouseOver = (e: any) => {
     e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.add(overCls);
     }
-    onMouseEnter && onMouseEnter(e);
+    onMouseOver && onMouseOver(e);
   }
 
-  const handleMouseLeave = (e: any) => {
+  const handleMouseOut = (e: any) => {
     e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
     if (target) {
       target.classList.remove(overCls);
     }
-    onMouseLeave && onMouseLeave(e);
+    onMouseOut && onMouseOut(e);
   }
 
   const cls = classnames(prefixCls, className, {
@@ -85,7 +85,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   }
 
   return (
-    <div ref={ref} className={cls} style={style} onClick={chooseItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...pickAttrs(restProps, { aria: true, data: true })}>
+    <div ref={ref} className={cls} style={style} onClick={chooseItem} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} {...pickAttrs(restProps, { aria: true, data: true })}>
       {
         isSelected &&
         <div className={classes.tools}>
