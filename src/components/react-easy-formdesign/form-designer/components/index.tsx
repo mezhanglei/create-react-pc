@@ -4,7 +4,7 @@ import { message, Tabs } from 'antd';
 import './index.less';
 import { getConfigField, getSelectedIndex, insertDesignItem } from '../../utils/utils';
 import ComponentList from './list';
-import { ELementProps, TabsData } from './configs';
+import { ELementProps, ComponentsSource } from './configs';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
 
@@ -40,22 +40,11 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <Tabs className='components-tabs'>
-        {
-          TabsData?.map((item) => {
-            const { children, ...rest } = item;
-            return (
-              <Tabs.TabPane {...rest}>
-                {
-                  children?.map((sub, subIndex) => {
-                    return <ComponentList {...sub} tabKey={rest?.key} key={subIndex} onChange={onChange} />
-                  })
-                }
-              </Tabs.TabPane>
-            )
-          })
-        }
-      </Tabs>
+      {
+        ComponentsSource?.map((sub, subIndex) => {
+          return <ComponentList {...sub} key={subIndex} onChange={onChange} />
+        })
+      }
     </div>
   );
 };

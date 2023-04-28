@@ -48,16 +48,21 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       onClick={() => {
         setEdit({ selected: { name: '#' } })
       }}>
-      <RenderForm
-        isEditor
-        store={designer}
-        form={designerForm}
-        properties={properties}
-        onPropertiesChange={onPropertiesChange}
-        onFieldsChange={onFieldsChange}
-        inside={ControlDnd}
-        renderItem={renderItem}
-      />
+      <header>
+
+      </header>
+      <main>
+        <RenderForm
+          isEditor
+          store={designer}
+          form={designerForm}
+          properties={properties}
+          onPropertiesChange={onPropertiesChange}
+          onFieldsChange={onFieldsChange}
+          inside={ControlDnd}
+          renderItem={renderItem}
+        />
+      </main>
     </div>
   );
 };

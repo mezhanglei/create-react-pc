@@ -37,75 +37,58 @@ export type ElementsType = { [key: string]: ELementProps }
 
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
 
-export const TabsData = [{
-  key: 'base',
-  tab: '基础组件',
-  children: [
-    {
-      title: '布局组件',
-      elementType: '布局组件',
-      elements: [
-        // tableLayout,
-        grid,
-      ]
-    },
-    {
-      title: '容器组件',
-      elementType: '容器组件',
-      elements: [
-        formTable
-      ]
-    },
-    {
-      title: '基础控件',
-      elementType: '基础控件',
-      elements: [
-        Input,
-        Radio,
-        Checkbox,
-        Select,
-        Switch,
-        TimePicker,
-        DatePicker,
-        Slider,
-        Rate,
-        ColorPicker,
-        Cascader,
-        FileUpload,
-        ImageUpload,
-        Alert,
-        RichEditor,
-        RichText,
-      ]
-    },
-    {
-      title: '业务组件',
-      elementType: '业务组件',
-      elements: [
-      ]
-    }
-  ]
-}, {
-  key: 'example',
-  tab: '表单模板',
-  children: [
-    {
-      title: '',
-      elementType: '',
-      elements: []
-    }
-  ]
-}]
+export const ComponentsSource = [
+  {
+    title: '布局组件',
+    elementType: '布局组件',
+    elements: [
+      // tableLayout,
+      grid,
+    ]
+  },
+  {
+    title: '容器组件',
+    elementType: '容器组件',
+    elements: [
+      formTable
+    ]
+  },
+  {
+    title: '基础控件',
+    elementType: '基础控件',
+    elements: [
+      Input,
+      Radio,
+      Checkbox,
+      Select,
+      Switch,
+      TimePicker,
+      DatePicker,
+      Slider,
+      Rate,
+      ColorPicker,
+      Cascader,
+      FileUpload,
+      ImageUpload,
+      Alert,
+      RichEditor,
+      RichText,
+    ]
+  },
+  {
+    title: '业务组件',
+    elementType: '业务组件',
+    elements: [
+    ]
+  }
+]
 
 // 所有元素的展平列表
-export const ConfigElements = TabsData.reduce((pre: ELementProps[], cur) => {
+export const ConfigElements = ComponentsSource.reduce((pre: ELementProps[], cur) => {
   let temp: ELementProps[] = [];
-  const children = cur?.children;
-  for (let i = 0; i < children?.length; i++) {
-    const elements = children[i]?.elements;
+  const elements = cur?.elements;
     temp = temp.concat(elements);
-  }
-  return pre.concat(temp)
+  return pre.concat(temp);
 }, []);
 
 // 所有元素列表转成的map结构

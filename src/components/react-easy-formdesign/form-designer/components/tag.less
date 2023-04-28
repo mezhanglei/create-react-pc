@@ -1,16 +1,24 @@
 .component-tag {
-  width: 7.2rem;
-  height: 2.2rem;
-  margin: 4px;
+  background: #fff;
+  color: #000;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #333;
-  background-color: #f5f7fa;
+  display: inline-block;
+  height: 70px;
+  line-height: 1;
+  min-width: 70px;
+  text-align: center;
+  transition: all .2s ease;
+  width: 33.33%;
 
   &:hover {
-    color: #1890ff;
-    border: 1px dashed #1890ff;
+    background: #2e73ff;
+    color: #fff;
+  }
+  &-icon {
+    padding: 10px 5px 12px;
+    svg {
+      width: 21px;
+      height: 21px;
+    }
   }
 }

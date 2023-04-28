@@ -1,5 +1,6 @@
 export default {
   id: 'gridRow',
+  icon: 'grid',
   componentLabel: '栅格布局',
   ignore: true,
   component: null,

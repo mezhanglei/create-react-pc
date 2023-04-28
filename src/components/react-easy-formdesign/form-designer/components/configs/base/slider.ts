@@ -1,6 +1,7 @@
 
 export default {
   id: 'slider',
+  icon: 'slider-field',
   componentLabel: '滑动输入',
   disabledEdit: true,
   label: '滑动输入',

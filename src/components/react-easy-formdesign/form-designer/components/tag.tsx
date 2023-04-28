@@ -1,5 +1,6 @@
 import React, { CSSProperties } from 'react'
 import classnames from 'classnames';
+import Icon from '@/components/svg-icon';
 import './tag.less';
 
 export interface TagProps {
@@ -7,7 +8,7 @@ export interface TagProps {
   style?: CSSProperties
   children: any
   onChange: () => void
-  icon?: string;
+  icon: string;
 }
 const prefixCls = 'component-tag';
 function Tag(props: TagProps, ref: any) {
@@ -16,6 +17,7 @@ function Tag(props: TagProps, ref: any) {
     className,
     children,
     onChange,
+    icon,
     ...restProps
   } = props;
 
@@ -23,6 +25,9 @@ function Tag(props: TagProps, ref: any) {
 
   return (
     <span onClick={onChange} ref={ref} className={cls} style={style} {...restProps}>
+      <div className={`${prefixCls}-icon`}>
+        <Icon name={icon} />
+      </div>
       {children}
     </span>
   );

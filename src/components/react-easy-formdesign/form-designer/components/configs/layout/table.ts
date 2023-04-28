@@ -1,5 +1,6 @@
 export default {
   id: 'table',
+  icon: 'table',
   componentLabel: '表格布局',
   component: null,
   type: 'Table',
