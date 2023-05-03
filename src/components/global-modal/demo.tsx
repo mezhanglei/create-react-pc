@@ -1,26 +1,19 @@
 import classnames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import 'react-responsive-modal/styles.css';
-import BaseModal, { BaseModalProps } from './baseModal';
-import "./demo.less";
+import ModalWrapper, { ModalWrapperProps } from './modalWrapper';
 
-export interface DemoModalProps extends BaseModalProps {
-  onResolve?: (val?: any) => void;
-  onReject?: (val?: any) => void;
-  className?: string;
+export interface DemoModalProps extends ModalWrapperProps {
+
 }
 
-// 大切换弹窗
+// 弹窗容器
 export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props, ref) => {
 
   const {
     children,
     className,
-    onClose,
     open,
-    showCloseIcon = false,
-    onResolve,
-    onReject,
+    onClose,
     ...rest
   } = props;
 
@@ -30,16 +23,6 @@ export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props
     setModalOpen(open);
   }, [open]);
 
-  const handleOk = () => {
-    closeModal()
-    onResolve && onResolve()
-  }
-
-  const handleCancel = () => {
-    closeModal();
-    onReject && onReject();
-  }
-
   const closeModal = () => {
     setModalOpen(false);
   }
@@ -47,19 +30,13 @@ export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props
   const cls = classnames('modal-demo', className);
 
   return (
-    <BaseModal
+    <ModalWrapper
       ref={ref}
       open={modalOpen}
-      showCloseIcon={showCloseIcon}
       onClose={closeModal}
       classNames={{ modal: cls }}
       {...rest}>
-      <h2>Simple centered modal</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-        pulvinar risus non risus hendrerit venenatis. Pellentesque sit amet
-        hendrerit risus, sed porttitor quam.
-      </p>
-    </BaseModal>
+      1111111
+    </ModalWrapper>
   );
 });

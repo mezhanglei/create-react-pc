@@ -1,13 +1,53 @@
 .easy-form-design-editor {
   height: 100%;
   overflow-y: auto;
-  .easy-form {
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .editor-header {
+    height: 45px;
+    padding: 0 10px;
+    line-height: 45px;
+    font-size: 18px;
+    border-bottom: solid 1px #e4e7ed;
+    text-align: right;
+
+    .left-divid {
+      margin-right: 10px;
+      height: 25px;
+    }
+
+    .left-toolbar {
+      display: flex;
+      float: left;
+      height: 100%;
+      font-size: 16px;
+      align-items: center;
+
+      button {
+        width: 30px;
+        text-align: center;
+        padding: 0;
+      }
+    }
   }
 
-  .field-item,
-  .field-list,
-  .custom-item {
-    margin: 2px 0px;
+  .editor-main {
+    padding: 0;
+    position: relative;
+    display: block;
+    flex: 1;
+    flex-basis: auto;
+    overflow: auto;
+    .easy-form {
+      height: 100%;
+      height: 100%;
+    }
+
+    .field-item,
+    .field-list,
+    .custom-item {
+      margin: 2px 0px;
+    }
   }
 }
