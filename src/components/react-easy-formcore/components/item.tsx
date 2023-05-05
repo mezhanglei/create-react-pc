@@ -65,7 +65,7 @@ export const Item = React.forwardRef<any, ItemProps>((props, ref) => {
   );
 
   return (
-    <div ref={ref} className={cls} style={style} {...pickAttrs(rest, { aria: true, data: true })}>
+    <div ref={ref} className={cls} style={style} {...pickAttrs(rest)}>
       <Label
         showLabel={showLabel}
         tooltip={tooltip}

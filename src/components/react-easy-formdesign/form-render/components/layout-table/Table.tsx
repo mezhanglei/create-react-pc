@@ -91,7 +91,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(({
     <table
       className={classnames([Classes.Table, className])}
       style={{ tableLayout: tableLayout, ...style }}
-      {...pickAttrs(rest, { aria: true, data: true })}
+      {...pickAttrs(rest)}
       ref={ref}
     >
       <ColumnGroup columns={columns} />

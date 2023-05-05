@@ -49,7 +49,7 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
-  dataSource = [],
+  dataSource = [{}],
   rowKey,
   className,
   style = {},
@@ -100,7 +100,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     <table
       className={classnames([Classes.Table, className])}
       style={{ tableLayout: tableLayout, ...style }}
-      {...pickAttrs(rest, { aria: true, data: true })}
+      {...pickAttrs(rest)}
       ref={ref}
     >
       <ColumnGroup columns={columns} />

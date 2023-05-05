@@ -16,7 +16,7 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
 
   return React.createElement(
     componentType,
-    { className: classNames(Classes.TableCell, className), ref, ...pickAttrs(rest, { aria: true, data: true }) },
+    { className: classNames(Classes.TableCell, className), ref, ...pickAttrs(rest) },
     children
   );
 });
@@ -30,7 +30,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>((pr
   } = props;
 
   return (
-    <tr className={classNames(Classes.TableRow, className)} ref={ref} {...pickAttrs(rest, { aria: true, data: true })}>
+    <tr className={classNames(Classes.TableRow, className)} ref={ref} {...pickAttrs(rest)}>
       {children}
     </tr>
   );
@@ -44,7 +44,7 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, React.HtmlHTM
   } = props;
 
   return (
-    <tbody className={classNames(Classes.TableRow, className)} ref={ref} {...pickAttrs(rest, { aria: true, data: true })}>
+    <tbody className={classNames(Classes.TableRow, className)} ref={ref} {...pickAttrs(rest)}>
       {children}
     </tbody>
   );
@@ -59,7 +59,7 @@ export const TableHead = React.forwardRef<HTMLTableSectionElement, TableHeadProp
   } = props;
 
   return (
-    <thead className={classNames(Classes.TableHead, className)} ref={ref} {...pickAttrs(rest, { aria: true, data: true })}>
+    <thead className={classNames(Classes.TableHead, className)} ref={ref} {...pickAttrs(rest)}>
       {children}
     </thead>
   );

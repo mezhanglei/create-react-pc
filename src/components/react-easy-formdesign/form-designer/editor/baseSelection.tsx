@@ -23,7 +23,6 @@ export interface EditorSelectionProps extends CommonSelectionProps {
 function BaseSelection(props: EditorSelectionProps, ref: any) {
   const {
     children,
-    style,
     className,
     name,
     parent,
@@ -91,7 +90,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   }
 
   return (
-    <div ref={ref} className={cls} style={style} onClick={chooseItem} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut} {...pickAttrs(restProps, { aria: true, data: true })}>
+    <div ref={ref} className={cls} {...pickAttrs(restProps)} onClick={chooseItem} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
       {isOver && !isSelected && componentLabel && <div className={classes.label}>{componentLabel}</div>}
       {isSelected && <div className={classes.tools}>{tools}</div>}
       {children}

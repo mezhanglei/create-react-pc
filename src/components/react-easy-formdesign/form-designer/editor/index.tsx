@@ -11,6 +11,7 @@ import Icon from "@/components/svg-icon";
 import { Button, Divider, Radio } from 'antd';
 import PlatContainer, { PlatContainerProps } from './platContainer';
 import { showImportModal } from './importModal';
+import { showPreviewModal } from './preview';
 
 export interface DesignEditorProps {
   className?: string
@@ -48,6 +49,12 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const importJson = () => {
     showImportModal()
+  }
+  const showPreview = () => {
+    showPreviewModal({ properties })
+  }
+  const clearEditor = () => {
+    setEdit({ properties: undefined });
   }
 
   return (
@@ -90,8 +97,8 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
           />
         </div>
         <Button type='link' onClick={importJson}>导入模板</Button>
-        <Button type='link'>预览</Button>
-        <Button type='link'>清空</Button>
+        <Button type='link' onClick={showPreview}>预览</Button>
+        <Button type='link' onClick={clearEditor}>清空</Button>
         <Button type='link'>生成JSON</Button>
       </header>
       <main className="editor-main">

@@ -34,7 +34,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
   return (
     <div
       className={classnames([Classes.Table, className])}
-      {...pickAttrs(rest, { aria: true, data: true })}
+      {...pickAttrs(rest)}
       style={style}
       ref={ref}>
       <TableDnd  {...rest}>
