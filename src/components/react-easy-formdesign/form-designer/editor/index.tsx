@@ -12,6 +12,7 @@ import { Button, Divider, Radio } from 'antd';
 import PlatContainer, { PlatContainerProps } from './platContainer';
 import { showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
+import { showExportJsonModal } from './exportJson';
 
 export interface DesignEditorProps {
   className?: string
@@ -56,6 +57,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   const clearEditor = () => {
     setEdit({ properties: undefined });
   }
+  const showExportJson = () => {
+    showExportJsonModal({ properties });
+  }
 
   return (
     <div
@@ -99,7 +103,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         <Button type='link' onClick={importJson}>导入模板</Button>
         <Button type='link' onClick={showPreview}>预览</Button>
         <Button type='link' onClick={clearEditor}>清空</Button>
-        <Button type='link'>生成JSON</Button>
+        <Button type='link' onClick={showExportJson}>生成JSON</Button>
       </header>
       <main className="editor-main">
         <PlatContainer plat={plat}>

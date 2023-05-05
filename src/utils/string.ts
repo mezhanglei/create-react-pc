@@ -1,6 +1,27 @@
 import * as devalue from 'devalue'
 import { isEmpty } from './type'
 import * as Pinyin from 'jian-pinyin';
+import Clipboard from 'clipboard';
+
+// 复制到剪贴板
+export function copyToClipboard(content: any, clickEvent: any, successFn?: () => void, errorFn?: () => void) {
+  if(typeof content !== 'string') return;
+  const clipboard = new Clipboard(clickEvent.target, {
+    text: () => content
+  })
+
+  clipboard.on('success', () => {
+    successFn && successFn();
+    clipboard.destroy();
+  })
+
+  clipboard.on('error', () => {
+    errorFn && errorFn();
+    clipboard.destroy();
+  })
+
+  clipboard.onClick(clickEvent)
+}
 
 // 将对象转化为json字符串
 export function toJSON(val: any) {
