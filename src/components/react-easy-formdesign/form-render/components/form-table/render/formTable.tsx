@@ -37,16 +37,16 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
-const CustomTableBody = (props) => {
-  const { children } = props;
+const CustomTableBody = (props: any) => {
+  const { children, ...restProps } = props;
   return (
-    <Form.List component={TableBody}>
+    <Form.List component={TableBody} {...restProps}>
       {children}
     </Form.List>
   )
 }
 
-const CustomTableRow = (props) => {
+const CustomTableRow = (props: any) => {
   const { children, ...restProps } = props;
   return (
     <Form.Item component={TableRow} {...restProps}>
@@ -55,7 +55,7 @@ const CustomTableRow = (props) => {
   );
 }
 
-const CustomTableCell = (props) => {
+const CustomTableCell = (props: any) => {
   const { name, store, type, props: typeProps, children, ...restProps } = props;
   const columnInstance = store && store.componentInstance({ type, props: typeProps });
   return (
