@@ -85,7 +85,16 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     }
   }), [columns]);
 
-  return <Table className={classNames('form-table', className)} columns={newColumns} dataSource={dataSource} ref={ref} rowKey="key" components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }} {...pickAttrs(rest)} />
+  return (
+    <Table
+      className={classNames('form-table', className)}
+      columns={newColumns}
+      dataSource={dataSource}
+      ref={ref}
+      rowKey="key"
+      components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }}
+      {...pickAttrs(rest)} />
+  );
 });
 
 export default FormTable;
