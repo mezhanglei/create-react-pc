@@ -40,7 +40,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
       <TableDnd  {...rest}>
         {
           columns?.map((column, colIndex) => {
-            const columnInstance = rest?.store && rest.store.componentInstance(column);
+            const columnInstance = rest?.store && rest.store.componentInstance({ type: column?.type, props: column?.props });
             return (
               <div className={Classes.TableCol} key={colIndex}>
                 <ColumnSelection {...rest} column={column} colIndex={colIndex}>
