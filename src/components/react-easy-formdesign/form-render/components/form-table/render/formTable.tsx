@@ -37,15 +37,6 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
-const CustomTableBody = (props: any) => {
-  const { children, ...restProps } = props;
-  return (
-    <Form.List component={TableBody} {...restProps}>
-      {children}
-    </Form.List>
-  )
-}
-
 const CustomTableRow = (props: any) => {
   const { children, ...restProps } = props;
   return (
@@ -66,7 +57,7 @@ const CustomTableCell = (props: any) => {
 }
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref) => {
-  const { className, columns, dataSource = [], store, ...rest } = props
+  const { className, columns, dataSource = [], name, parent, store, ...rest } = props
 
   const newColumns = useMemo(() => columns?.map((col) => {
     const { name, label, type, props: typeProps, ...restCol } = col;
@@ -85,15 +76,26 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     }
   }), [columns]);
 
+  const CustomTableBody = (props: any) => {
+    const { children, ...restProps } = props;
+    return (
+      <Form.List component={TableBody} name={name} parent={parent} {...restProps}>
+        {children}
+      </Form.List>
+    )
+  }
+
   return (
-    <Table
-      className={classNames('form-table', className)}
-      columns={newColumns}
-      dataSource={dataSource}
-      ref={ref}
-      rowKey="key"
-      components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }}
-      {...pickAttrs(rest)} />
+    <>
+      <Table
+        className={classNames('form-table', className)}
+        columns={newColumns}
+        dataSource={dataSource}
+        ref={ref}
+        rowKey="key"
+        components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }}
+        {...pickAttrs(rest)} />
+    </>
   );
 });
 
