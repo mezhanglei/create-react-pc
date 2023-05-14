@@ -1,5 +1,5 @@
 export default {
-  id: 'table',
+  id: 'Table',
   icon: 'table',
   componentLabel: '表格布局',
   component: null,
@@ -16,7 +16,7 @@ export default {
           ignore: true,
           properties: {
             name1: {
-              id: 'input',
+              id: 'Input',
               type: 'Input',
               props: {}
             }
@@ -28,7 +28,7 @@ export default {
           ignore: true,
           properties: {
             name2: {
-              id: 'input',
+              id: 'Input',
               type: 'Input',
               props: {}
             }

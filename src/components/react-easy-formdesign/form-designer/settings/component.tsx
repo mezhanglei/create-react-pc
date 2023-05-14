@@ -1,10 +1,11 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { updateDesignerItem, getDesignerItem, isNoSelected, getSettingsModule, setDesignerFormValue, getNameSettings } from '../../utils/utils';
+import { updateDesignerItem, getDesignerItem, isNoSelected, setDesignerFormValue, getNameSettings } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
+import getConfigSettings from '../components/settings';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -24,7 +25,10 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const attributeName = selected?.attributeName;
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
-  const settingsModule = useMemo(() => (getSettingsModule(getDesignerItem(designer, selectedPath, attributeName)?.id) || []), [selectedPath, attributeName]); // 配置表单列表
+  const configSettings = useMemo(() => {
+    const item = getDesignerItem(designer, selectedPath, attributeName);
+    return getConfigSettings(item?.id, item?.type);
+  }, [selectedPath, attributeName]); // 配置表单列表
   const nameSettings = useMemo(() => getNameSettings(designer, selected), [designer, selected]); // 表单节点字段设置
 
   useEffect(() => {
@@ -70,9 +74,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }
 
   const renderCommonList = () => {
-    if (!settingsModule?.length) return;
+    if (!configSettings) return;
     return (
-      settingsModule?.map((item) => {
+      Object.entries(configSettings)?.map((item) => {
         const [title, settings] = item;
         return (
           <CustomCollapse header={title} key={title} isOpened>

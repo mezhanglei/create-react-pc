@@ -1,6 +1,6 @@
 
 export default {
-  id: 'datePicker',
+  id: 'DatePicker',
   icon: 'date-field',
   componentLabel: '日期选择器',
   label: '日期选择器',

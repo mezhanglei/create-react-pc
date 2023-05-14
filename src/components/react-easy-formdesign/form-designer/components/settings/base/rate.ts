@@ -1,4 +1,4 @@
-const settings = {
+const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'InputNumber',
@@ -14,8 +14,6 @@ const settings = {
     }
   }
 }
-
-export default ['基础属性', settings] as [string, typeof settings]
 
 const operationSettings = {
   hidden: {
@@ -53,8 +51,6 @@ const operationSettings = {
   }
 }
 
-export const rate_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
-
 const rulesSettings = {
   rules: {
     type: 'RulesComponent',
@@ -64,4 +60,10 @@ const rulesSettings = {
   },
 }
 
-export const rate_rule = ['校验规则', rulesSettings] as [string, typeof rulesSettings]
+const settings = {
+  '基础属性': baseSettings,
+  '操作属性': operationSettings,
+  '校验规则': rulesSettings,
+}
+
+export default settings;

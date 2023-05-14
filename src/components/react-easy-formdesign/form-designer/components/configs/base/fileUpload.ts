@@ -1,6 +1,6 @@
 
 export default {
-  id: 'fileupload',
+  id: 'FileUpload',
   icon: 'file-upload-field',
   componentLabel: '文件上传',
   label: '文件上传',

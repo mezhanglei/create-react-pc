@@ -1,4 +1,4 @@
-const settings = {
+const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'CodeTextArea',
@@ -52,8 +52,6 @@ const settings = {
   }
 }
 
-export default ['基础属性', settings] as [string, typeof settings]
-
 const operationSettings = {
   hidden: {
     type: 'LinkageCheckbox',
@@ -90,8 +88,6 @@ const operationSettings = {
   }
 }
 
-export const select_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
-
 const rulesSettings = {
   rules: {
     type: 'RulesComponent',
@@ -101,4 +97,10 @@ const rulesSettings = {
   },
 }
 
-export const select_rule = ['校验规则', rulesSettings] as [string, typeof rulesSettings]
+const settings = {
+  '基础属性': baseSettings,
+  '操作属性': operationSettings,
+  '校验规则': rulesSettings,
+}
+
+export default settings;

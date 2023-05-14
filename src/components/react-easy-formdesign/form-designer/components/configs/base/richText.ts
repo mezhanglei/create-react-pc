@@ -1,6 +1,6 @@
 
 export default {
-  id: 'richText',
+  id: 'RichText',
   icon: 'html-text',
   componentLabel: '富文本',
   type: 'RichText',

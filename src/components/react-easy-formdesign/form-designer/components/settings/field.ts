@@ -1,5 +1,5 @@
 // 默认的表单域显示组件的属性
-const settings = {
+const baseSettings = {
   label: {
     label: '标签名称',
     type: 'Input'
@@ -63,4 +63,8 @@ const settings = {
   }
 }
 
-export default ['公共属性', settings] as [string, typeof settings];
+const settings = {
+  '公共属性': baseSettings
+}
+
+export default settings;

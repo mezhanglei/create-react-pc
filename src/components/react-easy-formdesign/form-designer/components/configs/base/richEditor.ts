@@ -1,6 +1,6 @@
 
 export default {
-  id: 'richEditor',
+  id: 'RichEditor',
   icon: 'rich-editor-field',
   componentLabel: '富文本编辑器',
   label: '富文本编辑器',

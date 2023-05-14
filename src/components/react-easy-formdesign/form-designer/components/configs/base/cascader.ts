@@ -1,5 +1,5 @@
 export default {
-  id: 'cascader',
+  id: 'Cascader',
   icon: 'cascader-field',
   componentLabel: '级联选择器',
   label: '级联选择器',

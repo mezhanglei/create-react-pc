@@ -1,11 +1,9 @@
-const settings = {
+const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'RichEditorModalBtn',
   },
 }
-
-export default ['基础属性', settings] as [string, typeof settings]
 
 const operationSettings = {
   hidden: {
@@ -15,4 +13,9 @@ const operationSettings = {
   },
 }
 
-export const richText_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
+const settings = {
+  '基础属性': baseSettings,
+  '操作属性': operationSettings,
+}
+
+export default settings;

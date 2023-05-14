@@ -6,7 +6,7 @@ import { evalString, uneval } from '@/utils/string';
 import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
 import { ConfigElementsMap, ELementProps } from '../form-designer/components/configs';
-import ConfigSettings, { ConfigSettingsItem } from '../form-designer/components/settings';
+import getConfigSettings from '../form-designer/components/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (name?: string) => {
@@ -62,7 +62,7 @@ export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedT
 export const getConfigField = (id?: string) => {
   if (!id) return;
   const item = ConfigElementsMap[id];
-  const configSettings = getConfigSettings(item?.id);
+  const configSettings = getConfigSettings(item?.id, item.type);
   const field = deepMergeObject(item, getInitialValues(configSettings));
   return field;
 }
@@ -71,7 +71,7 @@ export const getConfigField = (id?: string) => {
 export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   let curValues = designer.getItemByPath(path, attributeName) || {};
-  const configSettings = getConfigSettings(curValues?.id);
+  const configSettings = getConfigSettings(curValues?.id, curValues?.type);
   // 从配置表单中获取初始属性
   const initialValues = getInitialValues(configSettings);
   const result = deepMergeObject(initialValues, curValues);
@@ -137,28 +137,6 @@ export const setDesignerFormValue = (designerForm: FormStore, formPath?: string,
   if (initialValue !== undefined) {
     designerForm?.setFieldValue(formPath, initialValue);
   }
-}
-
-// 根据id获取控件配置模块(components/settings)
-export const getSettingsModule = (id?: string): ConfigSettingsItem | undefined => {
-  if (!id) return;
-  const settingsModule = id ? ConfigSettings[id] : []
-  return settingsModule;
-}
-
-// 根据id获取控件的配置(components/settings配置其他属性)
-export const getConfigSettings = (id?: string) => {
-  if (!id) return;
-  const settingsModule = getSettingsModule(id);
-  const cloneModule = deepClone(settingsModule);
-  if (!cloneModule?.length) return;
-  let totalSettings = {};
-  for (let i = 0; i < cloneModule?.length; i++) {
-    // 遍历获取当前的配置项
-    const item = cloneModule[i][1];
-    totalSettings = deepMergeObject(totalSettings, item);
-  }
-  return totalSettings;
 }
 
 // 代码编辑器执行解析字符串

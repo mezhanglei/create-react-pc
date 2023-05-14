@@ -1,4 +1,4 @@
-const settings = {
+const baseSettings = {
   props: {
     compact: true,
     properties: {
@@ -40,4 +40,8 @@ const settings = {
   }
 }
 
-export default ['基础属性', settings] as [string, typeof settings]
+const settings = {
+  '基础属性': baseSettings,
+}
+
+export default settings;

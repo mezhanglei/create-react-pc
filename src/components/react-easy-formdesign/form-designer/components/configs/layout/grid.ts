@@ -1,5 +1,5 @@
 export default {
-  id: 'gridRow',
+  id: 'Grid.Row',
   icon: 'grid',
   componentLabel: '栅格布局',
   ignore: true,
@@ -8,7 +8,7 @@ export default {
   includes: ['col'],
   properties: {
     col1: {
-      id: 'gridCol',
+      id: 'Grid.Col',
       component: null,
       type: 'Grid.Col',
       props: { span: 12 },
@@ -17,7 +17,7 @@ export default {
       }
     },
     col2: {
-      id: 'gridCol',
+      id: 'Grid.Col',
       component: null,
       type: 'Grid.Col',
       props: { span: 12 },

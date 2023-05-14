@@ -1,51 +1,71 @@
 import DefaultFieldSettings from "./field";
 // 基础控件
-import InputSettings, { input_operation, input_rule } from "./base/input";
-import RadioSettings, { radio_operation, radio_rule } from "./base/radio";
-import CheckboxSettings, { checkbox_operation, checkbox_rule } from './base/checkbox';
-import SelectSettings, { select_operation, select_rule } from './base/select';
-import SwitchSettings, { switch_operation, switch_rule } from './base/switch';
-import TimePickerSettings, { timePicker_operation, timePicker_rule } from './base/timePicker';
-import DatePickerSettings, { datePicker_operation, datePicker_rule } from './base/datePicker';
-import SliderSettings, { slider_operation, slider_rule } from './base/slider';
-import RateSettings, { rate_operation, rate_rule } from './base/rate';
-import ColorPickerSettings, { colorPicker_operation, colorPicker_rule } from './base/colorPicker';
-import FileUploadSettings, { fileUpload_operation, fileUpload_rule } from './base/fileUpload';
-import ImageUploadSettings, { imageUpload_operation, imageUpload_rule } from './base/imageUpload';
-import CascaderSettings, { cascader_operation, cascader_rule } from './base/cascader';
-import AlertSettings, { alert_operation } from './base/alert';
-import RichTextSettings, { richText_operation } from './base/richText';
+import InputSettings from "./base/input";
+import RadioSettings from "./base/radio";
+import CheckboxSettings from './base/checkbox';
+import SelectSettings from './base/select';
+import SwitchSettings from './base/switch';
+import TimePickerSettings from './base/timePicker';
+import DatePickerSettings from './base/datePicker';
+import SliderSettings from './base/slider';
+import RateSettings from './base/rate';
+import ColorPickerSettings from './base/colorPicker';
+import FileUploadSettings from './base/fileUpload';
+import ImageUploadSettings from './base/imageUpload';
+import CascaderSettings from './base/cascader';
+import AlertSettings from './base/alert';
+import RichTextSettings from './base/richText';
 // 布局组件
 import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
 // 业务组件
-// import Settings, { _operation } from './business/alert';
 
-// 属性配置, 以目标节点的id作为键
-const ConfigSettings = {
-  // 基础控件
-  input: [InputSettings, input_operation, input_rule, DefaultFieldSettings],
-  radio: [RadioSettings, radio_operation, radio_rule, DefaultFieldSettings],
-  checkbox: [CheckboxSettings, checkbox_operation, checkbox_rule, DefaultFieldSettings],
-  select: [SelectSettings, select_operation, select_rule, DefaultFieldSettings],
-  switch: [SwitchSettings, switch_operation, switch_rule, DefaultFieldSettings],
-  timePicker: [TimePickerSettings, timePicker_operation, timePicker_rule, DefaultFieldSettings],
-  datePicker: [DatePickerSettings, datePicker_operation, datePicker_rule, DefaultFieldSettings],
-  slider: [SliderSettings, slider_operation, slider_rule, DefaultFieldSettings],
-  rate: [RateSettings, rate_operation, rate_rule, DefaultFieldSettings],
-  colorPicker: [ColorPickerSettings, colorPicker_operation, colorPicker_rule, DefaultFieldSettings],
-  fileupload: [FileUploadSettings, fileUpload_operation, fileUpload_rule, DefaultFieldSettings],
-  imageupload: [ImageUploadSettings, imageUpload_operation, imageUpload_rule, DefaultFieldSettings],
-  cascader: [CascaderSettings, cascader_operation, cascader_rule, DefaultFieldSettings],
-  alert: [AlertSettings, alert_operation],
-  richText: [RichTextSettings, richText_operation],
-  richEditor: [DefaultFieldSettings],
-  // 布局组件
-  gridRow: [GridRowSettings],
-  gridCol: [GridColSettings],
+const getConfigSettings = (id?: string, type?: string): any => {
+  if (!id || !type) return {}
+  if (id === type) {
+    switch (id) {
+      case "Input":
+        return { ...InputSettings, ...DefaultFieldSettings };
+      case "Radio.Group":
+        return { ...RadioSettings, ...DefaultFieldSettings };
+      case "Checkbox.Group":
+        return { ...CheckboxSettings, ...DefaultFieldSettings };
+      case "Select":
+        return { ...SelectSettings, ...DefaultFieldSettings };
+      case "Switch":
+        return { ...SwitchSettings, ...DefaultFieldSettings };
+      case "TimePicker":
+        return { ...TimePickerSettings, ...DefaultFieldSettings };
+      case "DatePicker":
+        return { ...DatePickerSettings, ...DefaultFieldSettings };
+      case "Slider":
+        return { ...SliderSettings, ...DefaultFieldSettings };
+      case "Rate":
+        return { ...RateSettings, ...DefaultFieldSettings };
+      case "ColorPicker":
+        return { ...ColorPickerSettings, ...DefaultFieldSettings };
+      case "FileUpload":
+        return { ...FileUploadSettings, ...DefaultFieldSettings };
+      case "ImageUpload":
+        return { ...ImageUploadSettings, ...DefaultFieldSettings };
+      case "Cascader":
+        return { ...CascaderSettings, ...DefaultFieldSettings };
+      case "Alert":
+        return AlertSettings;
+      case "RichText":
+        return RichTextSettings;
+      case "RichEditor":
+        return DefaultFieldSettings;
+      case "Grid.Row":
+        return GridRowSettings;
+      case "Grid.Col":
+        return GridColSettings;
+      default:
+        break;
+    }
+  } else {
+    return {}
+  }
 }
 
-type ValueOf<T> = T[keyof T];
-export type ConfigSettingsType = typeof ConfigSettings;
-export type ConfigSettingsItem = ValueOf<ConfigSettingsType>;
-export default ConfigSettings;
+export default getConfigSettings;

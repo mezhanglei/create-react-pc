@@ -1,5 +1,5 @@
 export default {
-  id: 'switch',
+  id: 'Switch',
   icon: 'switch-field',
   componentLabel: '开关',
   label: '开关',

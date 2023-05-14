@@ -1,6 +1,6 @@
 
 export default {
-  id: 'select',
+  id: 'Select',
   icon: 'select-field',
   componentLabel: '下拉框',
   label: '下拉框',

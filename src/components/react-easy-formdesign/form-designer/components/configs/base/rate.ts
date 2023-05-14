@@ -1,6 +1,6 @@
 
 export default {
-  id: 'rate',
+  id: 'Rate',
   icon: 'rate-field',
   componentLabel: '评分',
   label: '评分',

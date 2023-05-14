@@ -1,6 +1,5 @@
 import React, { ReactNode, CSSProperties } from 'react';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
-import Raf from "@/utils/requestAnimationFrame";
 import { setScroll, getScroll, getOffsetWH, getEventPosition, getScrollParent, addEvent, removeEvent, getWindow } from "@/utils/dom";
 import { isDom } from "@/utils/type";
 import { isMobile } from '@/utils/brower';
@@ -304,7 +303,7 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
         this.setState({
           pullDistance: num
         })
-        Raf.setRaf(() => this.setDrag(num));
+        this.setDrag(num)
       }
     } else {
       if (deltaY > 0) {
@@ -312,7 +311,7 @@ export default class InfiniteScroll extends React.Component<ListProps, ListState
         this.setState({
           pullDistance: num
         })
-        Raf.setRaf(() => this.setDrag(num));
+        this.setDrag(num)
       }
     }
     // 最小判断边界

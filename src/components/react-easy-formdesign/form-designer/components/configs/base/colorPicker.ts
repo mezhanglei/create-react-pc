@@ -1,6 +1,6 @@
 
 export default {
-  id: 'colorPicker',
+  id: 'ColorPicker',
   icon: 'color-field',
   componentLabel: '颜色选择器',
   label: '颜色选择器',

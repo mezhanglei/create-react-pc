@@ -1,4 +1,4 @@
-const settings = {
+const baseSettings = {
   // === 控件自身的props的设置
   props: {
     compact: true,
@@ -29,8 +29,6 @@ const settings = {
   }
 }
 
-export default ['基础属性', settings] as [string, typeof settings]
-
 const operationSettings = {
   hidden: {
     type: 'LinkageCheckbox',
@@ -56,4 +54,9 @@ const operationSettings = {
   }
 }
 
-export const alert_operation = ['操作属性', operationSettings] as [string, typeof operationSettings]
+const settings = {
+  '基础属性': baseSettings,
+  '操作属性': operationSettings,
+}
+
+export default settings;
