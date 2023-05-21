@@ -1,6 +1,6 @@
 
 export default {
-  id: 'Radio.Group',
+  id: 'RadioGroup',
   icon: 'radio-field',
   componentLabel: '单选框',
   label: '单选框',

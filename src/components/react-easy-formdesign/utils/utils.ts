@@ -62,7 +62,7 @@ export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedT
 export const getConfigField = (id?: string) => {
   if (!id) return;
   const item = ConfigElementsMap[id];
-  const configSettings = getConfigSettings(item?.id, item.type);
+  const configSettings = getConfigSettings(item?.id, item?.subId);
   const field = deepMergeObject(item, getInitialValues(configSettings));
   return field;
 }
@@ -71,7 +71,7 @@ export const getConfigField = (id?: string) => {
 export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   let curValues = designer.getItemByPath(path, attributeName) || {};
-  const configSettings = getConfigSettings(curValues?.id, curValues?.type);
+  const configSettings = getConfigSettings(curValues?.id, curValues?.subId);
   // 从配置表单中获取初始属性
   const initialValues = getInitialValues(configSettings);
   const result = deepMergeObject(initialValues, curValues);

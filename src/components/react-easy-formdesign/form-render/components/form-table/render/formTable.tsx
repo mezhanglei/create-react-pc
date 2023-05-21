@@ -98,7 +98,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       })}
     </Form.List>
   );
-
+  console.log(rest, 222)
   return (
     <table
       className={classnames([Classes.Table, className])}

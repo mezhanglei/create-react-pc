@@ -58,7 +58,7 @@ const CustomTableCell = (props: any) => {
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref) => {
   const { className, columns, dataSource = [], name, parent, store, ...rest } = props
-
+console.log(props, 222)
   const newColumns = useMemo(() => columns?.map((col) => {
     const { name, label, type, props: typeProps, ...restCol } = col;
     return {

@@ -25,7 +25,8 @@ import formTable from "./container/table";
 
 // 列表中的元素类型
 export interface ELementProps extends FormFieldProps, CustomOptions {
-  id?: string; // 组件类型id，用于匹配组件
+  id?: string; // 组件类型id，用于匹配组件的配置
+  subId?: string; // 子组件的id， 用于匹配子组件的配置
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
   disabledEdit?: boolean; // 禁止编辑

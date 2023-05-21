@@ -5,8 +5,9 @@ export default {
   label: '表格组件',
   type: 'FormTable',
   props: {
-    columns:  [{
-      id: "FormTable.Col",
+    columns: [{
+      id: "FormTableCol",
+      subId: 'Input',
       name: 'ss',
       type: 'Input',
       label: '111'

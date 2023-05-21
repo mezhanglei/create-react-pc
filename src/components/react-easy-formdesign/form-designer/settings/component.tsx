@@ -27,7 +27,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const cls = classnames(prefixCls, className);
   const configSettings = useMemo(() => {
     const item = getDesignerItem(designer, selectedPath, attributeName);
-    return getConfigSettings(item?.id, item?.type);
+    return getConfigSettings(item?.id, item?.subId);
   }, [selectedPath, attributeName]); // 配置表单列表
   const nameSettings = useMemo(() => getNameSettings(designer, selected), [designer, selected]); // 表单节点字段设置
 
