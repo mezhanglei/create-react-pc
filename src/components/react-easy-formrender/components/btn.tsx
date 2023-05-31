@@ -3,8 +3,6 @@ import classnames from 'classnames';
 import './btn.less';
 import { GenerateFieldProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
-import { joinFormPath } from '../../react-easy-formcore';
-import { isEmpty } from '@/utils/type';
 import Icon from '../../svg-icon';
 
 export interface DeleteBtnProps extends GeneratePrams<any> {
@@ -16,6 +14,7 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
 
   const {
     name,
+    path,
     field,
     parent,
     store,
@@ -24,7 +23,7 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     ...restProps
   } = props;
 
-  const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name);
+  const currentPath = path;
   const deleteItem = () => {
     currentPath && form?.setFieldValue(currentPath, undefined, false);
     currentPath && store?.delItemByPath(currentPath);
@@ -44,6 +43,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
   const {
     name,
+    path,
     field,
     parent,
     store,
@@ -54,7 +54,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     ...restProps
   } = props;
 
-  const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name);
+  const currentPath = path;
 
   const addNewItem = () => {
     const properties = field?.properties;

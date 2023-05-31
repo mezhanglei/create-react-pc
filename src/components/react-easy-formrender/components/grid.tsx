@@ -30,6 +30,7 @@ export interface GridRowProps extends RowProps, GeneratePrams {
 export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
   const {
     name,
+    path,
     field,
     parent,
     store,
@@ -53,6 +54,7 @@ export interface GridColProps extends ColProps, GeneratePrams {
 export const GridCol = React.forwardRef<any, GridColProps>((props, ref) => {
   const {
     name,
+    path,
     field,
     parent,
     store,

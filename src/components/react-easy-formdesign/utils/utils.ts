@@ -1,16 +1,15 @@
-import { FormStore, isValidNumber, joinFormPath } from '@/components/react-easy-formcore';
+import { FormStore, isValidNumber } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
-import { getInitialValues } from '@/components/react-easy-formrender/utils/utils';
-import { deepMergeObject, deepClone } from '@/utils/object';
+import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
+import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
-import { isEmpty } from '@/utils/type';
 import { nanoid } from 'nanoid';
 import { ConfigElementsMap, ELementProps } from '../form-designer/components/configs';
 import getConfigSettings from '../form-designer/components/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
-export const defaultGetId = (name?: string) => {
-  return name ? `${name}_${nanoid(6)}` : '';
+export const defaultGetId = (id?: string) => {
+  return id ? `${id}_${nanoid(6)}` : '';
 };
 
 // 失去选中
@@ -21,25 +20,19 @@ export const isNoSelected = (path?: string) => {
 // 从selected中解构
 export const getFromSelected = (selected?: SelectedType) => {
   if (typeof selected !== 'object') return {};
-  const selectedName = selected?.name;
-  const selectedField = selected?.field;
-  const selectedParent = selected?.parent;
-  const selectedFormParent = selected?.formparent;
-  const selectedPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedParent, selectedName) as string;
-  const selectedFormPath = isEmpty(selectedName) ? undefined : joinFormPath(selectedFormParent, selectedField?.ignore ? undefined : selectedName) as string;
-  return { selected, selectedPath, selectedFormPath };
+  return { selected };
 }
 
 // name的setting
 export const getNameSettings = (designer: FormRenderStore, selected?: SelectedType) => {
-  const { selectedPath } = getFromSelected(selected);
+  const selectedPath = selected?.path;
   const attributeName = selected?.attributeName;
   const item = designer && getDesignerItem(designer, selectedPath, attributeName);
-  // 获取选中的name值
-  const name = attributeName ? item?.name : selected?.name;
-  if (isNoSelected(name)) return;
+  // 获取选中的字段值
+  const endName = attributeName ? item?.name : getPathEnd(selected?.name);
+  if (isNoSelected(endName)) return;
   // 非数组节点可以设置name
-  if (!isValidNumber(name)) {
+  if (!isValidNumber(endName)) {
     return {
       name: {
         label: '字段名',
@@ -51,10 +44,12 @@ export const getNameSettings = (designer: FormRenderStore, selected?: SelectedTy
 
 // 获取当前选中位置序号
 export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedType) => {
-  const parent = designer.getItemByPath(selected?.parent);
-  const childProperties = selected?.parent ? parent?.properties : parent;
+  const selectedParentPath = selected?.parent?.path;
+  const endName = getPathEnd(selected?.name);
+  const parent = designer.getItemByPath(selectedParentPath);
+  const childProperties = selectedParentPath ? parent?.properties : parent;
   const keys = Object.keys(childProperties || {});
-  const index = selected?.name ? keys?.indexOf(selected?.name) : -1;
+  const index = endName ? keys?.indexOf(endName) : -1;
   return index;
 }
 
@@ -63,7 +58,11 @@ export const getConfigField = (id?: string) => {
   if (!id) return;
   const item = ConfigElementsMap[id];
   const configSettings = getConfigSettings(item?.id, item?.subId);
-  const field = deepMergeObject(item, getInitialValues(configSettings));
+  const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
+    const result = { ...pre, ...cur };
+    return result;
+  }, {});
+  const field = deepMergeObject(item, getInitialValues(expandSettings));
   return field;
 }
 
@@ -73,7 +72,11 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string, attrib
   let curValues = designer.getItemByPath(path, attributeName) || {};
   const configSettings = getConfigSettings(curValues?.id, curValues?.subId);
   // 从配置表单中获取初始属性
-  const initialValues = getInitialValues(configSettings);
+  const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
+    const result = { ...pre, ...cur };
+    return result;
+  }, {});
+  const initialValues = getInitialValues(expandSettings);
   const result = deepMergeObject(initialValues, curValues);
   return result;
 }
@@ -88,8 +91,8 @@ export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps,
     designer?.insertItemByIndex(data, index, parent);
   } else {
     if (data?.id) {
-      const dataKey = defaultGetId(data?.id);
-      const newData = { [dataKey]: data };
+      const newName = defaultGetId(data?.id);
+      const newData = { [newName]: data };
       designer?.insertItemByIndex(newData, index, parent);
     }
   }

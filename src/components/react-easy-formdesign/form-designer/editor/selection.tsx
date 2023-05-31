@@ -1,8 +1,6 @@
-import { joinFormPath } from '@/components/react-easy-formcore';
 import { insertDesignItem } from '../../utils/utils';
 import React, { CSSProperties } from 'react';
 import { useFormEdit } from '../../utils/hooks';
-import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
 import BaseSelection, { CommonSelectionProps } from './baseSelection';
 
@@ -23,21 +21,21 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     style,
     className,
     name,
-    parent,
-    formparent,
+    path,
     field,
+    parent,
     store: designer,
     form: designerForm,
     ...restProps
   } = props;
 
   const setEdit = useFormEdit();
-  const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
+  const currentPath = path;
 
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = currentPath && designer?.getItemByPath(currentPath);
-    designer && insertDesignItem(designer, newField, nextIndex, { path: parent });
+    designer && insertDesignItem(designer, newField, nextIndex, { path: parent?.path });
   }
 
   const deleteItem = () => {

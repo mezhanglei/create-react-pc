@@ -2,20 +2,18 @@ import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
 import { FormStoreContext, FormInitialValuesContext, FormOptionsContext, FormValuesContext } from './form-context';
-import { deepGet, joinFormPath, getValueFromEvent, getValuePropName, isFormNode, toArray } from './utils/utils';
+import { deepGet, getValueFromEvent, getValuePropName, toArray } from './utils/utils';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
 
 export type TriggerType = string;
 export interface FieldChangedParams {
-  parent: string;
   name?: string;
   value: any;
 }
 
 export interface ItemCoreProps {
-  name?: string | number;
-  parent?: string;
+  name?: string;
   ignore?: boolean;
   index?: number;
   trigger?: TriggerType | TriggerType[]; // 设置收集字段值变更的时机
@@ -43,7 +41,6 @@ export const ItemCore = (props: ItemCoreProps) => {
     valueProp = 'value',
     valueGetter = getValueFromEvent,
     valueSetter,
-    parent,
     errorClassName,
     onFieldsChange,
     onValuesChange,
@@ -53,9 +50,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     ignore,
   } = fieldProps;
 
-  const joinPath = joinFormPath(parent, name);
-  const formPath = ignore === true ? parent : joinPath;
-  const currentPath = (isEmpty(name) || ignore === true) ? undefined : joinPath;
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
   const contextValue = deepGet(contextValues, currentPath);
   const initValue = initialValue ?? deepGet(initialValues, currentPath);
   const storeValue = store && store.getFieldValue(currentPath);
@@ -99,7 +94,7 @@ export const ItemCore = (props: ItemCoreProps) => {
         // 设置值
         store.setFieldValue(currentPath, value, eventName);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ parent: parent, name: name, value: value }, store?.getFieldValue());
+        onFieldsChange && onFieldsChange({ name: currentPath, value: value }, store?.getFieldValue());
       }
     },
     [currentPath, store, valueGetter, onFieldsChange]
@@ -112,7 +107,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!(isEmpty(newValue) && isEmpty(oldValue))) {
-        onValuesChange && onValuesChange({ parent: parent, name: name, value: newValue }, store?.getFieldValue())
+        onValuesChange && onValuesChange({ name: currentPath, value: newValue }, store?.getFieldValue())
       }
     });
     return () => {
@@ -145,7 +140,7 @@ export const ItemCore = (props: ItemCoreProps) => {
 
   // 最底层才会绑定value和onChange
   const bindChild = (child: any) => {
-    if (!isEmpty(name) && isValidElement(child)) {
+    if (!isEmpty(currentPath) && isValidElement(child)) {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { className } = childProps || {};
@@ -168,22 +163,16 @@ export const ItemCore = (props: ItemCoreProps) => {
   // 渲染子元素
   const getChildren = (children: any): any => {
     return React.Children.map(children, (child: any) => {
-      if (isFormNode(child)) {
+      const nestChildren = child?.props?.children;
+      const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
+      const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
+      const childType = child?.type;
+      if (nestChildren && (dataType === 'ignore' || typeof childType === 'string') && !dataName) {
         return cloneElement(child, {
-          parent: formPath
+          children: getChildren(nestChildren)
         });
       } else {
-        const childs = child?.props?.children;
-        const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
-        const dataName = child?.props?.['data-name']; // 标记的符合value/onChange props的控件
-        const childType = child?.type;
-        if (childs && (dataType === 'ignore' || typeof childType === 'string') && !dataName) {
-          return cloneElement(child, {
-            children: getChildren(childs)
-          });
-        } else {
-          return bindChild(child);
-        }
+        return bindChild(child);
       }
     });
   };

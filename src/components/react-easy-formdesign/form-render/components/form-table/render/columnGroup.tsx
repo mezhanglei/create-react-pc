@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { ColumnType } from './formTable';
+import { CustomColumnType } from './formTable';
 
 // 列的设置
-export const ColumnGroup: React.FC<{ columns: ColumnType[] }> = ({ columns }) => {
+export const ColumnGroup: React.FC<{ columns: CustomColumnType[] }> = ({ columns }) => {
   const columnWidths = columns.map((ele) => ele.width).join("-");
   const cols = useMemo(() => {
     let cols: React.ReactElement[] = [];

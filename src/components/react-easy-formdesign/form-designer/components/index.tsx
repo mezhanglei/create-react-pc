@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
-import { message, Tabs } from 'antd';
+import { message } from 'antd';
 import './index.less';
 import { getConfigField, getSelectedIndex, insertDesignItem } from '../../utils/utils';
 import ComponentList from './list';
@@ -29,13 +29,13 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     if (attributeName) return;
     const newIndex = getSelectedIndex(designer, selected) + 1; // 插入位置序号
     const field = getConfigField(item?.id);
-    const parentField = designer.getItemByPath(selectedParent);
+    const parentField = designer.getItemByPath(selectedParent?.path);
     const parentIncludes = parentField?.includes;
     if (parentIncludes && !parentIncludes.includes(field.id)) {
       message.warning("当前不可插入")
       return;
     };
-    insertDesignItem(designer, field, newIndex, { path: selectedParent });
+    insertDesignItem(designer, field, newIndex, { path: selectedParent?.path });
   }
 
   return (

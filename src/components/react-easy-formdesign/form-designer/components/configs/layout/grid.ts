@@ -3,13 +3,11 @@ export default {
   icon: 'grid',
   componentLabel: '栅格布局',
   ignore: true,
-  component: null,
   type: 'Grid.Row',
   includes: ['GridCol'],
   properties: {
     col1: {
       id: 'GridCol',
-      component: null,
       type: 'Grid.Col',
       props: { span: 12 },
       ignore: true,
@@ -18,7 +16,6 @@ export default {
     },
     col2: {
       id: 'GridCol',
-      component: null,
       type: 'Grid.Col',
       props: { span: 12 },
       ignore: true,

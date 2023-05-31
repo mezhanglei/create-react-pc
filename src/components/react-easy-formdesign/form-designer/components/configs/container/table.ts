@@ -10,7 +10,13 @@ export default {
       subId: 'Input',
       name: 'ss',
       type: 'Input',
-      label: '111'
+      label: 'ss'
+    }, {
+      id: "FormTableCol",
+      subId: 'Input',
+      name: 'dd',
+      type: 'Input',
+      label: 'dd'
     }]
   }
 }

@@ -11,16 +11,10 @@ export interface TableDndProps extends GeneratePrams<ELementProps> {
 
 // 表格拖放
 function TableDnd(props: TableDndProps, ref: any) {
-  const { children, store, ...rest } = props;
-
-  const {
-    name,
-    parent,
-    field
-  } = rest;
+  const { children, store, path, field, ...rest } = props;
 
   const attributeName = `props.columns`;
-  const currentPath = joinFormPath(parent, name);
+  const currentPath = path;
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;

@@ -21,6 +21,7 @@ import GridColSettings from './layout/grid-col';
 // 容器组件
 import FormTableColSettings from './container/table-col';
 import { filterObject } from "@/utils/object";
+import { PropertiesData } from "@/components/react-easy-formrender";
 // 业务组件
 
 // 根据id获取配置
@@ -68,7 +69,7 @@ const getConfigSettingsById = (id?: string) => {
   }
 }
 
-const getConfigSettings = (id?: string, subId?: string): any => {
+const getConfigSettings = (id?: string, subId?: string): { [key: string]: PropertiesData } | undefined => {
   if (!id) return {};
   switch (id) {
     case "FormTableCol":

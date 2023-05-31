@@ -22,7 +22,7 @@ const prefixCls = `${DesignprefixCls}-editor`;
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const { designer, designerForm, settingsForm, properties, selectedPath } = useFormDesign();
+  const { designer, designerForm, settingsForm, selected, properties } = useFormDesign();
   const setEdit = useFormEdit();
 
   const {
@@ -33,8 +33,11 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
   const [plat, setPlat] = useState<PlatContainerProps['plat']>('pc');
-  const PlatOptions = [{ label: 'PC', value: 'pc' }, { label: 'Pad', value: 'pad' }, { label: 'Phone', value: 'phone' },]
-
+  const PlatOptions = [
+    { label: 'PC', value: 'pc' },
+    { label: 'Pad', value: 'pad' },
+    { label: 'Phone', value: 'phone' }
+  ];
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
     setEdit({ properties: newData });
@@ -43,9 +46,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
     // 回填setting表单的intialValue选项
-    settingsForm?.setFieldValue('initialValue', value);
+    // settingsForm?.setFieldValue('initialValue', value);
     // 回填designer的initialValue值
-    selectedPath && designer?.updateItemByPath({ initialValue: value }, selectedPath);
+    // selectedPath && designer?.updateItemByPath({ initialValue: value }, selectedPath);
   }
 
   const importJson = () => {
@@ -124,12 +127,12 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 };
 
 // 编辑区默认的选中框渲染
-const renderItem: RenderFormProps['renderList'] = (params) => {
+const renderItem: RenderFormProps['renderItem'] = (params) => {
   const { children } = params;
-  const isControl = params?.field?.component !== null ? true : false;
+  const isControl = params?.field?.properties ? false : true;
   // 只有输入控件才需要默认添加选区
   if (isControl) {
-    return <ComponentSelection {...params} />
+    return <ComponentSelection {...params} data-type="ignore" />
   }
   return children;
 }

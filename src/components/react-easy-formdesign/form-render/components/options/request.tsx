@@ -57,7 +57,8 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
     ...rest
   } = props;
 
-  const { selectedPath, designer } = useFormDesign();
+  const { selected, designer } = useFormDesign();
+  const selectedPath = selected?.path;
   const requestForm = useFormStore();
   const [properties, setProperties] = useState({
     url: {

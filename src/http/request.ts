@@ -1,7 +1,7 @@
 import CreateRequest from './createRequest';
 import Loader from "@/components/loader/index";
 import { getToken, loginOut } from "@/core/session";
-import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS_MAP } from './config';
+import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } from './config';
 import { message } from 'antd';
 
 // 请求体结构
@@ -25,17 +25,20 @@ const request = CreateRequest({
   handleResult: (data: ResponseData) => {
     const code = data?.code;
     const msg = data?.message;
-    if (code == HTTP_CODE.LOGINFAIL) {
-      loginOut();
-    }
     if (code != HTTP_CODE.SUCCESS && code) {
-      const msgRes = HTTP_CODE_MAP[code] || msg
+      const msgRes = msg || HTTP_CODE_MAP[code]
       msgRes && message.info(msgRes);
     }
   },
   // 处理状态码
   handleStatus: (status, msg) => {
-    const msgRes = HTTP_STATUS_MAP[status] || msg
+    if (status == HTTP_STATUS.NOLOGIN) {
+      loginOut();
+    }
+    if (status == HTTP_STATUS.AUTH) {
+      // loginOut();
+    }
+    const msgRes = msg || HTTP_STATUS_MAP[status]
     msgRes && message.info(msgRes);
   }
 });

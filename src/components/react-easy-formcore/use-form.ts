@@ -47,11 +47,11 @@ export function useFormValues<T = unknown>(store: FormStore, path?: string | str
     const isChar = typeof path == 'string' || typeof path == 'number';
     const pathList = isChar ? [path] : (path instanceof Array ? path : [])
     for (let i = 0; i < pathList?.length; i++) {
-      const item = pathList[i]
-      queue?.push(store.subscribeFormGlobal(item, (newValue) => {
-        if (typeof item == 'string' || typeof item == 'number') {
+      const pathKey = pathList[i]
+      queue?.push(store.subscribeFormGlobal(pathKey, (newValue) => {
+        if (typeof pathKey == 'string' || typeof pathKey == 'number') {
           const oldValues = store.getFieldValue(path);
-          setFomValues(() => ({ ...oldValues, [item]: newValue }));
+          setFomValues(() => ({ ...oldValues, [pathKey]: newValue }));
         }
       }))
     }

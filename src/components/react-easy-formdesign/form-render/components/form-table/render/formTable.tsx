@@ -1,28 +1,19 @@
-import React, { CSSProperties, useCallback } from "react";
-import classnames from "classnames";
-import './formTable.less';
-import { ColumnGroup } from "./columnGroup";
+import React, { CSSProperties, useMemo } from "react";
+import { Table } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableProps } from "..";
-import { TableBody, TableCell, TableHead, TableRow } from "./components";
-import { Form } from "../../..";
+import { TableBody, TableCell, TableRow } from "./components";
+import { Form, useFormStore } from "../../..";
+import classNames from 'classnames';
+import './formTable.less';
+import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
 
-const prefix = "form-table";
-export const Classes = {
-  Table: `${prefix}`,
-  TableBody: `${prefix}-body`,
-  TableRow: `${prefix}-row`,
-  TableHead: `${prefix}-head`,
-  TableCell: `${prefix}-cell`,
-};
-
-export interface ColumnType {
+export interface CustomColumnType {
   key: string;
   name: string;
   label: string;
-  width?: React.CSSProperties["width"];
-  align?: React.CSSProperties["textAlign"];
   type?: string;
+  props?: any;
   render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 
@@ -38,7 +29,7 @@ export type TableBodyOptions = {
 }
 
 export type TableOptions = {
-  columns: ColumnType[];
+  columns: CustomColumnType[];
 }
 
 export interface FormTableProps extends TableOptions, TableBodyOptions, TableProps {
@@ -47,75 +38,83 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
-const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
-  columns = [],
-  dataSource = [{}],
-  rowKey,
-  className,
-  style = {},
-  tableLayout,
-  children,
-  store,
-  name,
-  parent,
-  field,
-  ...rest
-}, ref) => {
-
-  const getRowKey = useCallback(
-    (record: { [x: string]: any }, rowIndex: number) => {
-      if (typeof rowKey === "function") {
-        return rowKey(record);
-      }
-      let key = typeof rowKey === "string" ? rowKey : "key";
-      return record[key] || rowIndex;
-    },
-    [rowKey]
-  );
-
-  const renderCol = (record: any, rowIndex: number) => {
-    return columns.map((column, colIndex) => {
-      const { render, name } = column || {};
-      const columnInstance = store && store.componentInstance(column);
-      const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
-      return (
-        <Form.Item component={TableCell} name={name} key={name}>
-          {child}
-        </Form.Item>
-      );
-    })
-  };
-
-  const childs = (
-    <Form.List component={TableBody}>
-      {dataSource?.map((record, rowIndex) => {
-        const cols = renderCol(record, rowIndex);
-        return (
-          <Form.Item component={TableRow} key={getRowKey(record, rowIndex)}>
-            {cols}
-          </Form.Item>
-        )
-      })}
-    </Form.List>
-  );
-  console.log(rest, 222)
+const CustomTableRow = (props: any) => {
+  const { children, ...restProps } = props;
   return (
-    <table
-      className={classnames([Classes.Table, className])}
-      style={{ tableLayout: tableLayout, ...style }}
-      {...pickAttrs(rest)}
-      ref={ref}
-    >
-      <ColumnGroup columns={columns} />
-      <TableHead>
-        <TableRow>
-          {columns.map((column, colIndex) => {
-            return <TableCell key={column.key}>{column.label}</TableCell>
-          })}
-        </TableRow>
-      </TableHead>
-      {children ?? childs}
-    </table>
+    <Form.Item component={TableRow} {...restProps}>
+      {children}
+    </Form.Item>
+  );
+}
+
+const CustomTableCell = (props: any) => {
+  const { name, store, type, props: typeProps, children, ...restProps } = props;
+  const columnInstance = store && store.componentInstance({ type, props: typeProps });
+  return (
+    <Form.Item component={TableCell} name={name} key={name} {...restProps}>
+      {columnInstance || children}
+    </Form.Item>
+  );
+}
+
+const CustomTableBody = (props: any) => {
+  const { children, ...restProps } = props;
+  return (
+    <Form.List component={TableBody} {...restProps}>
+      {children}
+    </Form.List>
+  )
+}
+
+const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref) => {
+  const {
+    className,
+    columns = [],
+    dataSource = [{}],
+    store,
+    name,
+    path,
+    field,
+    parent,
+    value,
+    onChange,
+    ...rest
+  } = props
+
+  const newColumns = useMemo(() => columns?.map((col) => {
+    const { name, label, type, props: typeProps, ...restCol } = col;
+    return {
+      ...restCol,
+      dataIndex: name,
+      title: label,
+      onCell: (record: unknown) => ({
+        record,
+        name: name,
+        title: label,
+        store: store,
+        type: type,
+        props: typeProps,
+      }),
+    }
+  }), [columns]);
+
+  const form = useFormStore();
+
+  const onFieldsChange: ELementProps['onFieldsChange'] = (_, values) => {
+    onChange && onChange(values);
+  }
+
+  return (
+    <Form store={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
+      <Table
+        className={classNames('form-table', className)}
+        columns={newColumns}
+        dataSource={dataSource}
+        ref={ref}
+        rowKey="key"
+        components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }}
+        {...pickAttrs(rest)} />
+    </Form>
   );
 });
 

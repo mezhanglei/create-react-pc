@@ -1,6 +1,4 @@
-import { joinFormPath } from '@/components/react-easy-formcore';
 import React from 'react';
-import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
@@ -22,15 +20,15 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     style,
     className,
     name,
-    parent,
-    formparent,
+    path,
     field,
+    parent,
     store: designer,
     form: designerForm,
     ...restProps
   } = props;
 
-  const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
+  const currentPath = path;
   const setEdit = useFormEdit();
 
   const addCol = () => {
@@ -38,7 +36,6 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
     const newField = {
       id: 'gridCol',
-      component: null,
       type: 'Grid.Col',
       props: { span: 12 },
       ignore: true,

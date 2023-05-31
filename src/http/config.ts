@@ -15,7 +15,7 @@ export enum MESSAGE {
 
 // 返回status
 export enum HTTP_STATUS {
-  LOGINFAIL = 401,
+  NOLOGIN = 401,
   AUTH = 403,
   NONE = 404,
   WAY_ERROR = 405,
@@ -27,12 +27,12 @@ export enum HTTP_STATUS {
 }
 // status状态码
 export const HTTP_STATUS_MAP = {
-  401: "身份验证失败",
-  403: "无访问权限",
+  401: "请登录账号",
+  403: "账号权限已过期",
   404: "资源不存在",
   405: "请求方法错误",
   408: "请求超时",
-  502: "网络连接错误，请稍后再试",
+  502: "网关错误，请稍后再试",
   503: "服务不可用",
   504: "网关超时",
   505: "http版本不支持"
@@ -41,11 +41,11 @@ export const HTTP_STATUS_MAP = {
 // 返回code
 export enum HTTP_CODE {
   SUCCESS = 200,
-  LOGINFAIL = 401,
+  NOLOGIN = 401,
   AUTH = 403
 }
 export const HTTP_CODE_MAP = {
-  401: "请先登录",
+  401: "请登录账号",
   403: "无访问权限"
 };
 

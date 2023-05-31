@@ -2,16 +2,13 @@ export default {
   id: 'Table',
   icon: 'table',
   componentLabel: '表格布局',
-  component: null,
   type: 'Table',
   ignore: true,
   properties: [
     {
-      component: null,
       type: 'Table.Row',
       properties: {
         td1: {
-          component: null,
           type: 'Table.Cell',
           ignore: true,
           properties: {
@@ -23,7 +20,6 @@ export default {
           }
         },
         td2: {
-          component: null,
           type: 'Table.Cell',
           ignore: true,
           properties: {

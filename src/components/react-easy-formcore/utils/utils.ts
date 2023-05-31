@@ -49,14 +49,6 @@ export function joinFormPath(...args: Array<any>) {
   return result;
 };
 
-// 是否为表单节点
-export const isFormNode = (child: any) => {
-  const displayName = child?.type?.displayName;
-  const formFields = ['Form.Item', 'Form.List', 'ListCore', 'ItemCore'];
-  const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
-  return formFields?.includes(displayName) && dataType !== 'ignore'
-};
-
 // 是否触发校验规则
 export const validateTriggerCondition = (eventName?: TriggerType | boolean, validateTrigger?: TriggerType | TriggerType[],) => {
   // 不设置validateTrigger允许触发
@@ -77,4 +69,3 @@ export function toArray<T>(list: T | T[]): T[] {
   }
   return Array.isArray(list) ? list : [list];
 }
-

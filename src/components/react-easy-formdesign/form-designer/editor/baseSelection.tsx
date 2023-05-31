@@ -5,7 +5,6 @@ import { GeneratePrams } from '../../form-render';
 import './baseSelection.less';
 import { ELementProps } from '../components/configs';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
-import { isEmpty } from '@/utils/type';
 import pickAttrs from '@/utils/pickAttrs';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
@@ -25,8 +24,8 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     children,
     className,
     name,
+    path,
     parent,
-    formparent,
     attributeName,
     field,
     store: designer,
@@ -40,19 +39,20 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   const [isOver, setIsOver] = useState<boolean>(false);
   const setEdit = useFormEdit();
-  const { selected, selectedPath } = useFormDesign();
-  const completePath = isEmpty(name) ? attributeName : joinFormPath(parent, name, attributeName) as string;
-  const isSelected = completePath ? completePath === joinFormPath(selectedPath, selected?.attributeName) : false;
+  const { selected } = useFormDesign();
+  const completePath = joinFormPath(path, attributeName) as string;
+  const currentPath = joinFormPath(selected.path, selected?.attributeName);
+  const isSelected = completePath ? completePath === currentPath : false;
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
     setEdit({
       selected: {
-        name: name as string,
+        name: name,
+        path: path,
         attributeName: attributeName,
+        field: field,
         parent: parent,
-        formparent: formparent,
-        field: field
       }
     })
   }

@@ -1,6 +1,4 @@
-import { joinFormPath } from '@/components/react-easy-formcore';
 import React from 'react';
-import { isEmpty } from '@/utils/type';
 import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
@@ -24,9 +22,9 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     style,
     className,
     name,
-    parent,
-    formparent,
+    path,
     field,
+    parent,
     store: designer,
     form: designerForm,
     colIndex,
@@ -37,7 +35,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const columns = field?.props?.columns || [];
   const columnsPath = `props.columns`;
   const attributeName = `${columnsPath}[${colIndex}]`;
-  const currentPath = isEmpty(name) ? undefined : joinFormPath(parent, name) as string;
+  const currentPath = path;
   const setEdit = useFormEdit();
 
   const addColumn = () => {

@@ -1,11 +1,12 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
-import { Form, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
+import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
 import { updateDesignerItem, getDesignerItem, isNoSelected, setDesignerFormValue, getNameSettings } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
 import getConfigSettings from '../components/settings';
+import { getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export interface SelectedSettingsProps {
   className?: string
@@ -21,7 +22,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   } = props;
 
   const setEdit = useFormEdit();
-  const { selected, selectedPath, selectedFormPath, designer, designerForm } = useFormDesign();
+  const { selected, designer, designerForm } = useFormDesign();
+  const selectedPath = selected?.path;
+  const selectedName = selected?.name;
   const attributeName = selected?.attributeName;
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
@@ -43,11 +46,13 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     updateDesignerItem(designer, settingsValues, selectedPath, attributeName);
     // 非属性节点
     if (!attributeName) {
-      setDesignerFormValue(designerForm, selectedFormPath, settingsValues?.initialValue);
+      setDesignerFormValue(designerForm, selectedName, settingsValues?.initialValue);
       // 当前字段名更改则同步更改selected
       const { name } = settingsValues;
+      const joinName = joinFormPath(selected?.parent?.name, name);
+      const joinPath = joinFormPath(selected?.parent?.path, name);
       if (name) {
-        setEdit({ selected: { ...selected, name } });
+        setEdit({ selected: { ...selected, name: joinName, path: joinPath } });
       }
     }
   }
@@ -65,19 +70,19 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const setSettingsFormValue = (path?: string, attributeName?: string) => {
     if (isNoSelected(path)) return;
     const curSettingsValues = getDesignerItem(designer, path, attributeName);
-    form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: selected?.name }); // 回填属性区域数据
+    const endName = getPathEnd(selectedName);
+    form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: endName }); // 回填属性区域数据
     updateDesignerItem(designer, curSettingsValues, path, attributeName); // 同步编辑区域
     // 回填编辑区默认值
     if (!attributeName) {
-      setDesignerFormValue(designerForm, selectedFormPath, curSettingsValues?.initialValue);
+      setDesignerFormValue(designerForm, selectedName, curSettingsValues?.initialValue);
     }
   }
 
   const renderCommonList = () => {
     if (!configSettings) return;
     return (
-      Object.entries(configSettings)?.map((item) => {
-        const [title, settings] = item;
+      Object.entries(configSettings)?.map(([title, settings]) => {
         return (
           <CustomCollapse header={title} key={title} isOpened>
             <RenderFormChildren properties={settings} />

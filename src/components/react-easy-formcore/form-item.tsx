@@ -1,11 +1,9 @@
 import React, { useContext, CSSProperties, useMemo } from 'react';
 import { FormStoreContext, FormOptionsContext } from './form-context';
-import { joinFormPath } from './utils/utils';
 import { FormStore } from './form-store';
 import { useFormError } from './use-form';
 import { Item, ItemProps } from './components/item';
 import { ItemCore, ItemCoreProps } from './item-core';
-import { isEmpty } from '@/utils/type';
 
 export type FormItemProps<T = ItemProps> = T & ItemCoreProps & {
   className?: string;
@@ -21,7 +19,6 @@ export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
   const { children, ...fieldProps } = mergeProps;
   const {
     name,
-    parent,
     index,
     trigger,
     validateTrigger,
@@ -38,8 +35,7 @@ export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
     ...rest
   } = fieldProps;
 
-  const currentPath = (isEmpty(name) || ignore) ? undefined : joinFormPath(parent, name);
-  const [error] = useFormError(store, currentPath);
+  const [error] = useFormError(store, name);
   const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
   const required = isHaveRequired && ignore !== true ? true : rest?.required;
   const FieldComponent = component;
@@ -48,7 +44,6 @@ export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
     <ItemCore
       ignore={ignore}
       name={name}
-      parent={parent}
       index={index}
       trigger={trigger}
       validateTrigger={validateTrigger}

@@ -11,14 +11,9 @@ export interface ControlDndProps extends GeneratePrams<ELementProps> {
 
 // 控件的拖放控制
 function ControlDnd(props: ControlDndProps, ref: any) {
-  const { children, store, ...rest } = props;
+  const { children, store, path } = props;
 
-  const {
-    name,
-    parent
-  } = rest;
-
-  const currentPath = joinFormPath(parent, name);
+  const currentPath = path;
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;

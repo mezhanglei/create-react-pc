@@ -83,10 +83,10 @@ export class FormRenderStore {
   }
 
   // 更新节点的键
-  updateNameByPath = (newName?: string, path?: string) => {
+  updateNameByPath = (endName?: string, path?: string) => {
     const cloneProperties = this.getProperties();
     if (cloneProperties) {
-      let newProperties = updateName(cloneProperties, newName, path);
+      let newProperties = updateName(cloneProperties, endName, path);
       this.setProperties(newProperties);
     }
   }

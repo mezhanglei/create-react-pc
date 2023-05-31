@@ -38,7 +38,6 @@ const operationSettings = {
   props: {
     compact: true,
     inline: true,
-    component: null,
     properties: {
       showIcon: {
         type: 'Checkbox',

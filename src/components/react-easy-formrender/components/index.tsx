@@ -1,3 +1,4 @@
+import { Form } from "@/components/react-easy-formcore";
 import { AddBtn, DeleteBtn } from "./btn";
 import { GridCol, GridRow } from "./grid";
 
@@ -6,5 +7,7 @@ export const defaultComponents = {
   'row': GridRow,
   'col': GridCol,
   'add': AddBtn,
-  'delete': DeleteBtn
+  'delete': DeleteBtn,
+  'Form.Item': Form.Item,
+  'Form.List': Form.List,
 };

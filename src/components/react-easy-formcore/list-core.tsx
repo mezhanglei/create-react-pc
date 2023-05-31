@@ -1,11 +1,11 @@
+import { isEmpty } from '@/utils/type';
 import React, { cloneElement, useContext } from 'react';
 import { FormOptionsContext } from './form-context';
-import { joinFormPath, isFormNode } from './utils/utils';
+import { joinFormPath } from './utils/utils';
 import { FormRule } from './validator';
 
 export interface ListCoreProps {
-  name?: string | number;
-  parent?: string;
+  name?: string;
   rules?: FormRule[];
   initialValue?: any[];
   ignore?: boolean;
@@ -19,28 +19,26 @@ export const ListCore = (props: ListCoreProps) => {
   const {
     name,
     rules,
-    parent,
     initialValue,
     ignore
   } = fieldProps;
 
-  const joinPath = joinFormPath(parent, name);
-  const formPath = ignore === true ? parent : joinPath;
+  const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
 
   // 渲染子元素
   let index = 0;
   const getChildren = (children: any): any => {
     return React.Children.map(children, (child: any) => {
-      if (isFormNode(child)) {
-        return renderFormItem(child);
+      const nestChildren = child?.props?.children;
+      const dataType = child?.props?.['data-type'];
+      const childType = child?.type;
+      if (nestChildren && (dataType === 'ignore' || typeof childType === 'string')) {
+        return cloneElement(child, {
+          children: getChildren(nestChildren)
+        });
       } else {
-        const childs = child?.props?.children;
-        const dataType = child?.props?.['data-type']; // 标记的需要穿透的外层容器
-        const childType = child?.type;
-        if (childs && (dataType === 'ignore' || typeof childType === 'string')) {
-          return cloneElement(child, {
-            children: getChildren(childs)
-          });
+        if (React.isValidElement(child)) {
+          return renderFormItem(child);
         } else {
           return child;
         }
@@ -54,9 +52,9 @@ export const ListCore = (props: ListCoreProps) => {
     index++;
     const childRules = rules instanceof Array ? rules?.concat(child?.props?.rules) : child?.props?.rules;
     const childValue = child?.props?.initialValue ?? initialValue?.[currentIndex];
+    const childname = joinFormPath(currentPath, currentIndex, child?.props?.name);
     return child && cloneElement(child, {
-      parent: formPath,
-      name: currentIndex,
+      name: childname,
       rules: childRules,
       initialValue: childValue
     });

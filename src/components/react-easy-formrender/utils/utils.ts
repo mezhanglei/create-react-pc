@@ -386,7 +386,7 @@ export const setExpandComponents = (properties?: PropertiesData): { [key: string
   return componentsMap;
 }
 
-// 解析组件
+// 解析组件声明
 export const parseFromField = (target: FieldUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
   if (target === undefined) return;
   if (isValidChildren(target)) return null;
