@@ -23,12 +23,6 @@ export interface ColumnType {
   render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 
-export type UnionComponent<P> =
-  | React.ComponentType<P>
-  | React.ForwardRefExoticComponent<P>
-  | React.FC<P>
-  | keyof React.ReactHTML;
-
 export type TableBodyOptions = {
   dataSource?: { [x: string]: any }[];
   rowKey?: string | ((record: { [x: string]: any }) => string);

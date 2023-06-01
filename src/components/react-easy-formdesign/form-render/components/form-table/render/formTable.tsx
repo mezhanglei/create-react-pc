@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo } from "react";
+import React, { CSSProperties, useEffect, useMemo } from "react";
 import { Button, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
@@ -6,6 +6,8 @@ import { Form, GeneratePrams, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
+import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
+import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 
 export interface CustomColumnType {
   key: string;
@@ -14,12 +16,6 @@ export interface CustomColumnType {
   type?: string;
   props?: any;
 }
-
-export type UnionComponent<P> =
-  | React.ComponentType<P>
-  | React.ForwardRefExoticComponent<P>
-  | React.FC<P>
-  | keyof React.ReactHTML;
 
 export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
   value?: any;
@@ -43,7 +39,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   const {
     className,
     columns = [],
-    dataSource = [{}],
+    dataSource = [],
     formrender,
     name,
     path,
@@ -54,6 +50,13 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     onChange,
     ...rest
   } = props
+
+  const {
+    dataSource: tableData,
+    setDataSource,
+    addItem,
+    deleteItem
+  } = useTableData<any>(dataSource, onChange);
 
   const newColumns = useMemo(() => columns?.map((col) => {
     const { name, label, type, props: typeProps, ...restCol } = col;
@@ -78,19 +81,24 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     onChange && onChange(values);
   }
 
+  const addBtn = () => {
+    addItem([{ key: defaultGetId('row') }])
+  }
+
   return (
     <Form form={form} tagName="div" initialValues={value} onFieldsChange={onFieldsChange}>
       <Table
         className={classNames('form-table', className)}
         columns={newColumns}
-        dataSource={dataSource}
+        dataSource={tableData}
         ref={ref}
         rowKey="key"
+        tableLayout="fixed"
         components={{ body: { cell: CustomTableCell } }}
         {...pickAttrs(rest)}
         pagination={pagination}
       />
-      <Button type="link">+添加</Button>
+      <Button type="link" onClick={addBtn}>+添加</Button>
     </Form>
   );
 });

@@ -27,12 +27,6 @@ export interface CustomColumnType {
   render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 
-export type UnionComponent<P> =
-  | React.ComponentType<P>
-  | React.ForwardRefExoticComponent<P>
-  | React.FC<P>
-  | keyof React.ReactHTML;
-
 export interface FormTableProps extends TableProps {
   columns: CustomColumnType[];
   dataSource?: { [x: string]: any }[];

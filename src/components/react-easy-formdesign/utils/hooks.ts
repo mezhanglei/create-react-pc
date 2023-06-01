@@ -30,7 +30,7 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
   const dataSourceRef = useRef<T[]>(intialValue || []);
 
   const setDataSource = (data: T[]) => {
-    if (typeof data) {
+    if (data instanceof Array) {
       setData(data);
       dataSourceRef.current = data;
     }
