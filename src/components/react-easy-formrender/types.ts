@@ -31,6 +31,8 @@ export interface GenerateFormNodeProps extends FormComponent, FormItemProps {
 
 // 表单属性对象
 export type PropertiesData = { [name: string]: FormNodeProps } | FormNodeProps[]
+// render函数
+export type CustomRenderType = (params: GeneratePrams<any> & { children?: any }) => any;
 
 // 表单域(支持字符串表达式的表单域)
 export type FormNodeProps = {
@@ -51,9 +53,9 @@ export interface RenderFormChildrenProps {
   inside?: CustomUnionType;
   properties?: PropertiesData; // 渲染数据
   // 自定义渲染列表组件
-  renderList?: (params: GeneratePrams<any>) => any;
+  renderList?: CustomRenderType;
   // 自定义渲染子表单域
-  renderItem?: (params: GeneratePrams<any>) => any;
+  renderItem?: CustomRenderType;
   // 渲染数据回调函数
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
   formrender?: FormRenderStore
@@ -72,5 +74,4 @@ export interface GeneratePrams<T = {}> {
   parent?: { name?: string; path?: string, field?: T & GenerateFormNodeProps; };
   formrender?: FormRenderStore;
   form?: FormStore;
-  children?: any
 };

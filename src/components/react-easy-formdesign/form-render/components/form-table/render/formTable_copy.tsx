@@ -33,19 +33,13 @@ export type UnionComponent<P> =
   | React.FC<P>
   | keyof React.ReactHTML;
 
-export type TableBodyOptions = {
+export interface FormTableProps extends TableProps {
+  columns: CustomColumnType[];
   dataSource?: { [x: string]: any }[];
   rowKey?: string | ((record: { [x: string]: any }) => string);
-}
-
-export type TableOptions = {
-  columns: CustomColumnType[];
-}
-
-export interface FormTableProps extends TableOptions, TableBodyOptions, TableProps {
+  tableLayout?: React.CSSProperties["tableLayout"];
   className?: string;
   style?: CSSProperties;
-  tableLayout?: React.CSSProperties["tableLayout"];
 }
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({

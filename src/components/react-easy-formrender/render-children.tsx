@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FormNodeProps, RenderFormChildrenProps, GeneratePrams, PropertiesData, GenerateFormNodeProps, CustomUnionType } from './types';
+import { FormNodeProps, RenderFormChildrenProps, GeneratePrams, PropertiesData, GenerateFormNodeProps, CustomUnionType, CustomRenderType } from './types';
 import { defaultComponents } from './components';
 import { Form, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './use-formrender';
@@ -238,7 +238,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const ignoreTag = { "data-type": "ignore" }
   // 目标套上其他组件
-  const withSide = (children: any, side?: CustomUnionType, render?: (params: GeneratePrams<any> & { key?: string }) => any, commonProps?: GeneratePrams) => {
+  const withSide = (children: any, side?: CustomUnionType, render?: CustomRenderType, commonProps?: GeneratePrams) => {
     const keyProps = { key: commonProps?.path, };
     const childs = typeof render === 'function' ? render?.({ ...commonProps, ...keyProps, children }) : (React.isValidElement(children) ? React.cloneElement(children, keyProps) : children);
     const sideInstance = side && formRenderStore.componentInstance(side, { ...commonProps, ...ignoreTag });

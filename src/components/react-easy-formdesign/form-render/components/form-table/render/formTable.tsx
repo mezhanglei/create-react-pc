@@ -1,9 +1,8 @@
 import React, { CSSProperties, useMemo } from "react";
-import { Table } from "antd";
+import { Button, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
-import { TableProps } from "..";
 import { TableCell } from "./components";
-import { Form, joinFormPath, useFormStore } from "../../..";
+import { Form, GeneratePrams, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
@@ -22,19 +21,12 @@ export type UnionComponent<P> =
   | React.FC<P>
   | keyof React.ReactHTML;
 
-export type TableBodyOptions = {
-  dataSource?: { [x: string]: any }[];
-  rowKey?: string | ((record: { [x: string]: any }) => string);
-}
-
-export type TableOptions = {
+export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
+  value?: any;
+  onChange?: (val: any) => void;
   columns: CustomColumnType[];
-}
-
-export interface FormTableProps extends TableOptions, TableBodyOptions, TableProps {
   className?: string;
   style?: CSSProperties;
-  tableLayout?: React.CSSProperties["tableLayout"];
 }
 
 const CustomTableCell = (props: any) => {
@@ -58,6 +50,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     field,
     parent,
     value,
+    pagination = false,
     onChange,
     ...rest
   } = props
@@ -95,7 +88,9 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         rowKey="key"
         components={{ body: { cell: CustomTableCell } }}
         {...pickAttrs(rest)}
+        pagination={pagination}
       />
+      <Button type="link">+添加</Button>
     </Form>
   );
 });
