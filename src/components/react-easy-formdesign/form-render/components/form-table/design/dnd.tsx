@@ -3,7 +3,7 @@ import React from 'react';
 import './dnd.less';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
 import { defaultGetId, getConfigField, insertDesignItem, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
-import { GeneratePrams, joinFormPath } from '../../..';
+import { GeneratePrams } from '../../..';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -11,7 +11,7 @@ export interface TableDndProps extends GeneratePrams<ELementProps> {
 
 // 表格拖放
 function TableDnd(props: TableDndProps, ref: any) {
-  const { children, store, path, field, ...rest } = props;
+  const { children, formrender, path, field, ...rest } = props;
 
   const attributeName = `props.columns`;
   const currentPath = path;
@@ -25,7 +25,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const columns = field?.props?.columns || [];
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
-    store && updateDesignerItem(store, newColumns, currentPath, attributeName);
+    formrender && updateDesignerItem(formrender, newColumns, currentPath, attributeName);
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -49,8 +49,8 @@ function TableDnd(props: TableDndProps, ref: any) {
       formField = getConfigField(elementId);
       // 从表单节点中插入
     } else {
-      formField = store && store.getItemByIndex(fromIndex, { path: fromCollection?.path });
-      store && store.setItemByIndex(undefined, fromIndex, fromCollection?.path);
+      formField = formrender && formrender.getItemByIndex(fromIndex, { path: fromCollection?.path });
+      formrender && formrender.setItemByIndex(undefined, fromIndex, fromCollection?.path);
     }
     // 拼接column
     const newColumn = {
@@ -58,7 +58,7 @@ function TableDnd(props: TableDndProps, ref: any) {
       showLabel: false,
       name: defaultGetId(formField.id)
     }
-    store && insertDesignItem(store, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
+    formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
   }
 
   const disabledDrop: DndCondition = (param) => {

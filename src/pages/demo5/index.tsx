@@ -1,5 +1,3 @@
-// export default demo5;
-// import { Button } from 'antd';
 import React, { useState } from 'react';
 import RenderForm, { RenderFormChildren, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
 import { Form, useFormStore } from '@/components/react-easy-formcore';
@@ -42,26 +40,8 @@ export default function Demo5(props) {
       props: {}
     },
     name3: {
-      label: "数组",
-      footer: {
-        type: 'add',
-        props: {
-          item: {
-            rules: [{ required: true, message: 'name3[0]空了' }],
-            suffix: { type: 'delete' },
-            type: 'Select',
-            props: {
-              labelInValue: true,
-              style: { width: '100%' },
-              children: [
-                { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
-                { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
-              ]
-            }
-          }
-        }
-      },
       properties: [{
+        label: 'name3[0]',
         suffix: { type: 'delete' },
         rules: [{ required: true, message: 'name3[0]空了' }],
         initialValue: { label: '选项1', value: '1', key: '1' },
@@ -75,6 +55,7 @@ export default function Demo5(props) {
           ]
         }
       }, {
+        label: 'name3[1]',
         suffix: { type: 'delete' },
         rules: [{ required: true, message: 'name3[1]空了' }],
         type: 'Select',
@@ -89,10 +70,9 @@ export default function Demo5(props) {
       }]
     },
     name4: {
-      label: '对象嵌套',
       properties: {
         first: {
-          // label: '对象嵌套1',
+          label: '对象嵌套1',
           rules: [{ required: true, message: 'name1空了' }],
           type: 'Select',
           props: {
@@ -101,7 +81,7 @@ export default function Demo5(props) {
           }
         },
         second: {
-          // label: '对象嵌套2',
+          label: '对象嵌套2',
           rules: [{ required: true, message: 'name2空了' }],
           type: 'Select',
           props: {
@@ -110,7 +90,7 @@ export default function Demo5(props) {
           }
         },
         first1: {
-          // label: '对象嵌套3',
+          label: '对象嵌套3',
           rules: [{ required: true, message: 'name3空了' }],
           type: 'Select',
           props: {
@@ -119,7 +99,7 @@ export default function Demo5(props) {
           }
         },
         second1: {
-          // label: '对象嵌套4',
+          label: '对象嵌套4',
           rules: [{ required: true, message: 'name4空了' }],
           type: 'Select',
           props: {
@@ -189,7 +169,7 @@ export default function Demo5(props) {
   return (
     <div style={{ padding: '0 8px' }}>
       <RenderForm form={form} properties={properties} watch={watch} expressionImports={{ moment }} />
-      {/* <Form store={form}>
+      {/* <Form form={form}>
         <div>
           <p>part1</p>
           <RenderFormChildren properties={properties1} watch={watch} />

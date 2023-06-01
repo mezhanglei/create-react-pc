@@ -94,7 +94,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} style={style}>
-      <Form layout="vertical" store={form} onFieldsChange={onFieldsChange}>
+      <Form layout="vertical" form={form} onFieldsChange={onFieldsChange}>
         <RenderFormChildren properties={nameSettings} />
         {renderCommonList()}
       </Form>

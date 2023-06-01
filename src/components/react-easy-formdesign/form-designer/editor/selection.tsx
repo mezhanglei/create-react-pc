@@ -24,7 +24,7 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     path,
     field,
     parent,
-    store: designer,
+    formrender: designer,
     form: designerForm,
     ...restProps
   } = props;

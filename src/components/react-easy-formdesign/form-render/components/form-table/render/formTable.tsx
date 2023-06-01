@@ -48,8 +48,8 @@ const CustomTableRow = (props: any) => {
 }
 
 const CustomTableCell = (props: any) => {
-  const { name, store, type, props: typeProps, children, ...restProps } = props;
-  const columnInstance = store && store.componentInstance({ type, props: typeProps });
+  const { name, formrender, type, props: typeProps, children, ...restProps } = props;
+  const columnInstance = formrender && formrender.componentInstance({ type, props: typeProps });
   return (
     <Form.Item component={TableCell} name={name} key={name} {...restProps}>
       {columnInstance || children}
@@ -71,7 +71,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     className,
     columns = [],
     dataSource = [{}],
-    store,
+    formrender,
     name,
     path,
     field,
@@ -91,7 +91,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         record,
         name: name,
         title: label,
-        store: store,
+        formrender: formrender,
         type: type,
         props: typeProps,
       }),
@@ -105,7 +105,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   }
 
   return (
-    <Form store={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
+    <Form form={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
       <Table
         className={classNames('form-table', className)}
         columns={newColumns}

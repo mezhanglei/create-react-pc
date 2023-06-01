@@ -28,7 +28,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     parent,
     attributeName,
     field,
-    store: designer,
+    formrender: designer,
     form: designerForm,
     tools,
     onMouseOver,

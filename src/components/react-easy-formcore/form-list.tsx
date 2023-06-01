@@ -14,7 +14,7 @@ export type FormListProps<T = ItemProps> = T & ListCoreProps & {
 }
 
 export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
-  const store = useContext<FormStore>(FormStoreContext)
+  const form = useContext<FormStore>(FormStoreContext)
   const options = useContext<any>(FormOptionsContext)
   const mergeProps = { ...options, ...props };
   const { children, ...fieldProps } = mergeProps;
@@ -37,7 +37,7 @@ export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
     ...rest
   } = fieldProps;
 
-  const [error] = useFormError(store, name);
+  const [error] = useFormError(form, name);
   const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
   const required = isHaveRequired && ignore !== true ? true : rest?.required;
   const FieldComponent = component

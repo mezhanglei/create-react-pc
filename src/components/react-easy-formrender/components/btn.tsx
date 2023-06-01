@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import './btn.less';
-import { GenerateFieldProps, GeneratePrams } from '../types';
+import { GenerateFormNodeProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
 import Icon from '../../svg-icon';
 
@@ -17,7 +17,7 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
     path,
     field,
     parent,
-    store,
+    formrender,
     form,
     className,
     ...restProps
@@ -26,7 +26,7 @@ export const DeleteBtn: React.FC<DeleteBtnProps> = (props) => {
   const currentPath = path;
   const deleteItem = () => {
     currentPath && form?.setFieldValue(currentPath, undefined, false);
-    currentPath && store?.delItemByPath(currentPath);
+    currentPath && formrender?.delItemByPath(currentPath);
   }
 
   const cls = classnames('icon-delete', className)
@@ -37,7 +37,7 @@ export interface AddBtnProps extends GeneratePrams<any> {
   onClick?: () => void;
   className?: string;
   style?: CSSProperties;
-  item?: GenerateFieldProps;
+  item?: GenerateFormNodeProps;
 }
 export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
@@ -46,7 +46,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     path,
     field,
     parent,
-    store,
+    formrender,
     form,
     item,
     className,
@@ -60,7 +60,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
     const properties = field?.properties;
     const nextIndex = typeof properties === 'object' && Object?.keys(properties)?.length || 0;
     if (item && currentPath) {
-      store?.insertItemByIndex(item, nextIndex, { path: currentPath });
+      formrender?.insertItemByIndex(item, nextIndex, { path: currentPath });
     }
     props?.onClick && props?.onClick();
   }

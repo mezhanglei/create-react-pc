@@ -23,7 +23,7 @@ function ColSelection(props: ColSelectionProps, ref: any) {
     path,
     field,
     parent,
-    store: designer,
+    formrender: designer,
     form: designerForm,
     ...restProps
   } = props;

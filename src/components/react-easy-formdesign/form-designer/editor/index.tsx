@@ -112,7 +112,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         <PlatContainer plat={plat}>
           <RenderForm
             isEditor
-            store={designer}
+            formrender={designer}
             form={designerForm}
             properties={properties}
             onPropertiesChange={onPropertiesChange}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FormRenderStore } from './formrender-store';
-import { FormFieldProps, PropertiesData } from './types';
+import { FormNodeProps, PropertiesData } from './types';
 import { setExpandComponents } from './utils/utils';
 
 export function useFormRenderStore() {
@@ -8,16 +8,16 @@ export function useFormRenderStore() {
 }
 
 // 获取properties的state数据
-export function useProperties(store: FormRenderStore) {
+export function useProperties(formrender: FormRenderStore) {
   const [properties, setProperties] = useState<PropertiesData>();
 
   const uninstallMemo = useMemo(() => {
-    if (!store) return
-    const uninstall = store.subscribeProperties((newValue) => {
+    if (!formrender) return
+    const uninstall = formrender.subscribeProperties((newValue) => {
       setProperties(newValue);
     });
     return uninstall;
-  }, [store]);
+  }, [formrender]);
 
   useEffect(() => {
     return () => {
@@ -29,18 +29,18 @@ export function useProperties(store: FormRenderStore) {
 }
 
 // 展平开来的组件
-export function useExpandComponents(store: FormRenderStore) {
-  const [components, setComponents] = useState<{ [key: string]: FormFieldProps }>();
+export function useExpandComponents(formrender: FormRenderStore) {
+  const [components, setComponents] = useState<{ [key: string]: FormNodeProps }>();
 
   const uninstallMemo = useMemo(() => {
-    if (!store) return
+    if (!formrender) return
     // 订阅目标控件
-    const uninstall = store.subscribeProperties((newValue) => {
+    const uninstall = formrender.subscribeProperties((newValue) => {
       const result = setExpandComponents(newValue);
       setComponents(result);
     });
     return uninstall;
-  }, [store]);
+  }, [formrender]);
 
   useEffect(() => {
     return () => {

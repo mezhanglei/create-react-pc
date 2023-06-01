@@ -18,7 +18,7 @@ const CreateForm = React.forwardRef<any, CreateFormProps>((props, ref) => {
 
 export type FormProps<S = FormStore, T = ItemProps> = T & ItemCoreProps & {
   className?: string;
-  store?: S;
+  form?: S;
   style?: CSSProperties;
   children?: any;
   values?: any;
@@ -27,7 +27,7 @@ export type FormProps<S = FormStore, T = ItemProps> = T & ItemCoreProps & {
 } & CreateFormProps;
 
 export function Form(props: FormProps) {
-  const { className = '', style, children, store, initialValues, values, tagName, onSubmit, onReset, onMount, ...options } = props
+  const { className = '', style, children, form, initialValues, values, tagName, onSubmit, onReset, onMount, ...options } = props
 
   const classNames = 'easy-form ' + className
 
@@ -46,7 +46,7 @@ export function Form(props: FormProps) {
       }}
       onReset={onReset}
     >
-      <FormStoreContext.Provider value={store}>
+      <FormStoreContext.Provider value={form}>
         <FormOptionsContext.Provider value={options}>
           <FormInitialValuesContext.Provider value={initialValues}>
             <FormValuesContext.Provider value={values}>

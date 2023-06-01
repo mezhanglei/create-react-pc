@@ -3,15 +3,15 @@ import './index.less';
 import RequiredComponent from "./required";
 import MinOrMaxComponent from "./minOrMax";
 import PatternComponent from "./pattern";
-import RenderForm, { FormFieldProps, RenderFormProps } from '../../../form-render';
+import RenderForm, { FormNodeProps, RenderFormProps } from '../../../form-render';
 
 /**
  * 校验规则的配置组件。
  */
 export interface RulesComponentProps {
   includes?: string;
-  value?: FormFieldProps['rules'];
-  onChange?: (val?: FormFieldProps['rules']) => void;
+  value?: FormNodeProps['rules'];
+  onChange?: (val?: FormNodeProps['rules']) => void;
 }
 
 const prefixCls = 'rules-add'

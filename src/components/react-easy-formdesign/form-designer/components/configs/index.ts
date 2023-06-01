@@ -1,5 +1,5 @@
 import { getArrMap } from "@/utils/array";
-import { CustomOptions, FormFieldProps } from "../../../form-render";
+import { CustomOptions, FormNodeProps } from "../../../form-render";
 // 基础控件
 import Input from './base/input';
 import Radio from './base/radio';
@@ -24,7 +24,7 @@ import grid from './layout/grid';
 import formTable from "./container/table";
 
 // 列表中的元素类型
-export interface ELementProps extends FormFieldProps, CustomOptions {
+export interface ELementProps extends FormNodeProps, CustomOptions {
   id?: string; // 组件类型id，用于匹配组件的配置
   subId?: string; // 子组件的id， 用于匹配子组件的配置
   icon?: string; // 组件列表中的icon

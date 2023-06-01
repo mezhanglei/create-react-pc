@@ -25,7 +25,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     path,
     field,
     parent,
-    store: designer,
+    formrender: designer,
     form: designerForm,
     colIndex,
     column,

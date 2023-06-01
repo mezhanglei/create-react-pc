@@ -1,7 +1,7 @@
 import React from 'react';
 import { isValidChildren } from "@/utils/ReactIs";
 import { FormComponent, GeneratePrams } from "../types";
-import { parseFromField } from "./utils";
+import { parseComponent } from "./utils";
 
 // 生成组件实例
 const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams): any => {
@@ -10,7 +10,7 @@ const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementTy
       return createInstance(item, typeMap, commonProps);
     });
   } else {
-    const Child = parseFromField(target, typeMap) as React.ElementType;
+    const Child = parseComponent(target, typeMap) as React.ElementType;
     // 声明组件
     if (Child) {
       const { children, ...restProps } = (target as FormComponent)?.props || {};

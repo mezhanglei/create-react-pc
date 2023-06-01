@@ -30,7 +30,7 @@ export interface ItemCoreProps {
 }
 
 export const ItemCore = (props: ItemCoreProps) => {
-  const store = useContext<FormStore>(FormStoreContext);
+  const form = useContext<FormStore>(FormStoreContext);
   const initialValues = useContext(FormInitialValuesContext);
   const contextValues = useContext(FormValuesContext);
   const options = useContext(FormOptionsContext);
@@ -53,7 +53,7 @@ export const ItemCore = (props: ItemCoreProps) => {
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
   const contextValue = deepGet(contextValues, currentPath);
   const initValue = initialValue ?? deepGet(initialValues, currentPath);
-  const storeValue = store && store.getFieldValue(currentPath);
+  const storeValue = form && form.getFieldValue(currentPath);
   const initialItemValue = contextValue ?? storeValue ?? initValue;
   const [value, setValue] = useState(initialItemValue);
 
@@ -62,7 +62,7 @@ export const ItemCore = (props: ItemCoreProps) => {
   }, [contextValue]);
 
   // 初始化获取初始props
-  currentPath && store?.setFieldProps(currentPath, fieldProps);
+  currentPath && form?.setFieldProps(currentPath, fieldProps);
 
   // 收集的rules中的validateTrigger
   const ruleTriggers = useMemo(() => {
@@ -90,43 +90,43 @@ export const ItemCore = (props: ItemCoreProps) => {
   const bindChange = useCallback(
     (eventName, ...args: any[]) => {
       const value = valueGetter(...args);
-      if (currentPath && store) {
+      if (currentPath && form) {
         // 设置值
-        store.setFieldValue(currentPath, value, eventName);
+        form.setFieldValue(currentPath, value, eventName);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ name: currentPath, value: value }, store?.getFieldValue());
+        onFieldsChange && onFieldsChange({ name: currentPath, value: value }, form?.getFieldValue());
       }
     },
-    [currentPath, store, valueGetter, onFieldsChange]
+    [currentPath, form, valueGetter, onFieldsChange]
   );
 
   // 订阅更新值的函数
   useEffect(() => {
-    if (!currentPath || !store) return
+    if (!currentPath || !form) return
     // 订阅目标控件
-    const uninstall = store.subscribeFormItem(currentPath, (newValue, oldValue) => {
+    const uninstall = form.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!(isEmpty(newValue) && isEmpty(oldValue))) {
-        onValuesChange && onValuesChange({ name: currentPath, value: newValue }, store?.getFieldValue())
+        onValuesChange && onValuesChange({ name: currentPath, value: newValue }, form?.getFieldValue())
       }
     });
     return () => {
       uninstall();
     };
-  }, [currentPath, store, onValuesChange]);
+  }, [currentPath, form, onValuesChange]);
 
   // 表单域初始化值
   useEffect(() => {
-    if (!currentPath || !store) return;
-    // 回填store.initialValues和回填store.values
+    if (!currentPath || !form) return;
+    // 回填form.initialValues和回填form.values
     if (initialItemValue !== undefined) {
-      store.setInitialValues(currentPath, initialItemValue);
+      form.setInitialValues(currentPath, initialItemValue);
     }
     return () => {
       // 清除该表单域的props(在设置值的前面)
-      currentPath && store?.setFieldProps(currentPath, undefined);
+      currentPath && form?.setFieldProps(currentPath, undefined);
       // 清除初始值
-      currentPath && store.setInitialValues(currentPath, undefined);
+      currentPath && form.setInitialValues(currentPath, undefined);
     }
   }, [currentPath]);
 

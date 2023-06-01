@@ -6,7 +6,7 @@ import RenderFormChildren from './render-children';
 // 表单元素渲染
 export default function RenderForm(props: RenderFormProps) {
   const {
-    store,
+    formrender,
     form,
     uneval,
     properties,
@@ -23,11 +23,11 @@ export default function RenderForm(props: RenderFormProps) {
   const formStore = form ?? useFormStore();
 
   return (
-    <Form store={formStore} {...formOptions}>
+    <Form form={formStore} {...formOptions}>
       <RenderFormChildren
         expressionImports={expressionImports}
         uneval={uneval}
-        store={store}
+        formrender={formrender}
         properties={properties}
         components={components}
         watch={watch}

@@ -11,7 +11,7 @@ export interface ControlDndProps extends GeneratePrams<ELementProps> {
 
 // 控件的拖放控制
 function ControlDnd(props: ControlDndProps, ref: any) {
-  const { children, store, path } = props;
+  const { children, formrender, path } = props;
 
   const currentPath = path;
 
@@ -29,7 +29,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     // 额外传递的信息
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index;
-    store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+    formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -50,9 +50,9 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
       const field = getConfigField(elementId);
-      store && insertDesignItem(store, field, dropIndex, { path: dropCollection?.path });
+      formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
     } else {
-      store?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
+      formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }
   }
 

@@ -23,7 +23,7 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     path,
     field,
     parent,
-    store: designer,
+    formrender: designer,
     form: designerForm,
     ...restProps
   } = props;

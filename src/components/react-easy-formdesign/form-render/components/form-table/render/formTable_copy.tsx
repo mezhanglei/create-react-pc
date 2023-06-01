@@ -56,7 +56,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   style = {},
   tableLayout,
   children,
-  store,
+  formrender,
   name,
   path,
   field,
@@ -84,7 +84,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   }
 
   return (
-    <Form store={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
+    <Form form={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
       <table
         className={classnames([Classes.Table, className])}
         style={{ tableLayout: tableLayout, ...style }}
@@ -105,7 +105,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
               <Form.Item component={TableRow} key={getRowKey(record, rowIndex)}>
                 {columns.map((column, colIndex) => {
                   const { render, name } = column || {};
-                  const columnInstance = store && store.componentInstance(column);
+                  const columnInstance = formrender && formrender.componentInstance(column);
                   const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
                   return (
                     <Form.Item component={TableCell} name={name} key={name}>

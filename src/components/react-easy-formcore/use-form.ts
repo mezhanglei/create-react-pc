@@ -13,18 +13,18 @@ export function useValidator() {
 }
 
 // 获取error信息
-export function useFormError(store: FormStore, path?: string) {
-  const storeError = path && store && store.getFieldError(path);
+export function useFormError(form: FormStore, path?: string) {
+  const storeError = path && form && form.getFieldError(path);
   const [error, setError] = useState(storeError);
 
   const uninstallMemo = useMemo(() => {
-    if (!path || !store) return
-    const uninstall = store.subscribeError(path, () => {
-      const error = store?.getFieldError(path);
+    if (!path || !form) return
+    const uninstall = form.subscribeError(path, () => {
+      const error = form?.getFieldError(path);
       setError(error);
     });
     return uninstall;
-  }, [store, path]);
+  }, [form, path]);
 
   // 订阅组件更新错误的函数
   useEffect(() => {
@@ -37,26 +37,26 @@ export function useFormError(store: FormStore, path?: string) {
 }
 
 // 获取表单值
-export function useFormValues<T = unknown>(store: FormStore, path?: string | string[]) {
+export function useFormValues<T = unknown>(form: FormStore, path?: string | string[]) {
   const [formValues, setFomValues] = useState<T>();
 
   // 订阅目标控件
   const uninstallListMemo = useMemo(() => {
-    if (!store || !path) return [];
+    if (!form || !path) return [];
     const queue = [];
     const isChar = typeof path == 'string' || typeof path == 'number';
     const pathList = isChar ? [path] : (path instanceof Array ? path : [])
     for (let i = 0; i < pathList?.length; i++) {
       const pathKey = pathList[i]
-      queue?.push(store.subscribeFormGlobal(pathKey, (newValue) => {
+      queue?.push(form.subscribeFormGlobal(pathKey, (newValue) => {
         if (typeof pathKey == 'string' || typeof pathKey == 'number') {
-          const oldValues = store.getFieldValue(path);
+          const oldValues = form.getFieldValue(path);
           setFomValues(() => ({ ...oldValues, [pathKey]: newValue }));
         }
       }))
     }
     return queue;
-  }, [store, path]);
+  }, [form, path]);
 
   useEffect(() => {
     return () => {
