@@ -2,8 +2,8 @@ import React, { CSSProperties, useMemo } from "react";
 import { Table } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableProps } from "..";
-import { TableBody, TableCell, TableRow } from "./components";
-import { Form, useFormStore } from "../../..";
+import { TableCell } from "./components";
+import { Form, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
@@ -14,7 +14,6 @@ export interface CustomColumnType {
   label: string;
   type?: string;
   props?: any;
-  render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }
 
 export type UnionComponent<P> =
@@ -38,15 +37,6 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
   tableLayout?: React.CSSProperties["tableLayout"];
 }
 
-const CustomTableRow = (props: any) => {
-  const { children, ...restProps } = props;
-  return (
-    <Form.Item component={TableRow} {...restProps}>
-      {children}
-    </Form.Item>
-  );
-}
-
 const CustomTableCell = (props: any) => {
   const { name, formrender, type, props: typeProps, children, ...restProps } = props;
   const columnInstance = formrender && formrender.componentInstance({ type, props: typeProps });
@@ -55,15 +45,6 @@ const CustomTableCell = (props: any) => {
       {columnInstance || children}
     </Form.Item>
   );
-}
-
-const CustomTableBody = (props: any) => {
-  const { children, ...restProps } = props;
-  return (
-    <Form.List component={TableBody} {...restProps}>
-      {children}
-    </Form.List>
-  )
 }
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref) => {
@@ -87,9 +68,9 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       ...restCol,
       dataIndex: name,
       title: label,
-      onCell: (record: unknown) => ({
+      onCell: (record: unknown, rowIndex?: number) => ({
         record,
-        name: name,
+        name: joinFormPath(rowIndex, name), // 拼接路径
         title: label,
         formrender: formrender,
         type: type,
@@ -105,15 +86,16 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   }
 
   return (
-    <Form form={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
+    <Form form={form} tagName="div" initialValues={value} onFieldsChange={onFieldsChange}>
       <Table
         className={classNames('form-table', className)}
         columns={newColumns}
         dataSource={dataSource}
         ref={ref}
         rowKey="key"
-        components={{ body: { wrapper: CustomTableBody, row: CustomTableRow, cell: CustomTableCell } }}
-        {...pickAttrs(rest)} />
+        components={{ body: { cell: CustomTableCell } }}
+        {...pickAttrs(rest)}
+      />
     </Form>
   );
 });

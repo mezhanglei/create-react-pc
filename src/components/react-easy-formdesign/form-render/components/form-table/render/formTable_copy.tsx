@@ -5,7 +5,7 @@ import { ColumnGroup } from "./columnGroup";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableProps } from "..";
 import { TableBody, TableCell, TableHead, TableRow } from "./components";
-import { Form, useFormStore } from "../../..";
+import { Form, joinFormPath, useFormStore } from "../../..";
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
 
 const prefix = "form-table";
@@ -50,7 +50,7 @@ export interface FormTableProps extends TableOptions, TableBodyOptions, TablePro
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
-  dataSource = [{},{}],
+  dataSource = [{}, {}],
   rowKey,
   className,
   style = {},
@@ -84,7 +84,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   }
 
   return (
-    <Form form={form} tagName="div" initialValues={{ name: value }} onFieldsChange={onFieldsChange}>
+    <Form form={form} tagName="div" initialValues={value} onFieldsChange={onFieldsChange}>
       <table
         className={classnames([Classes.Table, className])}
         style={{ tableLayout: tableLayout, ...style }}
@@ -99,24 +99,25 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
             })}
           </TableRow>
         </TableHead>
-        <Form.List component={TableBody}>
+        <TableBody>
           {dataSource?.map((record, rowIndex) => {
             return (
-              <Form.Item component={TableRow} key={getRowKey(record, rowIndex)}>
+              <TableRow key={getRowKey(record, rowIndex)}>
                 {columns.map((column, colIndex) => {
                   const { render, name } = column || {};
                   const columnInstance = formrender && formrender.componentInstance(column);
                   const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
+                  const joinPath = joinFormPath(rowIndex, name);
                   return (
-                    <Form.Item component={TableCell} name={name} key={name}>
+                    <Form.Item component={TableCell} name={joinPath} key={joinPath}>
                       {child}
                     </Form.Item>
                   );
                 })}
-              </Form.Item>
+              </TableRow>
             )
           })}
-        </Form.List>
+        </TableBody>
       </table>
     </Form>
   );

@@ -70,7 +70,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const setSettingsFormValue = (path?: string, attributeName?: string) => {
     if (isNoSelected(path)) return;
     const curSettingsValues = getDesignerItem(designer, path, attributeName);
-    const endName = getPathEnd(selectedName);
+    const endName = getPathEnd(path);
     form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: endName }); // 回填属性区域数据
     updateDesignerItem(designer, curSettingsValues, path, attributeName); // 同步编辑区域
     // 回填编辑区默认值

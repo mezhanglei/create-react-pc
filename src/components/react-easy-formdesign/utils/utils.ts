@@ -29,7 +29,7 @@ export const getNameSettings = (designer: FormRenderStore, selected?: SelectedTy
   const attributeName = selected?.attributeName;
   const item = designer && getDesignerItem(designer, selectedPath, attributeName);
   // 获取选中的字段值
-  const endName = attributeName ? item?.name : getPathEnd(selected?.name);
+  const endName = attributeName ? item?.name : getPathEnd(selectedPath);
   if (isNoSelected(endName)) return;
   // 非数组节点可以设置name
   if (!isValidNumber(endName)) {
@@ -45,7 +45,7 @@ export const getNameSettings = (designer: FormRenderStore, selected?: SelectedTy
 // 获取当前选中位置序号
 export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedType) => {
   const selectedParentPath = selected?.parent?.path;
-  const endName = getPathEnd(selected?.name);
+  const endName = getPathEnd(selected?.path);
   const parent = designer.getItemByPath(selectedParentPath);
   const childProperties = selectedParentPath ? parent?.properties : parent;
   const keys = Object.keys(childProperties || {});

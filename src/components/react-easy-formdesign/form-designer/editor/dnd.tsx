@@ -11,7 +11,7 @@ export interface ControlDndProps extends GeneratePrams<ELementProps> {
 
 // 控件的拖放控制
 function ControlDnd(props: ControlDndProps, ref: any) {
-  const { children, formrender, path } = props;
+  const { children, formrender, path, ...rest } = props;
 
   const currentPath = path;
 
@@ -73,6 +73,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
       className='editor-dnd'
       options={{ hiddenFrom: true, disabledDrop: disabledDrop }}
       collection={{ path: currentPath }}
+      {...rest}
     >
       {children}
     </DndSortable>

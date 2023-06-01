@@ -286,7 +286,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const nestChildren = renderChildren(properties, inside, commonParams)
     const parseComponent = component !== undefined ? formRenderStore.componentParse(component) : undefined;
     const childs = haveProperties ?
-      (React.isValidElement(fieldWidget) ? React.cloneElement(fieldWidget, { children: nestChildren } as any) : nestChildren)
+      (React.isValidElement(fieldWidget) ? React.cloneElement(fieldWidget, { children: nestChildren, key: path, } as any) : nestChildren)
       : fieldWidget;
     const childsWithReadOnly = isReadOnly ? readOnlyWidget : childs;
     const fieldProps = {

@@ -13,6 +13,7 @@ import PlatContainer, { PlatContainerProps } from './platContainer';
 import { showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
+import { updateDesignerItem } from '../../utils/utils';
 
 export interface DesignEditorProps {
   className?: string
@@ -46,9 +47,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
     // 回填setting表单的intialValue选项
-    // settingsForm?.setFieldValue('initialValue', value);
-    // 回填designer的initialValue值
-    // selectedPath && designer?.updateItemByPath({ initialValue: value }, selectedPath);
+    settingsForm?.setFieldValue('initialValue', value);
+    // 表单记录下新的initialValue值
+    updateDesignerItem(designer, { initialValue: value }, selected?.path, selected?.attributeName);
   }
 
   const importJson = () => {

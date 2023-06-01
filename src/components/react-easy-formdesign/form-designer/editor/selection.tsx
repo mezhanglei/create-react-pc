@@ -26,7 +26,6 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     parent,
     formrender: designer,
     form: designerForm,
-    ...restProps
   } = props;
 
   const setEdit = useFormEdit();

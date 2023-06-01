@@ -37,11 +37,10 @@ export const isValidNumber = (item?: any) => isNumberStr(item);
 // 由前到后拼接当前项的表单的path
 export function joinFormPath(...args: Array<any>) {
   const result = args?.reduce((pre, cur) => {
-    const curName = isEmpty(cur) ? '' : cur;
-    const parent = isEmpty(pre) ? '' : pre;
-    if (isValidNumber(curName) || isWithBracket(curName)) {
-      const end = isValidNumber(curName) ? `[${curName}]` : curName
-      return parent && end ? `${parent}${end}` : (end || parent);
+    const curName = isEmpty(cur) ? '' : (isValidNumber(cur) ? `[${cur}]` : cur);
+    const parent = isEmpty(pre) ? '' : (isValidNumber(pre) ? `[${pre}]` : pre);
+    if (isWithBracket(curName)) {
+      return parent && curName ? `${parent}${curName}` : (curName || parent);
     } else {
       return parent && curName ? `${parent}.${curName}` : (curName || parent);
     }
@@ -54,7 +53,7 @@ export const validateTriggerCondition = (eventName?: TriggerType | boolean, vali
   // 不设置validateTrigger允许触发
   if (validateTrigger === undefined || eventName === undefined) return true;
   // 如果为布尔值则返回该值
-  if(typeof eventName === 'boolean') return eventName;
+  if (typeof eventName === 'boolean') return eventName;
   if (typeof validateTrigger === 'string') {
     return validateTrigger === eventName;
   }
