@@ -1,8 +1,8 @@
 import { deepClone } from "@/utils/object";
 import { joinFormPath } from "../react-easy-formcore";
 import { CustomUnionType, GeneratePrams, PropertiesData } from "./types";
-import createInstance from "./utils/createInstance";
-import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, insertItemByIndex, updateName, parseComponent, InsertItemType, getKeyValueByIndex } from "./utils/utils";
+import { createInstance, parseComponent } from "./utils/handle";
+import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, insertItemByIndex, updateName, InsertItemType, getKeyValueByIndex } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
 
