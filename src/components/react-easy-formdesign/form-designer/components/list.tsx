@@ -30,7 +30,7 @@ function ComponentList(props: ComponentListProps, ref: any) {
     return (
       <DndSortable
         className='elements-list'
-        collection={{ type: DndType.Components, elementType: elementType }}
+        collection={{ type: DndType.Components }}
         options={{
           disabledDrop: true,
           hiddenFrom: false,

@@ -1,7 +1,6 @@
 const baseSettings = {
   // === 控件自身的props的设置
   props: {
-    compact: true,
     properties: {
       message: {
         label: '提示',
@@ -36,8 +35,6 @@ const operationSettings = {
     props: { children: '隐藏' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       showIcon: {
         type: 'Checkbox',

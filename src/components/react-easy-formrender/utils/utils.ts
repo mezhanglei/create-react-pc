@@ -229,11 +229,11 @@ export const insertItemByIndex = (properties: PropertiesData, data: InsertItemTy
   const isList = entriesData?.isList;
   let addItems: Array<[string, any]> = [];
   if (isList) {
-    // 数组添加选项
+    // 数组类型
     const dataList = data instanceof Array ? data : [data];
     addItems = dataList?.map((item, i) => [`${i}`, item]);
   } else {
-    // 对象添加属性
+    // 对象类型
     addItems = Object.entries(data || {});
   }
   if (typeof index === 'number') {

@@ -1,6 +1,5 @@
 const baseSettings = {
   props: {
-    compact: true,
     properties: {
       gutter: {
         label: '栅格间隔',

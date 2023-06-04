@@ -3,7 +3,6 @@ import * as handleEffects from './effects';
 import initState from './initState';
 import type { CommonModel } from './interface';
 import { namespace } from './interface';
-import { fetchUserInfo } from './actions';
 
 // 将module类转换成对象
 const reducers = Object.fromEntries(
@@ -30,7 +29,6 @@ export default {
   effects: effects,
   subscriptions: {
     async setup({ dispatch }) {
-      // await dispatch(fetchUserInfo())
     }
   }
 } as CommonModel;

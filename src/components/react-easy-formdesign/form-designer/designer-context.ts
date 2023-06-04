@@ -2,6 +2,12 @@ import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
 import { ELementProps, FormDesignData } from './components/configs';
 
+// 拖拽区域的数据
+export interface DndCollectionType {
+  type?: string;
+  path?: string;
+  attributeName?: string
+}
 export interface SelectedType {
   name?: GeneratePrams<ELementProps>['name']; // 节点表单路径
   path?: GeneratePrams<ELementProps>['path']; // 节点路径

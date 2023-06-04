@@ -4,7 +4,6 @@ const baseSettings = {
     type: 'CodeTextArea',
   },
   props: {
-    compact: true,
     properties: {
       options: {
         type: 'OptionsComponent',
@@ -29,8 +28,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

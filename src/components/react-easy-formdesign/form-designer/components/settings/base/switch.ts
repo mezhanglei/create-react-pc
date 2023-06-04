@@ -5,7 +5,6 @@ const baseSettings = {
     valueProp: 'checked',
   },
   props: {
-    compact: true,
     properties: {
       size: {
         label: "尺寸",
@@ -37,8 +36,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

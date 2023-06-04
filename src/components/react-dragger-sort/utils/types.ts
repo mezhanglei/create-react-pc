@@ -28,17 +28,17 @@ export interface DragItem extends SortableItem {
 }
 
 // 拖拽触发的函数的参数
-export interface DndParams {
+export interface DndParams<T = {}> {
   e: EventType;
-  from: DragItem;
-  to?: SortableItem;
+  from: DragItem & T;
+  to?: SortableItem & T;
 }
 
 // 拖拽触发的函数
-export type DndHandle = (params: DndParams) => void;
+export type DndHandle<T = {}> = (params: DndParams<T>) => void;
 
 // 拖拽条件函数
-export type DndCondition = (params: DndParams) => boolean | undefined;
+export type DndCondition<T = {}> = (params: DndParams<T>) => boolean | undefined;
 export type UnionCondition = boolean | (HTMLElement | string)[] | DndCondition;
 
 export interface DndBaseProps {

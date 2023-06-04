@@ -5,17 +5,17 @@ export default {
   label: '表格组件',
   type: 'FormTable',
   props: {
+    showBtn: true,
     columns: [{
       id: "FormTableCol",
       subId: 'Input',
-      key: 'ss',
+      label: 'ss',
       name: 'ss',
       type: 'Input',
-      label: 'ss'
+      initialValue: 1,
     }, {
       id: "FormTableCol",
       subId: 'Input',
-      key: 'dd',
       name: 'dd',
       type: 'Input',
       label: 'dd'

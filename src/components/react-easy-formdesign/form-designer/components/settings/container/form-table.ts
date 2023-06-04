@@ -1,15 +1,19 @@
 const baseSettings = {
+  initialValue: {
+    label: '默认值',
+    type: '',
+  },
   props: {
     properties: {
-      maxCount: {
-        label: '最大允许上传个数',
+      minRows: {
+        label: '最小行数',
         type: 'InputNumber',
-        initialValue: 5
+        initialValue: 0
       },
-      fileSizeLimit: {
-        label: '文件大小限制(MB)',
+      maxRows: {
+        label: '最大行数',
         type: 'InputNumber',
-        initialValue: 5
+        initialValue: 0
       },
     }
   }
@@ -33,6 +37,11 @@ const operationSettings = {
         type: 'LinkageCheckbox',
         inline: true,
         props: { children: '禁用' }
+      },
+      showBtn: {
+        type: 'LinkageCheckbox',
+        inline: true,
+        props: { children: '可增删' }
       },
     }
   }

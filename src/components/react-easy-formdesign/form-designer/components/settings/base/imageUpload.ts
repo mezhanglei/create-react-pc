@@ -1,6 +1,5 @@
 const baseSettings = {
   props: {
-    compact: true,
     properties: {
       maxCount: {
         label: '最大允许上传个数',
@@ -29,8 +28,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

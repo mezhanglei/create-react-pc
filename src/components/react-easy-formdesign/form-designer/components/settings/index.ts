@@ -20,6 +20,7 @@ import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
 // 容器组件
 import FormTableColSettings from './container/table-col';
+import FormTableSettings from './container/form-table';
 import { filterObject } from "@/utils/object";
 import { PropertiesData } from "@/components/react-easy-formrender";
 // 业务组件
@@ -54,6 +55,8 @@ const getConfigSettingsById = (id?: string) => {
       return { ...ImageUploadSettings, ...DefaultFieldSettings };
     case "Cascader":
       return { ...CascaderSettings, ...DefaultFieldSettings };
+    case "FormTable":
+      return { ...FormTableSettings, ...DefaultFieldSettings };
     case "Alert":
       return AlertSettings;
     case "RichText":

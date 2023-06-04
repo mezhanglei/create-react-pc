@@ -10,7 +10,6 @@ const baseSettings = {
     }
   },
   props: {
-    compact: true,
     properties: {
       placeholder: {
         label: '占位字符',
@@ -78,8 +77,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

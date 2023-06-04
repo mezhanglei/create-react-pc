@@ -4,7 +4,6 @@ const baseSettings = {
     type: 'InputNumber',
   },
   props: {
-    compact: true,
     properties: {
       count: {
         label: 'star总数',
@@ -28,8 +27,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

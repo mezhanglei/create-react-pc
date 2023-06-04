@@ -1,6 +1,5 @@
 const baseSettings = {
   props: {
-    compact: true,
     properties: {
       span: {
         label: '栅格占位格数',

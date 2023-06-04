@@ -284,7 +284,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const fieldWidget = formRenderStore.componentInstance(typeRender || { type, props }, commonParams);
     // 节点的子组件
     const nestChildren = renderChildren(properties, inside, commonParams)
-    const parseComponent = component !== undefined ? formRenderStore.componentParse(component) : undefined;
     const childs = haveProperties ?
       (React.isValidElement(fieldWidget) ? React.cloneElement(fieldWidget, { children: nestChildren, key: path, } as any) : nestChildren)
       : fieldWidget;
@@ -296,7 +295,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       footer: footerInstance,
       suffix: suffixInstance,
       ignore: readOnly,
-      component: parseComponent,
+      component: component !== undefined ? formRenderStore.componentParse(component) : undefined,
       ...restField
     }
     // 没有子属性则节点为表单控件, 增加Form.Item表单域收集表单值

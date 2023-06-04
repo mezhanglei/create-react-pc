@@ -28,10 +28,9 @@ import RichEditor, { RichEditorModalBtn } from './rich-editor';
 import { RichText } from './rich-text';
 import FormTable from './form-table';
 import Collapse from './collapse';
-import Table from './layout-table/Table';
+import Table, { TableBody, TableCell, TableHead, TableRow } from './layout-table';
 import { GridCol } from './grid/col';
 import { GridRow } from './grid/row';
-import { TableBody, TableCell, TableHead, TableRow } from './layout-table/components';
 
 // 提供开发过程中的基础组件
 export const BaseComponents = {

@@ -1,5 +1,5 @@
-import React, { CSSProperties, useEffect, useMemo } from "react";
-import { Button, Table, TableProps } from "antd";
+import React, { CSSProperties, useMemo } from "react";
+import { Button, message, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
 import { Form, GeneratePrams, joinFormPath, useFormStore } from "../../..";
@@ -8,6 +8,7 @@ import './formTable.less';
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
+import Icon from '@/components/svg-icon';
 
 export interface CustomColumnType {
   key: string;
@@ -15,11 +16,16 @@ export interface CustomColumnType {
   label: string;
   type?: string;
   props?: any;
+  initialValue?: any;
 }
 
 export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
   value?: any;
   onChange?: (val: any) => void;
+  minRows?: number; // 表格默认最少行数
+  maxRows?: number; // 表格默认最大行数
+  disabled?: boolean; // 禁用
+  showBtn?: boolean; // 展示或隐藏增减按钮
   columns: CustomColumnType[];
   className?: string;
   style?: CSSProperties;
@@ -39,41 +45,26 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   const {
     className,
     columns = [],
-    dataSource = [],
+    minRows = 0,
+    maxRows = 50,
+    disabled,
+    showBtn,
+    pagination = false,
     formrender,
     name,
     path,
     field,
     parent,
     value,
-    pagination = false,
     onChange,
     ...rest
   } = props
 
   const {
     dataSource: tableData,
-    setDataSource,
     addItem,
     deleteItem
-  } = useTableData<any>(dataSource, onChange);
-
-  const newColumns = useMemo(() => columns?.map((col) => {
-    const { name, label, type, props: typeProps, ...restCol } = col;
-    return {
-      ...restCol,
-      dataIndex: name,
-      title: label,
-      onCell: (record: unknown, rowIndex?: number) => ({
-        record,
-        name: joinFormPath(rowIndex, name), // 拼接路径
-        title: label,
-        formrender: formrender,
-        type: type,
-        props: typeProps,
-      }),
-    }
-  }), [columns]);
+  } = useTableData<any>(Array.from({ length: Math.max(value?.length, minRows) }));
 
   const form = useFormStore();
 
@@ -81,24 +72,74 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     onChange && onChange(values);
   }
 
+  const deleteBtn = (rowIndex: number) => {
+    if (disabled) return;
+    deleteItem(rowIndex);
+    // 更新表单的值(引用更新)
+    const old = form.getFieldValue() || [];
+    old.splice(rowIndex, 1);
+    onChange && onChange(old);
+  }
+
   const addBtn = () => {
+    const list = form.getFieldValue() || [];
+    if (list.length >= maxRows) {
+      message.info(`最大行数不能超过${maxRows}`)
+      return;
+    }
     addItem([{ key: defaultGetId('row') }])
   }
 
+  const newColumns = useMemo(() => {
+    const result = columns?.map((col) => {
+      const { name, label, type, props, ...restCol } = col;
+      return {
+        ...restCol,
+        dataIndex: name,
+        title: label,
+        onCell: (record: unknown, rowIndex?: number) => ({
+          record,
+          name: joinFormPath(rowIndex, name), // 拼接路径
+          type,
+          props,
+          formrender: formrender,
+          ...restCol,
+        }),
+      }
+    }) as TableProps<any>['columns'] || [];
+    if (showBtn) {
+      // 添加删除按键
+      result.unshift({
+        title: '#',
+        width: 50,
+        render: (text: any, record, index: number) => {
+          if (tableData?.length > minRows) {
+            return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
+          }
+        }
+      })
+    }
+    return result;
+  }, [columns, showBtn, tableData]);
+
   return (
-    <Form form={form} tagName="div" initialValues={value} onFieldsChange={onFieldsChange}>
+    <Form
+      form={form}
+      className={classNames('form-table', className)}
+      tagName="div"
+      onFieldsChange={onFieldsChange}
+    >
       <Table
-        className={classNames('form-table', className)}
         columns={newColumns}
         dataSource={tableData}
         ref={ref}
         rowKey="key"
-        tableLayout="fixed"
+        scroll={{ y: 400 }}
         components={{ body: { cell: CustomTableCell } }}
-        {...pickAttrs(rest)}
         pagination={pagination}
+        {...pickAttrs(rest)}
       />
-      <Button type="link" onClick={addBtn}>+添加</Button>
+      {showBtn && <Button type="link" disabled={disabled} onClick={addBtn}>+添加</Button>}
     </Form>
   );
 });

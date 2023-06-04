@@ -1,5 +1,8 @@
 const baseSettings = {
-
+  label: {
+    label: '列的名',
+    type: 'Input'
+  },
 }
 
 const settings = {

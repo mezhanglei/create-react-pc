@@ -4,7 +4,6 @@ const baseSettings = {
     type: 'InputNumber',
   },
   props: {
-    compact: true,
     properties: {
       min: {
         label: '最小值',
@@ -38,8 +37,6 @@ const operationSettings = {
     props: { children: '标签' }
   },
   props: {
-    compact: true,
-    inline: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',

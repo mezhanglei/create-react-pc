@@ -18,7 +18,7 @@ const Table = React.forwardRef<any, TableProps>((props, ref) => {
   const columns = field?.props?.columns;
 
   return (
-    false ? <DesignTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
+    isEditor ? <DesignTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
   );
 });
 
