@@ -38,7 +38,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const currentPath = path;
   const setEdit = useFormEdit();
 
-  const addColumn = () => {
+  const copyItem = () => {
     const nextColIndex = colIndex + 1;
     const oldColumns = [...columns];
     const newColumn = {
@@ -60,7 +60,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
       {...props}
       componentLabel="表格列"
       attributeName={attributeName}
-      tools={[<Icon key="fuzhi" name="fuzhi" onClick={addColumn} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
+      tools={[<Icon key="fuzhi" name="fuzhi" onClick={copyItem} />, <Icon key="shanchu" name="shanchu" onClick={deleteColumn} />]}>
       {children}
     </BaseSelection>
   );

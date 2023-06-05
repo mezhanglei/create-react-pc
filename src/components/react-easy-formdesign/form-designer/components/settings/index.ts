@@ -19,7 +19,7 @@ import RichTextSettings from './base/richText';
 import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
 // 容器组件
-import FormTableColSettings from './container/table-col';
+import FormTableColSettings from './container/form-table-col';
 import FormTableSettings from './container/form-table';
 import { filterObject } from "@/utils/object";
 import { PropertiesData } from "@/components/react-easy-formrender";

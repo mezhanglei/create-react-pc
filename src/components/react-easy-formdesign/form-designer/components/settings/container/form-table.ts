@@ -13,7 +13,7 @@ const baseSettings = {
       maxRows: {
         label: '最大行数',
         type: 'InputNumber',
-        initialValue: 0
+        initialValue: 50
       },
     }
   }

@@ -9,8 +9,9 @@ import { ELementProps } from "@/components/react-easy-formdesign/form-designer/c
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 import Icon from '@/components/svg-icon';
+import { ColumnsType } from "antd/lib/table";
 
-export interface CustomColumnType {
+export interface CustomColumnType extends ColumnsType<any> {
   key: string;
   name: string;
   label: string;
