@@ -14,12 +14,13 @@ import ColorPicker from './base/colorPicker';
 import FileUpload from './base/fileUpload';
 import ImageUpload from './base/imageUpload';
 import Cascader from './base/cascader';
-import Alert from './base/alert';
 import RichEditor from "./base/richEditor";
 import RichText from "./base/richText";
 // 布局组件
 // import tableLayout from './layout/table';
 import grid from './layout/grid';
+import divider from './layout/divider';
+import Alert from './layout/alert';
 // 组合组件
 import formTable from "./combo/table";
 
@@ -45,6 +46,8 @@ export const ComponentsSource = [
     elements: [
       // tableLayout,
       grid,
+      divider,
+      Alert,
     ]
   },
   {
@@ -71,7 +74,6 @@ export const ComponentsSource = [
       Cascader,
       FileUpload,
       ImageUpload,
-      Alert,
       RichEditor,
       RichText,
     ]

@@ -13,11 +13,12 @@ import ColorPickerSettings from './base/colorPicker';
 import FileUploadSettings from './base/fileUpload';
 import ImageUploadSettings from './base/imageUpload';
 import CascaderSettings from './base/cascader';
-import AlertSettings from './base/alert';
 import RichTextSettings from './base/richText';
 // 布局组件
 import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
+import DividerSettings from './layout/divider';
+import AlertSettings from './layout/alert';
 // 组合组件
 import FormTableColSettings from './combo/form-table-col';
 import FormTableSettings from './combo/form-table';
@@ -57,6 +58,8 @@ const getControlSettings = (id?: string) => {
       return { ...CascaderSettings, ...DefaultFieldSettings };
     case "FormTable":
       return { ...FormTableSettings, ...DefaultFieldSettings };
+    case "Divider":
+      return DividerSettings;
     case "Alert":
       return AlertSettings;
     case "RichText":
