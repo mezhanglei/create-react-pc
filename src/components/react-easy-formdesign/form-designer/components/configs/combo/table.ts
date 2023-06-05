@@ -1,8 +1,8 @@
 export default {
   id: 'FormTable',
   icon: 'table',
-  componentLabel: '表格组件',
-  label: '表格组件',
+  componentLabel: '可编辑表格',
+  label: '可编辑表格',
   type: 'FormTable',
   props: {
     showBtn: true,

@@ -76,19 +76,17 @@ function TableDnd(props: TableDndProps, ref: any) {
   }
 
   return (
-    <div>
-      <DndSortable
-        ref={ref}
-        onUpdate={onUpdate}
-        onAdd={onAdd}
-        data-type="ignore"
-        className='table-dnd'
-        options={{ hiddenFrom: true, disabledDrop: disabledDrop }}
-        collection={{ path: currentPath, attributeName }}
-      >
-        {children}
-      </DndSortable>
-    </div>
+    <DndSortable
+      ref={ref}
+      onUpdate={onUpdate}
+      onAdd={onAdd}
+      data-type="ignore"
+      className='table-dnd'
+      options={{ hiddenFrom: true, disabledDrop: disabledDrop }}
+      collection={{ path: currentPath, attributeName }}
+    >
+      {children}
+    </DndSortable>
   )
 };
 

@@ -18,9 +18,9 @@ import RichTextSettings from './base/richText';
 // 布局组件
 import GridRowSettings from './layout/grid-row';
 import GridColSettings from './layout/grid-col';
-// 容器组件
-import FormTableColSettings from './container/form-table-col';
-import FormTableSettings from './container/form-table';
+// 组合组件
+import FormTableColSettings from './combo/form-table-col';
+import FormTableSettings from './combo/form-table';
 import { filterObject } from "@/utils/object";
 import { PropertiesData } from "@/components/react-easy-formrender";
 // 业务组件

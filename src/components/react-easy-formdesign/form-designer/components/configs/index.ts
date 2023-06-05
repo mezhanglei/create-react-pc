@@ -20,8 +20,8 @@ import RichText from "./base/richText";
 // 布局组件
 // import tableLayout from './layout/table';
 import grid from './layout/grid';
-// 容器字段
-import formTable from "./container/table";
+// 组合组件
+import formTable from "./combo/table";
 
 // 列表中的元素类型
 export interface ELementProps extends FormNodeProps, CustomOptions {
@@ -48,8 +48,8 @@ export const ComponentsSource = [
     ]
   },
   {
-    title: '容器组件',
-    elementType: '容器组件',
+    title: '控件组合',
+    elementType: '控件组合',
     elements: [
       formTable
     ]

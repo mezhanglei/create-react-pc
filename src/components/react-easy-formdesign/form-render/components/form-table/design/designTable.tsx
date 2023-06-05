@@ -30,6 +30,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
     TableColHead: `${prefix}-col__head`,
     TableColBody: `${prefix}-col__body`,
     TableDnd: `${prefix}-dnd`,
+    placeholder: `${prefix}-placeholder`,
   };
 
   return (
@@ -40,21 +41,24 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
       ref={ref}>
       <TableDnd  {...rest}>
         {
-          columns?.map((column, colIndex) => {
-            const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: column?.props });
-            return (
-              <ColumnSelection key={colIndex} className={Classes.TableSelection} {...rest} column={column} colIndex={colIndex}>
-                <div className={Classes.TableCol}>
-                  <div className={Classes.TableColHead}>
-                    {column?.label}
+          columns?.length ?
+            columns?.map((column, colIndex) => {
+              const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: column?.props });
+              return (
+                <ColumnSelection key={colIndex} className={Classes.TableSelection} {...rest} column={column} colIndex={colIndex}>
+                  <div className={Classes.TableCol}>
+                    <div className={Classes.TableColHead}>
+                      {column?.label}
+                    </div>
+                    <div className={Classes.TableColBody}>
+                      {column?.hidden === true ? null : columnInstance}
+                    </div>
                   </div>
-                  <div className={Classes.TableColBody}>
-                    {column?.hidden === true ? null : columnInstance}
-                  </div>
-                </div>
-              </ColumnSelection>
-            )
-          })
+                </ColumnSelection>
+              )
+            })
+            :
+            <span className={Classes.placeholder}>将控件拖拽到此处</span>
         }
       </TableDnd>
     </div>

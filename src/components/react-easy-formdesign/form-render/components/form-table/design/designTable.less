@@ -1,5 +1,5 @@
 .design-table {
-  min-height: 50px;
+  min-height: 100px;
   height: 100%;
   border: 1px inset rgba(0, 0, 0, .1);
   flex: 1;
@@ -37,5 +37,15 @@
       padding: 12px;
       min-height: 56px;
     }
+  }
+
+  &-placeholder {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #ccc;
+    margin: auto;
+    text-align: center;
   }
 }
