@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { updateDesignerItem, getDesignerItem, isNoSelected, setDesignerFormValue, getNameSettings } from '../../utils/utils';
+import { getDesignerItem, isNoSelected, setDesignerFormValue, getNameSettings, setDesignerItem, updateDesignerItem } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
@@ -31,7 +31,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const configSettings = useMemo(() => {
     const item = getDesignerItem(designer, selectedPath, attributeName);
     return getConfigSettings(item?.id, item?.subId);
-  }, [selectedPath, attributeName]); // 配置表单列表
+  }, [designer, selected]); // 配置表单列表
   const nameSettings = useMemo(() => getNameSettings(designer, selected), [designer, selected]); // 表单节点字段设置
 
   useEffect(() => {
@@ -72,7 +72,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     const curSettingsValues = getDesignerItem(designer, path, attributeName);
     const endName = getPathEnd(path);
     form?.reset(attributeName ? curSettingsValues : { ...curSettingsValues, name: endName }); // 回填属性区域数据
-    updateDesignerItem(designer, curSettingsValues, path, attributeName); // 同步编辑区域
+    setDesignerItem(designer, curSettingsValues, path, attributeName); // 同步编辑区域
     // 回填编辑区默认值
     if (!attributeName) {
       setDesignerFormValue(designerForm, selectedName, curSettingsValues?.initialValue);

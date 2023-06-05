@@ -41,7 +41,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   const setEdit = useFormEdit();
   const { selected } = useFormDesign();
   const completePath = joinFormPath(path, attributeName) as string;
-  const currentPath = joinFormPath(selected.path, selected?.attributeName);
+  const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
 
   const chooseItem = (e: any) => {

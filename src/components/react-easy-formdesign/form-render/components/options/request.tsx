@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
 import { useFormDesign } from "../../../utils/hooks";
-import { getDesignerItem, updateDesignerItem } from "../../../utils/utils";
+import { getDesignerItem, setDesignerItem } from "../../../utils/utils";
 import CodeTextArea from "../code-textarea";
 import { EditorCodeMirrorModal } from "./editor";
 import RenderForm, { RenderFormProps, useFormStore } from '../../../form-render';
@@ -119,7 +119,7 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
     const newConfig = oldProps?.requestConfig || {};
     newConfig[name] = value;
     onChange && onChange(newConfig);
-    updateDesignerItem(designer, newConfig, selectedPath, 'props.requestConfig')
+    setDesignerItem(designer, newConfig, selectedPath, 'props.requestConfig')
   }
 
   return (

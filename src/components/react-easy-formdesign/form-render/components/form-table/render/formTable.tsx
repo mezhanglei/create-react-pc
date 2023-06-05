@@ -33,11 +33,11 @@ export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementPr
 }
 
 const CustomTableCell = (props: any) => {
-  const { name, formrender, type, props: typeProps, children, ...restProps } = props;
+  const { name, formrender, type, props: typeProps, hidden, children, ...restProps } = props;
   const columnInstance = formrender && formrender.componentInstance({ type, props: typeProps });
   return (
     <Form.Item component={TableCell} name={name} key={name} {...restProps}>
-      {columnInstance || children}
+      {hidden === true ? null : (columnInstance || children)}
     </Form.Item>
   );
 }
@@ -76,7 +76,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   const deleteBtn = (rowIndex: number) => {
     if (disabled) return;
     deleteItem(rowIndex);
-    // 更新表单的值(引用更新)
+    // 更新表单的值(这里采用引用更新)
     const old = form.getFieldValue() || [];
     old.splice(rowIndex, 1);
     onChange && onChange(old);
@@ -140,7 +140,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         pagination={pagination}
         {...pickAttrs(rest)}
       />
-      {showBtn && <Button type="link" disabled={disabled} onClick={addBtn}>+添加</Button>}
+      {showBtn && <Button type="link" className="add-btn" disabled={disabled} onClick={addBtn}>+添加</Button>}
     </Form>
   );
 });

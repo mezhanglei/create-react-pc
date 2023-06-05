@@ -2,6 +2,7 @@ import { arrayMove } from "@/utils/array";
 import { FormNodeProps, PropertiesData } from "../types";
 import { pathToArr, deepSet, joinFormPath, deepGet } from "../../react-easy-formcore";
 import { isEmpty } from "@/utils/type";
+import { deepMergeObject } from "@/utils/object";
 
 // 匹配字符串表达式
 export const matchExpression = (value?: any) => {
@@ -64,7 +65,9 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
   if (end) {
     const lastData = temp[end];
     if (attributeName) {
-      const newData = deepSet(lastData, attributeName, data);
+      const oldData = deepGet(lastData, attributeName) || {};
+      const mergeData = deepMergeObject(oldData, data);
+      const newData = deepSet(lastData, attributeName, mergeData);
       temp[end] = newData;
     } else {
       if (data === undefined) {
@@ -75,7 +78,7 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
           delete temp[end];
         }
       } else {
-        temp[end] = { ...lastData, ...data };
+        temp[end] = deepMergeObject(lastData, data);
       }
     }
   }

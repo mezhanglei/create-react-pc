@@ -1,8 +1,4 @@
 const baseSettings = {
-  initialValue: {
-    label: '默认值',
-    type: '',
-  },
   props: {
     properties: {
       minRows: {
@@ -24,12 +20,6 @@ const operationSettings = {
     type: 'LinkageCheckbox',
     inline: true,
     props: { children: '隐藏' }
-  },
-  showLabel: {
-    type: 'LinkageCheckbox',
-    inline: true,
-    initialValue: true,
-    props: { children: '标签' }
   },
   props: {
     properties: {

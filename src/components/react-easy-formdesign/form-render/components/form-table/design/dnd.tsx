@@ -2,9 +2,10 @@ import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/compon
 import React from 'react';
 import './dnd.less';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { defaultGetId, getConfigField, insertDesignItem, updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, getConfigField, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';
+import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -13,6 +14,7 @@ export interface TableDndProps extends GeneratePrams<ELementProps> {
 // 表格拖放
 function TableDnd(props: TableDndProps, ref: any) {
   const { children, formrender, path, field, ...rest } = props;
+  const setEdit = useFormEdit();
 
   const attributeName = `props.columns`;
   const currentPath = path;
@@ -26,7 +28,8 @@ function TableDnd(props: TableDndProps, ref: any) {
     const columns = field?.props?.columns || [];
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
-    formrender && updateDesignerItem(formrender, newColumns, currentPath, attributeName);
+    formrender && setDesignerItem(formrender, newColumns, currentPath, attributeName);
+    setEdit({ selected: {} })
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -56,10 +59,12 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 拼接column
     const newColumn = {
       ...formField,
-      showLabel: false,
+      id: "FormTableCol",
+      subId: formField?.id,
       name: defaultGetId(formField.id)
     }
     formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
+    setEdit({ selected: {} });
   }
 
   const disabledDrop: DndCondition = (param) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '@/components/svg-icon';
 import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import { updateDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
@@ -43,14 +43,15 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     const oldColumns = [...columns];
     const newColumn = {
       ...column,
+      name: defaultGetId(column?.id),
     };
     oldColumns.splice(nextColIndex, 0, newColumn);
     const newField = deepSet(field, columnsPath, oldColumns);
-    designer && updateDesignerItem(designer, newField, currentPath);
+    designer && setDesignerItem(designer, newField, currentPath);
   }
 
   const deleteColumn = () => {
-    designer && updateDesignerItem(designer, undefined, currentPath, attributeName);
+    designer && setDesignerItem(designer, undefined, currentPath, attributeName);
     setEdit({ selected: {} });
   }
 

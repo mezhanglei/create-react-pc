@@ -48,9 +48,9 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
   // 接受外部赋值
   const defaultTab = buttons[0]?.value;
   useEffect(() => {
-    const result = getTabFromValue(value) || defaultTab;
-    setTab(result);
-    setDataMap({ [result]: value });
+    const tabkey = getTabFromValue(value) || defaultTab;
+    setTab(tabkey);
+    setDataMap({ [tabkey]: value });
   }, [defaultTab]);
 
   const getTabFromValue = (val?: any) => {
@@ -84,11 +84,7 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
       {...rest}
       value={dataMap['linkage']}
       onChange={(val) => dataChange('linkage', val)}
-      controlField={{
-        type: 'CodeTextArea',
-        props: {
-        }
-      }} />
+      controlField={{ type: 'CodeTextArea', }} />
   }
 
   const Component = tab && ComponentMap[tab];

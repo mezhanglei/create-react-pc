@@ -25,8 +25,8 @@ import { filterObject } from "@/utils/object";
 import { PropertiesData } from "@/components/react-easy-formrender";
 // 业务组件
 
-// 根据id获取配置
-const getConfigSettingsById = (id?: string) => {
+// 获取单一控件的配置
+const getControlSettings = (id?: string) => {
   if (!id) return {};
   switch (id) {
     case "Input":
@@ -76,11 +76,11 @@ const getConfigSettings = (id?: string, subId?: string): { [key: string]: Proper
   if (!id) return {};
   switch (id) {
     case "FormTableCol":
-      const settings = getConfigSettingsById(subId);
+      const settings = getControlSettings(subId);
       const needSettings = filterObject(settings, (key) => key !== '公共属性');
-      return { ...needSettings, ...FormTableColSettings };
+      return { ...FormTableColSettings, ...needSettings };
     default:
-      return getConfigSettingsById(id);
+      return getControlSettings(id);
   }
 }
 

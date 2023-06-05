@@ -26,6 +26,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
     Table: prefix,
     TableBody: `${prefix}-body`,
     TableCol: `${prefix}-col`,
+    TableSelection: `${prefix}-selection`,
     TableColHead: `${prefix}-col__head`,
     TableColBody: `${prefix}-col__body`,
     TableDnd: `${prefix}-dnd`,
@@ -42,16 +43,16 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
           columns?.map((column, colIndex) => {
             const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: column?.props });
             return (
-              <div className={Classes.TableCol} key={colIndex}>
-                <ColumnSelection {...rest} column={column} colIndex={colIndex}>
+              <ColumnSelection key={colIndex} className={Classes.TableSelection} {...rest} column={column} colIndex={colIndex}>
+                <div className={Classes.TableCol}>
                   <div className={Classes.TableColHead}>
                     {column?.label}
                   </div>
                   <div className={Classes.TableColBody}>
-                    {columnInstance}
+                    {column?.hidden === true ? null : columnInstance}
                   </div>
-                </ColumnSelection>
-              </div>
+                </div>
+              </ColumnSelection>
             )
           })
         }

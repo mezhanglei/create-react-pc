@@ -29,12 +29,6 @@ const operationSettings = {
     inline: true,
     props: { children: '隐藏' }
   },
-  showLabel: {
-    type: 'LinkageCheckbox',
-    inline: true,
-    initialValue: true,
-    props: { children: '标签' }
-  },
   props: {
     properties: {
       disabled: {

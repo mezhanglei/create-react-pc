@@ -133,7 +133,7 @@ export const deepMergeObject = function (obj1: any, obj2: any) {
   for (let key in obj2) {
     if (isObject(obj1[key])) {
       obj1[key] = deepMergeObject(obj1[key], obj2[key])
-    } else if (obj2[key] !== undefined) {
+    } else {
       obj1[key] = obj2[key]
     }
   }
@@ -142,10 +142,10 @@ export const deepMergeObject = function (obj1: any, obj2: any) {
 
 // 合并新对象，新对象浅合并, 新的覆盖旧的
 export const shallowMerge = function (oldValue: any, newValue: any) {
-  if (!isObject(oldValue) || !isObject(oldValue)) {
+  if (!isObject(oldValue) || !isObject(newValue)) {
     return oldValue;
   }
-  const result = { ...oldValue };
+  const result = deepClone(oldValue);
   for (let key in newValue) {
     result[key] = newValue[key];
   }

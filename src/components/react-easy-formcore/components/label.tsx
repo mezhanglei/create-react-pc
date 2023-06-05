@@ -3,7 +3,7 @@ import React, { CSSProperties } from 'react';
 import './label.less';
 import Icon from '@/components/svg-icon';
 import Tooltip from '@/components/tooltip';
-import { isValidChildren } from '@/utils/ReactIs';
+import { isEmpty } from '@/utils/type';
 
 export interface LabelBaseProps {
   colon?: boolean;
@@ -52,7 +52,7 @@ export const Label = React.forwardRef<any, LabelProps>((props, ref) => {
   }
 
   return (
-    isValidChildren(children) && showLabel ? (
+    !isEmpty(children) && showLabel ? (
       <label ref={ref} className={cls} style={mergeStyle} {...restProps}>
         {colon === true ? <>{children}:</> : children}
         {tooltip && (
