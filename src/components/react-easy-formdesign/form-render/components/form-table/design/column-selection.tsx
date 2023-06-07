@@ -36,7 +36,6 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const columnsPath = `props.columns`;
   const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = path;
-  const { resetSelect } = useFormEdit();
 
   const copyItem = () => {
     const nextColIndex = colIndex + 1;
@@ -52,7 +51,6 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const deleteColumn = () => {
     designer && setDesignerItem(designer, undefined, currentPath, attributeName);
-    resetSelect();
   }
 
   return (

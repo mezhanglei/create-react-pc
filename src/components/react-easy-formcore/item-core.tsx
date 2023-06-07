@@ -130,13 +130,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     }
   }, [currentPath]);
 
-  const childValue = (value: any) => {
-    if (typeof valueSetter === 'function') {
-      return valueSetter(value);
-    } else {
-      return value;
-    }
-  }
+  const childValue = useMemo(() => typeof valueSetter === 'function' ? valueSetter(value) : value, [valueSetter, value]);
 
   // 控件绑定value和onChange
   const bindChild = (child: any) => {
@@ -144,7 +138,8 @@ export const ItemCore = (props: ItemCoreProps) => {
       const valuePropName = getValuePropName(valueProp, child && child.type);
       const childProps = child?.props as any;
       const { className } = childProps || {};
-      const valueResult = childValue(value);
+      const valueResult = childValue;
+      console.log(valueResult, name, '控件的值')
       const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult }
 
       triggers.forEach((eventName) => {

@@ -35,7 +35,6 @@ export interface FormDesignCtxProps {
 
 export interface FormEditCtxProps {
   setEdit: (params: Partial<FormDesignCtxProps>) => void
-  resetSelect: () => void;
 }
 // 表单设计器的context
 export const FormDesignContext = React.createContext<FormDesignCtxProps>({})

@@ -60,11 +60,11 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     });
     // 同步编辑区域的信息到属性区域回显
     if (settingsForm) {
-      const oldValues = settingsForm?.getFieldValue();
-      const initialValues = attributeName ? deepGet(field, attributeName) : field;
+      const currentField = attributeName ? deepGet(field, attributeName) : field;
       const endName = getPathEnd(nextSelected?.path);
-      const settingValues = attributeName ? { ...initialValues, ...oldValues, } : { ...initialValues, ...oldValues, name: endName }
-      settingsForm.setFieldValue(settingValues);
+      const settingValues = attributeName ? currentField : { ...currentField, name: endName }
+      console.log(settingValues, '回显')
+      settingsForm.setFieldValue({ ...settingValues, initialValue: currentField?.initialValue });
     }
   }
 

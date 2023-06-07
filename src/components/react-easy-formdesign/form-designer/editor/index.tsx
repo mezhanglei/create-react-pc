@@ -29,7 +29,7 @@ const PlatOptions = [
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const { designer, designerForm, settingsForm, properties } = useFormDesign();
-  const { setEdit, resetSelect } = useFormEdit();
+  const { setEdit } = useFormEdit();
 
   const {
     style,
@@ -48,10 +48,14 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
-    // 回填setting表单的intialValue选项
-    settingsForm?.setFieldValue('initialValue', value);
-    // 表单记录下新的initialValue值
-    updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
+    // 延迟变更值
+    setTimeout(() => {
+      console.log(value, 'change')
+      // 表单记录下新的initialValue值
+      updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
+      // 回填setting表单的intialValue选项
+      settingsForm?.setFieldValue('initialValue', value);
+    }, 0);
   }
 
   const importJson = () => {
@@ -74,7 +78,6 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       style={style}
       {...restProps}
       onClick={() => {
-        resetSelect();
       }}>
       <header className="editor-header">
         <div className="left-toolbar">

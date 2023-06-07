@@ -28,22 +28,13 @@ function Provider(props: ProviderProps) {
     mode: 'edit',
     settingsForm: null,
   });
-  
-  const resetSelect = () => {
-    const settingsForm = state.settingsForm;
-    settingsForm && settingsForm.reset();
-    setEdit({
-      selected: {},
-      settingsForm: null,
-    })
-  }
 
   const {
     children
   } = props;
 
   return (
-    <FormEditContext.Provider value={{ setEdit, resetSelect }}>
+    <FormEditContext.Provider value={{ setEdit }}>
       <FormDesignContext.Provider value={state}>
         {children}
       </FormDesignContext.Provider>

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { getDesignerItem, isNoSelected, setDesignerFormValue, getNameSettings, updateDesignerItem } from '../../utils/utils';
+import { isNoSelected, setDesignerFormValue, getNameSettings, updateDesignerItem } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
@@ -17,7 +17,7 @@ const prefixCls = 'item-settings';
 function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const {
     style,
-    className
+    className,
   } = props;
 
   const { setEdit } = useFormEdit();
@@ -28,7 +28,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const form = useFormStore();
   const cls = classnames(prefixCls, className);
   const configSettings = useMemo(() => {
-    const item = getDesignerItem(designer, selectedPath, attributeName);
+    const item = designer.getItemByPath(selectedPath, attributeName);
     return getConfigSettings(item?.id, item?.subId);
   }, [designer, selectedPath, attributeName]); // 配置表单列表
   const nameSettings = useMemo(() => getNameSettings(designer, selected), [designer, selectedPath, attributeName]); // 表单节点字段设置
@@ -37,18 +37,18 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     setEdit({ settingsForm: form });
   }, []);
 
-  const onFieldsChange: RenderFormProps['onFieldsChange'] = () => {
-    if (isNoSelected(selectedPath)) return;
-    const settingsValues = form.getFieldValue();
-    updateDesignerItem(designer, settingsValues, selectedPath, attributeName);
-    // 非属性节点才可以设同步值
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
+    if (typeof name !== 'string') return;
+    designer?.updateItemByPath({ [name]: value }, selectedPath, attributeName);
+    // 非attributeName节点
     if (!attributeName) {
-      setDesignerFormValue(designerForm, selectedName, settingsValues?.initialValue);
-      // 当前字段名更改则同步更改selected
-      const { name } = settingsValues;
-      const joinName = joinFormPath(selected?.parent?.name, name);
-      const joinPath = joinFormPath(selected?.parent?.path, name);
-      if (name) {
+      if (name === 'initialValue') {
+        // 如果是值的更新则同时更新编辑区域表单
+        setDesignerFormValue(designerForm, selectedName, value);
+        // 更新name字段时需要更新选择框
+      } else if (name === 'name') {
+        const joinName = joinFormPath(selected?.parent?.name, value);
+        const joinPath = joinFormPath(selected?.parent?.path, value);
         setEdit({ selected: { ...selected, name: joinName, path: joinPath } });
       }
     }

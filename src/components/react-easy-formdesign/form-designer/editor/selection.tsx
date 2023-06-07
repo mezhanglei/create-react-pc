@@ -1,6 +1,5 @@
 import { insertDesignItem } from '../../utils/utils';
 import React, { CSSProperties } from 'react';
-import { useFormEdit } from '../../utils/hooks';
 import Icon from '@/components/svg-icon';
 import BaseSelection, { CommonSelectionProps } from './baseSelection';
 
@@ -28,7 +27,6 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     form: designerForm,
   } = props;
 
-  const { resetSelect } = useFormEdit();
   const currentPath = path;
 
   const copyItem = () => {
@@ -39,7 +37,6 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
 
   const deleteItem = () => {
     currentPath && designer?.delItemByPath(currentPath);
-    resetSelect();
   }
 
   return (
