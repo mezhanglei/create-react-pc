@@ -1,8 +1,27 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepSet } from "../form-render";
-import { FormDesignContext, FormEditContext } from "../form-designer/designer-context";
+import { FormDesignContext, FormEditContext, SelectedType } from "../form-designer/designer-context";
 import { setExpandComponents } from "@/components/react-easy-formrender/utils/utils";
 import { getFromSelected } from "./utils";
+import EventBus from "@/utils/event-bus";
+
+export function useEventBus() {
+  return useMemo(() => new EventBus(), [])
+}
+
+// 获取当前hover的内容
+export function useHoverSelected() {
+  const context = useContext(FormDesignContext);
+  const [hoverSelected, setHoverSelected] = useState<SelectedType>();
+
+  useEffect(() => {
+    context.eventBus.on('hover', (val: SelectedType) => {
+      setHoverSelected(val);
+    });
+  }, []);
+
+  return hoverSelected;
+}
 
 // 表单设计器的context
 export function useFormDesign() {
@@ -14,7 +33,7 @@ export function useFormDesign() {
 // 表单设计器的state
 export function useFormEdit() {
   const context = useContext(FormEditContext);
-  return context?.setEdit;
+  return context;
 }
 
 // 表单设计器的展开的控件

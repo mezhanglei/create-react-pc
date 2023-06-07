@@ -18,7 +18,7 @@ function PlatContainer(props: PlatContainerProps, ref: any) {
   return (
     <div ref={ref} className={classnames('form-container', className, {
       'pc': isPc,
-      'ipad': isPad,
+      'pad': isPad,
       'phone': isPhone
     })}>
       {children}

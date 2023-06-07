@@ -5,7 +5,7 @@ import './index.less';
 import ControlDnd from './dnd';
 import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign, useFormEdit } from '../../utils/hooks';
+import { useFormDesign, useFormEdit, useHoverSelected } from '../../utils/hooks';
 import Tooltip from '@/components/tooltip';
 import Icon from "@/components/svg-icon";
 import { Button, Divider, Radio } from 'antd';
@@ -20,11 +20,16 @@ export interface DesignEditorProps {
   style?: CSSProperties
 }
 const prefixCls = `${DesignprefixCls}-editor`;
+const PlatOptions = [
+  { label: 'PC', value: 'pc' },
+  { label: 'Pad', value: 'pad' },
+  { label: 'Phone', value: 'phone' }
+];
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const { designer, designerForm, settingsForm, selected, properties } = useFormDesign();
-  const setEdit = useFormEdit();
+  const { designer, designerForm, settingsForm, properties } = useFormDesign();
+  const { setEdit, resetSelect } = useFormEdit();
 
   const {
     style,
@@ -34,11 +39,8 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
   const [plat, setPlat] = useState<PlatContainerProps['plat']>('pc');
-  const PlatOptions = [
-    { label: 'PC', value: 'pc' },
-    { label: 'Pad', value: 'pad' },
-    { label: 'Phone', value: 'phone' }
-  ];
+  const hoverSelected = useHoverSelected();
+
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
     setEdit({ properties: newData });
@@ -49,7 +51,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     // 回填setting表单的intialValue选项
     settingsForm?.setFieldValue('initialValue', value);
     // 表单记录下新的initialValue值
-    updateDesignerItem(designer, { initialValue: value }, selected?.path, selected?.attributeName);
+    updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
   }
 
   const importJson = () => {
@@ -72,7 +74,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       style={style}
       {...restProps}
       onClick={() => {
-        setEdit({ selected: { name: '#' } });
+        resetSelect();
       }}>
       <header className="editor-header">
         <div className="left-toolbar">

@@ -73,7 +73,7 @@ export const getDesignerItem = (designer: FormRenderStore, path?: string, attrib
   const configSettings = getConfigSettings(curValues?.id, curValues?.subId);
   // 从配置表单中获取初始属性
   const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
-    const result = { ...pre, ...cur };
+    const result = deepMergeObject(pre, cur);
     return result;
   }, {});
   const initialValues = getInitialValues(expandSettings);

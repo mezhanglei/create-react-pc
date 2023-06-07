@@ -2,6 +2,8 @@ const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'DatePicker',
+    valueSetter: "{{(value)=> (value && moment(value))}}",
+    valueGetter: "{{(value) => (value && moment(value).format(formvalues.props && formvalues.props.format || 'YYYY-MM-DD'))}}",
     props: {
       picker: "{{formvalues.props && formvalues.props.picker}}",
       format: "{{formvalues.props && formvalues.props.format}}",

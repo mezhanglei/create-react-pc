@@ -1,3 +1,4 @@
+import EventBus from '@/utils/event-bus';
 import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
 import { ELementProps, FormDesignData } from './components/configs';
@@ -18,8 +19,9 @@ export interface SelectedType {
 
 // 表单编辑器操作方法
 export interface FormDesignCtxProps {
-  designerForm: FormStore
-  designer: FormRenderStore
+  designerForm: FormStore;
+  designer: FormRenderStore;
+  eventBus: EventBus;
   selected: SelectedType;
   historyData: {
     index: number;
@@ -33,6 +35,7 @@ export interface FormDesignCtxProps {
 
 export interface FormEditCtxProps {
   setEdit: (params: Partial<FormDesignCtxProps>) => void
+  resetSelect: () => void;
 }
 // 表单设计器的context
 export const FormDesignContext = React.createContext<FormDesignCtxProps>({})

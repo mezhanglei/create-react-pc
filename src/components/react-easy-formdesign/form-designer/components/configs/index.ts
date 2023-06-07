@@ -30,7 +30,6 @@ export interface ELementProps extends FormNodeProps, CustomOptions {
   subId?: string; // 子组件的id， 用于匹配子组件的配置
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
-  disabledEdit?: boolean; // 禁止编辑
   includes?: string[]; // 限制可以添加的子元素id
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }

@@ -14,7 +14,7 @@ export interface TableDndProps extends GeneratePrams<ELementProps> {
 // 表格拖放
 function TableDnd(props: TableDndProps, ref: any) {
   const { children, formrender, path, field, ...rest } = props;
-  const setEdit = useFormEdit();
+  const { resetSelect } = useFormEdit();
 
   const attributeName = `props.columns`;
   const currentPath = path;
@@ -29,7 +29,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
     formrender && setDesignerItem(formrender, newColumns, currentPath, attributeName);
-    setEdit({ selected: {} })
+    resetSelect();
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -64,7 +64,7 @@ function TableDnd(props: TableDndProps, ref: any) {
       name: defaultGetId(formField.id)
     }
     formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
-    setEdit({ selected: {} });
+    resetSelect();
   }
 
   const disabledDrop: DndCondition = (param) => {

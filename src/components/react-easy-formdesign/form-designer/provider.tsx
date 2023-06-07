@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFormRenderStore, useFormStore } from '../../react-easy-formrender';
+import { useEventBus } from '../utils/hooks';
 import { FormDesignContext, FormEditContext } from './designer-context';
 import { useSet } from './use-hooks';
 
@@ -11,10 +12,12 @@ function Provider(props: ProviderProps) {
 
   const designerStore = useFormRenderStore();
   const designerForm = useFormStore();
+  const eventBus = useEventBus();
 
   const [state, setEdit] = useSet({
     designerForm: designerForm,
     designer: designerStore,
+    eventBus: eventBus,
     properties: {},
     selected: {},
     historyData: {
@@ -25,13 +28,22 @@ function Provider(props: ProviderProps) {
     mode: 'edit',
     settingsForm: null,
   });
+  
+  const resetSelect = () => {
+    const settingsForm = state.settingsForm;
+    settingsForm && settingsForm.reset();
+    setEdit({
+      selected: {},
+      settingsForm: null,
+    })
+  }
 
   const {
     children
   } = props;
 
   return (
-    <FormEditContext.Provider value={{ setEdit }}>
+    <FormEditContext.Provider value={{ setEdit, resetSelect }}>
       <FormDesignContext.Provider value={state}>
         {children}
       </FormDesignContext.Provider>

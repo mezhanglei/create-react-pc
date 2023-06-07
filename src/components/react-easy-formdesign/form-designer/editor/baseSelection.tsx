@@ -1,4 +1,4 @@
-import { joinFormPath } from '@/components/react-easy-formcore';
+import { deepGet, joinFormPath } from '@/components/react-easy-formcore';
 import classnames from 'classnames';
 import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
@@ -6,6 +6,7 @@ import './baseSelection.less';
 import { ELementProps } from '../components/configs';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
+import { getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
@@ -38,23 +39,33 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   } = props;
 
   const [isOver, setIsOver] = useState<boolean>(false);
-  const setEdit = useFormEdit();
-  const { selected } = useFormDesign();
+  const { setEdit } = useFormEdit();
+  const { selected, eventBus, settingsForm } = useFormDesign();
   const completePath = joinFormPath(path, attributeName) as string;
   const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
 
+  const nextSelected = {
+    name: name,
+    path: path,
+    attributeName: attributeName,
+    field: field,
+    parent: parent,
+  }
+
   const chooseItem = (e: any) => {
     e.stopPropagation();
     setEdit({
-      selected: {
-        name: name,
-        path: path,
-        attributeName: attributeName,
-        field: field,
-        parent: parent,
-      }
-    })
+      selected: nextSelected
+    });
+    // 同步编辑区域的信息到属性区域回显
+    if (settingsForm) {
+      const oldValues = settingsForm?.getFieldValue();
+      const initialValues = attributeName ? deepGet(field, attributeName) : field;
+      const endName = getPathEnd(nextSelected?.path);
+      const settingValues = attributeName ? { ...initialValues, ...oldValues, } : { ...initialValues, ...oldValues, name: endName }
+      settingsForm.setFieldValue(settingValues);
+    }
   }
 
   const prefixCls = "editor-selection";
@@ -66,6 +77,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       target.classList.add(overCls);
       setIsOver(true);
     }
+    eventBus.emit('hover', nextSelected);
     onMouseOver && onMouseOver(e);
   }
 
@@ -94,7 +106,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       {isOver && !isSelected && componentLabel && <div className={classes.label}>{componentLabel}</div>}
       {isSelected && <div className={classes.tools}>{tools}</div>}
       {children}
-      {field?.disabledEdit && <div className={classes.mask}></div>}
+      {/* {<div className={classes.mask}></div>} */}
     </div>
   );
 };

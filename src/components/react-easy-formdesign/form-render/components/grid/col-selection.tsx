@@ -29,7 +29,7 @@ function ColSelection(props: ColSelectionProps, ref: any) {
   } = props;
 
   const currentPath = path;
-  const setEdit = useFormEdit();
+  const { resetSelect } = useFormEdit();
 
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
@@ -46,7 +46,7 @@ function ColSelection(props: ColSelectionProps, ref: any) {
 
   const deleteItem = () => {
     currentPath && designer?.delItemByPath(currentPath);
-    setEdit({ selected: {} })
+    resetSelect();
   }
 
   const prefixCls = "col-selection";

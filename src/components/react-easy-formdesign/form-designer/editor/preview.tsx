@@ -5,6 +5,7 @@ import { create } from '@/components/global-modal/createPromise';
 import RenderForm from '../../form-render';
 import './preview.less';
 import { FormDesignData } from '../components/configs';
+import { PlatContainerProps } from './platContainer';
 
 export interface PreviewModalProps extends ModalWrapperProps {
   properties?: FormDesignData
@@ -22,6 +23,12 @@ export const PreviewModal = React.forwardRef<HTMLDivElement, PreviewModalProps>(
   } = props;
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [plat, setPlat] = useState<PlatContainerProps['plat']>('pc');
+  const PlatOptions = [
+    { label: 'PC', value: 'pc' },
+    { label: 'Pad', value: 'pad' },
+    { label: 'Phone', value: 'phone' }
+  ];
 
   useEffect(() => {
     setModalOpen(open);

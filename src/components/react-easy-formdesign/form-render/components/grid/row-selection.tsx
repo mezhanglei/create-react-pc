@@ -29,7 +29,7 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
   } = props;
 
   const currentPath = path;
-  const setEdit = useFormEdit();
+  const { resetSelect } = useFormEdit();
 
   const addCol = () => {
     const currentItem = designer?.getItemByPath(currentPath);
@@ -47,7 +47,7 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
 
   const deleteItem = () => {
     currentPath && designer?.delItemByPath(currentPath);
-    setEdit({ selected: {} })
+    resetSelect();
   }
 
   const prefixCls = "row-selection";

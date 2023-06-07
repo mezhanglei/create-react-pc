@@ -28,7 +28,7 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     form: designerForm,
   } = props;
 
-  const setEdit = useFormEdit();
+  const { resetSelect } = useFormEdit();
   const currentPath = path;
 
   const copyItem = () => {
@@ -39,7 +39,7 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
 
   const deleteItem = () => {
     currentPath && designer?.delItemByPath(currentPath);
-    setEdit({ selected: {} })
+    resetSelect();
   }
 
   return (
