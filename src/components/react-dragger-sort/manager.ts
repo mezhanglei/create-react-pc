@@ -1,5 +1,5 @@
-import { isMoveIn } from "./utils/dom";
-import { EventType, SortableItem } from "./utils/types";
+import { isMoveIn } from "./utils/utils";
+import { EventType, SortableItem } from "./types";
 
 // 管理拖拽的类
 export class DndManager {

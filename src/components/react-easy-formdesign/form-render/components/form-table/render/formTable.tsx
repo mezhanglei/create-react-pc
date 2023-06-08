@@ -12,9 +12,9 @@ import Icon from '@/components/svg-icon';
 import { ColumnsType } from "antd/lib/table";
 
 export interface CustomColumnType extends ColumnsType<any> {
-  key: string;
-  name: string;
-  label: string;
+  key?: string;
+  title: string;
+  dataIndex: string;
   type?: string;
   props?: any;
   initialValue?: any;
@@ -93,14 +93,14 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
 
   const newColumns = useMemo(() => {
     const result = columns?.map((col) => {
-      const { name, label, type, props, ...restCol } = col;
+      const { dataIndex, title, type, props, ...restCol } = col;
       return {
         ...restCol,
-        dataIndex: name,
-        title: label,
+        dataIndex: dataIndex,
+        title: title,
         onCell: (record: unknown, rowIndex?: number) => ({
           record,
-          name: joinFormPath(rowIndex, name), // 拼接路径
+          name: joinFormPath(rowIndex, dataIndex), // 拼接路径
           type,
           props,
           formrender: formrender,

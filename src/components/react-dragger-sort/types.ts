@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { DndManager } from "./manager";
 
 export type EventType = MouseEvent | TouchEvent;
 
@@ -10,7 +10,7 @@ export enum DropEffect {
 }
 
 // 拖放所在区域的信息
-export interface SortableGroup extends DndBaseProps {
+export interface SortableGroup extends DndSortableProps {
   node: HTMLElement
 }
 
@@ -41,7 +41,9 @@ export type DndHandle<T = {}> = (params: DndParams<T>) => void;
 export type DndCondition<T = {}> = (params: DndParams<T>) => boolean | undefined;
 export type UnionCondition = boolean | (HTMLElement | string)[] | DndCondition;
 
-export interface DndBaseProps {
+export interface DndSortableProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
+  dndManager?: DndManager;
+  forwardedRef?: any;
   onStart?: DndHandle; // 拖拽开始触发的函数
   onMove?: DndHandle; // 拖拽进行中触发的函数
   onEnd?: DndHandle; // 拖拽结束函数
@@ -62,11 +64,4 @@ export interface DndBaseProps {
     sortPreClass?: string; // 元素往序号小的排序时添加的class
     sortNextClass?: string; // 元素往序号大的排序时添加的class
   }
-}
-
-// 拖拽容器组件的props
-export interface DndSortableProps extends DndBaseProps {
-  children: any;
-  className?: string;
-  style?: CSSProperties;
 }

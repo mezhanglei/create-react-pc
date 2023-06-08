@@ -63,7 +63,6 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       const currentField = attributeName ? deepGet(field, attributeName) : field;
       const endName = getPathEnd(nextSelected?.path);
       const settingValues = attributeName ? currentField : { ...currentField, name: endName }
-      console.log(settingValues, '回显')
       settingsForm.setFieldValue({ ...settingValues, initialValue: currentField?.initialValue });
     }
   }

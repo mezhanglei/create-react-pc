@@ -27,9 +27,9 @@ export const getFromSelected = (selected?: SelectedType) => {
 export const getNameSettings = (designer: FormRenderStore, selected?: SelectedType) => {
   const selectedPath = selected?.path;
   const attributeName = selected?.attributeName;
-  const item = designer && getDesignerItem(designer, selectedPath, attributeName);
+  if (attributeName) return;
   // 获取选中的字段值
-  const endName = attributeName ? item?.name : getPathEnd(selectedPath);
+  const endName = getPathEnd(selectedPath);
   if (isNoSelected(endName)) return;
   // 非数组节点可以设置name
   if (!isValidNumber(endName)) {

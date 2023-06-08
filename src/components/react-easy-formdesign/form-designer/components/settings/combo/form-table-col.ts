@@ -1,4 +1,8 @@
 const baseSettings = {
+  dataIndex: {
+    label: '字段名',
+    type: 'Input'
+  },
   label: {
     label: '标题',
     type: 'Input'

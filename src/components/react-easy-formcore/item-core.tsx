@@ -139,7 +139,6 @@ export const ItemCore = (props: ItemCoreProps) => {
       const childProps = child?.props as any;
       const { className } = childProps || {};
       const valueResult = childValue;
-      console.log(valueResult, name, '控件的值')
       const newChildProps = { className: classnames(className, errorClassName), [valuePropName]: valueResult }
 
       triggers.forEach((eventName) => {

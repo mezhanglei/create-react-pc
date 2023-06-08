@@ -5,7 +5,7 @@ import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-d
 import { defaultGetId, getConfigField, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';
-import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -17,6 +17,13 @@ function TableDnd(props: TableDndProps, ref: any) {
 
   const attributeName = `props.columns`;
   const currentPath = path;
+  const { setEdit } = useFormEdit();
+  const { settingsForm } = useFormDesign();
+
+  const removeSelect = () => {
+    setEdit({ selected: {} });
+    settingsForm && settingsForm.reset();
+  }
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {
     const { from, to } = params;
@@ -28,6 +35,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
     formrender && setDesignerItem(formrender, newColumns, currentPath, attributeName);
+    removeSelect()
   }
 
   const onAdd: DndSortableProps['onAdd'] = (params) => {
@@ -59,9 +67,10 @@ function TableDnd(props: TableDndProps, ref: any) {
       ...formField,
       id: "FormTableCol",
       subId: formField?.id,
-      name: defaultGetId(formField.id)
+      dataIndex: defaultGetId(formField.id)
     }
     formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
+    removeSelect();
   }
 
   const disabledDrop: DndCondition = (param) => {
