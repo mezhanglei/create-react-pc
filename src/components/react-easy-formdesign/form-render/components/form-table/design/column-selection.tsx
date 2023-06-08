@@ -1,6 +1,5 @@
 import React from 'react';
 import Icon from '@/components/svg-icon';
-import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
@@ -42,7 +41,8 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     const oldColumns = [...columns];
     const newColumn = {
       ...column,
-      name: defaultGetId(column?.id),
+      title: column?.label,
+      dataIndex: defaultGetId(column?.id),
     };
     oldColumns.splice(nextColIndex, 0, newColumn);
     const newField = deepSet(field, columnsPath, oldColumns);

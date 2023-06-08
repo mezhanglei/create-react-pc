@@ -17,15 +17,10 @@ export const isNoSelected = (path?: string) => {
   if (!path || path === '#') return true;
 }
 
-// 从selected中解构
-export const getFromSelected = (selected?: SelectedType) => {
-  if (typeof selected !== 'object') return {};
-  return { selected };
-}
-
 // name的setting
-export const getNameSettings = (designer: FormRenderStore, selected?: SelectedType) => {
+export const getNameSettings = (selected?: SelectedType) => {
   const selectedPath = selected?.path;
+  // const selectedField = selected?.field;
   const attributeName = selected?.attributeName;
   if (attributeName) return;
   // 获取选中的字段值
@@ -43,42 +38,41 @@ export const getNameSettings = (designer: FormRenderStore, selected?: SelectedTy
 }
 
 // 获取当前选中位置序号
-export const getSelectedIndex = (designer: FormRenderStore, selected?: SelectedType) => {
-  const selectedParentPath = selected?.parent?.path;
-  const endName = getPathEnd(selected?.path);
-  const parent = designer.getItemByPath(selectedParentPath);
-  const childProperties = selectedParentPath ? parent?.properties : parent;
-  const keys = Object.keys(childProperties || {});
-  const index = endName ? keys?.indexOf(endName) : -1;
-  return index;
+export const getSelectedIndex = (selected?: SelectedType) => {
+  if (isNoSelected(selected?.path)) return -1;
+  const index = selected?.field?.index as number;
+  return typeof index === 'number' ? index : -1;
 }
 
-// 根据id获取对应的配置的field
-export const getConfigField = (id?: string) => {
+// 获取节点的配置中初始值
+const getSettingsInitial = (id?: string, subId?: string) => {
   if (!id) return;
-  const item = ConfigElementsMap[id];
-  const configSettings = getConfigSettings(item?.id, item?.subId);
-  const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
-    const result = { ...pre, ...cur };
-    return result;
-  }, {});
-  const field = deepMergeObject(item, getInitialValues(expandSettings));
-  return field;
-}
-
-// 获取节点的值和属性
-export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
-  if (isNoSelected(path)) return;
-  let curValues = designer.getItemByPath(path, attributeName) || {};
-  const configSettings = getConfigSettings(curValues?.id, curValues?.subId);
+  const configSettings = getConfigSettings(id, subId);
   // 从配置表单中获取初始属性
   const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
     return result;
   }, {});
   const initialValues = getInitialValues(expandSettings);
-  const result = deepMergeObject(initialValues, curValues);
-  return result;
+  return initialValues;
+}
+
+// 根据id获取对应的组件
+export const getConfigItem = (id?: string) => {
+  if (!id) return;
+  const item = ConfigElementsMap[id];
+  const initialValues = getSettingsInitial(item?.id, item?.subId);
+  const field = deepMergeObject(initialValues, item);
+  return field;
+}
+
+// 根据路径获取节点的值和属性
+export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
+  if (isNoSelected(path)) return;
+  const item = designer.getItemByPath(path, attributeName) || {};
+  const initialValues = getSettingsInitial(item?.id, item?.subId);
+  const field = deepMergeObject(initialValues, item);
+  return field;
 }
 
 // 插入新节点

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { isNoSelected, setDesignerFormValue, getNameSettings, updateDesignerItem } from '../../utils/utils';
+import { setDesignerFormValue, getNameSettings } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
@@ -31,7 +31,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
     const item = designer.getItemByPath(selectedPath, attributeName);
     return getConfigSettings(item?.id, item?.subId);
   }, [designer, selectedPath, attributeName]); // 配置表单列表
-  const nameSettings = useMemo(() => getNameSettings(designer, selected), [designer, selectedPath, attributeName]); // 表单节点字段设置
+  const nameSettings = useMemo(() => getNameSettings(selected), [selectedPath, attributeName]); // 表单节点字段设置
 
   useEffect(() => {
     setEdit({ settingsForm: form });
@@ -39,8 +39,8 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (typeof name !== 'string') return;
-    designer?.updateItemByPath({ [name]: value }, selectedPath, attributeName);
-    // 非attributeName节点才存在值和选中项的更新
+    designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
+    // 非attributeName节点才存在值和selected的更新
     if (!attributeName) {
       if (name === 'initialValue') {
         // 如果是值的更新则同时更新编辑区域表单

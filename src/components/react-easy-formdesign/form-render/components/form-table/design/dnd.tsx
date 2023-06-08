@@ -2,7 +2,7 @@ import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/compon
 import React from 'react';
 import './dnd.less';
 import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
-import { defaultGetId, getConfigField, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
+import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
@@ -56,7 +56,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
-      formField = getConfigField(elementId);
+      formField = getConfigItem(elementId);
       // 从表单节点中插入
     } else {
       formField = formrender && formrender.getItemByIndex(fromIndex, { path: fromCollection?.path });
@@ -67,6 +67,7 @@ function TableDnd(props: TableDndProps, ref: any) {
       ...formField,
       id: "FormTableCol",
       subId: formField?.id,
+      title: formField?.label,
       dataIndex: defaultGetId(formField.id)
     }
     formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });

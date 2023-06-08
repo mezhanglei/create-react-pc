@@ -1,36 +1,15 @@
-import React, { CSSProperties, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Button, message, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
-import { Form, GeneratePrams, joinFormPath, useFormStore } from "../../..";
+import { Form, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 import Icon from '@/components/svg-icon';
-import { ColumnsType } from "antd/lib/table";
-
-export interface CustomColumnType extends ColumnsType<any> {
-  key?: string;
-  title: string;
-  dataIndex: string;
-  type?: string;
-  props?: any;
-  initialValue?: any;
-}
-
-export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
-  value?: any;
-  onChange?: (val: any) => void;
-  minRows?: number; // 表格默认最少行数
-  maxRows?: number; // 表格默认最大行数
-  disabled?: boolean; // 禁用
-  showBtn?: boolean; // 展示或隐藏增减按钮
-  columns: CustomColumnType[];
-  className?: string;
-  style?: CSSProperties;
-}
+import { FormTableProps } from "..";
 
 const CustomTableCell = (props: any) => {
   const { name, formrender, type, props: typeProps, hidden, children, ...restProps } = props;
@@ -61,11 +40,17 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     ...rest
   } = props
 
+  const defaultValue = Array.from({ length: Math.max(value?.length || 0, minRows || 0) });
   const {
     dataSource: tableData,
+    setDataSource,
     addItem,
     deleteItem
-  } = useTableData<any>(Array.from({ length: Math.max(value?.length, minRows) }));
+  } = useTableData<any>(defaultValue);
+
+  useEffect(() => {
+    setDataSource(defaultValue);
+  }, [minRows, value?.length]);
 
   const form = useFormStore();
 

@@ -108,14 +108,12 @@ export class FormStore<T extends Object = any> {
 
   // 更新表单值，单个表单值或多个表单值
   public setFieldValue(path: string | Partial<T>, value?: any, eventName?: TriggerType | boolean) {
-    if (typeof path === 'string') {
+    // 设置单个表单值
+    const setFormItemValue = (path: string, value?: any, eventName?: TriggerType | boolean) => {
       // 旧表单值存储
       this.lastValues = deepClone(this.values);
       // 设置值
       this.values = deepSet(this.values, path, value);
-      // 同步ui
-      this.notifyFormItem(path);
-      this.notifyFormGlobal(path);
       // 规则
       const fieldProps = this.getFieldProps(path);
       const rules = fieldProps?.['rules'];
@@ -123,8 +121,16 @@ export class FormStore<T extends Object = any> {
         // 校验规则
         this.validate(path, eventName);
       }
+    };
+
+    if (typeof path === 'string') {
+      setFormItemValue(path, value, eventName);
+      this.notifyFormItem(path);
+      this.notifyFormGlobal(path);
     } else if (typeof path === 'object') {
-      Promise.all(Object.keys(path).map((n) => this.setFieldValue(n, path?.[n])))
+      Promise.all(Object.keys(path).map((n) => setFormItemValue(n, path?.[n])))
+      this.notifyFormItem();
+      this.notifyFormGlobal();
     }
   }
 

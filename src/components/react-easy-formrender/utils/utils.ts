@@ -63,12 +63,15 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
   // 计算
   temp = pathLen === 0 ? temp : temp?.properties;
   if (end) {
-    const lastData = temp[end];
+    const endData = temp[end];
     if (attributeName) {
-      const oldData = deepGet(lastData, attributeName) || {};
-      const mergeData = deepMergeObject(oldData, data);
-      const newData = deepSet(lastData, attributeName, mergeData);
-      temp[end] = newData;
+      const oldData = deepGet(temp[end], attributeName);
+      if (typeof oldData === 'object' && typeof data === 'object') {
+        const mergeData = deepMergeObject(oldData, data);
+        temp[end] = deepSet(endData, attributeName, mergeData);
+      } else {
+        temp[end] = deepSet(endData, attributeName, data);
+      }
     } else {
       if (data === undefined) {
         if (temp instanceof Array) {
@@ -78,7 +81,7 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
           delete temp[end];
         }
       } else {
-        temp[end] = deepMergeObject(lastData, data);
+        temp[end] = typeof endData === 'object' && typeof data === 'object' ? deepMergeObject(endData, data) : data;
       }
     }
   }

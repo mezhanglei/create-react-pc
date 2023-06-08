@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { message } from 'antd';
 import './index.less';
-import { getConfigField, getSelectedIndex, insertDesignItem } from '../../utils/utils';
+import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../utils/utils';
 import ComponentList from './list';
 import { ELementProps, ComponentsSource } from './configs';
 import { DesignprefixCls } from '../provider';
@@ -27,11 +27,10 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const onChange = (item: ELementProps) => {
     if (attributeName) return;
-    const newIndex = getSelectedIndex(designer, selected) + 1; // 插入位置序号
-    const field = getConfigField(item?.id);
-    const parentField = designer.getItemByPath(selectedParent?.path);
-    const parentIncludes = parentField?.includes;
-    if (parentIncludes && !parentIncludes.includes(field.id)) {
+    const newIndex = getSelectedIndex(selected) + 1; // 插入位置序号
+    const field = getConfigItem(item?.id);
+    const includesIds = selectedParent?.field?.includes;
+    if (includesIds && !includesIds.includes(field.id)) {
       message.warning("当前不可插入")
       return;
     };

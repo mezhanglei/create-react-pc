@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepSet } from "../form-render";
 import { FormDesignContext, FormEditContext, SelectedType } from "../form-designer/designer-context";
 import { setExpandComponents } from "@/components/react-easy-formrender/utils/utils";
-import { getFromSelected } from "./utils";
 import EventBus from "@/utils/event-bus";
 
 export function useEventBus() {
@@ -26,8 +25,7 @@ export function useHoverSelected() {
 // 表单设计器的context
 export function useFormDesign() {
   const context = useContext(FormDesignContext);
-  const fromSelected = getFromSelected(context?.selected);
-  return { ...context, ...fromSelected };
+  return context;
 }
 
 // 表单设计器的state

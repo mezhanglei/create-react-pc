@@ -2,10 +2,9 @@ import { Select } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import OptionsList from './list';
 import { EditorCodeMirror } from './editor';
-import RequestSource, { isRequestConfig } from './request';
+import RequestSource from './request';
 import './index.less';
 import { LinkageBtn } from "../linkage";
-import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 
 /**
  * 数据源的配置组件。
@@ -48,20 +47,10 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
   // 接受外部赋值
   const defaultTab = buttons[0]?.value;
   useEffect(() => {
-    const tabkey = getTabFromValue(value) || defaultTab;
+    const tabkey = defaultTab;
     setTab(tabkey);
     setDataMap({ [tabkey]: value });
   }, [defaultTab]);
-
-  const getTabFromValue = (val?: any) => {
-    const matchStr = matchExpression(val);
-    if (matchStr) {
-      return "linkage"
-    };
-    if (isRequestConfig(val)) {
-      return 'request'
-    }
-  }
 
   const selectTypeChange = (key?: string) => {
     setTab(key);

@@ -1,20 +1,12 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import classnames from "classnames";
 import './designTable.less';
 import pickAttrs from "@/utils/pickAttrs";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
-import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
-import { TableProps } from "..";
+import { FormTableProps } from "..";
 
-export type DesignColumn = ELementProps;
-export interface DesignTableProps extends TableProps {
-  className?: string;
-  style?: CSSProperties;
-  columns?: DesignColumn[];
-}
-
-const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
+const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
   className,
   style,
@@ -33,6 +25,15 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
     placeholder: `${prefix}-placeholder`,
   };
 
+  const params = {
+    name: rest?.name,
+    path: rest?.path,
+    field: rest?.field,
+    parent: rest?.parent,
+    formrender: rest?.formrender,
+    form: rest?.form,
+  }
+
   return (
     <div
       className={classnames([Classes.Table, className])}
@@ -45,13 +46,13 @@ const DesignTable = React.forwardRef<HTMLTableElement, DesignTableProps>(({
             columns?.map((column, colIndex) => {
               const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: column?.props });
               return (
-                <ColumnSelection key={colIndex} className={Classes.TableSelection} {...rest} column={column} colIndex={colIndex}>
+                <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
                   <div className={Classes.TableCol}>
                     <div className={Classes.TableColHead}>
-                      {column?.label}
+                      {column?.title}
                     </div>
                     <div className={Classes.TableColBody}>
-                      {column?.hidden === true ? null : columnInstance}
+                      {column?.hidden === true ? null : React.cloneElement(columnInstance, { value: column?.initialValue })}
                     </div>
                   </div>
                 </ColumnSelection>

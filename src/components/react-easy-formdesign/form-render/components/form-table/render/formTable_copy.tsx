@@ -1,12 +1,12 @@
-import React, { CSSProperties, useCallback } from "react";
+import React, { useCallback } from "react";
 import classnames from "classnames";
 import './formTable.less';
 import { ColumnGroup } from "./columnGroup";
 import pickAttrs from "@/utils/pickAttrs";
-import { TableProps } from "..";
 import { TableBody, TableCell, TableHead, TableRow } from "./components";
 import { Form, joinFormPath, useFormStore } from "../../..";
 import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
+import { FormTableProps } from "..";
 
 const prefix = "form-table";
 export const Classes = {
@@ -16,25 +16,6 @@ export const Classes = {
   TableHead: `${prefix}-head`,
   TableCell: `${prefix}-cell`,
 };
-
-export interface CustomColumnType {
-  key: string;
-  name: string;
-  label: string;
-  width?: React.CSSProperties["width"];
-  align?: React.CSSProperties["textAlign"];
-  type?: string;
-  render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
-}
-
-export interface FormTableProps extends TableProps {
-  columns: CustomColumnType[];
-  dataSource?: { [x: string]: any }[];
-  rowKey?: string | ((record: { [x: string]: any }) => string);
-  tableLayout?: React.CSSProperties["tableLayout"];
-  className?: string;
-  style?: CSSProperties;
-}
 
 const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
@@ -83,7 +64,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
         <TableHead>
           <TableRow>
             {columns.map((column) => {
-              return <TableCell key={column.name}>{column.label}</TableCell>
+              return <TableCell key={column.dataIndex}>{column.title}</TableCell>
             })}
           </TableRow>
         </TableHead>
@@ -92,10 +73,10 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
             return (
               <TableRow key={getRowKey(record, rowIndex)}>
                 {columns.map((column, colIndex) => {
-                  const { render, name } = column || {};
+                  const { render, dataIndex } = column || {};
                   const columnInstance = formrender && formrender.componentInstance(column);
-                  const child = typeof render == 'function' ? render(record[name], record, rowIndex, colIndex) : (columnInstance || record[name]);
-                  const joinPath = joinFormPath(rowIndex, name);
+                  const child = typeof render == 'function' ? render(record[dataIndex], record, rowIndex, colIndex) : (columnInstance || record[dataIndex]);
+                  const joinPath = joinFormPath(rowIndex, dataIndex);
                   return (
                     <Form.Item component={TableCell} name={joinPath} key={joinPath}>
                       {child}

@@ -50,7 +50,6 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
     // 延迟变更值
     setTimeout(() => {
-      console.log(value, 'change')
       // 表单记录下新的initialValue值
       updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
       // 回填setting表单的intialValue选项

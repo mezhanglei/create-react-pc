@@ -1,8 +1,8 @@
 import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
-import { GeneratePrams, joinFormPath } from '../../form-render';
+import { GeneratePrams } from '../../form-render';
 import './dnd.less';
-import { getConfigField, insertDesignItem } from '../../utils/utils';
+import { getConfigItem, insertDesignItem } from '../../utils/utils';
 import { DndType, ELementProps } from '../components/configs';
 
 export interface ControlDndProps extends GeneratePrams<ELementProps> {
@@ -49,7 +49,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
-      const field = getConfigField(elementId);
+      const field = getConfigItem(elementId);
       formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
     } else {
       formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
