@@ -14,6 +14,7 @@ const ModalWrapper = React.forwardRef<HTMLDivElement, ModalWrapperProps>((props,
   const {
     children,
     className,
+    classNames,
     onClose,
     open,
     showCloseIcon = false,
@@ -51,7 +52,7 @@ const ModalWrapper = React.forwardRef<HTMLDivElement, ModalWrapperProps>((props,
       open={modalOpen}
       showCloseIcon={showCloseIcon}
       onClose={closeModal}
-      classNames={{ modal: cls }}
+      classNames={{ modal: cls, ...classNames }}
       {...rest}>
       {
         React.isValidElement(children) ? React.cloneElement(children, {

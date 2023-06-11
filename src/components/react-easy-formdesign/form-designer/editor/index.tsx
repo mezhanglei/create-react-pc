@@ -20,7 +20,7 @@ export interface DesignEditorProps {
   style?: CSSProperties
 }
 const prefixCls = `${DesignprefixCls}-editor`;
-const PlatOptions = [
+export const PlatOptions = [
   { label: 'PC', value: 'pc' },
   { label: 'Pad', value: 'pad' },
   { label: 'Phone', value: 'phone' }
@@ -100,7 +100,6 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
           </Tooltip>
           <Divider className="left-divid" type='vertical' />
           <Radio.Group
-            className="plat-buttons"
             options={PlatOptions}
             onChange={(e) => setPlat(e?.target?.value)}
             value={plat}

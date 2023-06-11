@@ -7,6 +7,8 @@ import { FormDesignData } from '../components/configs';
 import { EditorCodeMirror } from '../../form-render/components/options/editor';
 import { Button } from 'antd';
 import { copyToClipboard } from '@/utils/string';
+import { saveAsFile } from '@/utils/file';
+import js_beautify from 'js-beautify';
 
 export interface ExportJsonModalProps extends ModalWrapperProps {
   properties?: FormDesignData
@@ -38,6 +40,15 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
     copyToClipboard(JSON.stringify(properties), e);
   }
 
+  const downloadJS = () => {
+    const str = JSON.stringify(properties);
+    const formatStr = str && js_beautify(str, {
+      indent_size: 2
+    });
+    const fileId = new Date().toLocaleTimeString();
+    saveAsFile(formatStr, `formData_${fileId}.json`);
+  }
+
   const prefixCls = 'export-json-modal';
   const cls = classnames(prefixCls, className);
 
@@ -58,6 +69,7 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
       </div>
       <div className={`${prefixCls}-footer`}>
         <Button type='default' onClick={copyJson}>复制JSON</Button>
+        <Button type='primary' onClick={downloadJS}>导出文件</Button>
         <Button type='default' onClick={closeModal}>关闭</Button>
       </div>
     </ModalWrapper>

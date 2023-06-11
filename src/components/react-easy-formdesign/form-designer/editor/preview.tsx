@@ -5,7 +5,9 @@ import { create } from '@/components/global-modal/createPromise';
 import RenderForm from '../../form-render';
 import './preview.less';
 import { FormDesignData } from '../components/configs';
-import { PlatContainerProps } from './platContainer';
+import PlatContainer, { PlatContainerProps } from './platContainer';
+import { Radio } from 'antd';
+import { PlatOptions } from '.';
 
 export interface PreviewModalProps extends ModalWrapperProps {
   properties?: FormDesignData
@@ -24,11 +26,6 @@ export const PreviewModal = React.forwardRef<HTMLDivElement, PreviewModalProps>(
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [plat, setPlat] = useState<PlatContainerProps['plat']>('pc');
-  const PlatOptions = [
-    { label: 'PC', value: 'pc' },
-    { label: 'Pad', value: 'pad' },
-    { label: 'Phone', value: 'phone' }
-  ];
 
   useEffect(() => {
     setModalOpen(open);
@@ -50,10 +47,20 @@ export const PreviewModal = React.forwardRef<HTMLDivElement, PreviewModalProps>(
       classNames={{ modal: cls }}
       {...rest}>
       <div className={`${prefixCls}-title`}>预览</div>
+      <Radio.Group
+        className="plat-buttons"
+        options={PlatOptions}
+        onChange={(e) => setPlat(e?.target?.value)}
+        value={plat}
+        optionType="button"
+        buttonStyle="solid"
+      />
       <div className={`${prefixCls}-body`}>
-        <RenderForm
-          properties={properties}
-        />
+        <PlatContainer plat={plat}>
+          <RenderForm
+            properties={properties}
+          />
+        </PlatContainer>
       </div>
     </ModalWrapper>
   );
