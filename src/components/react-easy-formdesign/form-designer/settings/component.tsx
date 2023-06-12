@@ -39,7 +39,11 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (typeof name !== 'string') return;
-    designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
+    if (name == 'name') {
+      designer?.updateNameByPath(value, selectedPath);
+    } else {
+      designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
+    }
     // 非attributeName节点才存在值和selected的更新
     if (!attributeName) {
       if (name === 'initialValue') {

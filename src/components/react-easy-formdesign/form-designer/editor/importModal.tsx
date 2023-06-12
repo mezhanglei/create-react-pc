@@ -58,7 +58,7 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
 });
 
 // 展示弹窗
-export const showImportModal = (props?: any) => {
+export const showImportModal = (props?: Partial<ImportModalProps>) => {
   const Props = {
     open: true,
     ...props,

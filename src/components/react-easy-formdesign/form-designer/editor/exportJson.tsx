@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import ModalWrapper, { ModalWrapperProps } from '@/components/global-modal/modalWrapper';
 import { create } from '@/components/global-modal/createPromise';
 import './exportJson.less';
-import { FormDesignData } from '../components/configs';
 import { EditorCodeMirror } from '../../form-render/components/options/editor';
 import { Button } from 'antd';
 import { copyToClipboard } from '@/utils/string';
@@ -11,7 +10,8 @@ import { saveAsFile } from '@/utils/file';
 import js_beautify from 'js-beautify';
 
 export interface ExportJsonModalProps extends ModalWrapperProps {
-  properties?: FormDesignData
+  data?: any;
+  title: string;
 }
 
 export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalProps>((props, ref) => {
@@ -21,7 +21,8 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
     className,
     open,
     onClose,
-    properties,
+    data,
+    title,
     ...rest
   } = props;
 
@@ -37,11 +38,11 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
   }
 
   const copyJson = (e: any) => {
-    copyToClipboard(JSON.stringify(properties), e);
+    copyToClipboard(JSON.stringify(data), e);
   }
 
   const downloadJS = () => {
-    const str = JSON.stringify(properties);
+    const str = JSON.stringify(data);
     const formatStr = str && js_beautify(str, {
       indent_size: 2
     });
@@ -59,11 +60,11 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
       onClose={closeModal}
       classNames={{ modal: cls }}
       {...rest}>
-      <div className={`${prefixCls}-title`}>预览</div>
+      <div className={`${prefixCls}-title`}>{title}</div>
       <div className={`${prefixCls}-body`}>
         <EditorCodeMirror
           className={`${prefixCls}-content`}
-          value={JSON.stringify(properties)}
+          value={JSON.stringify(data)}
           options={{ readOnly: true, }}
         />
       </div>
@@ -77,7 +78,7 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
 });
 
 // 展示弹窗
-export const showExportJsonModal = (props: any) => {
+export const showExportJsonModal = (props: Partial<ExportJsonModalProps>) => {
   const Props = {
     open: true,
     ...props,

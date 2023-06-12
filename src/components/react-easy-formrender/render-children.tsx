@@ -10,7 +10,6 @@ import { isEmpty } from '@/utils/type';
 // 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
-  const options = useContext(FormOptionsContext);
   const [fieldPropsMap, setFieldPropsMap] = useState<Partial<FormNodeProps>>({});
   const [properties, setProperties] = useState<PropertiesData>({});
 
@@ -24,16 +23,15 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     inside,
     properties: propsProperties,
     formrender,
-    expressionImports = {}
+    expressionImports = {},
+    options,
   } = props;
 
+  const formOptions = useContext(FormOptionsContext);
   const form = useContext<FormStore>(FormStoreContext);
+  const { onValuesChange } = formOptions;
   const formRenderStore = formrender || useFormRenderStore();
-  formRenderStore.registry('components', { ...defaultComponents, ...components });
-
-  const {
-    onValuesChange
-  } = options;
+  formRenderStore.registry('components', Object.assign({}, defaultComponents, components));
 
   const valuesCallback: ItemCoreProps['onValuesChange'] = (...args) => {
     onValuesChange && onValuesChange(...args)
@@ -240,19 +238,20 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   // 目标套上其他组件
   const withSide = (children: any, side?: CustomUnionType, render?: CustomRenderType, commonProps?: GeneratePrams) => {
     const keyProps = { key: commonProps?.path, };
-    const childs = typeof render === 'function' ? render?.({ ...commonProps, ...keyProps, children }) : (React.isValidElement(children) ? React.cloneElement(children, keyProps) : children);
-    const sideInstance = side && formRenderStore.componentInstance(side, { ...commonProps, ...ignoreTag });
-    const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, { children: childs, ...keyProps } as any) : childs;
+    const childs = typeof render === 'function' ? render?.(Object.assign({ children }, commonProps, keyProps)) : (React.isValidElement(children) ? React.cloneElement(children, keyProps) : children);
+    const sideInstance = side && formRenderStore.componentInstance(side, Object.assign({}, commonProps, ignoreTag));
+    const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, Object.assign({ children: childs }, keyProps)) : childs;
     return childsWithSide;
   }
 
   // 生成子元素
-  const generateChild = (name: string, path: string, field: GenerateFormNodeProps, parent?: { name?: string, path?: string, field?: GenerateFormNodeProps, }) => {
+  const generateChild = (name: string, path: string, field: GenerateFormNodeProps, parent?: GeneratePrams['parent']) => {
     if (field?.hidden === true || !field) return;
+    const mergeField = typeof options === 'function' ? options(field) : Object.assign({}, options, field);
     const commonParams = {
       name,
       path,
-      field: { ...options, ...field },
+      field: mergeField,
       parent,
       form: form,
       formrender: formRenderStore
@@ -271,7 +270,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       inside,
       outside,
       ...restField
-    } = field;
+    } = mergeField;
     // 是否有子节点
     const haveProperties = typeof properties === 'object';
     // 当前节点是否为只读
@@ -288,7 +287,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       (React.isValidElement(fieldWidget) ? React.cloneElement(fieldWidget, { children: nestChildren, key: path, } as any) : nestChildren)
       : fieldWidget;
     const childsWithReadOnly = isReadOnly ? readOnlyWidget : childs;
-    const fieldProps = {
+    const fieldProps = Object.assign({
       key: path,
       name: name,
       onValuesChange: valuesCallback,
@@ -296,8 +295,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       suffix: suffixInstance,
       ignore: readOnly,
       component: component !== undefined ? formRenderStore.componentParse(component) : undefined,
-      ...restField
-    }
+    }, formOptions, restField);
     // 没有子属性则节点为表单控件, 增加Form.Item表单域收集表单值
     const result = haveProperties ? childsWithReadOnly : (
       <Form.Item {...fieldProps}>

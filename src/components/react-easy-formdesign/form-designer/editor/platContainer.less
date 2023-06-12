@@ -1,10 +1,12 @@
+@mobile-height: 440px;
+
 .form-container {
   padding: 10px;
   width: 100%;
   height: 100%;
-  background: #fafafa;
+  max-height: 500px;
   border-radius: 15px;
-  margin: 0 auto;
+  margin: 15px auto;
 
   &.pad {
     max-width: 750px;
@@ -16,13 +18,12 @@
   &.phone {
     overflow: hidden;
     width: 375px;
-    height: 500px;
-    background-color: #F4F7FA;
+    height: @mobile-height;
+    background-color: #fff;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     border-bottom-left-radius: 50px;
     border-bottom-right-radius: 50px;
-    margin: 20px auto;
     box-shadow: 1px 2px 20px rgba(0, 0, 0, 0.2);
     z-index: 500;
     position: relative;
@@ -59,7 +60,6 @@
     }
 
     .mobile-content {
-      background-color: #f7f7f7;
       border: 1px solid #E2E3E4;
 
       .phone-bar {
@@ -71,7 +71,8 @@
       }
 
       .phone-screen {
-        height: calc(500px - 140px);
+        height: calc(@mobile-height - 140px);
+        padding: 10px;
         overflow-y: scroll;
         overflow-x: hidden;
       }

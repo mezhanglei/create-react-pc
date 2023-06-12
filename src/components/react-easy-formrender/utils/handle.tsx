@@ -33,7 +33,7 @@ export const createInstance = (target?: any, typeMap?: { [key: string]: React.El
     if (Child) {
       const { children, ...restProps } = (target as FormComponent)?.props || {};
       return (
-        <Child {...commonProps} {...restProps}>
+        <Child {...Object.assign({}, commonProps, restProps)}>
           {createInstance(children, typeMap, commonProps)}
         </Child>
       );

@@ -17,6 +17,7 @@ export default function RenderForm(props: RenderFormProps) {
     inside,
     onPropertiesChange,
     expressionImports,
+    options,
     ...formOptions
   } = props;
 
@@ -25,6 +26,7 @@ export default function RenderForm(props: RenderFormProps) {
   return (
     <Form form={formStore} {...formOptions}>
       <RenderFormChildren
+        options={options}
         expressionImports={expressionImports}
         uneval={uneval}
         formrender={formrender}

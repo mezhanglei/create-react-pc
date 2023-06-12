@@ -20,8 +20,7 @@ export function RenderFormChildren(props: RenderFormChildrenProps) {
 export interface CustomOptions {
   isEditor?: boolean; // 是否为编辑态
 }
-export type RenderDesignFormProps = RenderFormProps & CustomOptions;
-export default function FormRender(props: RenderDesignFormProps) {
+export default function FormRender(props: RenderFormProps<CustomOptions>) {
   return (
     <RenderFormDefault
       {...props}

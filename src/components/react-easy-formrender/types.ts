@@ -6,7 +6,6 @@ import { FormRenderStore } from "./formrender-store";
 export interface FormComponent {
   type?: string;
   props?: any & { children?: any | Array<FormComponent> };
-  hidden?: string | boolean;
 }
 
 export type UnionComponent<P> =
@@ -19,7 +18,7 @@ export type UnionComponent<P> =
 export type CustomUnionType = FormComponent | Array<FormComponent> | UnionComponent<any> | Function | ReactNode
 
 // 最终生成的表单域
-export interface GenerateFormNodeProps extends FormComponent, FormItemProps {
+export type GenerateFormNodeProps<T = {}> = FormComponent & FormItemProps & T & {
   ignore?: boolean; // 标记当前节点为非表单节点
   inside?: CustomUnionType; // 节点内层嵌套组件
   outside?: CustomUnionType; // 节点外层嵌套组件
@@ -27,6 +26,7 @@ export interface GenerateFormNodeProps extends FormComponent, FormItemProps {
   readOnlyRender?: CustomUnionType; // 只读模式下的组件
   typeRender?: CustomUnionType; // 表单控件自定义渲染
   properties?: PropertiesData;
+  hidden?: string | boolean;
 }
 
 // 表单属性对象
@@ -44,7 +44,7 @@ export type FormNodeProps = {
 export type WatchHandler = (newValue: any, oldValue: any) => void
 
 // 不带form容器的渲染组件props
-export interface RenderFormChildrenProps {
+export interface RenderFormChildrenProps<T = {}> {
   // 给字符串表达式传入外部变量
   expressionImports?: object;
   uneval?: boolean;
@@ -58,20 +58,21 @@ export interface RenderFormChildrenProps {
   renderItem?: CustomRenderType;
   // 渲染数据回调函数
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
-  formrender?: FormRenderStore
+  formrender?: FormRenderStore;
+  options?: GenerateFormNodeProps<T> | ((params: GenerateFormNodeProps<T>) => GenerateFormNodeProps<T>); // 组件公共传参
 }
 
 // 带form容器的渲染组件props
-export interface RenderFormProps extends Omit<FormProps, 'form'>, RenderFormChildrenProps {
-  form?: FormStore
+export interface RenderFormProps<T = {}> extends Omit<FormProps, 'form'>, RenderFormChildrenProps<T> {
+  form?: FormStore;
 };
 
 // 组件公共的参数
 export interface GeneratePrams<T = {}> {
   name?: string;
   path?: string;
-  field?: T & GenerateFormNodeProps;
-  parent?: { name?: string; path?: string, field?: T & GenerateFormNodeProps; };
+  field?: GenerateFormNodeProps<T>;
+  parent?: { name?: string; path?: string, field?: GenerateFormNodeProps<T>; };
   formrender?: FormRenderStore;
   form?: FormStore;
 };

@@ -170,8 +170,8 @@ export const toEntries = (data: any) => {
   const isList = data instanceof Array;
   if (typeof data === 'object') {
     for (let key of Object.keys(data)) {
-      const field = data[key];
-      temp.push([key, field]);
+      const value = data[key];
+      temp.push([key, value]);
     }
   }
   return {

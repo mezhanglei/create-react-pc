@@ -9,7 +9,7 @@ import { useFormDesign, useFormEdit, useHoverSelected } from '../../utils/hooks'
 import Tooltip from '@/components/tooltip';
 import Icon from "@/components/svg-icon";
 import { Button, Divider, Radio } from 'antd';
-import PlatContainer, { PlatContainerProps } from './platContainer';
+import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer';
 import { showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
@@ -20,11 +20,6 @@ export interface DesignEditorProps {
   style?: CSSProperties
 }
 const prefixCls = `${DesignprefixCls}-editor`;
-export const PlatOptions = [
-  { label: 'PC', value: 'pc' },
-  { label: 'Pad', value: 'pad' },
-  { label: 'Phone', value: 'phone' }
-];
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
@@ -38,7 +33,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   } = props;
 
   const cls = classnames(prefixCls, className);
-  const [plat, setPlat] = useState<PlatContainerProps['plat']>('pc');
+  const [platType, setPlatType] = useState<PlatContainerProps['plat']>('pc');
   const hoverSelected = useHoverSelected();
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
@@ -61,13 +56,13 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     showImportModal()
   }
   const showPreview = () => {
-    showPreviewModal({ properties })
+    showPreviewModal({ properties, plat: platType });
   }
   const clearEditor = () => {
     setEdit({ properties: undefined });
   }
   const showExportJson = () => {
-    showExportJsonModal({ properties });
+    showExportJsonModal({ data: properties, title: '渲染JSON' });
   }
 
   return (
@@ -101,8 +96,8 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
           <Divider className="left-divid" type='vertical' />
           <Radio.Group
             options={PlatOptions}
-            onChange={(e) => setPlat(e?.target?.value)}
-            value={plat}
+            onChange={(e) => setPlatType(e?.target?.value)}
+            value={platType}
             optionType="button"
             buttonStyle="solid"
           />
@@ -113,9 +108,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
         <Button type='link' onClick={showExportJson}>生成JSON</Button>
       </header>
       <main className="editor-main">
-        <PlatContainer plat={plat}>
+        <PlatContainer plat={platType}>
           <RenderForm
-            isEditor
+            options={{ isEditor: true }}
             formrender={designer}
             form={designerForm}
             properties={properties}

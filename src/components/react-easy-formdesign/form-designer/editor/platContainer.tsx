@@ -2,8 +2,15 @@ import classnames from 'classnames';
 import React from 'react';
 import './platContainer.less';
 
+export const PlatOptions = [
+  { label: 'PC', value: 'pc' },
+  { label: 'Pad', value: 'pad' },
+  { label: 'Phone', value: 'phone' }
+];
+
+export type PlatType = typeof PlatOptions[number]["value"]
 export interface PlatContainerProps extends React.HtmlHTMLAttributes<any> {
-  plat: 'pc' | 'pad' | 'phone'
+  plat: PlatType;
 }
 
 function PlatContainer(props: PlatContainerProps, ref: any) {
