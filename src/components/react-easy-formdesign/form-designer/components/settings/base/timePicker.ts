@@ -2,8 +2,6 @@ const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'TimePicker',
-    valueSetter: "{{(value)=> (value && moment(value, 'HH:mm:ss'))}}",
-    valueGetter: "{{(value) => (value && moment(value).format(formvalues.props && formvalues.props.format || 'HH:mm:ss'))}}",
     props: {
       format: "{{formvalues.props && formvalues.props.format}}",
       use12Hours: "{{formvalues.props && formvalues.props.use12Hours}}",

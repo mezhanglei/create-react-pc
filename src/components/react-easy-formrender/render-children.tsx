@@ -197,7 +197,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
             return [propsKey, generateValue]
           }
           if (matchStr) {
-            if (propsKey === 'valueSetter') {
+            if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
               return [propsKey, () => undefined]
             }
             return [propsKey]
