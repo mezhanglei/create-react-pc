@@ -1,4 +1,4 @@
-import { deepGet, joinFormPath } from '@/components/react-easy-formcore';
+import { joinFormPath } from '@/components/react-easy-formcore';
 import classnames from 'classnames';
 import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
@@ -6,7 +6,6 @@ import './baseSelection.less';
 import { ELementProps } from '../components/configs';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
-import { getPathEnd } from '@/components/react-easy-formrender/utils/utils';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
@@ -40,7 +39,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   const [isOver, setIsOver] = useState<boolean>(false);
   const { setEdit } = useFormEdit();
-  const { selected, eventBus, settingsForm } = useFormDesign();
+  const { selected, eventBus } = useFormDesign();
   const completePath = joinFormPath(path, attributeName) as string;
   const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
@@ -58,13 +57,6 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     setEdit({
       selected: nextSelected
     });
-    // 同步编辑区域的信息到属性区域回显
-    if (settingsForm) {
-      const currentField = attributeName ? deepGet(field, attributeName) : field;
-      const endName = getPathEnd(nextSelected?.path);
-      const settingValues = attributeName ? currentField : { ...currentField, name: endName }
-      settingsForm.setFieldValue({ ...settingValues, initialValue: currentField?.initialValue });
-    }
   }
 
   const prefixCls = "editor-selection";
