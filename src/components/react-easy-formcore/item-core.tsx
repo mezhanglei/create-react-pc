@@ -34,7 +34,7 @@ export const ItemCore = (props: ItemCoreProps) => {
   const initialValues = useContext(FormInitialValuesContext);
   const contextValues = useContext(FormValuesContext);
   const options = useContext(FormOptionsContext);
-  const mergeProps = { ...options, ...props };
+  const mergeProps = Object.assign({}, options, props);
   const { children, ...fieldProps } = mergeProps;
   const {
     name,

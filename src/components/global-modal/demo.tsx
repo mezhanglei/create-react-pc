@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import React, { useEffect, useState } from 'react';
+import { create } from './createPromise';
 import ModalWrapper, { ModalWrapperProps } from './modalWrapper';
 
 export interface DemoModalProps extends ModalWrapperProps {
@@ -36,7 +37,15 @@ export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props
       onClose={closeModal}
       classNames={{ modal: cls }}
       {...rest}>
-      1111111
+      命令方式弹窗
     </ModalWrapper>
   );
 });
+
+// 展示弹窗
+export const showDemoSwitch = () => {
+  const Props = {
+    open: true
+  }
+  return create(DemoModal, { ...Props })
+};

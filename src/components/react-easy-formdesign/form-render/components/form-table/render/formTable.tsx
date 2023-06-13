@@ -12,8 +12,8 @@ import Icon from '@/components/svg-icon';
 import { FormTableProps } from "..";
 
 const CustomTableCell = (props: any) => {
-  const { name, formrender, type, props: typeProps, hidden, children, ...restProps } = props;
-  const columnInstance = formrender && formrender.componentInstance({ type, props: typeProps });
+  const { name, formrender, type, disabled, props: typeProps, hidden, children, ...restProps } = props;
+  const columnInstance = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, typeProps) });
   return (
     <Form.Item component={TableCell} name={name} key={name} {...restProps}>
       {hidden === true ? null : (columnInstance || children)}
@@ -50,7 +50,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
 
   useEffect(() => {
     setDataSource(defaultValue);
-  }, [minRows, value?.length]);
+  }, [minRows]);
 
   const form = useFormStore();
 
@@ -88,6 +88,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
           name: joinFormPath(rowIndex, dataIndex), // 拼接路径
           type,
           props,
+          disabled,
           formrender: formrender,
           ...restCol,
         }),
@@ -106,7 +107,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       })
     }
     return result;
-  }, [columns, showBtn, tableData]);
+  }, [columns, showBtn, tableData, disabled]);
 
   return (
     <Form

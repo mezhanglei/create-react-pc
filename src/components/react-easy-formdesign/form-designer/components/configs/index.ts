@@ -7,7 +7,9 @@ import Checkbox from './base/checkbox';
 import Select from './base/select';
 import Switch from './base/switch';
 import TimePicker from './base/timePicker';
+import TimePickerRangePicker from './base/timePickerRangePicker';
 import DatePicker from './base/datePicker';
+import DatePickerRangePicker from './base/datePickerRangePicker';
 import Slider from './base/slider';
 import Rate from './base/rate';
 import ColorPicker from './base/colorPicker';
@@ -66,7 +68,9 @@ export const ComponentsSource = [
       Select,
       Switch,
       TimePicker,
+      TimePickerRangePicker,
       DatePicker,
+      DatePickerRangePicker,
       Slider,
       Rate,
       ColorPicker,

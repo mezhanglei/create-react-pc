@@ -16,7 +16,7 @@ export type FormListProps<T = ItemProps> = T & ListCoreProps & {
 export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
   const form = useContext<FormStore>(FormStoreContext)
   const options = useContext<any>(FormOptionsContext)
-  const mergeProps = { ...options, ...props };
+  const mergeProps = Object.assign({}, options, props);
   const { children, ...fieldProps } = mergeProps;
   const {
     name,

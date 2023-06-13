@@ -16,7 +16,7 @@ export const useSet = <T>(initState: T) => {
         action = action(state);
       }
     }
-    return { ...state, ...action };
+    return Object.assign({}, state, action);
   }, initState);
 
   const setClassState = (state: T) => {

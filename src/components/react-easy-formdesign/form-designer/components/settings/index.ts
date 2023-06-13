@@ -6,7 +6,9 @@ import CheckboxSettings from './base/checkbox';
 import SelectSettings from './base/select';
 import SwitchSettings from './base/switch';
 import TimePickerSettings from './base/timePicker';
+import TimePickerRangePickerSettings from './base/timePickerRangePicker';
 import DatePickerSettings from './base/datePicker';
+import DatePickerRangePickerSettings from './base/datePickerRangePicker';
 import SliderSettings from './base/slider';
 import RateSettings from './base/rate';
 import ColorPickerSettings from './base/colorPicker';
@@ -42,8 +44,12 @@ const getControlSettings = (id?: string) => {
       return { ...SwitchSettings, ...DefaultFieldSettings };
     case "TimePicker":
       return { ...TimePickerSettings, ...DefaultFieldSettings };
+    case "TimePickerRangePicker":
+      return { ...TimePickerRangePickerSettings, ...DefaultFieldSettings };
     case "DatePicker":
       return { ...DatePickerSettings, ...DefaultFieldSettings };
+    case "DatePickerRangePicker":
+      return { ...DatePickerRangePickerSettings, ...DefaultFieldSettings };
     case "Slider":
       return { ...SliderSettings, ...DefaultFieldSettings };
     case "Rate":

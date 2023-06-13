@@ -74,7 +74,7 @@ export class FormStore<T extends Object = any> {
       delete this.fieldProps[path]
     } else {
       const lastField = this.fieldProps[path];
-      const newField = { ...lastField, ...field };
+      const newField = Object.assign({}, lastField, field);
       this.fieldProps[path] = newField;
       this.validator.add(path, field?.['rules']);
     };

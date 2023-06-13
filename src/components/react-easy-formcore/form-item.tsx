@@ -15,7 +15,7 @@ export type FormItemProps<T = ItemProps> = T & ItemCoreProps & {
 export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
   const form = useContext<FormStore>(FormStoreContext)
   const options = useContext<FormItemProps>(FormOptionsContext)
-  const mergeProps = { ...options, ...props };
+  const mergeProps = Object.assign({}, options, props);
   const { children, ...fieldProps } = mergeProps;
   const {
     name,
