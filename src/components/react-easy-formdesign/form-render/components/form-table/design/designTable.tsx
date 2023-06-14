@@ -8,6 +8,7 @@ import { FormTableProps } from "..";
 
 const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
+  disabled,
   className,
   style,
   ...rest
@@ -44,7 +45,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
         {
           columns?.length ?
             columns?.map((column, colIndex) => {
-              const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: column?.props });
+              const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled }, column?.props) });
               return (
                 <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
                   <div className={Classes.TableCol}>
@@ -52,7 +53,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
                       {column?.title}
                     </div>
                     <div className={Classes.TableColBody}>
-                      {column?.hidden === true ? null : React.cloneElement(columnInstance, { value: column?.initialValue })}
+                      {column?.hidden === true ? null : React.cloneElement(columnInstance, { value: column?.initialValue, })}
                     </div>
                   </div>
                 </ColumnSelection>

@@ -2,8 +2,8 @@ const baseSettings = {
   initialValue: {
     label: '默认值',
     type: 'DatePicker.RangePicker',
-    valueSetter: "{{(value)=> (typeof value === 'string' && moment(value))}}",
-    valueGetter: "{{(value) => (moment.isMoment(value) && moment(value).format(formvalues.props && formvalues.props.format || 'YYYY-MM-DD'))}}",
+    valueSetter: "{{(value)=> value instanceof Array && value.map((item) => typeof item === 'string' && moment(item))}}",
+    valueGetter: "{{(value) => value instanceof Array && value.map((item) => moment.isMoment(item) && moment(item).format(formvalues.props && formvalues.props.format || 'YYYY-MM-DD'))}}",
     props: {
       picker: "{{formvalues.props && formvalues.props.picker}}",
       format: "{{formvalues.props && formvalues.props.format}}",

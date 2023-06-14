@@ -89,12 +89,12 @@ export const ItemCore = (props: ItemCoreProps) => {
   // 给子元素绑定的onChange
   const bindChange = useCallback(
     (eventName, ...args: any[]) => {
-      const value = valueGetter(...args);
+      const newValue = valueGetter(...args);
       if (currentPath && form) {
         // 设置值
-        form.setFieldValue(currentPath, value, eventName);
+        form.setFieldValue(currentPath, newValue, eventName);
         // 主动onchange事件
-        onFieldsChange && onFieldsChange({ name: currentPath, value: value }, form?.getFieldValue());
+        onFieldsChange && onFieldsChange({ name: currentPath, value: newValue }, form?.getFieldValue());
       }
     },
     [currentPath, form, valueGetter, onFieldsChange]

@@ -53,11 +53,11 @@ export const ListCore = (props: ListCoreProps) => {
     const childRules = rules instanceof Array ? rules?.concat(child?.props?.rules) : child?.props?.rules;
     const childValue = child?.props?.initialValue ?? initialValue?.[currentIndex];
     const childname = joinFormPath(currentPath, currentIndex, child?.props?.name);
-    return child && cloneElement(child, {
+    return React.isValidElement(child) ? cloneElement(child, {
       name: childname,
       rules: childRules,
       initialValue: childValue
-    });
+    } as any) : child;
   };
 
   const childs = getChildren(children);

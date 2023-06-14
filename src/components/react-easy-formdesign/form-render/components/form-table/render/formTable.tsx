@@ -40,7 +40,8 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     ...rest
   } = props
 
-  const defaultValue = Array.from({ length: Math.max(value?.length || 0, minRows || 0) });
+  const items = Array.from({ length: Math.max(value?.length || 0, minRows || 0) });
+  const defaultValue = useMemo(() => items.map((item) => ({ key: defaultGetId('row') })), [items]);
   const {
     dataSource: tableData,
     setDataSource,
@@ -68,8 +69,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   }
 
   const addBtn = () => {
-    const list = form.getFieldValue() || [];
-    if (list.length >= maxRows) {
+    if (tableData?.length >= maxRows) {
       message.info(`最大行数不能超过${maxRows}`)
       return;
     }
