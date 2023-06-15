@@ -75,7 +75,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       }}>
       <header className="editor-header">
         <div className="left-toolbar">
-          <Tooltip
+          {/* <Tooltip
             appendTo={document.body}
             theme="light"
             content="撤销"
@@ -93,7 +93,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
               <Icon name="redo" />
             </Button>
           </Tooltip>
-          <Divider className="left-divid" type='vertical' />
+          <Divider className="left-divid" type='vertical' /> */}
           <Radio.Group
             options={PlatOptions}
             onChange={(e) => setPlatType(e?.target?.value)}

@@ -178,22 +178,8 @@ export class FormStore<T extends Object = any> {
   // 校验整个表单或校验表单中的某个控件
   public async validate(): Promise<ValidateResult<T>>
   public async validate(path: string, eventName?: TriggerType | boolean): Promise<string>
-  public async validate(path?: string, eventName?: TriggerType | boolean) {
-    if (path === undefined) {
-      const fieldPropsMap = this.getFieldProps() || {};
-      const result = await Promise.all(Object.keys(fieldPropsMap)?.map((key) => {
-        const fieldProps = fieldPropsMap?.[key];
-        const rules = fieldProps?.['rules'];
-        if (rules instanceof Array) {
-          return this.validate(key)
-        }
-      }))
-      const currentError = result?.filter((message) => message !== undefined)?.[0]
-      return {
-        error: currentError,
-        values: this.getFieldValue()
-      }
-    } else if (typeof path == 'string') {
+  public async validate(path?: string | string[], eventName?: TriggerType | boolean) {
+    const singleValidate = async (path: string) => {
       // 清空错误信息
       this.setFieldError(path, undefined);
       const fieldProps = this.getFieldProps(path) || {};
@@ -201,12 +187,31 @@ export class FormStore<T extends Object = any> {
       const ignore = fieldProps?.ignore;
       const canTrigger = validateTriggerCondition(eventName, fieldProps?.['validateTrigger']);
       if (canTrigger && ignore !== true) {
-        const message = await this.validator.start(path, value, eventName);
-        if (message) {
-          this.setFieldError(path, message);
+        const error = await this.validator.start(path, value, eventName);
+        if (error) {
+          this.setFieldError(path, error);
         }
-        return message;
+        return error;
       }
+    };
+
+    if(path instanceof Array || path === undefined) {
+      const fieldPropsMap = this.getFieldProps() || {};
+      const keys = path instanceof Array ? path : Object.keys(fieldPropsMap || {});
+      const result = await Promise.all(keys?.map((key) => {
+        const fieldProps = fieldPropsMap?.[key];
+        const rules = fieldProps?.['rules'];
+        if (rules instanceof Array) {
+          return singleValidate(key)
+        }
+      }));
+      const currentError = result?.filter((error) => error !== undefined)?.[0]
+      return {
+        error: currentError,
+        values: this.getFieldValue()
+      }
+    } else if(typeof path === 'string') {
+      return singleValidate(path);
     }
   }
 

@@ -28,7 +28,6 @@ export interface FormDesignCtxProps {
     maxStep: number;
     steps: Array<SelectedType>;
   }
-  mode?: string;
   settingsForm?: FormStore | null;
   properties: FormDesignData;
 }

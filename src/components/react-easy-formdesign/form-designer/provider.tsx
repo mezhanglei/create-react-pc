@@ -25,7 +25,6 @@ function Provider(props: ProviderProps) {
       maxStep: 20,
       steps: []
     },
-    mode: 'edit',
     settingsForm: null,
   });
 
