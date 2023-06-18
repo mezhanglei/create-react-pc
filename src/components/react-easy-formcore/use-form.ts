@@ -42,10 +42,10 @@ export function useFormValues<T = unknown>(form: FormStore, path?: string | stri
 
   // 订阅目标控件
   const uninstallListMemo = useMemo(() => {
-    if (!form || !path) return [];
+    if (!form) return [];
     const queue = [];
     const isChar = typeof path == 'string' || typeof path == 'number';
-    const pathList = isChar ? [path] : (path instanceof Array ? path : [])
+    const pathList = isChar ? [path] : (path instanceof Array ? path : Object.keys(form.getFieldProps()  || {}))
     for (let i = 0; i < pathList?.length; i++) {
       const pathKey = pathList[i]
       queue?.push(form.subscribeFormGlobal(pathKey, (newValue) => {

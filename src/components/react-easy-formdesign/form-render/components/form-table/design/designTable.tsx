@@ -11,6 +11,8 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   disabled,
   className,
   style,
+  value,
+  onChange,
   ...rest
 }, ref) => {
 
@@ -53,7 +55,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
                       {column?.title}
                     </div>
                     <div className={Classes.TableColBody}>
-                      {column?.hidden === true ? null : React.cloneElement(columnInstance, { value: column?.initialValue, })}
+                      {column?.hidden === true ? null : React.cloneElement(columnInstance)}
                     </div>
                   </div>
                 </ColumnSelection>

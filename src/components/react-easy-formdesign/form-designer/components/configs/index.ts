@@ -43,7 +43,6 @@ export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
 export const ComponentsSource = [
   {
     title: '布局组件',
-    elementType: '布局组件',
     elements: [
       // tableLayout,
       grid,
@@ -53,14 +52,12 @@ export const ComponentsSource = [
   },
   {
     title: '控件组合',
-    elementType: '控件组合',
     elements: [
       formTable
     ]
   },
   {
     title: '基础控件',
-    elementType: '基础控件',
     elements: [
       Input,
       Radio,
@@ -83,7 +80,6 @@ export const ComponentsSource = [
   },
   {
     title: '业务组件',
-    elementType: '业务组件',
     elements: [
     ]
   }
@@ -93,13 +89,13 @@ export const ComponentsSource = [
 export const ConfigElements = ComponentsSource.reduce((pre: ELementProps[], cur) => {
   let temp: ELementProps[] = [];
   const elements = cur?.elements;
-    temp = temp.concat(elements);
+  temp = temp.concat(elements);
   return pre.concat(temp);
 }, []);
 
 // 所有元素列表转成的map结构
 export const ConfigElementsMap: ElementsType = getArrMap(ConfigElements, 'id');
 // 可拖拽的区域类型
-export enum DndType  {
-  Components ='components'
+export enum DndType {
+  Components = 'components'
 }

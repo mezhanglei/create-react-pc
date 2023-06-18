@@ -3,7 +3,7 @@ import { validateTriggerCondition } from "./utils/utils";
 import { validatorsMap } from "./validate-rules";
 export type FormRule = {
   required?: boolean;
-  pattern?: string;
+  pattern?: RegExp;
   whitespace?: boolean;
   max?: number;
   min?: number;

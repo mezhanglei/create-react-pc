@@ -1,13 +1,11 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
-import { deepGet, Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { setDesignerFormValue, getNameSettings, isNoSelected } from '../../utils/utils';
+import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
+import { setDesignerFormValue, getNameSettings, asyncSettingsForm } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
 import getConfigSettings from '../components/settings';
-import { getPathEnd } from '@/components/react-easy-formrender/utils/utils';
-
 export interface SelectedSettingsProps {
   className?: string
   style?: CSSProperties
@@ -39,13 +37,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   }, []);
 
   useEffect(() => {
-    if (isNoSelected(selectedPath)) return;
-    // 同步编辑区域的信息到属性区域回显
-    const field = selected?.field;
-    const currentField = attributeName ? deepGet(field, attributeName) : field;
-    const endName = getPathEnd(selected?.path);
-    const settingValues = attributeName ? currentField : { ...currentField, name: endName }
-    form.setFieldValue({ ...settingValues, initialValue: currentField?.initialValue });
+    asyncSettingsForm(form, selected);
   }, [selectedPath, attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {

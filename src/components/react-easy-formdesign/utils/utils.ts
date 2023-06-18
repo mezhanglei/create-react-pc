@@ -1,7 +1,7 @@
 import { FormStore, isValidNumber } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
-import { deepMergeObject } from '@/utils/object';
+import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import { ConfigElementsMap, ELementProps } from '../form-designer/components/configs';
@@ -134,6 +134,17 @@ export const setDesignerFormValue = (designerForm: FormStore, formPath?: string,
   if (initialValue !== undefined) {
     designerForm?.setFieldValue(formPath, initialValue);
   }
+}
+
+// 同步目标的编辑区域值到属性面板回显
+export const asyncSettingsForm = (settingForm: FormStore, selected?: SelectedType) => {
+  if (isNoSelected(selected?.path) || !settingForm) return;
+  const field = selected?.field;
+  const attributeName = selected?.attributeName;
+  const currentField = attributeName ? deepGet(field, attributeName) : field;
+  const endName = getPathEnd(selected?.path);
+  const settingValues = attributeName ? currentField : { ...currentField, name: endName }
+  settingForm.setFieldsValue({ ...settingValues, initialValue: currentField?.initialValue });
 }
 
 // 代码编辑器执行解析字符串
