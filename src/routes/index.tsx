@@ -3,8 +3,7 @@ import { HashRouter as Router, Route, Switch, Redirect, RouteProps } from "react
 // import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { DemoRoute } from "./demo";
 import { DefaultRoutes } from "./default";
-import { isLogin } from "@/core/session";
-import { LOGIN_ROUTE } from "@/constants/account/index";
+import { isLogin } from "@/utils/auth";
 
 export interface MyRouteProps extends RouteProps {
   auth?: boolean; // 是否需要权限验证
@@ -36,7 +35,7 @@ export default function RouteComponent() {
             path={item.path}
             render={(props) => {
               if (!isLogin() && item.auth) {
-                return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: props.location } }} />;
+                return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
               } else {
                 return <item.component key={item.path} {...props}></item.component>
               }

@@ -1,5 +1,7 @@
 
 import "./loader.less";
+import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 class Loader extends React.Component {
   constructor(props) {
@@ -71,7 +73,8 @@ export default function showInstance(props) {
   let div = document.createElement('div');
   document.body.appendChild(div);
 
-  let instance = ReactDOM.render(<Loader {...props} />, div);
+  const root = createRoot(div);
+  let instance = root.render(<Loader {...props} />);
 
   // 开始
   const start = () => {
@@ -86,7 +89,7 @@ export default function showInstance(props) {
   // 销毁
   const destroy = () => {
     // 销毁节点并移除插入节点
-    const unmountResult = ReactDOM.unmountComponentAtNode(div);
+    const unmountResult = root.unmount(div);
     if (unmountResult && div.parentNode) {
       div.parentNode.removeChild(div);
     }

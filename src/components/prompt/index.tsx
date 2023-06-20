@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'antd';
 import { Prompt } from "react-router-dom";
-import { HashHistory } from "@/routes/history";
-// import { BrowserHistory } from "@/routes/history";
+import history from "@/routes/history";
 
 export interface CustomPromptProps {
     onOk?: (...rest: any[]) => any;
@@ -34,10 +33,10 @@ const CustomPrompt: React.FC<CustomPromptProps> = (props) => {
             setTimeout(() => {
                 if (isOk) {
                     setIsPrompt(false);
-                    HashHistory.go(0);
+                    history.go(0);
                 } else {
                     setIsPrompt(true);
-                    HashHistory.go(-1);
+                    history.go(-1);
                 }
             });
         }

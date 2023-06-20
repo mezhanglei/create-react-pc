@@ -2,7 +2,7 @@ import React, { useEffect, useRef, CSSProperties } from 'react';
 import { addEvent, findElement, removeEvent, getClientXY, getScrollParent, css, getInsideRange, getRect, getWindow } from '@/utils/dom';
 import { isMobile } from '@/utils/brower';
 import classNames from 'classnames';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 // 利用fixed实现的吸附固定组件
 // Simple abstraction for dragging events names.
@@ -76,7 +76,7 @@ const ReactFixedSticky: React.FC<ReactFixedStickyProps> = (props) => {
       position: 'fixed'
     });
     parent?.appendChild(stickyRef.current);
-    ReactDOM.render(FixedChild, stickyRef.current);
+    createRoot(stickyRef.current).render(FixedChild);
     return () => {
       removeEvent(addEventEle, dragEventFor.move, handleScroll);
       parent?.removeChild(stickyRef.current);

@@ -1,4 +1,4 @@
-import { getToken } from "@/core/session";
+import { getToken } from "@/utils/auth";
 import request from "@/http/request";
 import { addUrlQuery } from "@/utils/url";
 import { RequestResponse } from "../interface";

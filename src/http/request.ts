@@ -1,6 +1,6 @@
 import CreateRequest from './createRequest';
 import Loader from "@/components/loader/index";
-import { getToken, loginOut } from "@/core/session";
+import { getToken, loginOut } from "@/utils/auth";
 import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } from './config';
 import { message } from 'antd';
 
