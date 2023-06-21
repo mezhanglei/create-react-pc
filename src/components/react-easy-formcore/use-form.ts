@@ -14,8 +14,7 @@ export function useValidator() {
 
 // 获取error信息
 export function useFormError(form: FormStore, path?: string) {
-  const storeError = path && form && form.getFieldError(path);
-  const [error, setError] = useState(storeError);
+  const [error, setError] = useState();
 
   const uninstallMemo = useMemo(() => {
     if (!path || !form) return
@@ -24,7 +23,7 @@ export function useFormError(form: FormStore, path?: string) {
       setError(error);
     });
     return uninstall;
-  }, [form, path]);
+  }, [form, JSON.stringify(path)]);
 
   // 订阅组件更新错误的函数
   useEffect(() => {
@@ -45,7 +44,7 @@ export function useFormValues<T = unknown>(form: FormStore, path?: string | stri
     if (!form) return [];
     const queue = [];
     const isChar = typeof path == 'string' || typeof path == 'number';
-    const pathList = isChar ? [path] : (path instanceof Array ? path : Object.keys(form.getFieldProps()  || {}))
+    const pathList = isChar ? [path] : (path instanceof Array ? path : Object.keys(form.getFieldProps() || {}))
     for (let i = 0; i < pathList?.length; i++) {
       const pathKey = pathList[i]
       queue?.push(form.subscribeFormGlobal(pathKey, (newValue) => {
@@ -56,7 +55,7 @@ export function useFormValues<T = unknown>(form: FormStore, path?: string | stri
       }))
     }
     return queue;
-  }, [form, path]);
+  }, [form, JSON.stringify(path)]);
 
   useEffect(() => {
     return () => {
