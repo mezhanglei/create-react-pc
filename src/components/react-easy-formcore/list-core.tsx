@@ -20,9 +20,10 @@ export const ListCore = (props: ListCoreProps) => {
     name,
     rules,
     initialValue,
-    ignore
+    rest
   } = fieldProps;
 
+  const ignore = rest?.ignore || rest?.readOnly;
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
 
   // 渲染子元素

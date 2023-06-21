@@ -1,7 +1,14 @@
 .field-item {
-  padding: 8px 0px;
-  min-height: 32px;
   width: 100%;
+  margin-bottom: 16px;
+
+  &--error {
+    margin-bottom: 3px;
+  }
+
+  &--readOnly {
+    margin-bottom: 0px;
+  }
 
   &--horizontal {
     display: inline-flex;
@@ -28,6 +35,6 @@
   }
 
   &--compact {
-    padding: 0;
+    margin-bottom: 0;
   }
 }

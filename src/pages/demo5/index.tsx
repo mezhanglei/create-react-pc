@@ -48,7 +48,7 @@ export default function Demo5(props) {
         type: 'Select',
         props: {
           labelInValue: true,
-          style: { width: '100%' },
+          style: { flex: 1 },
           children: [
             { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
             { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
@@ -61,7 +61,7 @@ export default function Demo5(props) {
         type: 'Select',
         props: {
           labelInValue: true,
-          style: { width: '100%' },
+          style: { flex: 1 },
           children: [
             { type: 'Select.Option', props: { key: 1, value: '1', children: '选项1' } },
             { type: 'Select.Option', props: { key: 2, value: '2', children: '选项2' } }
@@ -168,7 +168,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm form={form} properties={properties} watch={watch} expressionImports={{ moment }} />
+      <RenderForm form={form} options={{ readOnly: false, props:{autoComplete:'off'} }} properties={properties} watch={watch} expressionImports={{ moment }} />
       {/* <Form form={form}>
         <div>
           <p>part1</p>

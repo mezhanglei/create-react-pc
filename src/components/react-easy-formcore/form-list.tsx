@@ -39,12 +39,12 @@ export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
 
   const [error] = useFormError(form, name);
   const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
-  const required = isHaveRequired && ignore !== true ? true : rest?.required;
+  const required = isHaveRequired && ignore !== true && rest?.readOnly !== true ? true : rest?.required;
   const FieldComponent = component
 
   const childs = (
     <ListCore
-      ignore={ignore}
+      ignore={ignore || rest?.readOnly}
       name={name}
       rules={rules}
       initialValue={initialValue}
@@ -55,7 +55,7 @@ export const FormList = React.forwardRef<any, FormListProps>((props, ref) => {
 
   return (
     FieldComponent ?
-      <FieldComponent {...fieldProps} required={required} ref={ref} error={error}>
+      <FieldComponent {...fieldProps} required={required} ref={ref} error={ignore !== true && error}>
         {childs}
       </FieldComponent>
       : childs

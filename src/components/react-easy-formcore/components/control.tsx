@@ -39,9 +39,9 @@ export const Control = React.forwardRef<any, ControlProps>((props, ref) => {
     <div ref={ref} className={cls} style={style} {...restProps}>
       <div className={classnames(`${prefix}__content`, isText && `${prefix}__content--text`)}>
         {children}
-        {!isEmpty(footer) && <div className={`${prefix}__footer`}>{footer}</div>}
+        {!isEmpty(suffix) && <div className={`${prefix}__suffix`}>{suffix}</div>}
       </div>
-      {!isEmpty(suffix) && <div className={`${prefix}__suffix`}>{suffix}</div>}
+      {!isEmpty(footer) && <div className={`${prefix}__footer`}>{footer}</div>}
       <div className={`${prefix}__message`}>{error}</div>
     </div>
   );

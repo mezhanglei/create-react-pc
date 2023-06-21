@@ -47,9 +47,10 @@ export const ItemCore = (props: ItemCoreProps) => {
     initialValue,
     trigger = 'onChange',
     validateTrigger,
-    ignore,
+    ...rest
   } = fieldProps;
 
+  const ignore = rest?.ignore || rest?.readOnly;
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
   const contextValue = deepGet(contextValues, currentPath);
   const initValue = initialValue ?? deepGet(initialValues, currentPath);

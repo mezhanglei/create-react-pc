@@ -2,11 +2,17 @@ import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormCh
 import React from 'react';
 import { BaseComponents } from './components';
 import moment from 'moment';
+import { Item } from '@/components/react-easy-formcore/components/item';
 
 export * from '@/components/react-easy-formrender';
 
-// 重新包装子元素渲染组件
-export function RenderFormChildren(props: RenderFormChildrenProps) {
+export interface CustomOptions {
+  isEditor?: boolean; // 是否为编辑态
+}
+
+// RenderFormChildren
+export type CustomRenderFormChildrenProps = RenderFormChildrenProps & CustomOptions;
+export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
   return (
     <RenderFormChilds
       {...props}
@@ -16,14 +22,14 @@ export function RenderFormChildren(props: RenderFormChildrenProps) {
   );
 }
 
-// 完整表单组件
-export interface CustomOptions {
-  isEditor?: boolean; // 是否为编辑态
-}
-export default function FormRender(props: RenderFormProps<CustomOptions>) {
+// RenderForm
+export type CustomRenderFormProps = RenderFormProps & CustomOptions
+export default function FormRender(props: CustomRenderFormProps) {
+  const { options, ...rest } = props;
   return (
     <RenderFormDefault
-      {...props}
+      {...rest}
+      options={{ ...options, component: Item }}
       components={{ ...BaseComponents, ...props?.components }}
       expressionImports={{ moment }}
     />
