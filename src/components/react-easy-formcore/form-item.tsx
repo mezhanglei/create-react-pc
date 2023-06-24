@@ -31,18 +31,18 @@ export const FormItem = React.forwardRef<any, FormItemProps>((props, ref) => {
     initialValue,
     rules,
     component = Item,
-    ignore,
     ...rest
   } = fieldProps;
 
   const [error] = useFormError(form, name);
+  const ignore = rest?.ignore || rest?.readOnly
   const isHaveRequired = useMemo(() => (rules instanceof Array && rules?.find((rule) => rule?.required === true)), [rules]);
-  const required = isHaveRequired && ignore !== true && rest?.readOnly !== true ? true : rest?.required;
+  const required = isHaveRequired && ignore !== true ? true : rest?.required;
   const FieldComponent = component;
 
   const childs = (
     <ItemCore
-      ignore={ignore || rest?.readOnly}
+      ignore={ignore}
       name={name}
       index={index}
       trigger={trigger}

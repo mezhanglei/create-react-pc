@@ -20,7 +20,7 @@ export const ListCore = (props: ListCoreProps) => {
     name,
     rules,
     initialValue,
-    rest
+    ...rest
   } = fieldProps;
 
   const ignore = rest?.ignore || rest?.readOnly;

@@ -228,7 +228,7 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 同步路径上所有节点的变化
+  // 同步路径上任意节点的变化
   private notifyFormGlobal(path?: string) {
     if (path) {
       this.formGlobalListeners.forEach((listener) => {

@@ -26,7 +26,7 @@ export type GenerateFormNodeProps<T = {}> = FormComponent & FormItemProps & T & 
   readOnlyRender?: CustomUnionType; // 只读模式下的组件
   typeRender?: CustomUnionType; // 表单控件自定义渲染
   properties?: PropertiesData;
-  hidden?: string | boolean;
+  hidden?: boolean;
 }
 
 // 表单属性对象
