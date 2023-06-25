@@ -60,6 +60,7 @@ export interface RenderFormChildrenProps<T = {}> {
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
   formrender?: FormRenderStore;
   options?: GenerateFormNodeProps<T> | ((params: GenerateFormNodeProps<T>) => GenerateFormNodeProps<T>); // 组件公共传参
+  evalPropNames?: Array<string>; // 表达式允许的字符串
 }
 
 // 带form容器的渲染组件props

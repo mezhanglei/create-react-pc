@@ -45,26 +45,24 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       ref={ref}>
       <TableDnd  {...rest}>
         {
-          columns?.length ?
-            columns?.map((column, colIndex) => {
-              const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled }, column?.props) });
-              return (
-                <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
-                  <div className={Classes.TableCol}>
-                    <div className={Classes.TableColHead}>
-                      {column?.title}
-                    </div>
-                    <div className={Classes.TableColBody}>
-                      {column?.hidden === true ? null : React.cloneElement(columnInstance)}
-                    </div>
+          columns?.map((column, colIndex) => {
+            const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled, value: undefined }, column?.props) });
+            return (
+              <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
+                <div className={Classes.TableCol}>
+                  <div className={Classes.TableColHead}>
+                    {column?.title}
                   </div>
-                </ColumnSelection>
-              )
-            })
-            :
-            <span className={Classes.placeholder}>将控件拖拽到此处</span>
+                  <div className={Classes.TableColBody}>
+                    {column?.hidden === true ? null : columnInstance}
+                  </div>
+                </div>
+              </ColumnSelection>
+            )
+          })
         }
       </TableDnd>
+      {!columns?.length && <span className={Classes.placeholder}>将控件拖拽到此处</span>}
     </div>
   );
 });

@@ -66,9 +66,8 @@ export function deepGet(obj: object | undefined, keys?: string | string[]): any 
   if (!keys?.length) return
   if (keys instanceof Array) {
     const result = obj instanceof Array ? [] : {}
-    for (let key in keys) {
-      const item = keys[key]
-      result[item] = pathToArr(item)?.reduce?.((o, k) => (o)?.[k], obj)
+    for (let key of keys) {
+      result[key] = pathToArr(key)?.reduce?.((o, k) => (o)?.[k], obj)
     }
     return result;
   } else {

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { FormNodeProps, RenderFormChildrenProps, GeneratePrams, PropertiesData, GenerateFormNodeProps, CustomUnionType, CustomRenderType } from './types';
 import { defaultComponents } from './components';
-import { Form, FormOptionsContext, FormRule, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
+import { Form, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './use-formrender';
 import { isEqual } from '@/utils/object';
 import { matchExpression } from './utils/utils';
@@ -25,6 +25,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     formrender,
     expressionImports = {},
     options,
+    evalPropNames = ['props', 'rules'],
   } = props;
 
   const formOptions = useContext(FormOptionsContext);
@@ -87,31 +88,23 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
   }, [properties]);
 
-  // 遍历处理rules字段
-  const evalRules = (rules: FormRule[]) => {
-    if (!(rules instanceof Array)) return;
-    const newRules = rules?.map((rule) => {
-      const newRule = {};
-      if (rule) {
-        for (let key of Object.keys(rule)) {
-          newRule[key] = evalExpression(rule[key], uneval)
-        }
-        return newRule;
-      }
-    });
-    return newRules;
-  }
-
-  // 遍历处理props字段
-  const evalProps = (val?: any) => {
-    const newProps = {};
-    if (val) {
-      for (let key of Object.keys(val)) {
-        const propsItem = val?.[key];
-        const generateItem = evalExpression(propsItem, uneval);
-        newProps[key] = generateItem;
-      }
-      return newProps;
+  // 递归检测对象
+  const evalAttr = (val: Object | Array<any>): any => {
+    if (val instanceof Array) {
+      return val.map((item) => {
+        return evalAttr(item);
+      });
+    } else if (typeof val === 'object') {
+      return Object.fromEntries(
+        Object.entries(val || {})?.map(
+          ([propsKey, propsItem]) => {
+            return [propsKey, evalAttr(propsItem)]
+          }
+        )
+      );
+    } else {
+      const generateItem = evalExpression(val, uneval);
+      return generateItem;
     }
   }
 
@@ -129,10 +122,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
             const matchStr = matchExpression(propsValue);
             if (matchStr) {
               result = evalExpression(propsValue, uneval);
-            } else if (propsKey === 'props') {
-              result = evalProps(propsValue);
-            } else if (propsKey === 'rules') {
-              result = evalRules(propsValue);
+            } else if (evalPropNames.includes(propsKey)) {
+              result = evalAttr(propsValue);
             }
             const propsPath = joinFormPath(path, propsKey);
             fieldPropsMap[propsPath] = result;
@@ -167,8 +158,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const getValueFromObject = (val?: Partial<FormNodeProps>, generateVal?: Partial<GenerateFormNodeProps>) => {
     return Object.fromEntries(
       Object.entries(val || {})?.map(
-        ([propsKey]) => {
-          const propsItem = val?.[propsKey];
+        ([propsKey, propsItem]) => {
           const matchStr = matchExpression(propsItem);
           const generateItem = generateVal?.[propsKey];
           if (generateItem !== undefined) {
@@ -188,18 +178,14 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     if (!path || isEmpty(field)) return;
     return Object.fromEntries(
       Object.entries(field || {})?.map(
-        ([propsKey]) => {
+        ([propsKey, propsValue]) => {
           const propsPath = joinFormPath(path, propsKey);
-          const propsValue = field[propsKey];
           const generateValue = propsPath && fieldPropsMap[propsPath];
           const matchStr = matchExpression(propsValue);
           if (generateValue !== undefined) {
             return [propsKey, generateValue]
           }
           if (matchStr) {
-            if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
-              return [propsKey, () => undefined]
-            }
             return [propsKey]
           };
           if (propsKey === 'props') {
@@ -220,7 +206,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         const importsKeys = ['form', 'formrender', 'formvalues'].concat(Object.keys(expressionImports))
         const importsValues = Object.values(expressionImports);
         const target = matchStr?.replace(/\{\{|\}\}/g, '');
-        // target?.replace('$', 'g'); // 去掉$开头的，兼容前版本
         const actionStr = "return " + target;
         // 函数最后一个参数为函数体，前面均为传入的变量名
         const action = new Function(...importsKeys, actionStr);

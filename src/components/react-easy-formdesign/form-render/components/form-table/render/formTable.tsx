@@ -41,7 +41,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   } = props
 
   const items = Array.from({ length: Math.max(value?.length || 0, minRows || 0) });
-  const defaultValue = useMemo(() => items.map((item) => ({ key: defaultGetId('row') })), [items]);
+  const defaultValue = useMemo(() => items.map(() => ({ key: defaultGetId('row') })), [items]);
   const {
     dataSource: tableData,
     setDataSource,
@@ -115,6 +115,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       className={classNames('form-table', className)}
       tagName="div"
       onFieldsChange={onFieldsChange}
+      values={value}
     >
       <Table
         columns={newColumns}

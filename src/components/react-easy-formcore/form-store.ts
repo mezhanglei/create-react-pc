@@ -50,6 +50,7 @@ export class FormStore<T extends Object = any> {
     this.validate = this.validate.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
     this.subscribeFormItem = this.subscribeFormItem.bind(this)
+    this.unsubscribeFormItem = this.unsubscribeFormItem.bind(this)
     this.subscribeFormGlobal = this.subscribeFormGlobal.bind(this)
     this.unsubscribeFormGlobal = this.unsubscribeFormGlobal.bind(this)
 
@@ -273,6 +274,15 @@ export class FormStore<T extends Object = any> {
     });
     return () => {
       this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
+    }
+  }
+
+  // 卸载
+  public unsubscribeFormItem(path?: string) {
+    if (path === undefined) {
+      this.formItemListeners = []
+    } else if (typeof path === 'string') {
+      this.formItemListeners = this.formItemListeners.filter((sub) => sub.path !== path)
     }
   }
 

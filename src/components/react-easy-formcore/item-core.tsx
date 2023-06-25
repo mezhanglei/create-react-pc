@@ -89,8 +89,8 @@ export const ItemCore = (props: ItemCoreProps) => {
 
   // 给子元素绑定的onChange
   const bindChange = useCallback(
-    (eventName, ...args: any[]) => {
-      const newValue = valueGetter(...args);
+    (eventName: string, ...args: any[]) => {
+      const newValue = typeof valueGetter == 'function' ? valueGetter(...args) : undefined;
       if (currentPath && form) {
         // 设置值
         form.setFieldValue(currentPath, newValue, eventName);
@@ -98,7 +98,7 @@ export const ItemCore = (props: ItemCoreProps) => {
         onFieldsChange && onFieldsChange({ name: currentPath, value: newValue }, form?.getFieldValue());
       }
     },
-    [currentPath, form, valueGetter, onFieldsChange]
+    [JSON.stringify(currentPath), form, valueGetter, onFieldsChange]
   );
 
   // 订阅更新值的函数
@@ -114,7 +114,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     return () => {
       uninstall();
     };
-  }, [currentPath, form, onValuesChange]);
+  }, [JSON.stringify(currentPath), form, onValuesChange]);
 
   // 表单域初始化值
   useEffect(() => {
@@ -129,9 +129,9 @@ export const ItemCore = (props: ItemCoreProps) => {
       // 清除初始值
       currentPath && form.setInitialValues(currentPath, undefined);
     }
-  }, [currentPath]);
+  }, [JSON.stringify(currentPath)]);
 
-  const childValue = useMemo(() => typeof valueSetter === 'function' ? valueSetter(value) : value, [valueSetter, value]);
+  const childValue = useMemo(() => typeof valueSetter === 'function' ? valueSetter(value) : (valueSetter ? undefined : value), [valueSetter, value]);
 
   // 控件绑定value和onChange
   const bindChild = (child: any) => {

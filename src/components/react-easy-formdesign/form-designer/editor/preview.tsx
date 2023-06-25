@@ -86,7 +86,7 @@ export const PreviewModal = React.forwardRef<HTMLDivElement, PreviewModalProps>(
       <div className={`${prefixCls}-body`}>
         <PlatContainer plat={platType}>
           <RenderForm
-            options={(current) => ({ ...current, props: disabled ? { ...current?.props, disabled: disabled } : current?.props })}
+            options={{props:{disabled: disabled}}}
             form={form}
             properties={properties}
           />
