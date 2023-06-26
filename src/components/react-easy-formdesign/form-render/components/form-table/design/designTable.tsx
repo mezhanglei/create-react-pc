@@ -46,7 +46,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       <TableDnd  {...rest}>
         {
           columns?.map((column, colIndex) => {
-            const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled, value: undefined }, column?.props) });
+            const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled }, column?.props) });
             return (
               <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
                 <div className={Classes.TableCol}>

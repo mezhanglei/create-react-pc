@@ -97,7 +97,6 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       {isOver && !isSelected && componentLabel && <div className={classes.label}>{componentLabel}</div>}
       {isSelected && <div className={classes.tools}>{tools}</div>}
       {children}
-      {/* {<div className={classes.mask}></div>} */}
     </div>
   );
 };

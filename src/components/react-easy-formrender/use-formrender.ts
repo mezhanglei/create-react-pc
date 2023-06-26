@@ -11,19 +11,18 @@ export function useFormRenderStore() {
 export function useProperties(formrender: FormRenderStore) {
   const [properties, setProperties] = useState<PropertiesData>();
 
-  const uninstallMemo = useMemo(() => {
+  const uninstall = useMemo(() => {
     if (!formrender) return
-    const uninstall = formrender.subscribeProperties((newValue) => {
+    return formrender.subscribeProperties((newValue) => {
       setProperties(newValue);
     });
-    return uninstall;
   }, [formrender]);
 
   useEffect(() => {
     return () => {
-      uninstallMemo?.();
+      uninstall?.();
     };
-  }, []);
+  }, [formrender]);
 
   return [properties, setProperties];
 }
@@ -32,21 +31,20 @@ export function useProperties(formrender: FormRenderStore) {
 export function useExpandComponents(formrender: FormRenderStore) {
   const [components, setComponents] = useState<{ [key: string]: FormNodeProps }>();
 
-  const uninstallMemo = useMemo(() => {
+  const uninstall = useMemo(() => {
     if (!formrender) return
     // 订阅目标控件
-    const uninstall = formrender.subscribeProperties((newValue) => {
+    return formrender.subscribeProperties((newValue) => {
       const result = setExpandComponents(newValue);
       setComponents(result);
     });
-    return uninstall;
   }, [formrender]);
 
   useEffect(() => {
     return () => {
-      uninstallMemo?.();
+      uninstall?.();
     };
-  }, []);
+  }, [formrender]);
 
   return [components, setComponents];
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FormNodeProps, RenderFormChildrenProps, GeneratePrams, PropertiesData, GenerateFormNodeProps, CustomUnionType, CustomRenderType } from './types';
 import { defaultComponents } from './components';
 import { Form, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
@@ -39,34 +39,9 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     handleFieldProps();
   }
 
-  // 从formRenderStore中订阅更新properties
   useEffect(() => {
-    if (!formRenderStore) return
-    const uninstall = formRenderStore.subscribeProperties((newValue, oldValue) => {
-      setProperties(newValue);
-      if (!isEqual(newValue, oldValue)) {
-        onPropertiesChange && onPropertiesChange(newValue, oldValue)
-      }
-    })
-    return uninstall;
-  }, [formRenderStore, onPropertiesChange]);
-
-  useEffect(() => {
-    return () => {
-      form?.unsubscribeFormGlobal();
-    }
-  }, []);
-
-  // 从props中更新properties
-  useEffect(() => {
-    if (!formRenderStore) return;
-    formRenderStore.setProperties(propsProperties);
-  }, [propsProperties]);
-
-  // 订阅监听函数
-  useMemo(() => {
     if (!form || !watch) return;
-    return Object.entries(watch)?.map(([key, watcher]) => {
+    Object.entries(watch)?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
         form?.subscribeFormGlobal(key, watcher)
@@ -80,7 +55,32 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         }
       }
     });
+    return () => {
+      Object.entries(watch || {})?.forEach(([key]) => {
+        form?.unsubscribeFormGlobal(key);
+      });
+    }
   }, [form, watch]);
+
+  // 从formRenderStore中订阅更新properties
+  useEffect(() => {
+    if (!formRenderStore) return
+    formRenderStore.subscribeProperties((newValue, oldValue) => {
+      setProperties(newValue);
+      if (!isEqual(newValue, oldValue)) {
+        onPropertiesChange && onPropertiesChange(newValue, oldValue)
+      }
+    })
+    return () => {
+      formRenderStore?.unsubscribeProperties();
+    }
+  }, [formRenderStore, onPropertiesChange]);
+
+  // 从props中更新properties
+  useEffect(() => {
+    if (!formRenderStore) return;
+    formRenderStore.setProperties(propsProperties);
+  }, [propsProperties]);
 
   // 变化时更新
   useEffect(() => {
@@ -161,12 +161,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
         ([propsKey, propsItem]) => {
           const matchStr = matchExpression(propsItem);
           const generateItem = generateVal?.[propsKey];
-          if (generateItem !== undefined) {
-            return [propsKey, generateItem]
-          }
           if (matchStr) {
-            return [propsKey]
-          };
+            if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
+              return [propsKey, generateItem ? generateItem : () => undefined]
+            }
+            return generateItem == undefined ? [propsKey] : [propsKey, generateItem]
+          }
           return [propsKey, propsItem]
         }
       )
@@ -182,12 +182,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           const propsPath = joinFormPath(path, propsKey);
           const generateValue = propsPath && fieldPropsMap[propsPath];
           const matchStr = matchExpression(propsValue);
-          if (generateValue !== undefined) {
-            return [propsKey, generateValue]
-          }
           if (matchStr) {
-            return [propsKey]
-          };
+            if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
+              return [propsKey, generateValue ? generateValue : () => undefined]
+            }
+            return generateValue == undefined ? [propsKey] : [propsKey, generateValue]
+          }
           if (propsKey === 'props') {
             return [propsKey, getValueFromObject(propsValue, generateValue)]
           }

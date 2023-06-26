@@ -149,7 +149,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
           <Col flex={1} style={{ width: '0' }}>
             <RenderForm
               tagName="div"
-              values={{ currentControlValue: ruleItem?.['currentControlValue'] }}
+              initialValues={{ currentControlValue: ruleItem?.['currentControlValue'] }}
               properties={{ currentControlValue: { compact: true, ...(controlField || {}) } }}
               onFieldsChange={(params) => currentControlChange(params, index)}
             />
@@ -380,7 +380,7 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
       <Checkbox checked={checkboxValue} onChange={checkboxChange} {...rest}>
         {children}
       </Checkbox>
-      <LinkageWrapper value={codeStr} onChange={linkageOnChange} controlField={{ type: 'Switch' }}>
+      <LinkageWrapper value={codeStr} onChange={linkageOnChange} controlField={{ type: 'Switch', valueProp: 'checked', }}>
         {
           (showModal: () => void, codeStr?: string) => (
             <>

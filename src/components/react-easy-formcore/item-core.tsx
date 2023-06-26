@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import React, { cloneElement, isValidElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FormStore } from './form-store';
-import { FormStoreContext, FormInitialValuesContext, FormOptionsContext, FormValuesContext } from './form-context';
+import { FormStoreContext, FormInitialValuesContext, FormOptionsContext } from './form-context';
 import { deepGet, getValueFromEvent, getValuePropName, toArray } from './utils/utils';
 import { FormRule } from './validator';
 import { isEmpty } from '@/utils/type';
@@ -26,13 +26,13 @@ export interface ItemCoreProps {
   errorClassName?: string;
   onFieldsChange?: (obj: FieldChangedParams, values?: any) => void;
   onValuesChange?: (obj: FieldChangedParams, values?: any) => void;
+  onFieldsMounted?: (obj: FieldChangedParams, values?: any) => void;
   children?: any
 }
 
 export const ItemCore = (props: ItemCoreProps) => {
   const form = useContext<FormStore>(FormStoreContext);
   const initialValues = useContext(FormInitialValuesContext);
-  const contextValues = useContext(FormValuesContext);
   const options = useContext(FormOptionsContext);
   const mergeProps = Object.assign({}, options, props);
   const { children, ...fieldProps } = mergeProps;
@@ -43,6 +43,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     valueSetter,
     errorClassName,
     onFieldsChange,
+    onFieldsMounted,
     onValuesChange,
     initialValue,
     trigger = 'onChange',
@@ -52,15 +53,10 @@ export const ItemCore = (props: ItemCoreProps) => {
 
   const ignore = rest?.ignore || rest?.readOnly;
   const currentPath = (isEmpty(name) || ignore === true) ? undefined : name;
-  const contextValue = deepGet(contextValues, currentPath);
   const initValue = initialValue ?? deepGet(initialValues, currentPath);
   const storeValue = form && form.getFieldValue(currentPath);
-  const initialItemValue = contextValue ?? storeValue ?? initValue;
+  const initialItemValue = storeValue ?? initValue;
   const [value, setValue] = useState(initialItemValue);
-
-  useEffect(() => {
-    setValue(contextValue);
-  }, [contextValue]);
 
   // 初始化获取初始props
   currentPath && form?.setFieldProps(currentPath, fieldProps);
@@ -105,14 +101,14 @@ export const ItemCore = (props: ItemCoreProps) => {
   useEffect(() => {
     if (!currentPath || !form) return
     // 订阅目标控件
-    const uninstall = form.subscribeFormItem(currentPath, (newValue, oldValue) => {
+    form.subscribeFormItem(currentPath, (newValue, oldValue) => {
       setValue(newValue);
       if (!(isEmpty(newValue) && isEmpty(oldValue))) {
         onValuesChange && onValuesChange({ name: currentPath, value: newValue }, form?.getFieldValue())
       }
     });
     return () => {
-      uninstall();
+      form.unsubscribeFormItem(currentPath)
     };
   }, [JSON.stringify(currentPath), form, onValuesChange]);
 
@@ -123,6 +119,7 @@ export const ItemCore = (props: ItemCoreProps) => {
     if (initialItemValue !== undefined) {
       form.setInitialValues(currentPath, initialItemValue);
     }
+    onFieldsMounted && onFieldsMounted({ name: currentPath, value: initialItemValue }, form?.getFieldValue())
     return () => {
       // 清除该表单域的props(在设置值的前面)
       currentPath && form?.setFieldProps(currentPath, undefined);

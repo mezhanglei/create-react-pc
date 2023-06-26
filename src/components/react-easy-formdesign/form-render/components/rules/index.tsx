@@ -1,17 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import './index.less';
 import RequiredComponent from "./required";
 import MinOrMaxComponent from "./minOrMax";
 import PatternComponent from "./pattern";
-import RenderForm, { FormNodeProps, RenderFormProps } from '../../../form-render';
+import RenderForm, { GenerateFormNodeProps, RenderFormProps, useFormStore } from '../../../form-render';
 
 /**
  * 校验规则的配置组件。
  */
 export interface RulesComponentProps {
   includes?: string;
-  value?: FormNodeProps['rules'];
-  onChange?: (val?: FormNodeProps['rules']) => void;
+  value?: GenerateFormNodeProps['rules'];
+  onChange?: (val?: GenerateFormNodeProps['rules']) => void;
 }
 
 const prefixCls = 'rules-add'
@@ -30,10 +30,10 @@ const RulesComponent = React.forwardRef<HTMLElement, RulesComponentProps>((props
     ...rest
   } = props;
 
-  const [rulesData, setRulesData] = useState<RulesComponentProps['value']>([]);
+  const form = useFormStore();
 
   useEffect(() => {
-    setRulesData(value);
+    form.setFieldsValue(value);
   }, [value])
 
   const rulesList = useMemo(() => ([
@@ -54,7 +54,6 @@ const RulesComponent = React.forwardRef<HTMLElement, RulesComponentProps>((props
   ), [rulesList]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = (_, values) => {
-    setRulesData(values);
     onChange && onChange(values);
   }
 
@@ -62,7 +61,7 @@ const RulesComponent = React.forwardRef<HTMLElement, RulesComponentProps>((props
     <div className={classes.rules}>
       <RenderForm
         tagName="div"
-        values={rulesData}
+        form={form}
         properties={properties}
         onFieldsChange={onFieldsChange}
       />

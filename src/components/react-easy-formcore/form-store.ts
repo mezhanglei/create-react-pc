@@ -49,6 +49,7 @@ export class FormStore<T extends Object = any> {
     this.reset = this.reset.bind(this)
     this.validate = this.validate.bind(this)
     this.subscribeError = this.subscribeError.bind(this)
+    this.unsubscribeError = this.unsubscribeError.bind(this)
     this.subscribeFormItem = this.subscribeFormItem.bind(this)
     this.unsubscribeFormItem = this.unsubscribeFormItem.bind(this)
     this.subscribeFormGlobal = this.subscribeFormGlobal.bind(this)
@@ -196,7 +197,7 @@ export class FormStore<T extends Object = any> {
       }
     };
 
-    if(path instanceof Array || path === undefined) {
+    if (path instanceof Array || path === undefined) {
       const fieldPropsMap = this.getFieldProps() || {};
       const keys = path instanceof Array ? path : Object.keys(fieldPropsMap || {});
       const result = await Promise.all(keys?.map((key) => {
@@ -211,7 +212,7 @@ export class FormStore<T extends Object = any> {
         error: currentError,
         values: this.getFieldValue()
       }
-    } else if(typeof path === 'string') {
+    } else if (typeof path === 'string') {
       return singleValidate(path);
     }
   }
@@ -277,6 +278,17 @@ export class FormStore<T extends Object = any> {
     }
   }
 
+  // 订阅表单错误的变动
+  public subscribeError(path: string, listener: FormListener['onChange']) {
+    this.errorListeners.push({
+      onChange: listener,
+      path: path
+    });
+    return () => {
+      this.errorListeners = this.errorListeners.filter((sub) => sub.path !== path)
+    }
+  }
+
   // 卸载
   public unsubscribeFormItem(path?: string) {
     if (path === undefined) {
@@ -295,13 +307,11 @@ export class FormStore<T extends Object = any> {
     }
   }
 
-  // 订阅表单错误的变动
-  public subscribeError(path: string, listener: FormListener['onChange']) {
-    this.errorListeners.push({
-      onChange: listener,
-      path: path
-    });
-    return () => {
+  // 卸载
+  public unsubscribeError(path?: string) {
+    if (path === undefined) {
+      this.errorListeners = []
+    } else if (typeof path === 'string') {
       this.errorListeners = this.errorListeners.filter((sub) => sub.path !== path)
     }
   }

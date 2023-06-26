@@ -35,7 +35,8 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     designer && insertDesignItem(designer, newField, nextIndex, { path: parent?.path });
   }
 
-  const deleteItem = () => {
+  const deleteItem = (e) => {
+    e.stopPropagation();
     currentPath && designer?.delItemByPath(currentPath);
   }
 

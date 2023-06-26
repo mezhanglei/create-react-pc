@@ -55,7 +55,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
 
   const form = useFormStore();
 
-  const onFieldsChange: ELementProps['onFieldsChange'] = (_, values) => {
+  const onValuesChange: ELementProps['onFieldsChange'] = (_, values) => {
     onChange && onChange(values);
   }
 
@@ -114,8 +114,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       form={form}
       className={classNames('form-table', className)}
       tagName="div"
-      onFieldsChange={onFieldsChange}
-      values={value}
+      onValuesChange={onValuesChange}
     >
       <Table
         columns={newColumns}

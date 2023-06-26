@@ -148,6 +148,11 @@ export class FormRenderStore {
     }
   }
 
+  // 卸载
+  public unsubscribeProperties() {
+    this.propertiesListeners = [];
+  }
+
   // 同步表单渲染数据的变化
   private notifyProperties() {
     this.propertiesListeners.forEach((onChange) => {

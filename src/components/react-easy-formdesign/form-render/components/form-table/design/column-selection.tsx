@@ -49,7 +49,8 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     designer && setDesignerItem(designer, newField, currentPath);
   }
 
-  const deleteColumn = () => {
+  const deleteColumn = (e) => {
+    e.stopPropagation();
     designer && setDesignerItem(designer, undefined, currentPath, attributeName);
   }
 
