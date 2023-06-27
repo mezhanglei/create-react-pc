@@ -8,19 +8,25 @@ export function useFormRenderStore() {
 }
 
 // 获取properties的state数据
-export function useProperties(formrender: FormRenderStore) {
+export function useProperties(formrender: FormRenderStore, immediate = true) {
   const [properties, setProperties] = useState<PropertiesData>();
 
-  const uninstall = useMemo(() => {
+  const subscribeData = () => {
     if (!formrender) return
-    return formrender.subscribeProperties((newValue) => {
+    formrender.subscribeProperties((newValue) => {
       setProperties(newValue);
     });
+  }
+
+  useMemo(() => {
+    if (!immediate) return
+    subscribeData();
   }, [formrender]);
 
   useEffect(() => {
+    subscribeData()
     return () => {
-      uninstall?.();
+      formrender.unsubscribeProperties();
     };
   }, [formrender]);
 
@@ -28,21 +34,27 @@ export function useProperties(formrender: FormRenderStore) {
 }
 
 // 展平开来的组件
-export function useExpandComponents(formrender: FormRenderStore) {
+export function useExpandComponents(formrender: FormRenderStore, immediate = true) {
   const [components, setComponents] = useState<{ [key: string]: FormNodeProps }>();
 
-  const uninstall = useMemo(() => {
+  const subscribeData = () => {
     if (!formrender) return
     // 订阅目标控件
-    return formrender.subscribeProperties((newValue) => {
+    formrender.subscribeProperties((newValue) => {
       const result = setExpandComponents(newValue);
       setComponents(result);
     });
+  }
+
+  useMemo(() => {
+    if (!immediate) return
+    subscribeData();
   }, [formrender]);
 
   useEffect(() => {
+    subscribeData
     return () => {
-      uninstall?.();
+      formrender.unsubscribeProperties();
     };
   }, [formrender]);
 

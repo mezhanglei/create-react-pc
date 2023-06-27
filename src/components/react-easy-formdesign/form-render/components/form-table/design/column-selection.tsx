@@ -4,6 +4,7 @@ import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesig
 import { deepSet } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
+import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;
@@ -20,7 +21,6 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     children,
     style,
     className,
-    name,
     path,
     field,
     parent,
@@ -35,6 +35,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const columnsPath = `props.columns`;
   const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = path;
+  const { setEdit } = useFormEdit();
 
   const copyItem = () => {
     const nextColIndex = colIndex + 1;
@@ -51,6 +52,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const deleteColumn = (e) => {
     e.stopPropagation();
+    setEdit({ selected: {} });
     designer && setDesignerItem(designer, undefined, currentPath, attributeName);
   }
 

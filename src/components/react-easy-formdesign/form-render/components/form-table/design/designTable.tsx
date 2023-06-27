@@ -11,8 +11,9 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   disabled,
   className,
   style,
+  name,
   value,
-  onChange,
+  // onChange,
   ...rest
 }, ref) => {
 
@@ -29,7 +30,6 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   };
 
   const params = {
-    name: rest?.name,
     path: rest?.path,
     field: rest?.field,
     parent: rest?.parent,

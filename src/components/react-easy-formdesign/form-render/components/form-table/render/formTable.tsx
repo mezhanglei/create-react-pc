@@ -15,9 +15,11 @@ const CustomTableCell = (props: any) => {
   const { name, formrender, type, disabled, props: typeProps, hidden, children, ...restProps } = props;
   const columnInstance = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, typeProps) });
   return (
-    <Form.Item component={TableCell} name={name} key={name} {...restProps}>
-      {hidden === true ? null : (columnInstance || children)}
-    </Form.Item>
+    <TableCell key={name}>
+      <Form.Item {...restProps} label="" name={name}>
+        {hidden === true ? null : (columnInstance || children)}
+      </Form.Item>
+    </TableCell>
   );
 }
 
@@ -53,7 +55,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     setDataSource(defaultValue);
   }, [minRows]);
 
-  const form = useFormStore();
+  const form = rest?.form || useFormStore();
 
   const onValuesChange: ELementProps['onFieldsChange'] = (_, values) => {
     onChange && onChange(values);
@@ -76,38 +78,35 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     addItem([{ key: defaultGetId('row') }])
   }
 
-  const newColumns = useMemo(() => {
-    const result = columns?.map((col) => {
-      const { dataIndex, title, type, props, ...restCol } = col;
-      return {
+  const result = columns?.map((col) => {
+    const { dataIndex, title, type, props, ...restCol } = col;
+    return {
+      ...restCol,
+      dataIndex: dataIndex,
+      title: title,
+      onCell: (record: unknown, rowIndex?: number) => ({
+        record,
+        name: joinFormPath(rowIndex, dataIndex), // 拼接路径
+        type,
+        props,
+        disabled,
+        formrender: formrender,
         ...restCol,
-        dataIndex: dataIndex,
-        title: title,
-        onCell: (record: unknown, rowIndex?: number) => ({
-          record,
-          name: joinFormPath(rowIndex, dataIndex), // 拼接路径
-          type,
-          props,
-          disabled,
-          formrender: formrender,
-          ...restCol,
-        }),
-      }
-    }) as TableProps<any>['columns'] || [];
-    if (showBtn) {
-      // 添加删除按键
-      result.unshift({
-        title: '#',
-        width: 50,
-        render: (text: any, record, index: number) => {
-          if (tableData?.length > minRows) {
-            return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
-          }
-        }
-      })
+      }),
     }
-    return result;
-  }, [columns, showBtn, tableData, disabled]);
+  }) as TableProps<any>['columns'] || [];
+  if (showBtn) {
+    // 添加删除按键
+    result.unshift({
+      title: '#',
+      width: 50,
+      render: (text: any, record, index: number) => {
+        if (tableData?.length > minRows) {
+          return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
+        }
+      }
+    })
+  }
 
   return (
     <Form
@@ -117,7 +116,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       onValuesChange={onValuesChange}
     >
       <Table
-        columns={newColumns}
+        columns={result}
         dataSource={tableData}
         ref={ref}
         rowKey="key"
