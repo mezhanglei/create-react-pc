@@ -78,35 +78,38 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     addItem([{ key: defaultGetId('row') }])
   }
 
-  const result = columns?.map((col) => {
-    const { dataIndex, title, type, props, ...restCol } = col;
-    return {
-      ...restCol,
-      dataIndex: dataIndex,
-      title: title,
-      onCell: (record: unknown, rowIndex?: number) => ({
-        record,
-        name: joinFormPath(rowIndex, dataIndex), // 拼接路径
-        type,
-        props,
-        disabled,
-        formrender: formrender,
+  const newColumns = useMemo(() => {
+    const result = columns?.map((col) => {
+      const { dataIndex, title, type, props, ...restCol } = col;
+      return {
         ...restCol,
-      }),
-    }
-  }) as TableProps<any>['columns'] || [];
-  if (showBtn) {
-    // 添加删除按键
-    result.unshift({
-      title: '#',
-      width: 50,
-      render: (text: any, record, index: number) => {
-        if (tableData?.length > minRows) {
-          return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
-        }
+        dataIndex: dataIndex,
+        title: title,
+        onCell: (record: unknown, rowIndex?: number) => ({
+          record,
+          name: joinFormPath(rowIndex, dataIndex), // 拼接路径
+          type,
+          props,
+          disabled,
+          formrender: formrender,
+          ...restCol,
+        }),
       }
-    })
-  }
+    }) as TableProps<any>['columns'] || [];
+    if (showBtn) {
+      // 添加删除按键
+      result.unshift({
+        title: '#',
+        width: 50,
+        render: (text: any, record, index: number) => {
+          if (tableData?.length > minRows) {
+            return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
+          }
+        }
+      })
+    }
+    return result;
+  }, [columns, showBtn, tableData, disabled]);
 
   return (
     <Form
@@ -116,7 +119,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
       onValuesChange={onValuesChange}
     >
       <Table
-        columns={result}
+        columns={newColumns}
         dataSource={tableData}
         ref={ref}
         rowKey="key"

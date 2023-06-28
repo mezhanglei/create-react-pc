@@ -5,6 +5,9 @@ import pickAttrs from "@/utils/pickAttrs";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
 import { FormTableProps } from "..";
+import { Form } from "../../..";
+import { useFormDesign } from "@/components/react-easy-formdesign/utils/hooks";
+import { updateDesignerItem } from "@/components/react-easy-formdesign/utils/utils";
 
 const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
@@ -13,7 +16,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   style,
   name,
   value,
-  // onChange,
+  onChange,
   ...rest
 }, ref) => {
 
@@ -37,6 +40,18 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     form: rest?.form,
   }
 
+  const { designer, settingsForm } = useFormDesign();
+
+  const onFieldsChange = (colIndex: number, newVal: any) => {
+    // 延迟变更值
+    setTimeout(() => {
+      // 表单记录下新的initialValue值
+      updateDesignerItem(designer, { initialValue: newVal }, rest?.path, `props.columns[${colIndex}]`);
+      // 回填setting表单的intialValue选项
+      settingsForm?.setFieldValue('initialValue', newVal);
+    }, 0);
+  }
+
   return (
     <div
       className={classnames([Classes.Table, className])}
@@ -48,13 +63,17 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
           columns?.map((column, colIndex) => {
             const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled }, column?.props) });
             return (
-              <ColumnSelection key={colIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
+              <ColumnSelection key={column?.dataIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
                 <div className={Classes.TableCol}>
                   <div className={Classes.TableColHead}>
                     {column?.title}
                   </div>
                   <div className={Classes.TableColBody}>
-                    {column?.hidden === true ? null : columnInstance}
+                    {column?.hidden === true ? null :
+                      <Form.Item name={column?.dataIndex} onFieldsChange={({ value }) => onFieldsChange(colIndex, value)}>
+                        {columnInstance}
+                      </Form.Item>
+                    }
                   </div>
                 </div>
               </ColumnSelection>
