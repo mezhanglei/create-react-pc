@@ -51,7 +51,7 @@ const ModalWrapper = React.forwardRef<HTMLDivElement, ModalWrapperProps>((props,
       ref={ref}
       open={modalOpen}
       showCloseIcon={showCloseIcon}
-      onClose={closeModal}
+      onClose={handleCancel}
       classNames={{ modal: cls, ...classNames }}
       {...rest}>
       {

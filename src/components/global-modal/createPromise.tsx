@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 
 // default Provider
 let Container = ({ children }: any) => <>{children}</>
@@ -22,7 +22,7 @@ const renderModal = (Template: any, props: any) => {
       <Template {...props} />
     </Container>
   );
-  ReactDOM.render(template, dom)
+  createRoot(dom).render(template)
   return dom;
 }
 
