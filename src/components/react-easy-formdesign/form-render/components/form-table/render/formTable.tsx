@@ -15,10 +15,14 @@ const CustomTableCell = (props: any) => {
   const { name, formrender, type, disabled, props: typeProps, hidden, children, ...restProps } = props;
   const columnInstance = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, typeProps) });
   return (
-    <TableCell key={name}>
-      <Form.Item {...restProps} label="" name={name}>
-        {hidden === true ? null : (columnInstance || children)}
-      </Form.Item>
+    <TableCell key={name} {...restProps}>
+      {
+        columnInstance ?
+          <Form.Item {...restProps} label="" name={name}>
+            {hidden === true ? null : (columnInstance)}
+          </Form.Item>
+          : children
+      }
     </TableCell>
   );
 }

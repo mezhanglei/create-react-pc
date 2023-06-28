@@ -27,7 +27,7 @@ export function useFormError(form: FormStore, path?: string, immediate = true) {
   useMemo(() => {
     if (!immediate) return
     subscribeError();
-  }, [form, JSON.stringify(path)]);
+  }, []);
 
   // 订阅组件更新错误的函数
   useEffect(() => {
@@ -70,7 +70,7 @@ export function useFormValues<T = unknown>(form: FormStore, path?: string | stri
   useMemo(() => {
     if (!immediate) return
     subscribeForm();
-  }, [form, JSON.stringify(path)]);
+  }, []);
 
   useEffect(() => {
     subscribeForm();

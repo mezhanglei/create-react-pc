@@ -8,10 +8,8 @@ export function addUrlQuery(query: object, url = location.href) {
   url = url?.lastIndexOf('&') === url?.length - 1 ? url.substring(0, url?.length - 1) : url;
   if (query) {
     let queryArr = [];
-    for (const key in query) {
-      if (query.hasOwnProperty(key)) {
-        queryArr.push(`${key}=${query[key]}`);
-      }
+    for (const key of Object.keys(query)) {
+      queryArr.push(`${key}=${query[key]}`);
     }
     if (url.indexOf("?") !== -1) {
       url = `${url}&${queryArr.join("&")}`;
@@ -34,8 +32,8 @@ export function delUrlQuery(name: string, url = location.href) {
     let obj = {};
     let arr = query.split("&");
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = arr[i].split("=");
-      obj[arr[i][0]] = arr[i][1];
+      const part = arr[i].split("=");
+      obj[part[0]] = part[1];
     }
     delete obj[name];
     let resultUrl =
@@ -62,8 +60,8 @@ export function getUrlQuery(name: string, url = location.href) {
     let obj = {};
     let arr = query.split("&");
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = arr[i].split("=");
-      obj[arr[i][0]] = arr[i][1];
+      const part = arr[i].split("=");
+      obj[part[0]] = part[1];
     }
     return decodeURIComponent(obj[name]);
   } else {

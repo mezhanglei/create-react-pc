@@ -21,7 +21,7 @@ export function useProperties(formrender: FormRenderStore, immediate = true) {
   useMemo(() => {
     if (!immediate) return
     subscribeData();
-  }, [formrender]);
+  }, []);
 
   useEffect(() => {
     subscribeData()
@@ -49,7 +49,7 @@ export function useExpandComponents(formrender: FormRenderStore, immediate = tru
   useMemo(() => {
     if (!immediate) return
     subscribeData();
-  }, [formrender]);
+  }, []);
 
   useEffect(() => {
     subscribeData

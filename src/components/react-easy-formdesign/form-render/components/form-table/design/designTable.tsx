@@ -43,7 +43,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   const { designer, settingsForm } = useFormDesign();
 
   const onFieldsChange = (colIndex: number, newVal: any) => {
-    // 延迟变更值
+    // 设置初始值
     setTimeout(() => {
       // 表单记录下新的initialValue值
       updateDesignerItem(designer, { initialValue: newVal }, rest?.path, `props.columns[${colIndex}]`);
