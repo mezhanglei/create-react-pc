@@ -2,7 +2,6 @@ import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormCh
 import React from 'react';
 import { BaseComponents } from './components';
 import moment from 'moment';
-import { Item } from '@/components/react-easy-formcore/components/item';
 
 export * from '@/components/react-easy-formrender';
 
@@ -13,11 +12,13 @@ export interface CustomOptions {
 // RenderFormChildren
 export type CustomRenderFormChildrenProps = RenderFormChildrenProps & CustomOptions;
 export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
+  const { components, expressionImports, ...rest } = props;
   return (
     <RenderFormChilds
-      {...props}
-      components={{ ...BaseComponents, ...props?.components }}
-      expressionImports={{ moment }}
+      options={{ props: { autoComplete: 'off' } }}
+      components={{ ...BaseComponents, ...components }}
+      expressionImports={{ ...expressionImports, moment }}
+      {...rest}
     />
   );
 }
@@ -25,13 +26,13 @@ export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
 // RenderForm
 export type CustomRenderFormProps = RenderFormProps & CustomOptions
 export default function FormRender(props: CustomRenderFormProps) {
-  const { options, ...rest } = props;
+  const { components, expressionImports, ...rest } = props;
   return (
     <RenderFormDefault
+      options={{ props: { autoComplete: 'off' } }}
+      components={{ ...BaseComponents, ...components }}
+      expressionImports={{ ...expressionImports, moment }}
       {...rest}
-      options={{ ...options, component: Item }}
-      components={{ ...BaseComponents, ...props?.components }}
-      expressionImports={{ moment }}
     />
   );
 }

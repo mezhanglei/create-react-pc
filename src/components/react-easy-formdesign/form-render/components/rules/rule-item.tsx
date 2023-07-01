@@ -127,6 +127,10 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
       const result = rest;
       onChange && onChange(result);
     }
+    closeTooltip();
+  }
+
+  const closeTooltip = () => {
     setTooltipVisible(false);
   }
 
@@ -139,6 +143,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
           properties={properties}
         />
         <div className={classes.confirm}>
+          <Button onClick={closeTooltip}>取消</Button>
           <Button onClick={confirm}>确认</Button>
         </div>
       </div>
