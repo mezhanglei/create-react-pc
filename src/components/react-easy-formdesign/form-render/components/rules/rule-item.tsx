@@ -144,7 +144,7 @@ const RuleItem = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) =>
         />
         <div className={classes.confirm}>
           <Button onClick={closeTooltip}>取消</Button>
-          <Button onClick={confirm}>确认</Button>
+          <Button type="primary" onClick={confirm}>确认</Button>
         </div>
       </div>
     );
