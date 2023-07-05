@@ -10,7 +10,7 @@ export interface CustomOptions {
 }
 
 // RenderFormChildren
-export type CustomRenderFormChildrenProps = RenderFormChildrenProps & CustomOptions;
+export type CustomRenderFormChildrenProps = RenderFormChildrenProps<CustomOptions>;
 export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
   const { components, expressionImports, ...rest } = props;
   return (
@@ -24,7 +24,7 @@ export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
 }
 
 // RenderForm
-export type CustomRenderFormProps = RenderFormProps & CustomOptions
+export type CustomRenderFormProps = RenderFormProps<CustomOptions>
 export default function FormRender(props: CustomRenderFormProps) {
   const { components, expressionImports, ...rest } = props;
   return (

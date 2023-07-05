@@ -5,7 +5,7 @@ import { setDesignerFormValue, getNameSettings, asyncSettingsForm } from '../../
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
-import getConfigSettings from '../components/settings';
+import getConfigSettings from '../../form-render/configs/settings';
 export interface SelectedSettingsProps {
   className?: string
   style?: CSSProperties

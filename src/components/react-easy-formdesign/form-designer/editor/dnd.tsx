@@ -3,7 +3,7 @@ import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
 import { getConfigItem, insertDesignItem } from '../../utils/utils';
-import { DndType, ELementProps } from '../components/configs';
+import { DndType, ELementProps } from '../../form-render/configs/components';
 
 export interface ControlDndProps extends GeneratePrams<ELementProps> {
   children?: any;

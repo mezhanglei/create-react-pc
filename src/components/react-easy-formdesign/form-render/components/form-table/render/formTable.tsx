@@ -5,7 +5,7 @@ import { TableCell } from "./components";
 import { Form, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
-import { ELementProps } from "@/components/react-easy-formdesign/form-designer/components/configs";
+import { ELementProps } from "@/components/react-easy-formdesign/form-render/configs/components";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 import Icon from '@/components/svg-icon';
@@ -59,7 +59,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     setDataSource(defaultValue);
   }, [minRows]);
 
-  const form = rest?.form || useFormStore();
+  const form = useFormStore();
 
   const onValuesChange: ELementProps['onFieldsChange'] = (_, values) => {
     onChange && onChange(values);

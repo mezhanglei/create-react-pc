@@ -4,7 +4,7 @@ import ModalWrapper, { ModalWrapperProps } from '@/components/global-modal/modal
 import { create } from '@/components/global-modal/createPromise';
 import RenderForm, { useFormStore } from '../../form-render';
 import './preview.less';
-import { FormDesignData } from '../components/configs';
+import { FormDesignData } from '../../form-render/configs/components';
 import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer';
 import { Button, Radio } from 'antd';
 import { showExportJsonModal } from './exportJson';

@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './baseSelection.less';
-import { ELementProps } from '../components/configs';
+import { ELementProps } from '../../form-render/configs/components';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
 

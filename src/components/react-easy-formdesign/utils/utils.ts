@@ -4,8 +4,8 @@ import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender
 import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
-import { ConfigElementsMap, ELementProps } from '../form-designer/components/configs';
-import getConfigSettings from '../form-designer/components/settings';
+import { ELementProps } from '../form-render/configs/components';
+import getConfigSettings from '../form-render/configs/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (id?: string) => {
@@ -58,9 +58,9 @@ const getSettingsInitial = (id?: string, subId?: string) => {
 }
 
 // 根据id获取对应的组件
-export const getConfigItem = (id?: string) => {
-  if (!id) return;
-  const item = ConfigElementsMap[id];
+export const getConfigItem = (id: string, map: { [id: string]: ELementProps }) => {
+  if (!id || !map) return;
+  const item = map[id];
   const initialValues = getSettingsInitial(item?.id, item?.subId);
   const field = deepMergeObject(initialValues, item);
   return field;
@@ -145,6 +145,17 @@ export const asyncSettingsForm = (settingForm: FormStore, selected?: SelectedTyp
   const endName = getPathEnd(selected?.path);
   const settingValues = attributeName ? currentField : { ...currentField, name: endName }
   settingForm.setFieldsValue({ ...settingValues, initialValue: currentField?.initialValue });
+}
+
+// 展开传入的组件
+export const getExpanded = (components: Array<{ title: string, elements: Array<ELementProps> }>) => {
+  const list = components instanceof Array ? components.reduce((pre: ELementProps[], cur) => {
+    let temp: ELementProps[] = [];
+    const elements = cur?.elements;
+    temp = temp.concat(elements);
+    return pre.concat(temp);
+  }, []) : [];
+  return list;
 }
 
 // 代码编辑器执行解析字符串

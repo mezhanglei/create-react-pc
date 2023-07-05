@@ -3,7 +3,7 @@ import { GeneratePrams } from '../..';
 import React from 'react';
 import RowSelection from './row-selection';
 import { RowProps } from 'antd';
-import { ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
+import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import classnames from 'classnames';
 import './row.less';
 

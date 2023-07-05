@@ -1,7 +1,7 @@
 import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-designer/components/configs';
+import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';

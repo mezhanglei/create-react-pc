@@ -1,7 +1,7 @@
 import EventBus from '@/utils/event-bus';
 import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
-import { ELementProps, FormDesignData } from './components/configs';
+import { ELementProps, FormDesignData } from '../form-render/configs/components';
 
 // 拖拽区域的数据
 export interface DndCollectionType {

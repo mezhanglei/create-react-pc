@@ -1,5 +1,5 @@
 import { getArrMap } from "@/utils/array";
-import { CustomOptions, FormNodeProps } from "../../../form-render";
+import { CustomOptions, FormNodeProps } from "../..";
 // 基础控件
 import Input from './base/input';
 import Radio from './base/radio';
@@ -25,6 +25,7 @@ import divider from './layout/divider';
 import Alert from './layout/alert';
 // 组合组件
 import formTable from "./combo/table";
+import { getExpanded } from "@/components/react-easy-formdesign/utils/utils";
 
 // 列表中的元素类型
 export interface ELementProps extends FormNodeProps, CustomOptions {
@@ -36,11 +37,24 @@ export interface ELementProps extends FormNodeProps, CustomOptions {
   properties?: { [name: string]: ELementProps } | ELementProps[]
 }
 
-export type ElementsType = { [key: string]: ELementProps }
-
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
+// 可拖拽的区域类型
+export enum DndType {
+  Components = 'components'
+}
 
-export const ComponentsSource = [
+// 转换components
+const convertComponents = (components: Array<{ title: string, elements: Array<ELementProps> }>) => {
+  const expanded = getExpanded(components);
+  const elementsMap = getArrMap(expanded, 'id');
+  return {
+    origin: components, // 原始渲染数据
+    expanded: expanded, // 展开的组件列表
+    map: elementsMap, // map结构
+  }
+}
+
+export const components = [
   {
     title: '布局组件',
     elements: [
@@ -83,19 +97,7 @@ export const ComponentsSource = [
     elements: [
     ]
   }
-]
+];
 
-// 所有元素的展平列表
-export const ConfigElements = ComponentsSource.reduce((pre: ELementProps[], cur) => {
-  let temp: ELementProps[] = [];
-  const elements = cur?.elements;
-  temp = temp.concat(elements);
-  return pre.concat(temp);
-}, []);
-
-// 所有元素列表转成的map结构
-export const ConfigElementsMap: ElementsType = getArrMap(ConfigElements, 'id');
-// 可拖拽的区域类型
-export enum DndType {
-  Components = 'components'
-}
+const configs = convertComponents(components);
+export default configs;

@@ -4,7 +4,7 @@ import { message } from 'antd';
 import './index.less';
 import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../utils/utils';
 import ComponentList from './list';
-import { ELementProps, ComponentsSource } from './configs';
+import configs, { ELementProps } from '../../form-render/configs/components';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
 
@@ -17,7 +17,7 @@ const prefixCls = `${DesignprefixCls}-components`;
 function DesignComponents(props: DesignComponentsProps, ref: any) {
   const {
     style,
-    className
+    className,
   } = props;
 
   const { selected, designer } = useFormDesign();
@@ -37,10 +37,12 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     insertDesignItem(designer, field, newIndex, { path: selectedParent?.path });
   }
 
+  const components = configs.origin;
+
   return (
     <div ref={ref} className={cls} style={style}>
       {
-        ComponentsSource?.map((sub, subIndex) => {
+        components?.map((sub, subIndex) => {
           return <ComponentList {...sub} key={subIndex} onChange={onChange} />
         })
       }
