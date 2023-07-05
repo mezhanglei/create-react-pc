@@ -1,5 +1,7 @@
 import React from 'react';
 import { useFormRenderStore, useFormStore } from '../../react-easy-formrender';
+import defaultComponents, { convertComponents } from '../form-render/configs/components';
+import defaultSettingsMap from '../form-render/configs/settings';
 import { useEventBus } from '../utils/hooks';
 import { FormDesignContext, FormEditContext } from './designer-context';
 import { useSet } from './use-hooks';
@@ -18,6 +20,8 @@ function Provider(props: ProviderProps) {
     designerForm: designerForm,
     designer: designerStore,
     eventBus: eventBus,
+    settingsMap: Object.assign({}, defaultSettingsMap),
+    components: convertComponents(defaultComponents),
     properties: {},
     selected: {},
     historyData: {

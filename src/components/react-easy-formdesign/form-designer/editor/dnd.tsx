@@ -3,7 +3,13 @@ import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
 import { getConfigItem, insertDesignItem } from '../../utils/utils';
-import { DndType, ELementProps } from '../../form-render/configs/components';
+import { ELementProps } from '../../form-render/configs/components';
+import { useFormDesign } from '../../utils/hooks';
+
+// 可拖拽的区域类型
+export enum DndType {
+  Components = 'components'
+}
 
 export interface ControlDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -12,6 +18,7 @@ export interface ControlDndProps extends GeneratePrams<ELementProps> {
 // 控件的拖放控制
 function ControlDnd(props: ControlDndProps, ref: any) {
   const { children, formrender, path, ...rest } = props;
+  const { components, settingsMap } = useFormDesign();
 
   const currentPath = path;
 
@@ -49,7 +56,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
-      const field = getConfigItem(elementId);
+      const field = getConfigItem(elementId, components?.map, settingsMap);
       formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
     } else {
       formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });

@@ -5,7 +5,7 @@ import { setDesignerFormValue, getNameSettings, asyncSettingsForm } from '../../
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
-import getConfigSettings from '../../form-render/configs/settings';
+import defaultSettingsMap, { handleSettings } from '../../form-render/configs/settings';
 export interface SelectedSettingsProps {
   className?: string
   style?: CSSProperties
@@ -20,7 +20,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   } = props;
 
   const { setEdit } = useFormEdit();
-  const { selected, designer, designerForm } = useFormDesign();
+  const { selected, designer, designerForm, settingsMap } = useFormDesign();
   const selectedPath = selected?.path;
   const selectedName = selected?.name;
   const attributeName = selected?.attributeName;
@@ -28,8 +28,9 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const cls = classnames(prefixCls, className);
   const configSettings = useMemo(() => {
     const item = designer.getItemByPath(selectedPath, attributeName);
-    return getConfigSettings(item?.id, item?.subId);
-  }, [designer, selectedPath, attributeName]); // 配置表单列表
+    const settings = handleSettings(settingsMap[item?.id], item);
+    return settings;
+  }, [designer, selectedPath, attributeName, settingsMap]);
   const nameSettings = useMemo(() => getNameSettings(selected), [selectedPath, attributeName]); // 表单节点字段设置
 
   useEffect(() => {
@@ -64,10 +65,10 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const renderCommonList = () => {
     if (!configSettings) return;
     return (
-      Object.entries(configSettings)?.map(([title, settings]) => {
+      Object.entries(configSettings)?.map(([name, data]) => {
         return (
-          <CustomCollapse header={title} key={title} isOpened>
-            <RenderFormChildren properties={settings} />
+          <CustomCollapse header={name} key={name} isOpened>
+            <RenderFormChildren properties={data} />
           </CustomCollapse>
         )
       })

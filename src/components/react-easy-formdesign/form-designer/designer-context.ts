@@ -1,7 +1,8 @@
 import EventBus from '@/utils/event-bus';
 import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
-import { ELementProps, FormDesignData } from '../form-render/configs/components';
+import { ELementProps, FormDesignData, OriginComponents } from '../form-render/configs/components';
+import { SettingsMapType } from '../form-render/configs/settings';
 
 // 拖拽区域的数据
 export interface DndCollectionType {
@@ -23,6 +24,8 @@ export interface FormDesignCtxProps {
   designer: FormRenderStore;
   eventBus: EventBus;
   selected: SelectedType;
+  components: { origin: OriginComponents, expanded: ELementProps[], map: { [key: string]: ELementProps } };
+  settingsMap: SettingsMapType;
   historyData: {
     index: number;
     maxStep: number;

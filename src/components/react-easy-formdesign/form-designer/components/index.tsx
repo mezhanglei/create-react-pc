@@ -20,7 +20,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className,
   } = props;
 
-  const { selected, designer } = useFormDesign();
+  const { selected, designer, components, settingsMap } = useFormDesign();
   const selectedParent = selected?.parent;
   const attributeName = selected?.attributeName;
   const cls = classnames(prefixCls, className);
@@ -28,7 +28,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   const onChange = (item: ELementProps) => {
     if (attributeName) return;
     const newIndex = getSelectedIndex(selected) + 1; // 插入位置序号
-    const field = getConfigItem(item?.id);
+    const field = getConfigItem(item?.id, components?.map, settingsMap);
     const includesIds = selectedParent?.field?.includes;
     if (includesIds && !includesIds.includes(field.id)) {
       message.warning("当前不可插入")
@@ -37,12 +37,12 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     insertDesignItem(designer, field, newIndex, { path: selectedParent?.path });
   }
 
-  const components = configs.origin;
+  const originComponents = components.origin;
 
   return (
     <div ref={ref} className={cls} style={style}>
       {
-        components?.map((sub, subIndex) => {
+        originComponents?.map((sub, subIndex) => {
           return <ComponentList {...sub} key={subIndex} onChange={onChange} />
         })
       }

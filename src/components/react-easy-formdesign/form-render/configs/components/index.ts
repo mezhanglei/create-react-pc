@@ -1,36 +1,36 @@
 import { getArrMap } from "@/utils/array";
 import { CustomOptions, FormNodeProps } from "../..";
 // 基础控件
-import Input from './base/input';
-import Radio from './base/radio';
-import Checkbox from './base/checkbox';
-import Select from './base/select';
-import Switch from './base/switch';
-import TimePicker from './base/timePicker';
-import TimePickerRangePicker from './base/timePickerRangePicker';
-import DatePicker from './base/datePicker';
-import DatePickerRangePicker from './base/datePickerRangePicker';
-import Slider from './base/slider';
-import Rate from './base/rate';
-import ColorPicker from './base/colorPicker';
-import FileUpload from './base/fileUpload';
-import ImageUpload from './base/imageUpload';
-import Cascader from './base/cascader';
-import RichEditor from "./base/richEditor";
-import RichText from "./base/richText";
+import Input from './input';
+import Radio from './radio';
+import Checkbox from './checkbox';
+import Select from './select';
+import Switch from './switch';
+import TimePicker from './timePicker';
+import TimePickerRangePicker from './timePickerRangePicker';
+import DatePicker from './datePicker';
+import DatePickerRangePicker from './datePickerRangePicker';
+import Slider from './slider';
+import Rate from './rate';
+import ColorPicker from './colorPicker';
+import FileUpload from './fileUpload';
+import ImageUpload from './imageUpload';
+import Cascader from './cascader';
+import RichEditor from "./richEditor";
+import RichText from "./richText";
 // 布局组件
 // import tableLayout from './layout/table';
-import grid from './layout/grid';
-import divider from './layout/divider';
-import Alert from './layout/alert';
+import grid from './grid';
+import divider from './divider';
+import Alert from './alert';
 // 组合组件
-import formTable from "./combo/table";
+import formTable from "./formTable";
 import { getExpanded } from "@/components/react-easy-formdesign/utils/utils";
 
 // 列表中的元素类型
 export interface ELementProps extends FormNodeProps, CustomOptions {
-  id?: string; // 组件类型id，用于匹配组件的配置
-  subId?: string; // 子组件的id， 用于匹配子组件的配置
+  id?: string; // 当前节点的id
+  additional?: string; // 当前节点内的组件id
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
   includes?: string[]; // 限制可以添加的子元素id
@@ -38,13 +38,11 @@ export interface ELementProps extends FormNodeProps, CustomOptions {
 }
 
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
-// 可拖拽的区域类型
-export enum DndType {
-  Components = 'components'
-}
 
-// 转换components
-const convertComponents = (components: Array<{ title: string, elements: Array<ELementProps> }>) => {
+export type OriginComponents = Array<{ title: string, elements: Array<ELementProps> }>;
+
+// 在使用前转换components
+export const convertComponents = (components: OriginComponents) => {
   const expanded = getExpanded(components);
   const elementsMap = getArrMap(expanded, 'id');
   return {
@@ -54,7 +52,7 @@ const convertComponents = (components: Array<{ title: string, elements: Array<EL
   }
 }
 
-export const components = [
+const components = [
   {
     title: '布局组件',
     elements: [
@@ -99,5 +97,4 @@ export const components = [
   }
 ];
 
-const configs = convertComponents(components);
-export default configs;
+export default components;

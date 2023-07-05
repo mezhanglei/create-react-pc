@@ -1,35 +1,39 @@
 import DefaultFieldSettings from "./field";
 // 基础控件
-import InputSettings from "./base/input";
-import RadioSettings from "./base/radio";
-import CheckboxSettings from './base/checkbox';
-import SelectSettings from './base/select';
-import SwitchSettings from './base/switch';
-import TimePickerSettings from './base/timePicker';
-import TimePickerRangePickerSettings from './base/timePickerRangePicker';
-import DatePickerSettings from './base/datePicker';
-import DatePickerRangePickerSettings from './base/datePickerRangePicker';
-import SliderSettings from './base/slider';
-import RateSettings from './base/rate';
-import ColorPickerSettings from './base/colorPicker';
-import FileUploadSettings from './base/fileUpload';
-import ImageUploadSettings from './base/imageUpload';
-import CascaderSettings from './base/cascader';
-import RichTextSettings from './base/richText';
+import InputSettings from "./input";
+import RadioSettings from "./radio";
+import CheckboxSettings from './checkbox';
+import SelectSettings from './select';
+import SwitchSettings from './switch';
+import TimePickerSettings from './timePicker';
+import TimePickerRangePickerSettings from './timePickerRangePicker';
+import DatePickerSettings from './datePicker';
+import DatePickerRangePickerSettings from './datePickerRangePicker';
+import SliderSettings from './slider';
+import RateSettings from './rate';
+import ColorPickerSettings from './colorPicker';
+import FileUploadSettings from './fileUpload';
+import ImageUploadSettings from './imageUpload';
+import CascaderSettings from './cascader';
+import RichTextSettings from './richText';
 // 布局组件
-import GridRowSettings from './layout/grid-row';
-import GridColSettings from './layout/grid-col';
-import DividerSettings from './layout/divider';
-import AlertSettings from './layout/alert';
+import GridRowSettings from './gridRow';
+import GridColSettings from './gridCol';
+import DividerSettings from './divider';
+import AlertSettings from './alert';
 // 组合组件
-import FormTableColSettings from './combo/form-table-col';
-import FormTableSettings from './combo/form-table';
+import FormTableColSettings from './formTableCol';
+import FormTableSettings from './formTable';
 import { filterObject } from "@/utils/object";
 import { PropertiesData } from "@/components/react-easy-formrender";
+import { ELementProps } from "../components";
 // 业务组件
 
-// 基础配置
-const baseSettings = {
+export type SettingsType = { [key: string]: PropertiesData }
+export type SettingsMapType = { [id: string]: SettingsType | ((item?: Partial<ELementProps>) => SettingsType) }
+
+// 静态配置
+const staticSettingsMap = {
   "Input": { ...InputSettings, ...DefaultFieldSettings },
   "RadioGroup": { ...RadioSettings, ...DefaultFieldSettings },
   "CheckboxGroup": { ...CheckboxSettings, ...DefaultFieldSettings },
@@ -54,16 +58,32 @@ const baseSettings = {
   "GridCol": GridColSettings,
 }
 
-const getConfigSettings = (id?: string, subId?: string): { [key: string]: PropertiesData } | undefined => {
-  if (!id) return {};
-  switch (id) {
-    case "FormTableCol":
-      const settings = subId && baseSettings[subId];
-      const needSettings = filterObject(settings, (key) => key !== '公共属性');
-      return Object.assign({}, FormTableColSettings, needSettings);
-    default:
-      return baseSettings[id];
+// 动态配置
+const dynamicSettingsMap = {
+  "FormTableCol": (item?: Partial<ELementProps>) => {
+    const additional = item?.additional; // 节点额外的组件id
+    const formSettings = filterObject<SettingsType>(getStaticSettings(additional), (key) => key !== '公共属性');
+    return Object.assign({}, FormTableColSettings, formSettings);
   }
 }
 
-export default getConfigSettings;
+const originSettingsMap = { ...staticSettingsMap, ...dynamicSettingsMap };
+
+export default originSettingsMap;
+
+// 获取静态配置
+export const getStaticSettings = (ids?: string | Array<string>) => {
+  if (ids instanceof Array) {
+    return ids.reduce((preSettings: SettingsType, cur: string) => {
+      const curSettings = staticSettingsMap[cur] as SettingsType;
+      return Object.assign(preSettings, curSettings);
+    }, {});
+  } else if (typeof ids === 'string') {
+    return staticSettingsMap[ids] as SettingsType;
+  }
+}
+
+// 配置需要转换才能使用
+export const handleSettings = (settings: SettingsMapType[string], item?: Partial<ELementProps>) => {
+  return typeof settings === 'function' ? settings(item) : settings;
+}

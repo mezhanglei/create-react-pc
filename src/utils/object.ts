@@ -48,10 +48,10 @@ export function objectToFormData(obj: any, formData?: FormData) {
 }
 
 // 过滤对象中的属性
-export function filterObject(obj: object | undefined | null, callback: (key?: string, value?: any) => boolean): any {
+export function filterObject<T = any>(obj: T | undefined, callback: (key?: string, value?: any) => boolean): T | undefined {
   if (obj === undefined || obj === null) return obj;
   const entries = Object.entries(obj)?.filter((item) => (callback(item[0], item[1])));
-  return Object.fromEntries(entries);
+  return Object.fromEntries(entries) as T;
 }
 
 // 接收路径字符串或数组字符串，返回数组字符串表示路径

@@ -1,11 +1,12 @@
 import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { DndType, ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
+import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { DndType } from '@/components/react-easy-formdesign/form-designer/editor/dnd';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;
@@ -18,7 +19,7 @@ function TableDnd(props: TableDndProps, ref: any) {
   const attributeName = `props.columns`;
   const currentPath = path;
   const { setEdit } = useFormEdit();
-  const { settingsForm } = useFormDesign();
+  const { settingsForm, components, settingsMap } = useFormDesign();
 
   const removeSelect = () => {
     setEdit({ selected: {} });
@@ -56,7 +57,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
       const elementId = from?.id as string;
-      formField = getConfigItem(elementId);
+      formField = getConfigItem(elementId, components?.map, settingsMap);
       // 从表单节点中插入
     } else {
       formField = formrender && formrender.getItemByIndex(fromIndex, { path: fromCollection?.path });
@@ -66,7 +67,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const newColumn = {
       ...formField,
       id: "FormTableCol",
-      subId: formField?.id,
+      additional: formField?.id,
       title: formField?.label,
       dataIndex: defaultGetId(formField.id)
     }

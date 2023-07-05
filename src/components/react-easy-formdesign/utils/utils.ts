@@ -5,7 +5,7 @@ import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import { ELementProps } from '../form-render/configs/components';
-import getConfigSettings from '../form-render/configs/settings';
+import { SettingsType, SettingsMapType, handleSettings } from '../form-render/configs/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (id?: string) => {
@@ -44,12 +44,10 @@ export const getSelectedIndex = (selected?: SelectedType) => {
   return typeof index === 'number' ? index : -1;
 }
 
-// 获取节点的配置中初始值
-const getSettingsInitial = (id?: string, subId?: string) => {
-  if (!id) return;
-  const configSettings = getConfigSettings(id, subId);
+// 根据节点的配置返回节点的初始值
+const getSettingsInitial = (settings: SettingsType) => {
   // 从配置表单中获取初始属性
-  const expandSettings = Object.values(configSettings || {}).reduce((pre, cur) => {
+  const expandSettings = Object.values(settings || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
     return result;
   }, {});
@@ -58,10 +56,11 @@ const getSettingsInitial = (id?: string, subId?: string) => {
 }
 
 // 根据id获取对应的组件
-export const getConfigItem = (id: string, map: { [id: string]: ELementProps }) => {
+export const getConfigItem = (id: string | undefined, map: { [id: string]: ELementProps }, settingsMap: SettingsMapType) => {
   if (!id || !map) return;
   const item = map[id];
-  const initialValues = getSettingsInitial(item?.id, item?.subId);
+  const settings = handleSettings(settingsMap?.[id], item);
+  const initialValues = getSettingsInitial(settings);
   const field = deepMergeObject(initialValues, item);
   return field;
 }
@@ -70,9 +69,7 @@ export const getConfigItem = (id: string, map: { [id: string]: ELementProps }) =
 export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
   if (isNoSelected(path)) return;
   const item = designer.getItemByPath(path, attributeName) || {};
-  const initialValues = getSettingsInitial(item?.id, item?.subId);
-  const field = deepMergeObject(initialValues, item);
-  return field;
+  return item;
 }
 
 // 插入新节点

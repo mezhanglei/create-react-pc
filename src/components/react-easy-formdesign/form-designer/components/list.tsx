@@ -3,7 +3,8 @@ import classnames from 'classnames';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import './list.less';
-import { DndType, ELementProps } from '../../form-render/configs/components';
+import { ELementProps } from '../../form-render/configs/components';
+import { DndType } from '../editor/dnd';
 
 export interface ComponentListProps {
   className?: string;
