@@ -5,7 +5,7 @@ import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import { ELementProps } from '../form-render/configs/components';
-import { SettingsType, SettingsMapType, handleSettings } from '../form-render/configs/settings';
+import { SettingsType, SettingsMapType, convertSettings } from '../form-render/configs/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (id?: string) => {
@@ -56,10 +56,10 @@ const getSettingsInitial = (settings: SettingsType) => {
 }
 
 // 根据id获取对应的组件
-export const getConfigItem = (id: string | undefined, map: { [id: string]: ELementProps }, settingsMap: SettingsMapType) => {
-  if (!id || !map) return;
-  const item = map[id];
-  const settings = handleSettings(settingsMap?.[id], item);
+export const getConfigItem = (id: string | undefined, componentsMap: { [id: string]: ELementProps }, settingsMap: SettingsMapType) => {
+  if (!id || !componentsMap) return;
+  const item = componentsMap[id];
+  const settings = convertSettings(settingsMap?.[id], item);
   const initialValues = getSettingsInitial(settings);
   const field = deepMergeObject(initialValues, item);
   return field;

@@ -32,8 +32,8 @@ import { ELementProps } from "../components";
 export type SettingsType = { [key: string]: PropertiesData }
 export type SettingsMapType = { [id: string]: SettingsType | ((item?: Partial<ELementProps>) => SettingsType) }
 
-// 静态配置
-const staticSettingsMap = {
+// 配置
+const configSettingsMap = {
   "Input": { ...InputSettings, ...DefaultFieldSettings },
   "RadioGroup": { ...RadioSettings, ...DefaultFieldSettings },
   "CheckboxGroup": { ...CheckboxSettings, ...DefaultFieldSettings },
@@ -56,34 +56,21 @@ const staticSettingsMap = {
   "RichEditor": DefaultFieldSettings,
   "GridRow": GridRowSettings,
   "GridCol": GridColSettings,
-}
-
-// 动态配置
-const dynamicSettingsMap = {
   "FormTableCol": (item?: Partial<ELementProps>) => {
-    const additional = item?.additional; // 节点额外的组件id
-    const formSettings = filterObject<SettingsType>(getStaticSettings(additional), (key) => key !== '公共属性');
+    // 额外的配置
+    const additional = item?.additional;
+    const additionalSettings = additional instanceof Array ? additional.reduce((preSettings: SettingsType, cur: string) => {
+      const curSettings = configSettingsMap[cur] as SettingsType;
+      return Object.assign(preSettings, curSettings);
+    }, {}) : (typeof additional == 'string' && configSettingsMap[additional])
+    const formSettings = filterObject<SettingsType>(additionalSettings, (key) => key !== '公共属性');
     return Object.assign({}, FormTableColSettings, formSettings);
   }
 }
 
-const originSettingsMap = { ...staticSettingsMap, ...dynamicSettingsMap };
+export default configSettingsMap;
 
-export default originSettingsMap;
-
-// 获取静态配置
-export const getStaticSettings = (ids?: string | Array<string>) => {
-  if (ids instanceof Array) {
-    return ids.reduce((preSettings: SettingsType, cur: string) => {
-      const curSettings = staticSettingsMap[cur] as SettingsType;
-      return Object.assign(preSettings, curSettings);
-    }, {});
-  } else if (typeof ids === 'string') {
-    return staticSettingsMap[ids] as SettingsType;
-  }
-}
-
-// 配置需要转换才能使用
-export const handleSettings = (settings: SettingsMapType[string], item?: Partial<ELementProps>) => {
+// 转换配置
+export const convertSettings = (settings: SettingsMapType[string], item?: Partial<ELementProps>) => {
   return typeof settings === 'function' ? settings(item) : settings;
 }

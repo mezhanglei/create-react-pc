@@ -5,7 +5,7 @@ import { setDesignerFormValue, getNameSettings, asyncSettingsForm } from '../../
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/collapse';
-import defaultSettingsMap, { handleSettings } from '../../form-render/configs/settings';
+import defaultSettingsMap, { convertSettings } from '../../form-render/configs/settings';
 export interface SelectedSettingsProps {
   className?: string
   style?: CSSProperties
@@ -28,7 +28,7 @@ function SelectedSettings(props: SelectedSettingsProps, ref: any) {
   const cls = classnames(prefixCls, className);
   const configSettings = useMemo(() => {
     const item = designer.getItemByPath(selectedPath, attributeName);
-    const settings = handleSettings(settingsMap[item?.id], item);
+    const settings = convertSettings(settingsMap[item?.id], item);
     return settings;
   }, [designer, selectedPath, attributeName, settingsMap]);
   const nameSettings = useMemo(() => getNameSettings(selected), [selectedPath, attributeName]); // 表单节点字段设置

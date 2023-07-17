@@ -30,7 +30,7 @@ import { getExpanded } from "@/components/react-easy-formdesign/utils/utils";
 // 列表中的元素类型
 export interface ELementProps extends FormNodeProps, CustomOptions {
   id?: string; // 当前节点的id
-  additional?: string; // 当前节点内的组件id
+  additional?: string | string[]; // 当前节点内的组件id
   icon?: string; // 组件列表中的icon
   componentLabel?: string; // 组件列表中的显示名字
   includes?: string[]; // 限制可以添加的子元素id
