@@ -18,7 +18,7 @@ export interface ControlDndProps extends GeneratePrams<ELementProps> {
 // 控件的拖放控制
 function ControlDnd(props: ControlDndProps, ref: any) {
   const { children, formrender, path, ...rest } = props;
-  const { components, settingsMap } = useFormDesign();
+  const { components, settings } = useFormDesign();
 
   const currentPath = path;
 
@@ -55,8 +55,8 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     const dropIndex = to?.index || 0;
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
-      const elementId = from?.id as string;
-      const field = getConfigItem(elementId, components?.map, settingsMap);
+      const type = from?.id as string;
+      const field = getConfigItem(type, components, settings);
       formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
     } else {
       formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });

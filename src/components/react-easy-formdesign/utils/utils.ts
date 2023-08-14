@@ -5,11 +5,11 @@ import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import { ELementProps } from '../form-render/configs/components';
-import { SettingsType, SettingsMapType, convertSettings } from '../form-render/configs/settings';
+import { SettingsItem, SettingsMapType } from '../form-render/configs/settings';
 import { SelectedType } from '../form-designer/designer-context';
 
-export const defaultGetId = (id?: string) => {
-  return id ? `${id}_${nanoid(6)}` : '';
+export const defaultGetId = (key?: string) => {
+  return typeof key == 'string' ? `${key.replace(/\./g, '')}_${nanoid(6)}` : '';
 };
 
 // 失去选中
@@ -45,7 +45,7 @@ export const getSelectedIndex = (selected?: SelectedType) => {
 }
 
 // 根据节点的配置返回节点的初始值
-const getSettingsInitial = (settings: SettingsType) => {
+const getSettingsInitial = (settings?: SettingsItem) => {
   // 从配置表单中获取初始属性
   const expandSettings = Object.values(settings || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
@@ -55,25 +55,26 @@ const getSettingsInitial = (settings: SettingsType) => {
   return initialValues;
 }
 
-// 根据id获取对应的组件
-export const getConfigItem = (id: string | undefined, componentsMap: { [id: string]: ELementProps }, settingsMap: SettingsMapType) => {
-  if (!id || !componentsMap) return;
-  const item = componentsMap[id];
-  const settings = convertSettings(settingsMap?.[id], item);
-  const initialValues = getSettingsInitial(settings);
+// 根据配置键名获取配置
+export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settingsMap?: SettingsMapType) => {
+  if (!key || !components) return;
+  const item = components[key];
+  const itemSettings = settingsMap?.[key];
+  const initialValues = getSettingsInitial(itemSettings);
   const field = deepMergeObject(initialValues, item);
   return field;
 }
 
 // 根据路径获取节点的值和属性
-export const getDesignerItem = (designer: FormRenderStore, path?: string, attributeName?: string) => {
-  if (isNoSelected(path)) return;
+export const getDesignerItem = (designer?: FormRenderStore, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !designer) return;
   const item = designer.getItemByPath(path, attributeName) || {};
   return item;
 }
 
 // 插入新节点
-export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
+export const insertDesignItem = (designer?: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
+  if (!designer) return;
   const { path, attributeName } = parent || {};
   const parentItem = designer && designer.getItemByPath(path, attributeName);
   const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
@@ -81,8 +82,8 @@ export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps,
   if (isInArray) {
     designer?.insertItemByIndex(data, index, parent);
   } else {
-    if (data?.id) {
-      const newName = defaultGetId(data?.id);
+    if (data?.type) {
+      const newName = defaultGetId(data?.type);
       const newData = { [newName]: data };
       designer?.insertItemByIndex(newData, index, parent);
     }
@@ -90,8 +91,8 @@ export const insertDesignItem = (designer: FormRenderStore, data?: ELementProps,
 }
 
 // 更新节点的属性(不包括值)
-export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
-  if (isNoSelected(path)) return;
+export const updateDesignerItem = (designer: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !designer) return;
   if (attributeName) {
     // 设置属性节点
     designer?.updateItemByPath(data, path, attributeName);
@@ -108,8 +109,8 @@ export const updateDesignerItem = (designer: FormRenderStore, data: any, path?: 
 }
 
 // 覆盖设置节点的属性(不包括值)
-export const setDesignerItem = (designer: FormRenderStore, data: any, path?: string, attributeName?: string) => {
-  if (isNoSelected(path)) return;
+export const setDesignerItem = (designer: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !designer) return;
   if (attributeName) {
     // 设置属性节点
     designer?.setItemByPath(data, path, attributeName);
@@ -126,15 +127,15 @@ export const setDesignerItem = (designer: FormRenderStore, data: any, path?: str
 }
 
 // 设置设计器区域的表单值
-export const setDesignerFormValue = (designerForm: FormStore, formPath?: string, initialValue?: any) => {
-  if (isNoSelected(formPath) || !formPath) return;
+export const setDesignerFormValue = (designerForm?: FormStore, formPath?: string, initialValue?: any) => {
+  if (isNoSelected(formPath) || !formPath || !designerForm) return;
   if (initialValue !== undefined) {
     designerForm?.setFieldValue(formPath, initialValue);
   }
 }
 
 // 同步目标的编辑区域值到属性面板回显
-export const asyncSettingsForm = (settingForm: FormStore, selected?: SelectedType) => {
+export const asyncSettingsForm = (settingForm?: FormStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
   const field = selected?.field;
   const attributeName = selected?.attributeName;
@@ -142,17 +143,6 @@ export const asyncSettingsForm = (settingForm: FormStore, selected?: SelectedTyp
   const endName = getPathEnd(selected?.path);
   const settingValues = attributeName ? currentField : { ...currentField, name: endName }
   settingForm.setFieldsValue({ ...settingValues, initialValue: currentField?.initialValue });
-}
-
-// 展开传入的组件
-export const getExpanded = (components: Array<{ title: string, elements: Array<ELementProps> }>) => {
-  const list = components instanceof Array ? components.reduce((pre: ELementProps[], cur) => {
-    let temp: ELementProps[] = [];
-    const elements = cur?.elements;
-    temp = temp.concat(elements);
-    return pre.concat(temp);
-  }, []) : [];
-  return list;
 }
 
 // 代码编辑器执行解析字符串

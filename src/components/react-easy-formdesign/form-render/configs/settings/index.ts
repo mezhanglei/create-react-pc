@@ -1,8 +1,8 @@
 import DefaultFieldSettings from "./field";
 // 基础控件
 import InputSettings from "./input";
-import RadioSettings from "./radio";
-import CheckboxSettings from './checkbox';
+import RadioGroupSettings from "./radioGroup";
+import CheckboxGroupSettings from './checkboxGroup';
 import SelectSettings from './select';
 import SwitchSettings from './switch';
 import TimePickerSettings from './timePicker';
@@ -22,27 +22,24 @@ import GridColSettings from './gridCol';
 import DividerSettings from './divider';
 import AlertSettings from './alert';
 // 组合组件
-import FormTableColSettings from './formTableCol';
 import FormTableSettings from './formTable';
-import { filterObject } from "@/utils/object";
-import { PropertiesData } from "@/components/react-easy-formrender";
-import { ELementProps } from "../components";
+import { FormDesignData } from "../components";
 // 业务组件
 
-export type SettingsType = { [key: string]: PropertiesData }
-export type SettingsMapType = { [id: string]: SettingsType | ((item?: Partial<ELementProps>) => SettingsType) }
+export type SettingsItem = { [key: string]: FormDesignData }
+export type SettingsMapType = { [key: string]: SettingsItem }
 
 // 配置
-const configSettingsMap = {
+const configSettings = {
   "Input": { ...InputSettings, ...DefaultFieldSettings },
-  "RadioGroup": { ...RadioSettings, ...DefaultFieldSettings },
-  "CheckboxGroup": { ...CheckboxSettings, ...DefaultFieldSettings },
+  "Radio.Group": { ...RadioGroupSettings, ...DefaultFieldSettings },
+  "Checkbox.Group": { ...CheckboxGroupSettings, ...DefaultFieldSettings },
   "Select": { ...SelectSettings, ...DefaultFieldSettings },
   "Switch": { ...SwitchSettings, ...DefaultFieldSettings },
   "TimePicker": { ...TimePickerSettings, ...DefaultFieldSettings },
-  "TimePickerRangePicker": { ...TimePickerRangePickerSettings, ...DefaultFieldSettings },
+  "TimePicker.RangePicker": { ...TimePickerRangePickerSettings, ...DefaultFieldSettings },
   "DatePicker": { ...DatePickerSettings, ...DefaultFieldSettings },
-  "DatePickerRangePicker": { ...DatePickerRangePickerSettings, ...DefaultFieldSettings },
+  "DatePicker.RangePicker": { ...DatePickerRangePickerSettings, ...DefaultFieldSettings },
   "Slider": { ...SliderSettings, ...DefaultFieldSettings },
   "Rate": { ...RateSettings, ...DefaultFieldSettings },
   "ColorPicker": { ...ColorPickerSettings, ...DefaultFieldSettings },
@@ -54,23 +51,8 @@ const configSettingsMap = {
   "Alert": AlertSettings,
   "RichText": RichTextSettings,
   "RichEditor": DefaultFieldSettings,
-  "GridRow": GridRowSettings,
-  "GridCol": GridColSettings,
-  "FormTableCol": (item?: Partial<ELementProps>) => {
-    // 额外的配置
-    const additional = item?.additional;
-    const additionalSettings = additional instanceof Array ? additional.reduce((preSettings: SettingsType, cur: string) => {
-      const curSettings = configSettingsMap[cur] as SettingsType;
-      return Object.assign(preSettings, curSettings);
-    }, {}) : (typeof additional == 'string' && configSettingsMap[additional])
-    const formSettings = filterObject<SettingsType>(additionalSettings, (key) => key !== '公共属性');
-    return Object.assign({}, FormTableColSettings, formSettings);
-  }
+  "Grid.Row": GridRowSettings,
+  "Grid.Col": GridColSettings,
 }
 
-export default configSettingsMap;
-
-// 转换配置
-export const convertSettings = (settings: SettingsMapType[string], item?: Partial<ELementProps>) => {
-  return typeof settings === 'function' ? settings(item) : settings;
-}
+export default configSettings;

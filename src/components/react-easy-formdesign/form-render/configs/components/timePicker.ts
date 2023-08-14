@@ -1,8 +1,7 @@
 
 export default {
-  id: 'TimePicker',
-  icon: 'time-field',
-  componentLabel: '时间选择器',
+  configIcon: 'time-field',
+  configLabel: '时间选择器',
   label: '时间选择器',
   type: 'TimePicker',
   valueSetter: "{{(value) => typeof value === 'string' && moment(value, 'HH:mm:ss')}}",

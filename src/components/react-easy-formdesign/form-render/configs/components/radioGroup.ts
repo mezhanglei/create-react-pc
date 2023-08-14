@@ -1,8 +1,7 @@
 
 export default {
-  id: 'RadioGroup',
-  icon: 'radio-field',
-  componentLabel: '单选框',
+  configIcon: 'radio-field',
+  configLabel: '单选框',
   label: '单选框',
   type: 'Radio.Group',
   props: {

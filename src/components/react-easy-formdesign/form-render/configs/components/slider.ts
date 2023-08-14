@@ -1,8 +1,7 @@
 
 export default {
-  id: 'Slider',
-  icon: 'slider-field',
-  componentLabel: '滑动输入',
+  configIcon: 'slider-field',
+  configLabel: '滑动输入',
   label: '滑动输入',
   type: 'Slider',
   props: {

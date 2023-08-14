@@ -1,8 +1,7 @@
 
 export default {
-  id: 'Alert',
-  icon: 'alert',
-  componentLabel: '提示',
+  configIcon: 'alert',
+  configLabel: '提示',
   type: 'Alert',
   ignore: true,
   labelWidth: 'auto',

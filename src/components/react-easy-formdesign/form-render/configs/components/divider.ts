@@ -1,8 +1,7 @@
 
 export default {
-  id: 'Divider',
-  icon: 'divider',
-  componentLabel: '分割线',
+  configIcon: 'divider',
+  configLabel: '分割线',
   type: 'Divider',
   ignore: true,
   labelWidth: 'auto',

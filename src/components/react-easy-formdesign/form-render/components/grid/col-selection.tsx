@@ -32,7 +32,6 @@ function ColSelection(props: ColSelectionProps, ref: any) {
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = {
-      id: 'gridCol',
       type: 'Grid.Col',
       props: { span: 12 },
       ignore: true,
@@ -53,7 +52,7 @@ function ColSelection(props: ColSelectionProps, ref: any) {
     <BaseSelection
       ref={ref}
       {...props}
-      componentLabel="栅格列"
+      configLabel="栅格列"
       className={cls}
       tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}

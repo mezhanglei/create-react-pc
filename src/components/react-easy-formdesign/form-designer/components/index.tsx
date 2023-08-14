@@ -3,10 +3,13 @@ import classnames from 'classnames';
 import { message } from 'antd';
 import './index.less';
 import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../utils/utils';
-import ComponentList from './list';
-import configs, { ELementProps } from '../../form-render/configs/components';
+import { ELementProps } from '../../form-render/configs/components';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
+import DndSortable from '@/components/react-dragger-sort';
+import { DndType } from '../editor/dnd';
+import Tag from './tag';
+import { pickObject } from '@/utils/object';
 
 export interface DesignComponentsProps {
   className?: string
@@ -20,30 +23,71 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     className,
   } = props;
 
-  const { selected, designer, components, settingsMap } = useFormDesign();
+  const { selected, designer, components, settings } = useFormDesign();
   const selectedParent = selected?.parent;
   const attributeName = selected?.attributeName;
   const cls = classnames(prefixCls, className);
 
-  const onChange = (item: ELementProps) => {
+  const onChange = (key: string, item: ELementProps) => {
     if (attributeName) return;
     const newIndex = getSelectedIndex(selected) + 1; // 插入位置序号
-    const field = getConfigItem(item?.id, components?.map, settingsMap);
+    const initialField = getConfigItem(key, components, settings); // 插入的属性类型
     const includesIds = selectedParent?.field?.includes;
-    if (includesIds && !includesIds.includes(field.id)) {
+    if (includesIds && !includesIds.includes(key)) {
       message.warning("当前不可插入")
       return;
     };
-    insertDesignItem(designer, field, newIndex, { path: selectedParent?.path });
+    insertDesignItem(designer, initialField, newIndex, { path: selectedParent?.path });
   }
 
-  const originComponents = components.origin;
+  const componentData = {
+    '布局组件': pickObject(components, ['GridRow', 'Divider', 'Alert']),
+    '控件组合': pickObject(components, ['FormTable']),
+    '基础控件': pickObject(components, [
+      "Input",
+      "RadioGroup",
+      "CheckboxGroup",
+      "Select",
+      "Switch",
+      "TimePicker",
+      "TimePickerRangePicker",
+      "DatePicker",
+      "DatePickerRangePicker",
+      "Slider",
+      "Rate",
+      "ColorPicker",
+      "Cascader",
+      "FileUpload",
+      "ImageUpload",
+      "RichEditor",
+      "RichText",
+    ])
+  }
 
   return (
     <div ref={ref} className={cls} style={style}>
       {
-        originComponents?.map((sub, subIndex) => {
-          return <ComponentList {...sub} key={subIndex} onChange={onChange} />
+        Object.entries(componentData).map(([title, configs]) => {
+          return (
+            <div key={title} className='components-list'>
+              <div className={`components-list-title`}>{title}</div>
+              <DndSortable
+                className='elements-list'
+                collection={{ type: DndType.Components }}
+                options={{
+                  disabledDrop: true,
+                  hiddenFrom: false,
+                  disabledSort: true
+                }}
+              >
+                {
+                  Object.entries(configs || {})?.map(([key, data]) => {
+                    return <Tag key={key} data-id={key} icon={data?.configIcon} onChange={() => onChange?.(key, data)}>{data?.configLabel}</Tag>
+                  })
+                }
+              </DndSortable>
+            </div>
+          )
         })
       }
     </div>

@@ -32,7 +32,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     placeholder: `${prefix}-placeholder`,
   };
 
-  const params = {
+  const columnProps = {
     path: rest?.path,
     field: rest?.field,
     parent: rest?.parent,
@@ -63,7 +63,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
           columns?.map((column, colIndex) => {
             const columnInstance = rest?.formrender && rest.formrender.componentInstance({ type: column?.type, props: Object.assign({ disabled }, column?.props) });
             return (
-              <ColumnSelection key={column?.dataIndex} className={Classes.TableSelection} {...params} column={column} colIndex={colIndex}>
+              <ColumnSelection key={column?.dataIndex} className={Classes.TableSelection} {...columnProps} column={column} colIndex={colIndex}>
                 <div className={Classes.TableCol}>
                   <div className={Classes.TableColHead}>
                     {column?.title}

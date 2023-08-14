@@ -34,7 +34,6 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     const currentItem = designer?.getItemByPath(currentPath);
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
     const newField = {
-      id: 'gridCol',
       type: 'Grid.Col',
       props: { span: 12 },
       ignore: true,
@@ -55,7 +54,7 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     <BaseSelection
       ref={ref}
       {...props}
-      componentLabel="栅格布局"
+      configLabel="栅格布局"
       className={cls}
       tools={[<Icon key="add" name="add" onClick={addCol} />, <Icon key="shanchu" name="shanchu" onClick={deleteItem} />]}>
       {children}

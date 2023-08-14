@@ -1,8 +1,7 @@
 
 export default {
-  id: 'Select',
-  icon: 'select-field',
-  componentLabel: '下拉框',
+  configIcon: 'select-field',
+  configLabel: '下拉框',
   label: '下拉框',
   type: 'Select',
   props: {

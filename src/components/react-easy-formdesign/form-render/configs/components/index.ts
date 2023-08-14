@@ -1,9 +1,8 @@
-import { getArrMap } from "@/utils/array";
 import { CustomOptions, FormNodeProps } from "../..";
 // 基础控件
 import Input from './input';
-import Radio from './radio';
-import Checkbox from './checkbox';
+import RadioGroup from './radioGroup';
+import CheckboxGroup from './checkboxGroup';
 import Select from './select';
 import Switch from './switch';
 import TimePicker from './timePicker';
@@ -20,81 +19,49 @@ import RichEditor from "./richEditor";
 import RichText from "./richText";
 // 布局组件
 // import tableLayout from './layout/table';
-import grid from './grid';
-import divider from './divider';
+import GridRow from './gridRow';
+import Divider from './divider';
 import Alert from './alert';
 // 组合组件
-import formTable from "./formTable";
-import { getExpanded } from "@/components/react-easy-formdesign/utils/utils";
+import FormTable from "./formTable";
 
 // 列表中的元素类型
 export interface ELementProps extends FormNodeProps, CustomOptions {
-  id?: string; // 当前节点的id
-  additional?: string | string[]; // 当前节点内的组件id
-  icon?: string; // 组件列表中的icon
-  componentLabel?: string; // 组件列表中的显示名字
-  includes?: string[]; // 限制可以添加的子元素id
-  properties?: { [name: string]: ELementProps } | ELementProps[]
+  includes?: string[]; // 子元素限制可以添加的组件类型
+  configLabel?: string; // 配置组件的名
+  configIcon?: string; // 配置组件的图标
+  properties?: { [name: string]: ELementProps } | ELementProps[] // 子元素渲染树
 }
 
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
 
-export type OriginComponents = Array<{ title: string, elements: Array<ELementProps> }>;
-
-// 在使用前转换components
-export const convertComponents = (components: OriginComponents) => {
-  const expanded = getExpanded(components);
-  const elementsMap = getArrMap(expanded, 'id');
-  return {
-    origin: components, // 原始渲染数据
-    expanded: expanded, // 展开的组件列表
-    map: elementsMap, // map结构
-  }
+const components = {
+  // 布局组件
+  // tableLayout,
+  "Grid.Row": GridRow,
+  "Divider": Divider,
+  "Alert": Alert,
+  // 控件组合
+  "FormTable": FormTable,
+  // 基础控件
+  "Input": Input,
+  "Radio.Group": RadioGroup,
+  "Checkbox.Group": CheckboxGroup,
+  "Select": Select,
+  "Switch": Switch,
+  "TimePicker": TimePicker,
+  "TimePicker.RangePicker": TimePickerRangePicker,
+  "DatePicker": DatePicker,
+  "DatePicker.RangePicker": DatePickerRangePicker,
+  "Slider": Slider,
+  "Rate": Rate,
+  "ColorPicker": ColorPicker,
+  "Cascader": Cascader,
+  "FileUpload": FileUpload,
+  "ImageUpload": ImageUpload,
+  "RichEditor": RichEditor,
+  "RichText": RichText,
+  // 业务组件
 }
-
-const components = [
-  {
-    title: '布局组件',
-    elements: [
-      // tableLayout,
-      grid,
-      divider,
-      Alert,
-    ]
-  },
-  {
-    title: '控件组合',
-    elements: [
-      formTable
-    ]
-  },
-  {
-    title: '基础控件',
-    elements: [
-      Input,
-      Radio,
-      Checkbox,
-      Select,
-      Switch,
-      TimePicker,
-      TimePickerRangePicker,
-      DatePicker,
-      DatePickerRangePicker,
-      Slider,
-      Rate,
-      ColorPicker,
-      Cascader,
-      FileUpload,
-      ImageUpload,
-      RichEditor,
-      RichText,
-    ]
-  },
-  {
-    title: '业务组件',
-    elements: [
-    ]
-  }
-];
 
 export default components;

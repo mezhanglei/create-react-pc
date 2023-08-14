@@ -4,7 +4,6 @@ import './dnd.less';
 import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
-import { DndCollectionType } from '@/components/react-easy-formdesign/form-designer/designer-context';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { DndType } from '@/components/react-easy-formdesign/form-designer/editor/dnd';
 
@@ -19,7 +18,7 @@ function TableDnd(props: TableDndProps, ref: any) {
   const attributeName = `props.columns`;
   const currentPath = path;
   const { setEdit } = useFormEdit();
-  const { settingsForm, components, settingsMap } = useFormDesign();
+  const { settingsForm, components, settings } = useFormDesign();
 
   const removeSelect = () => {
     setEdit({ selected: {} });
@@ -45,31 +44,29 @@ function TableDnd(props: TableDndProps, ref: any) {
     // 拖拽区域信息
     const fromGroup = from.group;
     // 额外传递的信息
-    const fromCollection = fromGroup?.collection as DndCollectionType;
+    const fromCollection = fromGroup?.collection as {
+      type?: string;
+      path?: string;
+      attributeName?: string
+    };
     const fromIndex = from?.index;
     if (typeof fromIndex != 'number') return
-    // 拖放区域的信息
-    // const dropGroup = to?.group;
-    // 额外传递的信息
-    // const dropCollection = dropGroup?.collection as DndCollectionType;
     const dropIndex = to?.index || 0;
-    let formField;
+    let controlField;
     // 从侧边栏插入进来
     if (fromCollection?.type === DndType.Components) {
-      const elementId = from?.id as string;
-      formField = getConfigItem(elementId, components?.map, settingsMap);
+      const type = from?.id as string;
+      controlField = getConfigItem(type, components, settings);
       // 从表单节点中插入
     } else {
-      formField = formrender && formrender.getItemByIndex(fromIndex, { path: fromCollection?.path });
+      controlField = formrender && formrender.getItemByIndex(fromIndex, { path: fromCollection?.path });
       formrender && formrender.setItemByIndex(undefined, fromIndex, { path: fromCollection?.path });
     }
     // 拼接column
     const newColumn = {
-      ...formField,
-      id: "FormTableCol",
-      additional: formField?.id,
-      title: formField?.label,
-      dataIndex: defaultGetId(formField.id)
+      ...controlField,
+      title: controlField?.label,
+      dataIndex: defaultGetId(controlField.type)
     }
     formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
     removeSelect();

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useFormRenderStore, useFormStore } from '../../react-easy-formrender';
-import defaultComponents, { convertComponents } from '../form-render/configs/components';
-import defaultSettingsMap from '../form-render/configs/settings';
+import { ConfigComponents, ConfigSettings } from '../form-render';
 import { useEventBus } from '../utils/hooks';
 import { FormDesignContext, FormEditContext } from './designer-context';
 import { useSet } from './use-hooks';
@@ -19,17 +18,17 @@ function Provider(props: ProviderProps) {
   const [state, setEdit] = useSet({
     designerForm: designerForm,
     designer: designerStore,
+    settingsForm: null,
     eventBus: eventBus,
-    settingsMap: Object.assign({}, defaultSettingsMap),
-    components: convertComponents(defaultComponents),
-    properties: {},
     selected: {},
+    properties: {},
+    settings: Object.assign({}, ConfigSettings),
+    components: Object.assign({}, ConfigComponents),
     historyData: {
       index: -1,
       maxStep: 20,
       steps: []
     },
-    settingsForm: null,
   });
 
   const {

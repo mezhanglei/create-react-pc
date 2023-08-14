@@ -1,7 +1,6 @@
 export default {
-  id: 'FormTable',
-  icon: 'table',
-  componentLabel: '可编辑表格',
+  configIcon: 'table',
+  configLabel: '可编辑表格',
   label: '可编辑表格',
   type: 'FormTable',
   props: {

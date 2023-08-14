@@ -1,7 +1,6 @@
 export default {
-  id: 'Table',
-  icon: 'table',
-  componentLabel: '表格布局',
+  configIcon: 'table',
+  configLabel: '表格布局',
   type: 'Table',
   ignore: true,
   properties: [
@@ -13,7 +12,6 @@ export default {
           ignore: true,
           properties: {
             name1: {
-              id: 'Input',
               type: 'Input',
               props: {}
             }
@@ -24,7 +22,6 @@ export default {
           ignore: true,
           properties: {
             name2: {
-              id: 'Input',
               type: 'Input',
               props: {}
             }

@@ -6,12 +6,14 @@ import './baseSelection.less';
 import { ELementProps } from '../../form-render/configs/components';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
+import { SelectedType } from '../designer-context';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
   tools?: any[]; // 工具栏
   attributeName?: string; // 属性路径
-  componentLabel?: string; // 当前组件的名字
+  configLabel?: string; // 当前组件的名字
+  onChoose?: (selected?: SelectedType) => void; // 
 }
 /**
  * 基础选择框组件
@@ -30,10 +32,11 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     field,
     formrender: designer,
     form: designerForm,
+    configLabel,
     tools,
     onMouseOver,
     onMouseOut,
-    componentLabel,
+    onChoose,
     ...restProps
   } = props;
 
@@ -47,13 +50,17 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   const nextSelected = {
     name: name,
     path: path,
+    parent: parent,
     attributeName: attributeName,
     field: field,
-    parent: parent,
   }
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
+    if(onChoose) {
+      onChoose(nextSelected);
+      return;
+    }
     setEdit({
       selected: nextSelected
     });
@@ -68,7 +75,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       target.classList.add(overCls);
       setIsOver(true);
     }
-    eventBus.emit('hover', nextSelected);
+    eventBus && eventBus.emit('hover', nextSelected);
     onMouseOver && onMouseOver(e);
   }
 
@@ -94,7 +101,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   return (
     <div ref={ref} className={cls} {...pickAttrs(restProps)} onClick={chooseItem} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
-      {isOver && !isSelected && componentLabel && <div className={classes.label}>{componentLabel}</div>}
+      {isOver && !isSelected && configLabel && <div className={classes.label}>{configLabel}</div>}
       {isSelected && <div className={classes.tools}>{tools}</div>}
       {children}
     </div>
