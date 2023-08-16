@@ -3,11 +3,10 @@ import Icon from '@/components/svg-icon';
 import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { deepSet, pickObject } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
-import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
+import { ELementProps, ConfigSetting } from '@/components/react-easy-formdesign/form-render/configs';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
-import FormTableColSettings from './column-settings';
+import FormTableColSetting from './column-setting';
 import { SelectedType } from '@/components/react-easy-formdesign/form-designer/designer-context';
-import { SettingsItem } from '../../../configs/settings';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;
@@ -43,11 +42,11 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const onChoose = (val?: SelectedType) => {
     const type = column?.type;
-    const appendSettings = type && settings ? settings[type] as SettingsItem : undefined;
-    const controlSettings = pickObject<SettingsItem>(appendSettings, (key) => key !== '公共属性');
-    const mergeSettings = Object.assign({}, FormTableColSettings, controlSettings)
+    const appendSetting = type && settings ? settings[type] as ConfigSetting : undefined;
+    const controlSetting = pickObject<ConfigSetting>(appendSetting, (key) => key !== '公共属性');
+    const mergeSetting = Object.assign({}, FormTableColSetting, controlSetting)
     setEdit({
-      selected: Object.assign({ settings: mergeSettings }, val)
+      selected: Object.assign({ setting: mergeSetting }, val)
     });
   }
 

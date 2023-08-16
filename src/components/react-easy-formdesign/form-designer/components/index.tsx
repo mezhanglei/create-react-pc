@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { message } from 'antd';
 import './index.less';
 import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../utils/utils';
-import { ELementProps } from '../../form-render/configs/components';
+import { ELementProps } from '../../form-render/configs';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign } from '../../utils/hooks';
 import DndSortable from '@/components/react-dragger-sort';

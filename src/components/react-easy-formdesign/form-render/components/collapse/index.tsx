@@ -25,7 +25,7 @@ const CustomCollapse: React.FC<CustomCollapseProps> = (props) => {
     setIsOpenedState(isOpened)
   }, [isOpened])
 
-  const prefix = 'design-settings-collapse';
+  const prefix = 'design-setting-collapse';
   const cls = classNames(prefix, className);
 
   return (

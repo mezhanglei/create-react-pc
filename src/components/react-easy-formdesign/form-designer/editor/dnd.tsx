@@ -3,7 +3,7 @@ import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
 import { getConfigItem, insertDesignItem } from '../../utils/utils';
-import { ELementProps } from '../../form-render/configs/components';
+import { ELementProps } from '../../form-render/configs';
 import { useFormDesign } from '../../utils/hooks';
 
 // 可拖拽的区域类型

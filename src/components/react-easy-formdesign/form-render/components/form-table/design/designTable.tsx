@@ -40,7 +40,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     form: rest?.form,
   }
 
-  const { designer, settingsForm } = useFormDesign();
+  const { designer, settingForm } = useFormDesign();
 
   const onFieldsChange = (colIndex: number, newVal: any) => {
     // 设置初始值
@@ -48,7 +48,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
       // 表单记录下新的initialValue值
       updateDesignerItem(designer, { initialValue: newVal }, rest?.path, `props.columns[${colIndex}]`);
       // 回填setting表单的intialValue选项
-      settingsForm?.setFieldValue('initialValue', newVal);
+      settingForm?.setFieldValue('initialValue', newVal);
     }, 0);
   }
 

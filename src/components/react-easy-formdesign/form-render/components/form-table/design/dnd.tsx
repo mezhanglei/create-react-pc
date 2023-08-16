@@ -1,7 +1,7 @@
 import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
+import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
 import { GeneratePrams } from '../../..';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
@@ -18,11 +18,11 @@ function TableDnd(props: TableDndProps, ref: any) {
   const attributeName = `props.columns`;
   const currentPath = path;
   const { setEdit } = useFormEdit();
-  const { settingsForm, components, settings } = useFormDesign();
+  const { settingForm, components, settings } = useFormDesign();
 
   const removeSelect = () => {
     setEdit({ selected: {} });
-    settingsForm && settingsForm.reset();
+    settingForm && settingForm.reset();
   }
 
   const onUpdate: DndSortableProps['onUpdate'] = (params) => {

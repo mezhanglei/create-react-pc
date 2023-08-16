@@ -2,8 +2,7 @@ import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormCh
 import React from 'react';
 import { BaseComponents } from './components';
 import moment from 'moment';
-import ConfigComponents from './configs/components';
-import ConfigSettings from './configs/settings';
+import { ConfigComponents, ConfigSettings } from './configs';
 
 export * from '@/components/react-easy-formrender';
 export { ConfigSettings, ConfigComponents }

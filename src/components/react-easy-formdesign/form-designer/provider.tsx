@@ -18,7 +18,7 @@ function Provider(props: ProviderProps) {
   const [state, setEdit] = useSet({
     designerForm: designerForm,
     designer: designerStore,
-    settingsForm: null,
+    settingForm: null,
     eventBus: eventBus,
     selected: {},
     properties: {},

@@ -154,25 +154,6 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     setFieldPropsMap(fieldPropsMap);
   }
 
-  // 遍历对象获取
-  const getValueFromObject = (val?: Partial<FormNodeProps>, generateVal?: Partial<GenerateFormNodeProps>) => {
-    return Object.fromEntries(
-      Object.entries(val || {})?.map(
-        ([propsKey, propsItem]) => {
-          const matchStr = matchExpression(propsItem);
-          const generateItem = generateVal?.[propsKey];
-          if (matchStr) {
-            if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
-              return [propsKey, generateItem ? generateItem : () => undefined]
-            }
-            return generateItem == undefined ? [propsKey] : [propsKey, generateItem]
-          }
-          return [propsKey, propsItem]
-        }
-      )
-    );
-  }
-
   // 获取计算表达式之后的结果
   const getEvalFieldProps = (field: FormNodeProps, path?: string) => {
     if (!path || isEmpty(field)) return;
@@ -182,14 +163,12 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
           const propsPath = joinFormPath(path, propsKey);
           const generateValue = propsPath && fieldPropsMap[propsPath];
           const matchStr = matchExpression(propsValue);
-          if (matchStr) {
+          // 匹配上表达式或表达式值的映射则返回映射值
+          if (matchStr || generateValue !== undefined) {
             if (propsKey === 'valueSetter' || propsKey === 'valueGetter') {
               return [propsKey, generateValue ? generateValue : () => undefined]
             }
             return generateValue == undefined ? [propsKey] : [propsKey, generateValue]
-          }
-          if (propsKey === 'props') {
-            return [propsKey, getValueFromObject(propsValue, generateValue)]
           }
           return [propsKey, propsValue];
         }

@@ -1,27 +1,26 @@
 import EventBus from '@/utils/event-bus';
 import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
-import { ELementProps, FormDesignData } from '../form-render/configs/components';
-import { SettingsItem, SettingsMapType } from '../form-render/configs/settings';
+import { ELementProps, FormDesignData, ConfigSetting, ConfigSettingsType } from '../form-render/configs';
 export interface SelectedType {
-  name?: GeneratePrams<ELementProps>['name']; // 节点表单路径
+  name?: GeneratePrams<ELementProps>['name']; // 节点表单字段
   path?: GeneratePrams<ELementProps>['path']; // 节点路径
   parent?: GeneratePrams<ELementProps>['parent']; // 路径父节点
   attributeName?: string; // 当前选中节点的属性路径
   field?: ELementProps; // 节点的field
-  settings?: SettingsItem; // 节点的属性配置
+  setting?: ConfigSetting; // 节点的属性区域表单
 }
 
 // 表单编辑器操作方法
 export interface FormDesignCtxProps {
   designerForm?: FormStore;
   designer?: FormRenderStore;
-  settingsForm?: FormStore | null;
+  settingForm?: FormStore | null;
   eventBus?: EventBus;
   selected?: SelectedType;
   properties?: FormDesignData;
   components?: { [key: string]: ELementProps };
-  settings?: SettingsMapType;
+  settings?: ConfigSettingsType;
   historyData?: {
     index: number;
     maxStep: number;

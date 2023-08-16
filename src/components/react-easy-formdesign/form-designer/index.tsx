@@ -2,7 +2,7 @@ import React, { CSSProperties, forwardRef } from 'react';
 import Provider, { DesignprefixCls } from './provider';
 import Components from './components';
 import Editor from './editor';
-import Settings from './settings';
+import Setting from './setting';
 import classnames from 'classnames';
 import { Col, Row } from 'antd';
 import './index.less';
@@ -16,7 +16,7 @@ const classes_design = {
   design: DesignprefixCls,
   components: `${DesignprefixCls}__components`,
   editor: `${DesignprefixCls}__editor`,
-  settings: `${DesignprefixCls}__settings`
+  setting: `${DesignprefixCls}__setting`
 }
 
 const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
@@ -25,7 +25,7 @@ const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
       <Provider {...props}>
         <Col className={classes_design.components} xs={24} sm={24} md={5} lg={5}><Components /></Col>
         <Col className={classes_design.editor} xs={24} sm={24} md={14} lg={14}><Editor /></Col>
-        <Col className={classes_design.settings} xs={24} sm={24} md={5} lg={5}><Settings /></Col>
+        <Col className={classes_design.setting} xs={24} sm={24} md={5} lg={5}><Setting /></Col>
       </Provider>
     </Row>
   );
@@ -34,6 +34,6 @@ const Generator = ({ className, ...props }: DesignFormProps, ref: any) => {
 Generator.Provider = Provider;
 Generator.Components = Components;
 Generator.Editor = Editor;
-Generator.Settings = Settings;
+Generator.Setting = Setting;
 
 export default forwardRef(Generator);

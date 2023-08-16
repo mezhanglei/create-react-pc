@@ -32,6 +32,10 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
   const prefixCls = 'import-modal';
   const cls = classnames(prefixCls, className);
 
+  const loadJson = (item) => {
+
+  }
+
   return (
     <ModalWrapper
       ref={ref}
@@ -49,7 +53,7 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
             1111
           </div>
           <div className={`${prefixCls}-col-cover`}>
-            <Button type='primary'>加载模板</Button>
+            <Button type='primary' onClick={() =>loadJson(1)}>加载模板</Button>
           </div>
         </Col>
       </Row>

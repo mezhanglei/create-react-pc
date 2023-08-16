@@ -23,7 +23,7 @@ const prefixCls = `${DesignprefixCls}-editor`;
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const { designer, designerForm, settingsForm, properties } = useFormDesign();
+  const { designer, designerForm, settingForm, properties } = useFormDesign();
   const { setEdit } = useFormEdit();
 
   const {
@@ -45,10 +45,10 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
     // 延迟变更值
     setTimeout(() => {
-      // 表单记录下新的initialValue值
+      // 更新目标的initialValue
       updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
       // 回填setting表单的intialValue选项
-      settingsForm?.setFieldValue('initialValue', value);
+      settingForm?.setFieldValue('initialValue', value);
     }, 0);
   }
 

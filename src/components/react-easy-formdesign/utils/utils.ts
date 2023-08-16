@@ -4,8 +4,7 @@ import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender
 import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
-import { ELementProps } from '../form-render/configs/components';
-import { SettingsItem, SettingsMapType } from '../form-render/configs/settings';
+import { ELementProps, ConfigSetting, ConfigSettingsType } from '../form-render/configs';
 import { SelectedType } from '../form-designer/designer-context';
 
 export const defaultGetId = (key?: string) => {
@@ -18,7 +17,7 @@ export const isNoSelected = (path?: string) => {
 }
 
 // name的setting
-export const getNameSettings = (selected?: SelectedType) => {
+export const getNameSetting = (selected?: SelectedType) => {
   const selectedPath = selected?.path;
   // const selectedField = selected?.field;
   const attributeName = selected?.attributeName;
@@ -45,22 +44,22 @@ export const getSelectedIndex = (selected?: SelectedType) => {
 }
 
 // 根据节点的配置返回节点的初始值
-const getSettingsInitial = (settings?: SettingsItem) => {
+const getSettingInitial = (setting?: ConfigSetting) => {
   // 从配置表单中获取初始属性
-  const expandSettings = Object.values(settings || {}).reduce((pre, cur) => {
+  const expandSetting = Object.values(setting || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
     return result;
   }, {});
-  const initialValues = getInitialValues(expandSettings);
+  const initialValues = getInitialValues(expandSetting);
   return initialValues;
 }
 
 // 根据配置键名获取配置
-export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settingsMap?: SettingsMapType) => {
+export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settings?: ConfigSettingsType) => {
   if (!key || !components) return;
   const item = components[key];
-  const itemSettings = settingsMap?.[key];
-  const initialValues = getSettingsInitial(itemSettings);
+  const itemSetting = settings?.[key];
+  const initialValues = getSettingInitial(itemSetting);
   const field = deepMergeObject(initialValues, item);
   return field;
 }
@@ -135,7 +134,7 @@ export const setDesignerFormValue = (designerForm?: FormStore, formPath?: string
 }
 
 // 同步目标的编辑区域值到属性面板回显
-export const asyncSettingsForm = (settingForm?: FormStore, selected?: SelectedType) => {
+export const asyncSettingForm = (settingForm?: FormStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
   const field = selected?.field;
   const attributeName = selected?.attributeName;
