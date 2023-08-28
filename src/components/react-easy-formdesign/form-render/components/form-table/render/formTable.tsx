@@ -5,11 +5,11 @@ import { TableCell } from "./components";
 import { Form, joinFormPath, useFormStore } from "../../..";
 import classNames from 'classnames';
 import './formTable.less';
-import { ELementProps } from "@/components/react-easy-formdesign/form-render/configs/components";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 import Icon from '@/components/svg-icon';
 import { FormTableProps } from "..";
+import { ELementProps } from "../../../configs";
 
 const CustomTableCell = (props: any) => {
   const { name, formrender, type, disabled, props: typeProps, hidden, children, ...restProps } = props;

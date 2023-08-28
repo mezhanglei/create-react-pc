@@ -1,12 +1,13 @@
-import React, { CSSProperties, LegacyRef, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
 import classNames from 'classnames';
 import './editor.less';
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 import { js_beautify } from 'js-beautify';
 import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/utils/utils";
+import CustomModal from "@/components/ant-modal";
 
 const prefixCls = 'options-codemirror';
 const classes = {
@@ -66,20 +67,15 @@ export const EditorCodeMirror = React.forwardRef<CodeMirror, EditorCodeMirrorPro
 });
 
 // 代码编辑器弹窗
-export const EditorCodeMirrorModal = (
-  props: EditorCodeMirrorProps & {
-    onClose?: () => void;
-  }) => {
+export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
 
   const {
     value,
     onChange,
-    onClose,
     options,
     disabled,
   } = props;
 
-  const [visible, setVisible] = useState<boolean>()
   const [codeStr, setCodeStr] = useState<string>('');
   const codemirrorRef = useRef<any>();
 
@@ -87,10 +83,6 @@ export const EditorCodeMirrorModal = (
     const code = handleStringify(value)
     setCodeStr(code ?? '')
   }, [value])
-
-  const showModal = () => {
-    setVisible(true)
-  }
 
   const handleOk = () => {
     const codemirror = codemirrorRef.current;
@@ -101,33 +93,23 @@ export const EditorCodeMirrorModal = (
       const code = handleEvalString(codeStr);
       onChange && onChange(code);
     }
-    closeModal()
-  }
-
-  const closeModal = () => {
-    setVisible(false);
-    onClose && onClose();
   }
 
   return (
-    <>
-      <div>
-        <span>{codeStr}</span>
-        <Button type="link" disabled={disabled} onClick={showModal}>编辑数据</Button>
-      </div>
-      <Modal
-        destroyOnClose
-        title="编辑数据"
-        visible={visible}
-        onCancel={closeModal}
-        onOk={handleOk}>
-        <EditorCodeMirror
-          ref={codemirrorRef}
-          value={value}
-          options={options}
-          disabled={disabled}
-        />
-      </Modal>
-    </>
+    <CustomModal title="编辑数据" onOk={handleOk} displayElement={
+      (showModal) => (
+        <div>
+          <span>{codeStr}</span>
+          <Button type="link" disabled={disabled} onClick={showModal}>编辑数据</Button>
+        </div>
+      )
+    }>
+      <EditorCodeMirror
+        ref={codemirrorRef}
+        value={value}
+        options={options}
+        disabled={disabled}
+      />
+    </CustomModal>
   );
 };

@@ -3,10 +3,10 @@ import classnames from 'classnames';
 import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './baseSelection.less';
-import { ELementProps } from '../../form-render/configs/components';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
 import { SelectedType } from '../designer-context';
+import { ELementProps } from '../../form-render/configs';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {

@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import BraftEditor, { BraftEditorProps, MediaType } from 'braft-editor';
 import 'braft-editor/dist/index.css';
 import classnames from 'classnames';
-import { Input, Button, ButtonProps, Modal } from 'antd';
+import { Input, Button, ButtonProps } from 'antd';
 import './index.less';
+import CustomModal from '@/components/ant-modal';
 
 export interface RichEditorProps extends BraftEditorProps {
   value?: string;
@@ -106,130 +107,44 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
 
 export default RichEditor;
 
-export interface RichEditorModalProps extends RichEditorProps {
-  visible?: boolean;
-  onClose?: () => void;
-}
-export const RichEditorModal = React.forwardRef<any, RichEditorModalProps>((props, ref) => {
+// 按钮弹窗富文本
+export const RichEditorModalBtn = (props: RichEditorProps & ButtonProps) => {
 
   const {
     value,
     onChange,
-    onClose,
-    className,
+    className
   } = props;
 
-  const [visible, setVisible] = useState<boolean>()
-  const [content, setContent] = useState<string>();
-
-  useEffect(() => {
-    setContent(value);
-  }, [value]);
-
-  useEffect(() => {
-    setVisible(props?.visible)
-  }, [props?.visible]);
-
-  const handleOk = () => {
-    onChange && onChange(content)
-    closeModal()
-  }
-
-  const closeModal = () => {
-    setVisible(false);
-    onClose && onClose();
-  }
-
-  const handleOnChange = (val?: string) => {
-    setContent(val)
-  }
-
-  const cls = classnames(className, 'rich-editor-modal');
-
-  return (
-    <Modal
-      className={cls}
-      destroyOnClose
-      title="富文本添加"
-      visible={visible}
-      onCancel={closeModal}
-      onOk={handleOk}>
-      <RichEditor
-        value={value}
-        onChange={handleOnChange}
-      />
-    </Modal>
-  )
-});
-
-// 弹窗富文本通用组件
-export interface RichEditorModalWrapperProps extends RichEditorModalProps {
-  children?: (showModal: () => void, codeStr?: string) => void | any;
-}
-export const LinkageWrapper = (props: RichEditorModalWrapperProps) => {
-
-  const {
-    value,
-    onChange,
-    onClose,
-    children
-  } = props;
-
-  const [visible, setVisible] = useState<boolean>()
   const [content, setContent] = useState<string>();
 
   useEffect(() => {
     setContent(value)
   }, [value])
 
-  const showModal = () => {
-    setVisible(true)
+  const handleOk = () => {
+    onChange && onChange(content)
   }
 
-  const closeModal = () => {
-    setVisible(false);
-    onClose && onClose();
+  const richOnChange = (val?: string) => {
+    setContent(val)
   }
 
-  const handleOnChange = (val?: string) => {
-    setContent(val);
-    onChange && onChange(val);
-  }
+  const cls = classnames(className, 'rich-editor-modal');
 
   return (
-    <>
-      {
-        typeof children === 'function' &&
-        children(showModal, content)
-      }
-      <RichEditorModal
-        visible={visible}
+    <CustomModal className={cls} title="富文本添加" onOk={handleOk} displayElement={
+      (showModal) => (
+        <div>
+          <Input.TextArea value={value} />
+          <Button type="link" className="add-rich-editor" onClick={showModal}>自定义内容</Button>
+        </div>
+      )
+    }>
+      <RichEditor
         value={value}
-        onClose={closeModal}
-        onChange={handleOnChange}
+        onChange={richOnChange}
       />
-    </>
-  );
-};
-
-// 按钮弹窗富文本
-export const RichEditorModalBtn = (props: RichEditorModalProps & ButtonProps) => {
-
-  const {
-    value,
-    onChange,
-  } = props;
-
-  return (
-    <LinkageWrapper value={value} onChange={onChange}>
-      {
-        (showModal: () => void, content?: string) => (
-          <div>
-            <Input.TextArea value={content} />
-            <Button type="link" className="add-rich-editor" onClick={showModal}>自定义内容</Button>
-          </div>
-        )
-      }
-    </LinkageWrapper>
+    </CustomModal>
   );
 };

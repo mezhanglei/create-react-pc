@@ -1,7 +1,7 @@
-import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import { ColumnsType, TableProps } from 'antd/lib/table';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../..';
+import { ELementProps } from '../../configs';
 import DesignTable from './design/designTable';
 import FormTable from './render/formTable';
 

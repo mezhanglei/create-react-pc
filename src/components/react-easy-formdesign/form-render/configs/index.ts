@@ -46,6 +46,8 @@ import AlertSetting from './alert/setting';
 // 组合组件
 import FormTable from "./formTable/render";
 import FormTableSetting from "./formTable/setting";
+// 表单组
+import { FormGroups, FormGroupSettings } from '../groups';
 
 
 // 列表中的元素类型
@@ -86,7 +88,8 @@ export const ConfigComponents = {
   "ImageUpload": ImageUpload,
   "RichEditor": RichEditor,
   "RichText": RichText,
-  // 业务组件
+  // 表单组
+  ...FormGroups
 }
 
 // 配置组件的属性区域
@@ -113,4 +116,5 @@ export const ConfigSettings = {
   "RichEditor": DefaultFieldSetting,
   "Grid.Row": GridRowSetting,
   "Grid.Col": GridColSetting,
+  ...FormGroupSettings,
 }

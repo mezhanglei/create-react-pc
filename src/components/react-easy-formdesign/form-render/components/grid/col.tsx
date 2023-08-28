@@ -1,4 +1,3 @@
-import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs/components';
 import { GridCol as BaseGridCol } from '@/components/react-easy-formrender/components/grid';
 import { ColProps } from 'antd';
 import classnames from 'classnames';
@@ -7,6 +6,7 @@ import { GeneratePrams } from '../..';
 import ColSelection from './col-selection';
 import './col.less';
 import ControlDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
+import { ELementProps } from '../../configs';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;

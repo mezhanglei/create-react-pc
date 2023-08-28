@@ -31,6 +31,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     showUploadList,
     accept = DOC_MIME_VALUES.join(','),
     multiple = true,
+    children,
     ...rest
   } = props;
 
@@ -103,7 +104,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     },
   };
 
-  // 自动上传
+  // 远程上传
   const autoUploadProps: UploadProps = {
     // 默认关闭已上传列表
     showUploadList: showUploadList !== undefined ? showUploadList : false,
@@ -156,7 +157,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       {...(!autoUpload ? handleUploadProps : autoUploadProps)}
       {...rest}
     >
-      <Button loading={loading}><Icon name="upload" className="icon-upload"></Icon>上传文件</Button>
+      {children || <Button loading={loading}><Icon name="upload" className="icon-upload"></Icon>上传文件</Button>}
     </Upload>
   )
 });

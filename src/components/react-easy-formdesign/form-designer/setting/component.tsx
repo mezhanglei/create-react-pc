@@ -29,7 +29,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     const field = selected?.field;
     const type = field?.type;
     const itemSetting = type && settings ? settings[type] : undefined;
-    const selectedSetting = selected?.setting; // 如果有settings则优先
+    const selectedSetting = selected?.setting; // 如果有setting则优先
     return selectedSetting || itemSetting;
   }, [designer, selectedPath, attributeName, settings]);
   const nameSetting = useMemo(() => getNameSetting(selected), [selectedPath, attributeName]); // 表单节点字段设置

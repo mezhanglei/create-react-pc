@@ -14,7 +14,7 @@ export function useHoverSelected() {
   const [hoverSelected, setHoverSelected] = useState<SelectedType>();
 
   useEffect(() => {
-    context.eventBus.on('hover', (val: SelectedType) => {
+    context.eventBus && context.eventBus.on('hover', (val: SelectedType) => {
       setHoverSelected(val);
     });
   }, []);
