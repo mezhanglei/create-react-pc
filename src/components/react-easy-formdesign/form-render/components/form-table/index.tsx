@@ -1,4 +1,4 @@
-import { ColumnsType, TableProps } from 'antd/lib/table';
+import { ColumnType, TableProps } from 'antd/lib/table';
 import React, { CSSProperties } from 'react';
 import { GeneratePrams } from '../..';
 import { ELementProps } from '../../configs';
@@ -6,8 +6,6 @@ import DesignTable from './design/designTable';
 import FormTable from './render/formTable';
 
 export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
-  value?: any;
-  onChange?: (val: any) => void;
   minRows?: number; // 表格默认最少行数
   maxRows?: number; // 表格默认最大行数
   disabled?: boolean; // 禁用
@@ -17,7 +15,7 @@ export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementPr
   style?: CSSProperties;
 }
 
-export interface CustomColumnType extends Omit<ColumnsType<any>, 'includes'>, ELementProps {
+export interface CustomColumnType<T = any> extends Omit<ColumnType<T>, 'includes'>, ELementProps {
   key?: string;
   title: string;
   dataIndex: string;

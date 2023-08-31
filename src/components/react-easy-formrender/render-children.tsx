@@ -44,11 +44,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     Object.entries(watch)?.map(([key, watcher]) => {
       // 函数形式
       if (typeof watcher === 'function') {
-        form?.subscribeFormGlobal(key, watcher)
+        form?.subscribeFormValue(key, watcher)
         // 对象形式
       } else if (typeof watcher === 'object') {
         if (typeof watcher.handler === 'function') {
-          form?.subscribeFormGlobal(key, watcher.handler);
+          form?.subscribeFormValue(key, watcher.handler);
         }
         if (watcher.immediate) {
           watcher.handler(form?.getFieldValue(key), form?.getLastValue(key));
@@ -57,7 +57,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     });
     return () => {
       Object.entries(watch || {})?.forEach(([key]) => {
-        form?.unsubscribeFormGlobal(key);
+        form?.unsubscribeFormValue(key);
       });
     }
   }, [form, watch]);

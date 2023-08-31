@@ -122,8 +122,9 @@ export const RichEditorModalBtn = (props: RichEditorProps & ButtonProps) => {
     setContent(value)
   }, [value])
 
-  const handleOk = () => {
-    onChange && onChange(content)
+  const handleOk = (closeModal: () => void) => {
+    closeModal();
+    onChange && onChange(content);
   }
 
   const richOnChange = (val?: string) => {

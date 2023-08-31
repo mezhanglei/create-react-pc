@@ -84,9 +84,10 @@ export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
     setCodeStr(code ?? '')
   }, [value])
 
-  const handleOk = () => {
+  const handleOk = (closeModal: () => void) => {
     const codemirror = codemirrorRef.current;
     const editor = codemirror?.editor;
+    closeModal();
     if (editor) {
       const codeStr = editor.getValue();
       setCodeStr(codeStr);

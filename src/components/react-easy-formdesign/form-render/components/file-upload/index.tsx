@@ -20,7 +20,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
   const {
     fileSizeLimit = 5,
-    autoUpload,
+    autoUpload = true,
     // 组件原生props
     value,
     onChange,

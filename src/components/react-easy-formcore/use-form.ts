@@ -1,3 +1,4 @@
+import { pickObject } from '@/utils/object'
 import { useEffect, useMemo, useState } from 'react'
 import { FormStore } from './form-store'
 import Validator from './validator'
@@ -13,7 +14,7 @@ export function useValidator() {
 }
 
 // 获取error信息
-export function useFormError(form: FormStore, path?: string, immediate = true) {
+export function useFormError(form: FormStore, path?: string) {
   const [error, setError] = useState();
 
   const subscribeError = () => {
@@ -25,7 +26,6 @@ export function useFormError(form: FormStore, path?: string, immediate = true) {
   };
 
   useMemo(() => {
-    if (!immediate) return
     subscribeError();
   }, []);
 
@@ -41,44 +41,30 @@ export function useFormError(form: FormStore, path?: string, immediate = true) {
 }
 
 // 获取表单值
-export function useFormValues<T = unknown>(form: FormStore, path?: string | string[], immediate = true) {
+export function useFormValues<T = unknown>(form: FormStore, path?: string | string[]) {
   const [formValues, setFomValues] = useState<T>();
-
-  const isChar = (key?: any) => typeof key === 'string' || typeof key === 'number';
 
   const subscribeForm = () => {
     if (!form) return;
-    const pathList = path === undefined ? Object.keys(form.getFieldProps() || {}) : (path instanceof Array ? path : [path]);
-    pathList.map((key) => {
-      if (isChar(key)) {
-        return form.subscribeFormGlobal(key, (newVal) => {
-          // 返回目标值对象
-          if (path) {
-            setFomValues((old) => {
-              return Object.assign({}, old, { [key]: newVal });
-            })
-          } else {
-            // 返回整个表单值
-            const oldValues = form.getFieldValue();
-            setFomValues(oldValues);
-          }
-        })
+    form.subscribeFormValues((newVal) => {
+      if (path == undefined) {
+        setFomValues(newVal);
+      } else {
+        const keys = path instanceof Array ? path : [path];
+        const result = keys ? pickObject(newVal, keys) : newVal;
+        setFomValues(result);
       }
     });
   };
 
   useMemo(() => {
-    if (!immediate) return
     subscribeForm();
   }, []);
 
   useEffect(() => {
     subscribeForm();
     return () => {
-      const pathList = path === undefined ? Object.keys(form.getFieldProps() || {}) : (path instanceof Array ? path : [path]);
-      pathList?.forEach((key) => {
-        form.unsubscribeFormGlobal(key);
-      });
+      form.unsubscribeFormValues();
     }
   }, [form, JSON.stringify(path)]);
 

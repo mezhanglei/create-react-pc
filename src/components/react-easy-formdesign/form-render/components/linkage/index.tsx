@@ -200,7 +200,8 @@ export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
     }
   }, [value]);
 
-  const handleOk = () => {
+  const handleOk = (closeModal: () => void) => {
+    closeModal();
     onChange && onChange(codeStr)
   }
 
@@ -270,7 +271,8 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
   }
 
   // 确认
-  const handleOk = () => {
+  const handleOk = (closeModal: () => void) => {
+    closeModal();
     // 选中状态则直接更改值
     if (checkboxValue) {
       setCheckboxValue(true);

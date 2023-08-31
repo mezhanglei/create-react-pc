@@ -51,9 +51,21 @@ export function objectToFormData(obj: any, formData?: FormData) {
 export const pickObject = <T = any>(obj: T | undefined, keys: string[] | ((key?: string, value?: any) => boolean)) => {
   if (obj === undefined || obj === null) return obj;
   if (keys instanceof Array) {
-    return keys.reduce((iter, val) => (val in obj && (iter[val] = obj[val]), iter), {}) as T
+    return keys.reduce((iter, key) => {
+      const item = deepGet(obj as any, key);
+      if (item !== undefined) {
+        iter[key] = item;
+      }
+      return iter;
+    }, {}) as T;
   } else if (typeof keys === 'function') {
-    return Object.keys(obj).reduce((iter, val) => (keys(val, obj[val]) && (iter[val] = obj[val]), iter), {}) as T
+    return Object.keys(obj || {}).reduce((iter, key) => {
+      const item = deepGet(obj as any, key);
+      if (keys(key, item)) {
+        iter[key] = item;
+      }
+      return iter;
+    }, {}) as T;
   }
 }
 
@@ -65,7 +77,7 @@ export function pathToArr(path?: string | string[]) {
 }
 
 // 根据路径获取目标对象中的单个值或多个值
-export function deepGet(obj: object | undefined, keys?: string | string[]): any {
+export function deepGet<T = any>(obj: T | undefined, keys?: string | string[]): any {
   if (!keys?.length) return
   if (keys instanceof Array) {
     const result = obj instanceof Array ? [] : {}
@@ -79,8 +91,8 @@ export function deepGet(obj: object | undefined, keys?: string | string[]): any 
 }
 
 // 给对象目标属性添加值, path：['a', 0] 等同于 'a[0]'
-export function deepSet(obj: any, path: string | string[], value: any) {
-  let temp = deepClone(obj);
+export function deepSet<T = any>(obj: T, path: string | string[], value: any) {
+  let temp: any = deepClone(obj);
   let root = temp;
   const pathIsArr = Array.isArray(path);
   const parts = pathToArr(path);

@@ -2,8 +2,10 @@ import { Modal, ModalProps } from 'antd';
 import React, { ReactNode } from 'react';
 import { useState } from 'react';
 
-export interface CustomModalProps extends ModalProps {
+export interface CustomModalProps extends Omit<ModalProps, 'onOk' | 'onCancel'> {
   displayElement?: ((showModal: () => void) => ReactNode) | ReactNode;
+  onOk?: (showModal: () => void) => void;
+  onCancel?: (showModal: () => void) => void;
 }
 
 // 简化使用弹窗组件
@@ -28,13 +30,19 @@ const CustomModal = (props: CustomModalProps) => {
   }
 
   const handleCancel = (e: any) => {
-    onCancel && onCancel(e)
-    closeModal();
+    if (onCancel) {
+      onCancel(closeModal)
+    } else {
+      closeModal();
+    }
   }
 
   const handleOk = (e: any) => {
-    onOk && onOk(e)
-    closeModal()
+    if (onOk) {
+      onOk(closeModal);
+    } else {
+      closeModal();
+    }
   }
 
   return (

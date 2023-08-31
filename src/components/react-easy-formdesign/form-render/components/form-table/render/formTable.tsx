@@ -2,24 +2,21 @@ import React, { useEffect, useMemo } from "react";
 import { Button, message, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
-import { Form, joinFormPath, useFormStore } from "../../..";
-import classNames from 'classnames';
+import { Form, joinFormPath } from "../../..";
 import './formTable.less';
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
 import Icon from '@/components/svg-icon';
 import { FormTableProps } from "..";
-import { ELementProps } from "../../../configs";
 
 const CustomTableCell = (props: any) => {
-  const { name, formrender, type, disabled, props: typeProps, hidden, children, ...restProps } = props;
-  const columnInstance = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, typeProps) });
+  const { name, hidden, formControl, children, ...restProps } = props;
   return (
     <TableCell key={name} {...restProps}>
       {
-        columnInstance ?
+        formControl ?
           <Form.Item {...restProps} label="" name={name}>
-            {hidden === true ? null : (columnInstance)}
+            {hidden === true ? null : formControl}
           </Form.Item>
           : children
       }
@@ -36,17 +33,16 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     disabled,
     showBtn,
     pagination = false,
+    form,
     formrender,
     name,
     path,
     field,
     parent,
-    value,
-    onChange,
     ...rest
   } = props
 
-  const items = Array.from({ length: Math.max(value?.length || 0, minRows || 0) });
+  const items = Array.from({ length: Math.max(minRows || 0) });
   const defaultValue = useMemo(() => items.map(() => ({ key: defaultGetId('row') })), [items]);
   const {
     dataSource: tableData,
@@ -59,19 +55,11 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     setDataSource(defaultValue);
   }, [minRows]);
 
-  const form = useFormStore();
-
-  const onValuesChange: ELementProps['onFieldsChange'] = (_, values) => {
-    onChange && onChange(values);
-  }
-
   const deleteBtn = (rowIndex: number) => {
     if (disabled) return;
     deleteItem(rowIndex);
-    // 更新表单的值(这里采用引用更新)
-    const old = form.getFieldValue() || [];
+    const old = form && form.getFieldValue(name) || [];
     old.splice(rowIndex, 1);
-    onChange && onChange(old);
   }
 
   const addBtn = () => {
@@ -89,15 +77,15 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         ...restCol,
         dataIndex: dataIndex,
         title: title,
-        onCell: (record: unknown, rowIndex?: number) => ({
-          record,
-          name: joinFormPath(rowIndex, dataIndex), // 拼接路径
-          type,
-          props,
-          disabled,
-          formrender: formrender,
-          ...restCol,
-        }),
+        onCell: (record: unknown, rowIndex?: number) => {
+          const formControl = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, props) });
+          return {
+            record,
+            name: joinFormPath(name, rowIndex, dataIndex), // 拼接路径
+            formControl: formControl,
+            ...restCol,
+          }
+        },
       }
     }) as TableProps<any>['columns'] || [];
     if (showBtn) {
@@ -116,12 +104,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   }, [columns, showBtn, tableData, disabled]);
 
   return (
-    <Form
-      form={form}
-      className={classNames('form-table', className)}
-      tagName="div"
-      onValuesChange={onValuesChange}
-    >
+    <>
       <Table
         columns={newColumns}
         dataSource={tableData}
@@ -133,7 +116,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         {...pickAttrs(rest)}
       />
       {showBtn && <Button type="link" className="add-btn" disabled={disabled} onClick={addBtn}>+添加</Button>}
-    </Form>
+    </>
   );
 });
 

@@ -18,7 +18,9 @@ export class FormStore<T extends Object = any> {
 
   private formItemListeners: FormListener[] = []
 
-  private formGlobalListeners: FormListener[] = []
+  private formValueListeners: FormListener[] = []
+
+  private formValuesListeners: Array<FormListener['onChange']> = []
 
   private errorListeners: FormListener[] = []
 
@@ -52,12 +54,15 @@ export class FormStore<T extends Object = any> {
     this.unsubscribeError = this.unsubscribeError.bind(this)
     this.subscribeFormItem = this.subscribeFormItem.bind(this)
     this.unsubscribeFormItem = this.unsubscribeFormItem.bind(this)
-    this.subscribeFormGlobal = this.subscribeFormGlobal.bind(this)
-    this.unsubscribeFormGlobal = this.unsubscribeFormGlobal.bind(this)
+    this.subscribeFormValue = this.subscribeFormValue.bind(this)
+    this.unsubscribeFormValue = this.unsubscribeFormValue.bind(this)
+    this.subscribeFormValues = this.subscribeFormValues.bind(this)
+    this.unsubscribeFormValues = this.unsubscribeFormValues.bind(this)
 
     this.notifyError = this.notifyError.bind(this)
     this.notifyFormItem = this.notifyFormItem.bind(this)
-    this.notifyFormGlobal = this.notifyFormGlobal.bind(this)
+    this.notifyFormValue = this.notifyFormValue.bind(this)
+    this.notifyFormValues = this.notifyFormValues.bind(this)
   }
 
   // 获取
@@ -100,7 +105,8 @@ export class FormStore<T extends Object = any> {
     // 设置值
     this.values = deepSet(this.values, path, initialValue);
     this.notifyFormItem(path);
-    this.notifyFormGlobal(path);
+    this.notifyFormValue(path);
+    this.notifyFormValues();
   }
 
   // 获取初始值
@@ -128,11 +134,13 @@ export class FormStore<T extends Object = any> {
     if (typeof path === 'string') {
       setFormItemValue(path, value, eventName);
       this.notifyFormItem(path);
-      this.notifyFormGlobal(path);
+      this.notifyFormValue(path);
+      this.notifyFormValues();
     } else if (typeof path === 'object') {
       Promise.all(Object.keys(path).map((n) => setFormItemValue(n, path?.[n])))
       this.notifyFormItem();
-      this.notifyFormGlobal();
+      this.notifyFormValue();
+      this.notifyFormValues();
     }
   }
 
@@ -141,7 +149,8 @@ export class FormStore<T extends Object = any> {
     this.lastValues = deepClone(this.values);
     this.values = values;
     this.notifyFormItem();
-    this.notifyFormGlobal();
+    this.notifyFormValue();
+    this.notifyFormValues();
   }
 
   // 重置表单
@@ -231,16 +240,21 @@ export class FormStore<T extends Object = any> {
   }
 
   // 同步路径上任意节点的变化
-  private notifyFormGlobal(path?: string) {
+  private notifyFormValue(path?: string) {
     if (path) {
-      this.formGlobalListeners.forEach((listener) => {
+      this.formValueListeners.forEach((listener) => {
         if (isExitPrefix(listener?.path, path)) {
           listener?.onChange && listener?.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path))
         }
       })
     } else {
-      this.formGlobalListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
+      this.formValueListeners.forEach((listener) => listener.onChange(this.getFieldValue(listener.path), this.getLastValue(listener.path)))
     }
+  }
+
+  // 同步
+  private notifyFormValues() {
+    this.formValuesListeners.forEach((onChange) => onChange(this.getFieldValue(), this.getLastValue()))
   }
 
   // 同步错误的变化
@@ -268,13 +282,21 @@ export class FormStore<T extends Object = any> {
   }
 
   // 主动订阅路径上所有表单控件的变动(表单控件消失不会卸载)
-  public subscribeFormGlobal(path: string, listener: FormListener['onChange']) {
-    this.formGlobalListeners.push({
+  public subscribeFormValue(path: string, listener: FormListener['onChange']) {
+    this.formValueListeners.push({
       onChange: listener,
       path: path
     });
     return () => {
-      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
+      this.formValueListeners = this.formValueListeners.filter((sub) => sub.path !== path)
+    }
+  }
+
+  // 订阅整个表单值(表单控件消失不会卸载)
+  public subscribeFormValues(listener: FormListener['onChange']) {
+    this.formValuesListeners.push(listener);
+    return () => {
+      this.formValuesListeners = []
     }
   }
 
@@ -299,12 +321,17 @@ export class FormStore<T extends Object = any> {
   }
 
   // 卸载
-  public unsubscribeFormGlobal(path?: string) {
+  public unsubscribeFormValue(path?: string) {
     if (path === undefined) {
-      this.formGlobalListeners = []
+      this.formValueListeners = []
     } else if (typeof path === 'string') {
-      this.formGlobalListeners = this.formGlobalListeners.filter((sub) => sub.path !== path)
+      this.formValueListeners = this.formValueListeners.filter((sub) => sub.path !== path)
     }
+  }
+
+  // 卸载
+  public unsubscribeFormValues() {
+    this.formValuesListeners = [];
   }
 
   // 卸载
