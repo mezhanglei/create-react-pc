@@ -1,6 +1,7 @@
 import Result from "@/components/result/result";
 import { useEffect } from "react";
 import { message } from "antd";
+import React from "react";
 
 // 非微信提示页面
 export default function NotWechat(props) {
