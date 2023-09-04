@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import classnames from 'classnames';

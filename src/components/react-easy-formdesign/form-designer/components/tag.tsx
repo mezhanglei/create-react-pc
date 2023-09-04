@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react'
 import classnames from 'classnames';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 import './tag.less';
 
 export interface TagProps {

@@ -1,21 +1,21 @@
-import { message, Upload, UploadProps } from 'antd';
+import { Button, message, Upload, UploadProps } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import React, { useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
-import request from '@/http/request';
+import './index.less';
 import { objectToFormData } from '@/utils/object';
-import { getBase64 } from './util';
-import CustomModal from '@/components/AntdModal';
+import { DOC_MIME_KEYS, DOC_MIME_VALUES } from '@/utils/mime';
+import request from '@/http/request';
 
-export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
-  fileSizeLimit: number; // 每张图片的限制上传大小
+export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
+  fileSizeLimit?: number; // 每个文件的限制上传大小
   autoUpload?: boolean; // 是否在选取文件后立即上传
   value?: Array<UploadFile>; // 赋值给defaultFileList
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
 }
 // 扩展后的文件类型
 export type FileItem = UploadFile & RcFile;
-const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
+const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
   const {
     fileSizeLimit = 5,
@@ -27,19 +27,21 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     headers,
     name = 'file', // 文件参数名
     data, // 额外参数
-    accept = 'image/gif,image/jpeg,image/jpg,image/png,image/webp,image/bmp',
-    listType = 'picture-card',
-    maxCount = 5,
+    showUploadList,
+    accept = DOC_MIME_VALUES.join(','),
     multiple = true,
     children,
     ...rest
   } = props;
 
   const [fileList, setFileList] = useState<Array<FileItem>>([]);
-  const [imageVisible, setImageVisible] = useState<boolean>();
-  const [imageTitle, setImageTitle] = useState<string>();
-  const [imageSrc, setImageSrc] = useState<string>();
   const [loading, setLoading] = useState<boolean>();
+
+  // 获取文件名
+  const getFileName = (file?: FileItem) => {
+    const defaultFileName = file?.url && (file.url.substring(file.url.lastIndexOf('/') + 1));
+    return file?.name || defaultFileName;
+  }
 
   const checkFile = (file: RcFile) => {
     const fileSize = file.size / 1024 / 1024
@@ -49,6 +51,16 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     }
     if (fileSize === 0) {
       message.error(`文件不能为空`)
+      return Upload.LIST_IGNORE;
+    }
+    const filename = getFileName(file);
+    const suffix = filename?.split('.')?.pop?.()
+    if (!suffix) {
+      message.error(`请上传正确的文件格式`)
+      return Upload.LIST_IGNORE;
+    }
+    if (!accept?.includes(suffix.toLowerCase())) {
+      message.error(`请上传正确的文件格式: ${DOC_MIME_KEYS?.join('，')}`)
       return Upload.LIST_IGNORE;
     }
   }
@@ -65,8 +77,9 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     });
   }
 
-  // 手动上传(只上传到本地)
+  // 手动上传
   const handleUploadProps: UploadProps = {
+    showUploadList: showUploadList,
     onRemove: (file) => {
       const index = fileList.indexOf(file as RcFile);
       const newFileList = fileList.slice();
@@ -75,7 +88,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       onChange && onChange(newFileList);
       return rest?.onRemove && rest?.onRemove(file);
     },
-    beforeUpload: async (data) => {
+    beforeUpload: (data) => {
       const file = data as FileItem
       if (checkFile(data) == Upload.LIST_IGNORE) {
         // 改变上传状态为报错
@@ -83,7 +96,6 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         return Upload.LIST_IGNORE;
       }
       file.status = 'done'
-      file.thumbUrl = await getBase64(file);
       const newFileList = [...fileList, file];
       setFileList(newFileList);
       onChange && onChange(newFileList);
@@ -93,6 +105,8 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
 
   // 远程上传
   const autoUploadProps: UploadProps = {
+    // 默认关闭已上传列表
+    showUploadList: showUploadList !== undefined ? showUploadList : false,
     onRemove: (file) => {
       const index = fileList.indexOf(file as RcFile);
       const newFileList = fileList.slice();
@@ -100,14 +114,11 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       setFileList(newFileList);
       return rest?.onRemove && rest?.onRemove(file);
     },
-    beforeUpload: async (data) => {
+    beforeUpload: (data) => {
       const file = data as FileItem
       if (checkFile(file) == Upload.LIST_IGNORE) {
         return Upload.LIST_IGNORE;
       }
-      file.thumbUrl = await getBase64(file);
-      const newFileList = [...fileList, file];
-      setFileList(newFileList);
     },
     customRequest: async (option) => {
       const file = option?.file as FileItem;
@@ -135,55 +146,19 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     }
   }
 
-  const handlePreview = async (data: UploadFile) => {
-    const file = data as FileItem;
-    if (!file.url && !file.preview) {
-      const fileChoose = file.originFileObj || file; // 源文件或当前的文件
-      file.preview = await getBase64(fileChoose);
-    }
-    setImageSrc(file.url || file.preview);
-    setImageVisible(true);
-    const filename = getFileName(file);
-    setImageTitle(filename);
-  }
-
-  const handleCancel = () => {
-    setImageVisible(false);
-  }
-
-  // 获取文件名
-  const getFileName = (file?: FileItem) => {
-    const defaultFileName = file?.url && (file.url.substring(file.url.lastIndexOf('/') + 1));
-    return file?.name || defaultFileName;
-  }
-
-  const uploadButton = children || (
-    <div>
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
-
   return (
-    <>
-      <Upload
-        ref={ref}
-        multiple={multiple}
-        fileList={fileList}
-        defaultFileList={value}
-        accept={accept}
-        listType={listType}
-        onPreview={handlePreview}
-        maxCount={maxCount}
-        {...(!autoUpload ? handleUploadProps : autoUploadProps)}
-        {...rest}
-      >
-        {fileList?.length >= maxCount ? null : uploadButton}
-      </Upload>
-      <CustomModal visible={imageVisible} title={imageTitle} footer={null} onCancel={handleCancel}>
-        <img alt="example" style={{ width: '100%' }} src={imageSrc} />
-      </CustomModal>
-    </>
+    <Upload
+      ref={ref}
+      multiple={multiple}
+      accept={accept}
+      fileList={fileList}
+      defaultFileList={value}
+      {...(!autoUpload ? handleUploadProps : autoUploadProps)}
+      {...rest}
+    >
+      {children || <Button loading={loading}>上传文件</Button>}
+    </Upload>
   )
 });
 
-export default ImageUpload;
+export default FileUpload;

@@ -1,6 +1,6 @@
 import { insertDesignItem } from '../../utils/utils';
 import React, { CSSProperties } from 'react';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 import BaseSelection, { CommonSelectionProps } from './baseSelection';
 
 export interface ControlSelectionProps extends CommonSelectionProps {

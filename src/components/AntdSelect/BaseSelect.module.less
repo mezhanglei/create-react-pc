@@ -1,0 +1,24 @@
+.customerSelect {
+  :global {
+    .ant-select-dropdown {
+      // min-width: 309px;
+      .ant-select-item-option:not(:last-child) {
+        padding: 0;
+
+        .ant-select-item-option-content {
+          padding: 5px 0 5px 12px;
+          margin-right: 12px;
+          border-bottom: 1px solid #dedede;
+        }
+      }
+
+      .ant-select-item-option:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .ant-select-selection-overflow-item:first-child {
+      max-width: calc(100% - 70px);
+    }
+  }
+}

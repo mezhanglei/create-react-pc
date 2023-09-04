@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import React, { CSSProperties } from 'react';
 import './label.less';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 import Tooltip from '@/components/tooltip';
 import { isEmpty } from '@/utils/type';
 

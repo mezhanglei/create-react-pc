@@ -2,7 +2,7 @@ import { Collapse } from 'react-collapse';
 import React, { useEffect, useState } from 'react';
 import "./index.less";
 import classNames from 'classnames';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 
 export interface CustomCollapseProps extends React.HtmlHTMLAttributes<HTMLElement> {
   header?: React.ReactNode;

@@ -1,5 +1,4 @@
 import CreateRequest from './createRequest';
-import Loader from "@/components/loader/index";
 import { getToken, loginOut } from "@/utils/auth";
 import { CustomConfig, HTTP_CODE, HTTP_CODE_MAP, HTTP_STATUS, HTTP_STATUS_MAP } from './config';
 import { message } from 'antd';
@@ -16,10 +15,8 @@ const request = CreateRequest({
     Authorization: getToken()
   },
   startLoading: () => {
-    Loader.start();
   },
   endLoading: () => {
-    Loader.end();
   },
   // 处理响应码
   handleResult: (data: ResponseData) => {

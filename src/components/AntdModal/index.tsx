@@ -1,11 +1,12 @@
 import { Modal, ModalProps } from 'antd';
 import React, { ReactNode } from 'react';
 import { useState } from 'react';
+import './style.less';
 
-export interface CustomModalProps extends Omit<ModalProps, 'onOk' | 'onCancel'> {
+export interface CustomModalProps extends ModalProps {
   displayElement?: ((showModal: () => void) => ReactNode) | ReactNode;
-  onOk?: (showModal: () => void) => void;
-  onCancel?: (showModal: () => void) => void;
+  onOk?: (closeModal: any) => Promise<boolean | void>;
+  onCancel?: (closeModal: any) => Promise<boolean | void>;
 }
 
 // 简化使用弹窗组件
@@ -29,19 +30,19 @@ const CustomModal = (props: CustomModalProps) => {
     setVisible(false);
   }
 
-  const handleCancel = (e: any) => {
-    if (onCancel) {
+  const handleCancel = async (e: any) => {
+    if (typeof onCancel == 'function') {
       onCancel(closeModal)
     } else {
-      closeModal();
+      closeModal()
     }
   }
 
-  const handleOk = (e: any) => {
-    if (onOk) {
-      onOk(closeModal);
+  const handleOk = async (e: any) => {
+    if (typeof onOk == 'function') {
+      onOk(closeModal)
     } else {
-      closeModal();
+      closeModal()
     }
   }
 
@@ -53,8 +54,8 @@ const CustomModal = (props: CustomModalProps) => {
             onClick: showModal
           })
           :
-          typeof displayElement === 'function' &&
-          displayElement(showModal)
+          typeof displayElement === 'function' ?
+            displayElement(showModal) : null
       }
       <Modal
         destroyOnClose
@@ -66,7 +67,7 @@ const CustomModal = (props: CustomModalProps) => {
         {...rest}
       >
         {children}
-      </Modal>
+      </Modal >
     </>
   );
 };

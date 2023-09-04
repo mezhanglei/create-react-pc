@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import ModalWrapper, { ModalWrapperProps } from '@/components/global-modal/modalWrapper';
-import { create } from '@/components/global-modal/createPromise';
+import ModalWrapper, { ModalWrapperProps } from '@/components/GlobalModal/modalWrapper';
+import { create } from '@/components/GlobalModal/createPromise';
 import { Button, Col, Row } from 'antd';
 import './importModal.less';
 

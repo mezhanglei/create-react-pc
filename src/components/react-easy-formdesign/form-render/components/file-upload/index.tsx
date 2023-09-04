@@ -6,7 +6,7 @@ import './index.less';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
 import { DOC_MIME_KEYS, DOC_MIME_VALUES } from '@/utils/mime';
-import Icon from '@/components/svg-icon';
+import Icon from '@/components/SvgIcon';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
   fileSizeLimit: number; // 每个文件的限制上传大小

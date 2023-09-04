@@ -1,4 +1,4 @@
-import loadable from "@/components/lazy";
+import loadable from "./loadable";
 
 // 默认的部分
 export const DefaultRoutes = [

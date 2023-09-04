@@ -1,11 +1,10 @@
-import { message, Upload, UploadProps } from 'antd';
+import { message, Modal, Upload, UploadProps } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import React, { useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
-import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
 import { getBase64 } from './util';
-import CustomModal from '@/components/AntdModal';
+import request from '@/request';
 
 export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
   fileSizeLimit: number; // 每张图片的限制上传大小
@@ -159,7 +158,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
 
   const uploadButton = children || (
     <div>
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>上传图片</div>
     </div>
   );
 
@@ -179,9 +178,14 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       >
         {fileList?.length >= maxCount ? null : uploadButton}
       </Upload>
-      <CustomModal visible={imageVisible} title={imageTitle} footer={null} onCancel={handleCancel}>
+      <Modal
+        visible={imageVisible}
+        title={imageTitle}
+        footer={null}
+        onCancel={handleCancel}
+      >
         <img alt="example" style={{ width: '100%' }} src={imageSrc} />
-      </CustomModal>
+      </Modal>
     </>
   )
 });

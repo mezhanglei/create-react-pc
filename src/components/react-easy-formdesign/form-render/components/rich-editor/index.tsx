@@ -4,7 +4,7 @@ import 'braft-editor/dist/index.css';
 import classnames from 'classnames';
 import { Input, Button, ButtonProps } from 'antd';
 import './index.less';
-import CustomModal from '@/components/ant-modal';
+import CustomModal from '@/components/AntdModal';
 
 export interface RichEditorProps extends BraftEditorProps {
   value?: string;

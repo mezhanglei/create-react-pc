@@ -7,7 +7,7 @@ import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
 import { useFormDesign, useFormEdit, useHoverSelected } from '../../utils/hooks';
 import Tooltip from '@/components/tooltip';
-import Icon from "@/components/svg-icon";
+import Icon from "@/components/SvgIcon";
 import { Button, Divider, Radio } from 'antd';
 import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer';
 import { showImportModal } from './importModal';

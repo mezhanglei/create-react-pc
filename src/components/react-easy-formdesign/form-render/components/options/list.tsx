@@ -2,7 +2,7 @@ import { isEmpty } from "@/utils/type";
 import { Button, Col, Input, message, Row } from "antd";
 import React, { ChangeEvent, useEffect } from "react";
 import './list.less';
-import Icon from "@/components/svg-icon";
+import Icon from "@/components/SvgIcon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 
 export interface OptionItem { label?: string, value?: string }

@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useImperativeHandle, useMemo } from "react";
 import { Button, message, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
-import { Form, joinFormPath } from "../../..";
-import './formTable.less';
-import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
-import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";
-import Icon from '@/components/SvgIcon';
-import { FormTableProps } from "..";
+import classNames from 'classnames';
+import './index.less';
+import SvgIcon from '@/components/SvgIcon';
+import { Form, FormStore, joinFormPath, useFormStore } from "@/components/FormRender";
+import { defaultGetId, useTableData } from "./utils";
+import { FormTableProps } from "./types";
 
 const CustomTableCell = (props: any) => {
   const { name, hidden, formControl, children, ...restProps } = props;
@@ -24,25 +24,20 @@ const CustomTableCell = (props: any) => {
   );
 }
 
-const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref) => {
+// 可编辑表格(ref方案，通过ref来获取值)
+const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
   const {
     className,
     columns = [],
     minRows = 0,
     maxRows = 50,
     disabled,
-    showBtn,
+    showBtn = true,
     pagination = false,
-    form,
-    formrender,
-    name,
-    path,
-    field,
-    parent,
     ...rest
   } = props
 
-  const items = Array.from({ length: Math.max(minRows || 0) });
+  const items = Array.from({ length: minRows || 0 });
   const defaultValue = useMemo(() => items.map(() => ({ key: defaultGetId('row') })), [items]);
   const {
     dataSource: tableData,
@@ -55,10 +50,15 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
     setDataSource(defaultValue);
   }, [minRows]);
 
+  const tableForm = useFormStore();
+
+  useImperativeHandle(ref, () => tableForm)
+
   const deleteBtn = (rowIndex: number) => {
     if (disabled) return;
     deleteItem(rowIndex);
-    const old = form && form.getFieldValue(name) || [];
+    // 更新表单的值(这里采用引用更新)
+    const old = tableForm.getFieldValue() || [];
     old.splice(rowIndex, 1);
   }
 
@@ -72,16 +72,16 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
 
   const newColumns = useMemo(() => {
     const result = columns?.map((col) => {
-      const { dataIndex, title, type, props, ...restCol } = col;
+      const { dataIndex, title, renderFormItem, ...restCol } = col;
       return {
         ...restCol,
         dataIndex: dataIndex,
         title: title,
-        onCell: (record: unknown, rowIndex?: number) => {
-          const formControl = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, props) });
+        onCell: (record: any, rowIndex?: number) => {
+          const formControl = renderFormItem && renderFormItem(record?.[dataIndex], record);
           return {
             record,
-            name: joinFormPath(name, rowIndex, dataIndex), // 拼接路径
+            name: joinFormPath(rowIndex, dataIndex), // 拼接路径
             formControl: formControl,
             ...restCol,
           }
@@ -95,7 +95,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         width: 50,
         render: (text: any, record, index: number) => {
           if (tableData?.length > minRows) {
-            return <Icon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
+            return <SvgIcon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
           }
         }
       })
@@ -104,11 +104,14 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
   }, [columns, showBtn, tableData, disabled]);
 
   return (
-    <>
+    <Form
+      form={tableForm}
+      className={classNames('form-table', className)}
+      tagName="div"
+    >
       <Table
         columns={newColumns}
         dataSource={tableData}
-        ref={ref}
         rowKey="key"
         scroll={{ y: 400 }}
         components={{ body: { cell: CustomTableCell } }}
@@ -116,7 +119,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         {...pickAttrs(rest)}
       />
       {showBtn && <Button type="link" className="add-btn" disabled={disabled} onClick={addBtn}>+添加</Button>}
-    </>
+    </Form>
   );
 });
 

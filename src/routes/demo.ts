@@ -1,4 +1,4 @@
-import loadable from "@/components/lazy";
+import loadable from "./loadable";
 
 // 首页
 export const DemoRoute = [

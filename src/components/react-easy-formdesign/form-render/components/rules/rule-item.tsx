@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Icon from "@/components/svg-icon";
+import Icon from "@/components/SvgIcon";
 import Tooltip from "@/components/tooltip";
 import RenderForm, { useFormStore, useFormValues } from '../../../form-render';
 import { Button } from "antd";

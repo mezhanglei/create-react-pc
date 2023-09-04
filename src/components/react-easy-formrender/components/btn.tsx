@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import './btn.less';
 import { GenerateFormNodeProps, GeneratePrams } from '../types';
 import Button from '@/components/button';
-import Icon from '../../svg-icon';
+import Icon from '../../SvgIcon';
 
 export interface DeleteBtnProps extends GeneratePrams<any> {
   onClick?: () => void;
