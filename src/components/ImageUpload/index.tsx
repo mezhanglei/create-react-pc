@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { objectToFormData } from '@/utils/object';
 import { getBase64 } from './util';
-import request from '@/request';
+import request from '@/http/request';
 
 export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
   fileSizeLimit: number; // 每张图片的限制上传大小

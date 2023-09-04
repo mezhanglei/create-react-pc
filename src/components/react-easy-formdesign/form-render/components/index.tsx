@@ -19,8 +19,6 @@ import CodeTextArea from './code-textarea';
 import ColorPicker from './color-picker';
 import OptionsComponent from './options';
 import { SliderNumber } from './slider-number';
-import FileUpload from "./file-upload";
-import ImageUpload from "./image-upload";
 import { bindRequest } from './options/bind';
 import RulesComponent from './rules';
 import { LinkageCheckbox } from './linkage';
@@ -32,6 +30,8 @@ import Collapse from './collapse';
 import Table, { TableBody, TableCell, TableHead, TableRow } from './layout-table';
 import { GridCol } from './grid/col';
 import { GridRow } from './grid/row';
+import FileUpload from '@/components/FileUpload';
+import ImageUpload from '@/components/ImageUpload';
 
 // 提供开发过程中的基础组件
 export const BaseComponents = {
