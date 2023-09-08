@@ -5,7 +5,7 @@ import { TableCell } from "./components";
 import classNames from 'classnames';
 import './index.less';
 import SvgIcon from '@/components/SvgIcon';
-import { Form, FormStore, joinFormPath, useFormStore } from "@/components/FormRender";
+import { Form, FormProps, FormStore, joinFormPath, useFormStore } from "@/components/react-easy-formrender";
 import { defaultGetId, useTableData } from "./utils";
 import { FormTableProps } from "./types";
 
@@ -53,6 +53,10 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
   const tableForm = useFormStore();
 
   useImperativeHandle(ref, () => tableForm)
+
+  const onValuesChange: FormProps['onValuesChange'] = (_, values) => {
+    setDataSource(values)
+  }
 
   const deleteBtn = (rowIndex: number) => {
     if (disabled) return;
@@ -108,6 +112,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
       form={tableForm}
       className={classNames('form-table', className)}
       tagName="div"
+      onValuesChange={onValuesChange}
     >
       <Table
         columns={newColumns}
