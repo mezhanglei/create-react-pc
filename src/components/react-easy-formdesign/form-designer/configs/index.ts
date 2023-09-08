@@ -1,5 +1,4 @@
-import { CustomOptions, FormNodeProps } from "../";
-import DefaultFieldSetting from './field-setting';
+import DefaultFieldSetting from './fieldSetting';
 // 基础控件
 import Input from './input/render';
 import InputSetting from './input/setting';
@@ -46,15 +45,8 @@ import AlertSetting from './alert/setting';
 // 组合组件
 import FormTable from "./formTable/render";
 import FormTableSetting from "./formTable/setting";
+import { ELementProps } from "../../form-render/components";
 
-
-// 列表中的元素类型
-export interface ELementProps extends FormNodeProps, CustomOptions {
-  includes?: string[]; // 子元素限制可以添加的组件类型
-  configLabel?: string; // 配置组件的名
-  configIcon?: string; // 配置组件的图标
-  properties?: { [name: string]: ELementProps } | ELementProps[] // 子元素渲染树
-}
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
 export type ConfigSetting = { [key: string]: FormDesignData }
 export type ConfigSettingsType = { [key: string]: ConfigSetting }

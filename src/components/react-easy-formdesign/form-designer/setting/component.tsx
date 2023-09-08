@@ -1,8 +1,8 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { setDesignerFormValue, getNameSetting, asyncSettingForm } from '../../utils/utils';
-import { useFormDesign, useFormEdit } from '../../utils/hooks';
+import { setDesignerFormValue, getNameSetting, asyncSettingForm } from '../../form-render/utils/utils';
+import { useFormDesign, useFormEdit } from '../../form-render/utils/hooks';
 import './component.less';
 import CustomCollapse from '../../form-render/components/base/collapse';
 export interface SelectedSettingProps {

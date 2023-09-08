@@ -8,7 +8,7 @@ import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer'
 import { Button, Radio } from 'antd';
 import { showExportJsonModal } from './exportJson';
 import { CloseOutlined } from '@ant-design/icons';
-import { FormDesignData } from '../../form-render/configs';
+import { FormDesignData } from '../configs';
 
 export interface PreviewModalProps extends ModalWrapperProps {
   properties?: FormDesignData;
@@ -86,7 +86,7 @@ export const PreviewModal = React.forwardRef<HTMLDivElement, PreviewModalProps>(
       <div className={`${prefixCls}-body`}>
         <PlatContainer plat={platType}>
           <RenderForm
-            options={{props:{disabled: disabled}}}
+            options={{ props: { disabled: disabled } }}
             form={form}
             properties={properties}
           />

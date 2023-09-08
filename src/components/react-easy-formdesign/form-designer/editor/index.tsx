@@ -5,7 +5,7 @@ import './index.less';
 import ControlDnd from './dnd';
 import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign, useFormEdit, useHoverSelected } from '../../utils/hooks';
+import { useFormDesign, useFormEdit, useHoverSelected } from '../../form-render/utils/hooks';
 import Tooltip from '@/components/tooltip';
 import Icon from "@/components/SvgIcon";
 import { Button, Divider, Radio } from 'antd';
@@ -13,7 +13,7 @@ import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer'
 import { showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
-import { updateDesignerItem } from '../../utils/utils';
+import { updateDesignerItem } from '../../form-render/utils/utils';
 
 export interface DesignEditorProps {
   className?: string

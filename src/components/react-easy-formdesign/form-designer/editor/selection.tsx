@@ -1,4 +1,4 @@
-import { insertDesignItem } from '../../utils/utils';
+import { insertDesignItem } from '../../form-render/utils/utils';
 import React, { CSSProperties } from 'react';
 import Icon from '@/components/SvgIcon';
 import BaseSelection, { CommonSelectionProps } from './baseSelection';

@@ -5,7 +5,7 @@ import RowSelection from './row-selection';
 import { RowProps } from 'antd';
 import classnames from 'classnames';
 import './row.less';
-import { ELementProps } from '../../../configs';
+import { ELementProps } from '../..';
 
 // row组件
 export type CustomRowProps = RowProps & GeneratePrams<ELementProps>;

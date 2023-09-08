@@ -14,24 +14,32 @@ import {
   Alert,
   Divider,
 } from 'antd';
-import CodeInput from './base/code-input';
-import CodeTextArea from './base/code-textarea';
-import ColorPicker from './base/color-picker';
+import CodeInput from './base/codeInput';
+import CodeTextArea from './base/codeTextarea';
+import ColorPicker from './base/colorPicker';
 import OptionsComponent from './base/options';
-import { SliderNumber } from './base/slider-number';
+import { SliderNumber } from './base/sliderNumber';
 import { bindRequest } from './base/options/bind';
 import RulesComponent from './base/rules';
 import { LinkageCheckbox } from './base/linkage';
 import { EditorCodeMirror } from './base/options/editor';
-import RichEditor, { RichEditorModalBtn } from './base/rich-editor';
-import { RichText } from './base/rich-text';
-import FormTable from './base/form-table';
+import RichEditor, { RichEditorModalBtn } from './base/richEditor';
+import { RichText } from './base/richText';
+import FormTable from './base/formTable';
 import Collapse from './base/collapse';
-import Table, { TableBody, TableCell, TableHead, TableRow } from './base/layout-table';
+import Table, { TableBody, TableCell, TableHead, TableRow } from './base/layoutTable';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
 import GroupExample from './groups/example';
 import { GridCol, GridRow } from './base/grid';
+import { CustomOptions, FormNodeProps } from '..';
+
+export interface ELementProps extends FormNodeProps, CustomOptions {
+  includes?: string[]; // 子元素限制可以添加的组件类型
+  configLabel?: string; // 配置组件的名
+  configIcon?: string; // 配置组件的图标
+  properties?: { [name: string]: ELementProps } | ELementProps[] // 子元素渲染树
+}
 
 // 注册组件
 export const registerComponents = {

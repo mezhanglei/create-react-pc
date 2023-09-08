@@ -1,7 +1,8 @@
 import EventBus from '@/utils/event-bus';
 import React from 'react';
 import { FormRenderStore, FormStore, GeneratePrams } from '../form-render';
-import { ELementProps, FormDesignData, ConfigSetting, ConfigSettingsType } from '../form-render/configs';
+import { ELementProps } from '../form-render/components';
+import { FormDesignData, ConfigSetting, ConfigSettingsType } from './configs';
 export interface SelectedType {
   name?: GeneratePrams<ELementProps>['name']; // 节点表单字段
   path?: GeneratePrams<ELementProps>['path']; // 节点路径

@@ -2,14 +2,14 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { message } from 'antd';
 import './index.less';
-import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../utils/utils';
-import { ELementProps } from '../../form-render/configs';
+import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../form-render/utils/utils';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign } from '../../utils/hooks';
+import { useFormDesign } from '../../form-render/utils/hooks';
 import DndSortable from '@/components/react-dragger-sort';
 import { DndType } from '../editor/dnd';
 import Tag from './tag';
 import { pickObject } from '@/utils/object';
+import { ELementProps } from '../../form-render/components';
 
 export interface DesignComponentsProps {
   className?: string
@@ -61,7 +61,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
       "ImageUpload",
       "RichEditor",
       "RichText",
-    ])
+    ]),
+    '业务组件': pickObject(components, ['example'])
   }
 
   return (

@@ -1,11 +1,11 @@
 import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { ELementProps } from '@/components/react-easy-formdesign/form-render/configs';
-import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/utils/utils';
-import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
+import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
+import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/form-render/utils/hooks';
 import { DndType } from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { GeneratePrams } from '../../../../';
+import { GeneratePrams } from '../../../..';
+import { ELementProps } from '../../..';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;

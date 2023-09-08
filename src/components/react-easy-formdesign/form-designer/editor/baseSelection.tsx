@@ -3,10 +3,10 @@ import classnames from 'classnames';
 import React, { useState } from 'react';
 import { GeneratePrams } from '../../form-render';
 import './baseSelection.less';
-import { useFormDesign, useFormEdit } from '../../utils/hooks';
+import { useFormDesign, useFormEdit } from '../../form-render/utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
 import { SelectedType } from '../designer-context';
-import { ELementProps } from '../../form-render/configs';
+import { ELementProps } from '../../form-render/components';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
@@ -57,7 +57,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   const chooseItem = (e: any) => {
     e.stopPropagation();
-    if(onChoose) {
+    if (onChoose) {
       onChoose(nextSelected);
       return;
     }

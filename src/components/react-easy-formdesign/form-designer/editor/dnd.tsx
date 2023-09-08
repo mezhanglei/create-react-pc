@@ -2,9 +2,9 @@ import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-
 import React from 'react';
 import { GeneratePrams } from '../../form-render';
 import './dnd.less';
-import { getConfigItem, insertDesignItem } from '../../utils/utils';
-import { ELementProps } from '../../form-render/configs';
-import { useFormDesign } from '../../utils/hooks';
+import { getConfigItem, insertDesignItem } from '../../form-render/utils/utils';
+import { useFormDesign } from '../../form-render/utils/hooks';
+import { ELementProps } from '../../form-render/components';
 
 // 可拖拽的区域类型
 export enum DndType {

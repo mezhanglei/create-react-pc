@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import './editor.less';
 import { Button } from "antd";
 import { js_beautify } from 'js-beautify';
-import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/utils/utils";
+import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";
 import CustomModal from "@/components/AntdModal";
 
 const prefixCls = 'options-codemirror';

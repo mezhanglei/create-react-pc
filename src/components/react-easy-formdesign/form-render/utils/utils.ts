@@ -4,8 +4,9 @@ import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender
 import { deepGet, deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
-import { ELementProps, ConfigSetting, ConfigSettingsType } from '../form-render/configs';
-import { SelectedType } from '../form-designer/designer-context';
+import { ConfigSetting, ConfigSettingsType } from '../../form-designer/configs';
+import { SelectedType } from '../../form-designer/designer-context';
+import { ELementProps } from '../components';
 
 export const defaultGetId = (key?: string) => {
   return typeof key == 'string' ? `${key.replace(/\./g, '')}_${nanoid(6)}` : '';

@@ -6,7 +6,7 @@ import { GeneratePrams } from '../../../';
 import ColSelection from './col-selection';
 import './col.less';
 import ControlDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { ELementProps } from '../../../configs';
+import { ELementProps } from '../..';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;

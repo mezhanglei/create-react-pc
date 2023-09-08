@@ -1,4 +1,4 @@
-import { handleEvalString, handleStringify } from '@/components/react-easy-formdesign/utils/utils';
+import { handleEvalString, handleStringify } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { Input, InputProps, InputRef } from 'antd';
 import React, { CSSProperties, Ref, useEffect, useState } from 'react';
 

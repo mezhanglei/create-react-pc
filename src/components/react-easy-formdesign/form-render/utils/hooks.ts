@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { deepSet } from "../form-render";
-import { FormDesignContext, FormEditContext, SelectedType } from "../form-designer/designer-context";
+import { deepSet } from "..";
+import { FormDesignContext, FormEditContext, SelectedType } from "../../form-designer/designer-context";
 import { setExpandComponents } from "@/components/react-easy-formrender/utils/utils";
 import EventBus from "@/utils/event-bus";
 

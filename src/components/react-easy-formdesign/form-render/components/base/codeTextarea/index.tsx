@@ -1,4 +1,4 @@
-import { handleEvalString, handleStringify } from '@/components/react-easy-formdesign/utils/utils';
+import { handleEvalString, handleStringify } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import { TextAreaRef } from 'antd/lib/input/TextArea';

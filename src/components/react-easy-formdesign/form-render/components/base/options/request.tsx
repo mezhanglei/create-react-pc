@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
-import CodeTextArea from "../code-textarea";
+import CodeTextArea from "../codeTextarea";
 import { EditorCodeMirrorModal } from "./editor";
 import RenderForm, { RenderFormProps, useFormStore } from "../../..";
-import { getDesignerItem, setDesignerItem } from '../../../../utils/utils';
-import { useFormDesign } from '../../../../utils/hooks';
+import { getDesignerItem, setDesignerItem } from '../../../utils/utils';
+import { useFormDesign } from '../../../utils/hooks';
 
 export interface RequestResponseConfig {
   url?: string; // 请求的路径
