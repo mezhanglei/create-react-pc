@@ -92,9 +92,20 @@ const handleRule = async (rule: FormRule | undefined, value: any) => {
   for (let [ruleKey, ruleValue] of entries) {
     // 自定义校验
     if (ruleKey === 'validator' && typeof ruleValue === 'function') {
-      const result = await ruleValue?.(value);
-      // 校验结果
-      return result === true ? defaultMessage : result;
+      try {
+        let msg;
+        const result = await ruleValue?.(value, (err) => {
+          msg = err;
+        });
+        return msg || (typeof result === 'string' ? result : defaultMessage);
+      } catch (error: any) {
+        if (typeof error === 'string') {
+          return error
+        }
+        if (typeof error?.message == 'string') {
+          return error?.message
+        }
+      }
       // 其他字段的校验，返回true表示报错
     } else if (validatorsMap[ruleKey]?.(ruleValue, value) === true) {
       return defaultMessage;

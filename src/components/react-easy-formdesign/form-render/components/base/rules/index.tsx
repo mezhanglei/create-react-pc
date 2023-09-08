@@ -3,7 +3,7 @@ import './index.less';
 import RequiredComponent from "./required";
 import MinOrMaxComponent from "./minOrMax";
 import PatternComponent from "./pattern";
-import RenderForm, { GenerateFormNodeProps, RenderFormProps, useFormStore } from '../../../form-render';
+import RenderForm, { GenerateFormNodeProps, RenderFormProps, useFormStore } from '../../../';
 
 /**
  * 校验规则的配置组件。

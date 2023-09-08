@@ -4,9 +4,9 @@ import './formTable.less';
 import { ColumnGroup } from "./columnGroup";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableBody, TableCell, TableHead, TableRow } from "./components";
-import { Form, joinFormPath, useFormStore } from "../../..";
 import { FormTableProps } from "..";
-import { ELementProps } from "../../../configs";
+import { Form, joinFormPath, useFormStore, } from '../../../../';
+import { ELementProps } from "@/components/react-easy-formdesign/form-render/configs";
 
 const prefix = "form-table";
 export const Classes = {

@@ -5,8 +5,8 @@ import './style.less';
 
 export interface CustomModalProps extends ModalProps {
   displayElement?: ((showModal: () => void) => ReactNode) | ReactNode;
-  onOk?: (closeModal: any) => Promise<boolean | void>;
-  onCancel?: (closeModal: any) => Promise<boolean | void>;
+  onOk?: (closeModal: any) => void | Promise<void>;
+  onCancel?: (closeModal: any) => void | Promise<void>;
 }
 
 // 简化使用弹窗组件

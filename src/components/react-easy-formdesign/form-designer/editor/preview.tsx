@@ -4,11 +4,11 @@ import ModalWrapper, { ModalWrapperProps } from '@/components/GlobalModal/modalW
 import { create } from '@/components/GlobalModal/createPromise';
 import RenderForm, { useFormStore } from '../../form-render';
 import './preview.less';
-import { FormDesignData } from '../../form-render/configs/components';
 import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer';
 import { Button, Radio } from 'antd';
 import { showExportJsonModal } from './exportJson';
 import { CloseOutlined } from '@ant-design/icons';
+import { FormDesignData } from '../../form-render/configs';
 
 export interface PreviewModalProps extends ModalWrapperProps {
   properties?: FormDesignData;

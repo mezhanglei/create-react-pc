@@ -14,27 +14,27 @@ import {
   Alert,
   Divider,
 } from 'antd';
-import CodeInput from './code-input';
-import CodeTextArea from './code-textarea';
-import ColorPicker from './color-picker';
-import OptionsComponent from './options';
-import { SliderNumber } from './slider-number';
-import { bindRequest } from './options/bind';
-import RulesComponent from './rules';
-import { LinkageCheckbox } from './linkage';
-import { EditorCodeMirror } from './options/editor';
-import RichEditor, { RichEditorModalBtn } from './rich-editor';
-import { RichText } from './rich-text';
-import FormTable from './form-table';
-import Collapse from './collapse';
-import Table, { TableBody, TableCell, TableHead, TableRow } from './layout-table';
-import { GridCol } from './grid/col';
-import { GridRow } from './grid/row';
+import CodeInput from './base/code-input';
+import CodeTextArea from './base/code-textarea';
+import ColorPicker from './base/color-picker';
+import OptionsComponent from './base/options';
+import { SliderNumber } from './base/slider-number';
+import { bindRequest } from './base/options/bind';
+import RulesComponent from './base/rules';
+import { LinkageCheckbox } from './base/linkage';
+import { EditorCodeMirror } from './base/options/editor';
+import RichEditor, { RichEditorModalBtn } from './base/rich-editor';
+import { RichText } from './base/rich-text';
+import FormTable from './base/form-table';
+import Collapse from './base/collapse';
+import Table, { TableBody, TableCell, TableHead, TableRow } from './base/layout-table';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
+import GroupExample from './groups/example';
+import { GridCol, GridRow } from './base/grid';
 
-// 提供开发过程中的基础组件
-export const BaseComponents = {
+// 注册组件
+export const registerComponents = {
   // ui库组件
   "Input": Input, // 输入控件
   "Input.TextArea": Input.TextArea, // 输入文本域
@@ -77,10 +77,11 @@ export const BaseComponents = {
   "FormTable": FormTable, // 可编辑表格
   "Collapse": Collapse,
   "Table": Table,
-  "Table.Cell": TableCell,
-  "Table.Row": TableRow,
-  "Table.Head": TableHead,
-  "Table.Body": TableBody,
-  "Grid.Row": GridRow,
-  "Grid.Col": GridCol,
+  "TableCell": TableCell,
+  "TableRow": TableRow,
+  "TableHead": TableHead,
+  "TableBody": TableBody,
+  "GridRow": GridRow,
+  "GridCol": GridCol,
+  "example": GroupExample,
 }

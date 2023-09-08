@@ -32,7 +32,7 @@ function ColSelection(props: ColSelectionProps, ref: any) {
   const addCol = () => {
     const nextIndex = (field?.index as number) + 1;
     const newField = {
-      type: 'Grid.Col',
+      type: 'GridCol',
       props: { span: 12 },
       ignore: true,
       properties: {

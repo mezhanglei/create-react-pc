@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Icon from "@/components/SvgIcon";
 import Tooltip from "@/components/tooltip";
-import RenderForm, { useFormStore, useFormValues } from '../../../form-render';
+import RenderForm, { useFormStore, useFormValues } from '../../../';
 import { Button } from "antd";
 import { ControlFieldProps, LinkageBtn } from "../linkage";
 import { matchExpression } from "@/components/react-easy-formrender/utils/utils";

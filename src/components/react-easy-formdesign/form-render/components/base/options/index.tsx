@@ -47,9 +47,8 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
   // 接受外部赋值
   const defaultTab = buttons[0]?.value;
   useEffect(() => {
-    const tabkey = defaultTab;
-    setTab(tabkey);
-    setDataMap({ [tabkey]: value });
+    setTab(defaultTab);
+    setDataMap({ [defaultTab]: value });
   }, [defaultTab]);
 
   const selectTypeChange = (key?: string) => {

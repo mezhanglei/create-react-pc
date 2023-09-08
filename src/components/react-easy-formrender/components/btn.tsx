@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import classnames from 'classnames';
 import './btn.less';
 import { GenerateFormNodeProps, GeneratePrams } from '../types';
@@ -38,6 +38,7 @@ export interface AddBtnProps extends GeneratePrams<any> {
   className?: string;
   style?: CSSProperties;
   item?: GenerateFormNodeProps;
+  children?: ReactNode;
 }
 export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
@@ -58,7 +59,7 @@ export const AddBtn: React.FC<AddBtnProps> = (props) => {
 
   const addNewItem = () => {
     const properties = field?.properties;
-    const nextIndex = typeof properties === 'object' && Object?.keys(properties)?.length || 0;
+    const nextIndex = Object?.keys(properties || {})?.length || 0;
     if (item && currentPath) {
       formrender?.insertItemByIndex(item, nextIndex, { path: currentPath });
     }

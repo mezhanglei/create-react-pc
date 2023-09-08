@@ -1,6 +1,5 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
-import { useFormEdit } from '@/components/react-easy-formdesign/utils/hooks';
 import { insertDesignItem } from '@/components/react-easy-formdesign/utils/utils';
 import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
 import classnames from 'classnames';
@@ -34,7 +33,7 @@ function RowSelection(props: EditorSelectionProps, ref: any) {
     const currentItem = designer?.getItemByPath(currentPath);
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
     const newField = {
-      type: 'Grid.Col',
+      type: 'GridCol',
       props: { span: 12 },
       ignore: true,
       properties: {

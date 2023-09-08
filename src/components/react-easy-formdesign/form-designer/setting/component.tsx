@@ -4,7 +4,7 @@ import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore }
 import { setDesignerFormValue, getNameSetting, asyncSettingForm } from '../../utils/utils';
 import { useFormDesign, useFormEdit } from '../../utils/hooks';
 import './component.less';
-import CustomCollapse from '../../form-render/components/collapse';
+import CustomCollapse from '../../form-render/components/base/collapse';
 export interface SelectedSettingProps {
   className?: string
   style?: CSSProperties

@@ -5,7 +5,7 @@ import pickAttrs from "@/utils/pickAttrs";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
 import { FormTableProps } from "..";
-import { Form } from "../../..";
+import { Form } from "../../../../";
 import { useFormDesign } from "@/components/react-easy-formdesign/utils/hooks";
 import { updateDesignerItem } from "@/components/react-easy-formdesign/utils/utils";
 

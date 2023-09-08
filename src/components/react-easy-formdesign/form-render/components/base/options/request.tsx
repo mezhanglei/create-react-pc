@@ -1,38 +1,25 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
-import { useFormDesign } from "../../../utils/hooks";
-import { getDesignerItem, setDesignerItem } from "../../../utils/utils";
 import CodeTextArea from "../code-textarea";
 import { EditorCodeMirrorModal } from "./editor";
-import RenderForm, { RenderFormProps, useFormStore } from '../../../form-render';
+import RenderForm, { RenderFormProps, useFormStore } from "../../..";
+import { getDesignerItem, setDesignerItem } from '../../../../utils/utils';
+import { useFormDesign } from '../../../../utils/hooks';
 
-export interface RequestSourceConfig {
+export interface RequestResponseConfig {
   url?: string; // 请求的路径
   method?: string; // 请求方式
-  requestType?: string; // 提交方式
+  paramsType?: string; // 参数类型
   params?: any; // 参数
   headers?: any; // headers携带的信息
-  returnFn?: string; // 解析函数字符串
-}
-
-export interface RequestResponseConfig extends Omit<RequestSourceConfig, 'returnFn'> {
-  returnFn?: (val: any) => any; // 解析函数
+  returnFn?: string | ((val: any) => any); // 解析函数字符串
 }
 
 export interface RequestSourceProps {
-  value?: RequestSourceConfig;
+  value?: RequestResponseConfig;
   onChange?: (val?: RequestResponseConfig) => void;
   className?: string;
   style?: CSSProperties;
-}
-
-// 是否为请求配置
-export const isRequestConfig = (data: any) => {
-  if (typeof data === 'object') {
-    if (data?.url) {
-      return true;
-    }
-  }
 }
 
 const prefixCls = 'request-source';
@@ -43,7 +30,7 @@ const methodOptions = [
   { value: 'get', label: 'GET' },
   { value: 'post', label: 'POST' }
 ];
-const requestTypeOptions = [
+const paramsTypeOptions = [
   { value: 'formData', label: 'FormData' },
   { value: 'json', label: 'JSON' }
 ];
@@ -81,7 +68,7 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
         options: methodOptions
       }
     },
-    requestType: {
+    paramsType: {
       label: '提交方式',
       layout: 'horizontal',
       labelWidth: 80,
@@ -89,7 +76,7 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
       type: 'Select',
       props: {
         style: { width: '100%' },
-        options: requestTypeOptions
+        options: paramsTypeOptions
       }
     },
     params: {

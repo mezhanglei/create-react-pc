@@ -5,10 +5,10 @@ export default {
   ignore: true,
   properties: [
     {
-      type: 'Table.Row',
+      type: 'TableRow',
       properties: {
         td1: {
-          type: 'Table.Cell',
+          type: 'TableCell',
           ignore: true,
           properties: {
             name1: {
@@ -18,7 +18,7 @@ export default {
           }
         },
         td2: {
-          type: 'Table.Cell',
+          type: 'TableCell',
           ignore: true,
           properties: {
             name2: {

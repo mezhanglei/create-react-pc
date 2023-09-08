@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react';
 import ModalWrapper, { ModalWrapperProps } from '@/components/GlobalModal/modalWrapper';
 import { create } from '@/components/GlobalModal/createPromise';
 import './exportJson.less';
-import { EditorCodeMirror } from '../../form-render/components/options/editor';
 import { Button } from 'antd';
 import { copyToClipboard } from '@/utils/string';
 import { saveAsFile } from '@/utils/file';
 import js_beautify from 'js-beautify';
+import { EditorCodeMirror } from '../../form-render/components/base/options/editor';
 
 export interface ExportJsonModalProps extends ModalWrapperProps {
   data?: any;

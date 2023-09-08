@@ -1,6 +1,7 @@
 import React from 'react';
 import { CustomUnionType, FormComponent, GeneratePrams } from "../types";
 import { isReactComponent, isValidChildren } from "@/utils/ReactIs";
+import { isObject } from '@/utils/type';
 
 // 解析组件声明
 export const parseComponent = (target: CustomUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
@@ -11,7 +12,7 @@ export const parseComponent = (target: CustomUnionType | undefined, typeMap?: { 
     return target as any
   }
   // 是否为已注册的组件声明
-  if (typeof target === 'object') {
+  if (isObject(target)) {
     const targetInfo = target as FormComponent;
     const register = typeMap && targetInfo?.type && typeMap[targetInfo?.type];
     if (register) {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/SvgIcon";
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
-import RenderForm, { FieldChangedParams } from "../..";
+import RenderForm, { FieldChangedParams } from "../../../";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/utils/utils";

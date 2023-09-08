@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CustomColumnType } from './formTable';
+import { CustomColumnType } from '..';
 
 // 列的设置
 export const ColumnGroup: React.FC<{ columns: CustomColumnType[] }> = ({ columns }) => {

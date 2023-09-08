@@ -5,7 +5,7 @@ import { Form, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, j
 import { useFormRenderStore } from './use-formrender';
 import { isEqual } from '@/utils/object';
 import { matchExpression } from './utils/utils';
-import { isEmpty } from '@/utils/type';
+import { isEmpty, isObject } from '@/utils/type';
 
 // 表单元素渲染
 export default function RenderFormChildren(props: RenderFormChildrenProps) {
@@ -46,7 +46,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       if (typeof watcher === 'function') {
         form?.subscribeFormValue(key, watcher)
         // 对象形式
-      } else if (typeof watcher === 'object') {
+      } else if (isObject(watcher)) {
         if (typeof watcher.handler === 'function') {
           form?.subscribeFormValue(key, watcher.handler);
         }
@@ -94,7 +94,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       return val.map((item) => {
         return evalAttr(item);
       });
-    } else if (typeof val === 'object') {
+    } else if (isObject(val)) {
       return Object.fromEntries(
         Object.entries(val || {})?.map(
           ([propsKey, propsItem]) => {
@@ -110,7 +110,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   // 递归遍历处理表单域的字符串表达式并存储解析后的信息
   const handleFieldProps = () => {
-    if (typeof properties !== 'object') return;
+    if (!properties) return;
     const fieldPropsMap = {};
     // 遍历处理对象树中的非properties字段
     const deepHandle = (formNode: FormNodeProps, path: string) => {
@@ -177,7 +177,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   }
 
   // 值兼容字符串表达式
-  const evalExpression = (value?: string | boolean, uneval?: boolean): any => {
+  const evalExpression = (value?: unknown, uneval?: boolean): any => {
     if (uneval) return value;
     if (typeof value === 'string') {
       const matchStr = matchExpression(value)
@@ -236,7 +236,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
       ...restField
     } = mergeField;
     // 是否有子节点
-    const haveProperties = typeof properties === 'object';
+    const haveProperties = isObject(properties) || properties instanceof Array;
     // 当前节点是否为只读
     const isReadOnly = restField?.readOnly === true;
     const footerInstance = formRenderStore.componentInstance(footer, commonParams);

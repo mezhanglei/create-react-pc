@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { Button, message, Table, TableProps } from "antd";
 import pickAttrs from "@/utils/pickAttrs";
 import { TableCell } from "./components";
-import { Form, joinFormPath } from "../../..";
+import { Form, joinFormPath } from "../../../../";
 import './formTable.less';
 import { useTableData } from "@/components/react-easy-formdesign/utils/hooks";
 import { defaultGetId } from "@/components/react-easy-formdesign/utils/utils";

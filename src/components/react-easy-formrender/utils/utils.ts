@@ -1,7 +1,7 @@
 import { arrayMove } from "@/utils/array";
 import { FormNodeProps, PropertiesData } from "../types";
 import { pathToArr, deepSet, joinFormPath, deepGet } from "../../react-easy-formcore";
-import { isEmpty } from "@/utils/type";
+import { getType, isArray, isEmpty, isObject } from "@/utils/type";
 import { deepMergeObject } from "@/utils/object";
 
 // 匹配字符串表达式
@@ -66,7 +66,8 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
     const endData = temp[end];
     if (attributeName) {
       const oldData = deepGet(temp[end], attributeName);
-      if (typeof oldData === 'object' && typeof data === 'object') {
+      const isCanMerge = getType(oldData) == getType(data) && (isObject(oldData) || isArray(oldData));
+      if (isCanMerge) {
         const mergeData = deepMergeObject(oldData, data);
         temp[end] = deepSet(endData, attributeName, mergeData);
       } else {
@@ -81,7 +82,8 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
           delete temp[end];
         }
       } else {
-        temp[end] = typeof endData === 'object' && typeof data === 'object' ? deepMergeObject(endData, data) : data;
+        const isCanMerge = getType(endData) == getType(data) && (isObject(data) || isArray(data));
+        temp[end] = isCanMerge ? deepMergeObject(endData, data) : data;
       }
     }
   }
@@ -154,7 +156,7 @@ export const getItemByPath = (properties?: PropertiesData, path?: string, attrib
 
 // 根据index获取目标项
 export const getKeyValueByIndex = (properties: PropertiesData, index?: number, parent?: { path?: string; attributeName?: string }) => {
-  if (typeof properties != 'object' || typeof index !== 'number') return [];
+  if (!properties || typeof index !== 'number') return [];
   const { path, attributeName } = parent || {};
   const parentItem = getItemByPath(properties, path, attributeName);
   const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
@@ -168,11 +170,9 @@ export const getKeyValueByIndex = (properties: PropertiesData, index?: number, p
 export const toEntries = (data: any) => {
   const temp: Array<[string, any]> = [];
   const isList = data instanceof Array;
-  if (typeof data === 'object') {
-    for (let key of Object.keys(data)) {
-      const value = data[key];
-      temp.push([key, value]);
-    }
+  for (let key of Object.keys(data || {})) {
+    const value = data[key];
+    temp.push([key, value]);
   }
   return {
     isList,
@@ -184,20 +184,18 @@ export const toEntries = (data: any) => {
 const parseEntries = (entriesData?: { entries: Array<[string, any]>, isList?: boolean }) => {
   const { isList, entries = [] } = entriesData || {};
   const temp = isList ? [] : {};
-  if (typeof entries === 'object') {
-    for (let key of Object.keys(entries)) {
-      const item = entries[key];
-      const itemKey = item?.[0];
-      const itemData = item?.[1];
-      // 还原数据
-      if (isList) {
-        temp[key] = itemData;
-      } else if (typeof itemKey === 'string') {
-        temp[itemKey] = itemData;
-      }
+  for (let key of Object.keys(entries || {})) {
+    const item = entries[key];
+    const itemKey = item?.[0];
+    const itemData = item?.[1];
+    // 还原数据
+    if (isList) {
+      temp[key] = itemData;
+    } else if (typeof itemKey === 'string') {
+      temp[itemKey] = itemData;
     }
-    return temp;
   }
+  return temp;
 };
 
 // 更新指定路径的name
@@ -316,7 +314,7 @@ export const moveDiffLevel = (properties: PropertiesData, from: { parent?: strin
 
 // 提取properties中的默认值
 export const getInitialValues = (properties?: PropertiesData) => {
-  if (typeof properties !== 'object') return
+  if (!properties) return
   let initialValues = {};
   // 遍历处理对象树中的非properties字段
   const deepHandle = (formNode: FormNodeProps, path: string) => {
@@ -355,7 +353,7 @@ export const getInitialValues = (properties?: PropertiesData) => {
 
 // 展平properties中的控件，键为表单路径
 export const setExpandComponents = (properties?: PropertiesData): { [key: string]: FormNodeProps } | undefined => {
-  if (typeof properties !== 'object') return
+  if (!properties) return
   let componentsMap = {};
   // 遍历处理对象树中的非properties字段
   const deepHandle = (formNode: FormNodeProps, path: string) => {
