@@ -80,6 +80,7 @@ const operationSetting = {
 const rulesSetting = {
   rules: {
     type: 'RulesComponent',
+    compact: true,
     props: {
       includes: ['required'],
     }

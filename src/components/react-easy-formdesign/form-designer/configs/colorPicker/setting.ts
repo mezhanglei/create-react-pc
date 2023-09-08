@@ -12,6 +12,7 @@ const operationSetting = {
     props: { children: '隐藏' }
   },
   props: {
+    compact: true,
     properties: {
       disabled: {
         type: 'LinkageCheckbox',
@@ -25,6 +26,7 @@ const operationSetting = {
 const rulesSetting = {
   rules: {
     type: 'RulesComponent',
+    compact: true,
     props: {
       includes: ['required']
     }
