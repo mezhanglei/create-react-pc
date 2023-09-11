@@ -55,6 +55,12 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
   useImperativeHandle(ref, () => tableForm)
 
   const onValuesChange: FormProps['onValuesChange'] = (_, values) => {
+    for (let i = 0; i < values?.length; i++) {
+      const item = values[i];
+      if (!item?.key && item) {
+        item.key = defaultGetId('row')
+      }
+    }
     setDataSource(values)
   }
 

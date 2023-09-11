@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/SvgIcon";
 import { useTableData } from "@/components/react-easy-formdesign/form-render/utils/hooks";
-import RenderForm, { FieldChangedParams } from "../../../";
+import FormRender, { FieldChangedParams } from "../../../";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";
@@ -45,9 +45,6 @@ const classes = {
 const assembleOptions = [{
   label: '或',
   value: '||'
-}, {
-  label: '且',
-  value: '&&'
 }];
 
 /**
@@ -148,7 +145,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
             <span className={classes.itemSuffix}>时，设置为</span>
           </Col>
           <Col flex={1} style={{ width: '0' }}>
-            <RenderForm
+            <FormRender
               tagName="div"
               initialValues={{ currentControlValue: ruleItem?.['currentControlValue'] }}
               properties={{ currentControlValue: { compact: true, ...(controlField || {}) } }}
