@@ -8,13 +8,12 @@ import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";
 import CustomModal from "@/components/AntdModal";
+import { ELementProps } from "../..";
 
-export interface ControlFieldProps {
-  controlField?: any;
-}
-export interface LinkageRulesProps extends ControlFieldProps {
-  value?: string;
-  onChange?: (codeStr?: string) => void;
+export interface LinkageRulesProps {
+  controlField?: ELementProps;
+  value?: RuleData[];
+  onChange?: (codeStr?: RuleData[]) => void;
 }
 
 // 集合类型
@@ -48,6 +47,46 @@ const assembleOptions = [{
   value: '||'
 }];
 
+// 字符串转化为规则列表
+const transformToRule = (codeStr?: string) => {
+  if (typeof codeStr !== 'string' || !codeStr) return [];
+  let result: RuleData[] = [];
+  // 将字符串转换为RuleData
+  const handleStr = (str: string) => {
+    if (typeof str !== 'string') return;
+    const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配目标
+    const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配目标(不带括号)
+    if (matchStr) {
+      const item = matchStr?.split('&&');
+      const code = item[0];
+      const value = evalString(item[1]);
+      const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配assemble符号
+      result.push({ assemble: matchAssemble, code, value });
+      // 剩余的字符串继续处理
+      if (matchStrWithBracket) {
+        const restStr = str?.replace(matchStrWithBracket, '');
+        handleStr(restStr);
+      }
+    }
+  }
+  const removedBracket = codeStr?.replace(/\{\{|\}\}/g, '');
+  handleStr(removedBracket);
+  return result;
+}
+
+// 规则列表转化为字符串
+const ruleToCodeStr = (data?: RuleData[]) => {
+  let codeStr = data?.reduce((preStr, current) => {
+    const assembleStr = current?.assemble || "";
+    const conditionStr = current?.code || "";
+    const controlValue = current?.value;
+    const currentStr = conditionStr ? `(${conditionStr} && ${handleStringify(controlValue)})` : ""
+    return preStr + assembleStr + currentStr;
+  }, "");
+  codeStr = codeStr ? `{{${codeStr}}}` : "";
+  return codeStr;
+}
+
 /**
  * 联动规则设置
  */
@@ -68,50 +107,11 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
     addItem,
     updateItem,
     deleteItem
-  } = useTableData<RuleData>(initialValue, (newData) => {
-    let codeStr = newData?.reduce((preStr, current) => {
-      const assembleStr = current?.assemble || "";
-      const conditionStr = current?.code || "";
-      const controlValue = current?.value;
-      const currentStr = conditionStr ? `(${conditionStr} && ${handleStringify(controlValue)})` : ""
-      return preStr + assembleStr + currentStr;
-    }, "");
-    codeStr = codeStr ? `{{${codeStr}}}` : "";
-    onChange && onChange(codeStr);
-  });
+  } = useTableData<RuleData>(initialValue, onChange);
 
   useEffect(() => {
-    if (typeof value === 'string') {
-      const data = transformToRule(value);
-      setDataSource(data);
-    }
+    setDataSource(value || initialValue);
   }, [value])
-
-  const transformToRule = (value?: string) => {
-    if (typeof value !== 'string' || !value) return [];
-    let result: RuleData[] = [];
-    // 将字符串转换为RuleData
-    const handleStr = (str: string) => {
-      if (typeof str !== 'string') return;
-      const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配目标
-      const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配目标(不带括号)
-      if (matchStr) {
-        const item = matchStr?.split('&&');
-        const code = item[0];
-        const value = evalString[item[1]];
-        const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配assemble符号
-        result.push({ assemble: matchAssemble, code, value });
-        // 剩余的字符串继续处理
-        if (matchStrWithBracket) {
-          const restStr = str?.replace(matchStrWithBracket, '');
-          handleStr(restStr);
-        }
-      }
-    }
-    const removedBracket = value?.replace(/\{\{|\}\}/g, '');
-    handleStr(removedBracket);
-    return result;
-  }
 
   const assembleChange = (val: any, rowIndex: number) => {
     updateItem(val, rowIndex, "assemble");
@@ -178,8 +178,14 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   );
 });
 
+export interface LinkageRulesCodeStr {
+  controlField?: ELementProps;
+  value?: string;
+  onChange?: (codeStr?: string) => void;
+}
+
 // 按钮点击联动弹窗
-export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
+export const LinkageBtn = (props: LinkageRulesCodeStr & ButtonProps) => {
 
   const {
     value,
@@ -187,38 +193,37 @@ export const LinkageBtn = (props: LinkageRulesProps & ButtonProps) => {
     controlField,
   } = props;
 
-  const [codeStr, setCodeStr] = useState<string>();
+  const [ruleData, setRuleData] = useState<RuleData[]>();
 
   useEffect(() => {
     if (typeof value === 'string') {
-      setCodeStr(value)
+      setRuleData(transformToRule(value));
     } else {
-      setCodeStr(undefined)
+      setRuleData(undefined)
     }
   }, [value]);
 
   const handleOk = (closeModal: () => void) => {
     closeModal();
+    const codeStr = ruleToCodeStr(ruleData);
     onChange && onChange(codeStr)
   }
 
-  const rulesOnchange = (val?: string) => {
-    setCodeStr(val)
+  const rulesOnchange = (val?: RuleData[]) => {
+    setRuleData(val)
   }
-
-  const ruleValue = typeof value === 'string' ? value : undefined;
 
   return (
     <CustomModal className={classes.modal} title="添加联动" onOk={handleOk} displayElement={
       (showModal) => (
         <div>
-          <span>{codeStr}</span>
-          <Button type="link" className={classes.modalButton} onClick={showModal}>{codeStr ? "修改联动" : "添加联动"}</Button>
+          <span>{value}</span>
+          <Button type="link" className={classes.modalButton} onClick={showModal}>{value ? "修改联动" : "添加联动"}</Button>
         </div>
       )
     }>
       <LinkageRules
-        value={ruleValue}
+        value={ruleData}
         onChange={rulesOnchange}
         controlField={controlField}
       />
@@ -234,17 +239,19 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
     checked,
     onChange,
     children,
+    controlField = { type: 'Switch', valueProp: 'checked' },
     ...rest
   } = props;
 
-  const [codeStr, setCodeStr] = useState<string>();
+  const [ruleData, setRuleData] = useState<RuleData[]>();
   const [checkboxValue, setCheckboxValue] = useState<boolean>();
+  const editDataEmpty = ruleData?.length ? true : false;
 
   useEffect(() => {
     if (typeof value === 'boolean') {
       setCheckboxValue(value)
-    } else if (typeof codeStr === 'string') {
-      setCodeStr(value)
+    } else if (typeof value === 'string') {
+      setRuleData(transformToRule(value))
     }
   }, [value])
 
@@ -252,9 +259,10 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
   const checkboxChange = (e: CheckboxChangeEvent) => {
     const checked = e?.target?.checked;
     // 有值时切换选中状态
-    if (codeStr) {
+    if (ruleData?.length) {
       if (checked) {
         setCheckboxValue(true);
+        const codeStr = ruleToCodeStr(ruleData);
         onChange && onChange(codeStr);
       } else {
         setCheckboxValue(false);
@@ -273,13 +281,14 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
     // 选中状态则直接更改值
     if (checkboxValue) {
       setCheckboxValue(true);
+      const codeStr = ruleToCodeStr(ruleData);
       onChange && onChange(codeStr);
     }
   }
 
   // 联动值的变化
-  const rulesOnchange = (codeStr?: string) => {
-    setCodeStr(codeStr);
+  const rulesOnchange = (data?: RuleData[]) => {
+    setRuleData(data)
   }
 
   const clearCodeStr = () => {
@@ -287,10 +296,8 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
     if (checkboxValue) {
       onChange && onChange(false);
     }
-    setCodeStr(undefined);
+    setRuleData([]);
   }
-
-  const ruleValue = typeof value === 'string' ? value : undefined;
 
   return (
     <CustomModal className={classes.modal} title="添加联动" onOk={handleOk} displayElement={
@@ -300,14 +307,14 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
             {children}
           </Checkbox>
           <Icon className={classes.addIcon} onClick={showModal} name="edit" title="编辑" />
-          {codeStr && <Icon className={classes.clearIcon} onClick={clearCodeStr} title="清除" name="qingchu" />}
+          {editDataEmpty && <Icon className={classes.clearIcon} onClick={clearCodeStr} title="清除" name="qingchu" />}
         </span>
       )
     }>
       <LinkageRules
-        value={ruleValue}
+        value={ruleData}
         onChange={rulesOnchange}
-        controlField={{ type: 'Switch', valueProp: 'checked' }}
+        controlField={controlField}
       />
     </CustomModal>
   );
