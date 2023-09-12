@@ -201,11 +201,11 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
   const ignoreTag = { "data-type": "ignore" }
   // 目标套上其他组件
   const withSide = (children: any, side?: CustomUnionType, render?: CustomRenderType, commonProps?: GeneratePrams) => {
-    const keyProps = { key: commonProps?.path, };
-    const childs = typeof render === 'function' ? render?.(Object.assign({ children }, commonProps, keyProps)) : (React.isValidElement(children) ? React.cloneElement(children, keyProps) : children);
+    const childs = typeof render === 'function' ? render?.(Object.assign({ children }, commonProps)) : children;
     const sideInstance = side && formRenderStore.componentInstance(side, Object.assign({}, commonProps, ignoreTag));
-    const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, Object.assign({ children: childs }, keyProps)) : childs;
-    return childsWithSide;
+    const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, { children: childs } as Partial<unknown>) : childs;
+    const cloneChilds = React.isValidElement(childsWithSide) ? React.cloneElement(childsWithSide, { key: commonProps?.path }) : childsWithSide;
+    return cloneChilds;
   }
 
   // 生成子元素
@@ -241,30 +241,32 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     const isReadOnly = restField?.readOnly === true;
     const footerInstance = formRenderStore.componentInstance(footer, commonParams);
     const suffixInstance = formRenderStore.componentInstance(suffix, commonParams);
-    // 只读显示组件
-    const readOnlyWidget = formRenderStore.componentInstance(readOnlyRender, commonParams);
-    // 当前节点组件
-    const fieldWidget = formRenderStore.componentInstance(typeRender || { type, props }, commonParams);
-    // 节点的子组件
-    const nestChildren = renderChildren(properties, inside, commonParams)
-    const childs = haveProperties ?
-      (React.isValidElement(fieldWidget) ? React.cloneElement(fieldWidget, { children: nestChildren, key: path, } as any) : nestChildren)
-      : fieldWidget;
-    const childsWithReadOnly = isReadOnly ? readOnlyWidget : childs;
     const fieldProps = Object.assign({
-      key: path,
       name: name,
       onValuesChange: valuesCallback,
       footer: footerInstance,
       suffix: suffixInstance,
       component: component !== undefined ? formRenderStore.componentParse(component) : undefined,
     }, restField);
-    // 没有子属性则节点为表单控件, 增加Form.Item表单域收集表单值
-    const result = haveProperties ? childsWithReadOnly : (
-      <Form.Item {...fieldProps}>
-        {childsWithReadOnly}
-      </Form.Item>
-    );
+    // 只读显示组件
+    const readOnlyWidget = formRenderStore.componentInstance(readOnlyRender, commonParams);
+    if (isReadOnly) return readOnlyWidget;
+    // 当前节点组件
+    const FormNodeWidget = formRenderStore.componentInstance(typeRender || { type, props }, commonParams);
+    // 节点的子组件
+    const FormNodeChildren = renderChildren(properties, inside, commonParams)
+    let result;
+    if (haveProperties) {
+      // 不携带表单域的节点
+      result = React.isValidElement(FormNodeWidget) ? React.cloneElement(FormNodeWidget, Object.assign(fieldProps, { children: FormNodeChildren })) : FormNodeChildren
+    } else {
+      // 携带表单域的节点
+      result = (
+        <Form.Item {...fieldProps}>
+          {FormNodeWidget}
+        </Form.Item>
+      );
+    }
     return withSide(result, outside, renderItem, commonParams)
   }
 

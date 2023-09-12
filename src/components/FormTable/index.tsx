@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import './index.less';
 import SvgIcon from '@/components/SvgIcon';
 import { Form, FormProps, FormStore, joinFormPath, useFormStore } from "@/components/react-easy-formrender";
-import { defaultGetId, useTableData } from "./utils";
+import { useTableData } from "./utils";
 import { FormTableProps } from "./types";
 
 const CustomTableCell = (props: any) => {
@@ -37,8 +37,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
     ...rest
   } = props
 
-  const items = Array.from({ length: minRows || 0 });
-  const defaultValue = useMemo(() => items.map(() => ({ key: defaultGetId('row') })), [items]);
+  const defaultValue = Array.from({ length: minRows || 0 });
   const {
     dataSource: tableData,
     setDataSource,
@@ -55,12 +54,6 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
   useImperativeHandle(ref, () => tableForm)
 
   const onValuesChange: FormProps['onValuesChange'] = (_, values) => {
-    for (let i = 0; i < values?.length; i++) {
-      const item = values[i];
-      if (!item?.key && item) {
-        item.key = defaultGetId('row')
-      }
-    }
     setDataSource(values)
   }
 
@@ -70,6 +63,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
     // 更新表单的值(这里采用引用更新)
     const old = tableForm.getFieldValue() || [];
     old.splice(rowIndex, 1);
+    tableForm.setFieldsValue([...old]);
   }
 
   const addBtn = () => {
@@ -77,7 +71,9 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
       message.info(`最大行数不能超过${maxRows}`)
       return;
     }
-    addItem([{ key: defaultGetId('row') }])
+    addItem([{}])
+    const newDataSource = tableData.concat({});
+    tableForm.setFieldsValue(newDataSource);
   }
 
   const newColumns = useMemo(() => {
@@ -123,7 +119,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
       <Table
         columns={newColumns}
         dataSource={tableData}
-        rowKey="key"
+        rowKey={(_, index) => `${index}`}
         scroll={{ y: 400 }}
         components={{ body: { cell: CustomTableCell } }}
         pagination={pagination}

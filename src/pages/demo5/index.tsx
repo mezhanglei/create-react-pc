@@ -168,7 +168,7 @@ export default function Demo5(props) {
 
   return (
     <div style={{ padding: '0 8px' }}>
-      <RenderForm form={form} options={{ readOnly: false, props:{autoComplete:'off'} }} properties={properties} watch={watch} expressionImports={{ moment }} />
+      <RenderForm form={form} options={{ readOnly: false, props: { autoComplete: 'off' } }} properties={properties} watch={watch} expressionImports={{ moment }} />
       {/* <Form form={form}>
         <div>
           <p>part1</p>

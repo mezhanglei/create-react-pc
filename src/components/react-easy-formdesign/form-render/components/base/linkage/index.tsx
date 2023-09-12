@@ -20,10 +20,11 @@ export interface LinkageRulesProps extends ControlFieldProps {
 // 集合类型
 type AssembleType = '&&' | '||'
 // 规则条件的渲染数据类型
-type RuleData = [AssembleType | undefined, {
-  condition?: string;
-  currentControlValue?: any;
-}];
+type RuleData = {
+  assemble?: AssembleType;
+  code?: string;
+  value?: unknown;
+}
 
 const prefixCls = 'linkage-rules';
 const classes = {
@@ -59,7 +60,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
     ...rest
   } = props;
 
-  const initialValue: RuleData[] = [[, {}]]
+  const initialValue: RuleData[] = [{}]
 
   const {
     dataSource,
@@ -69,9 +70,9 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
     deleteItem
   } = useTableData<RuleData>(initialValue, (newData) => {
     let codeStr = newData?.reduce((preStr, current) => {
-      const assembleStr = current?.[0] || "";
-      const conditionStr = current?.[1]?.condition || "";
-      const controlValue = current?.[1]?.currentControlValue;
+      const assembleStr = current?.assemble || "";
+      const conditionStr = current?.code || "";
+      const controlValue = current?.value;
       const currentStr = conditionStr ? `(${conditionStr} && ${handleStringify(controlValue)})` : ""
       return preStr + assembleStr + currentStr;
     }, "");
@@ -81,28 +82,28 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
 
   useEffect(() => {
     if (typeof value === 'string') {
-      const data = getRulesDataFromValue(value);
+      const data = transformToRule(value);
       setDataSource(data);
     }
   }, [value])
 
-  const getRulesDataFromValue = (value?: string) => {
+  const transformToRule = (value?: string) => {
     if (typeof value !== 'string' || !value) return [];
     let result: RuleData[] = [];
     // 将字符串转换为RuleData
     const handleStr = (str: string) => {
       if (typeof str !== 'string') return;
-      const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配集合符号
-      const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配带括号的目标
-      const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配无括号的目标
-      if (matchStr && matchStrWithBracket) {
-        const splitList = matchStr?.split('&&');
-        const condition = splitList?.[0]; // 匹配问号前面的字符串, 即条件
-        const currentControlValueStr = splitList?.[1]; // 匹配问号后面的
-        const currentControlValue = currentControlValueStr && evalString(currentControlValueStr);
-        result.push([matchAssemble, { condition, currentControlValue }]);
-        const restStr = str?.replace(matchStrWithBracket, '')
-        if (restStr) {
+      const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配目标
+      const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配目标(不带括号)
+      if (matchStr) {
+        const item = matchStr?.split('&&');
+        const code = item[0];
+        const value = evalString[item[1]];
+        const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配assemble符号
+        result.push({ assemble: matchAssemble, code, value });
+        // 剩余的字符串继续处理
+        if (matchStrWithBracket) {
+          const restStr = str?.replace(matchStrWithBracket, '');
           handleStr(restStr);
         }
       }
@@ -113,20 +114,23 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   }
 
   const assembleChange = (val: any, rowIndex: number) => {
-    updateItem(val, rowIndex, "[0]");
+    updateItem(val, rowIndex, "assemble");
   }
 
-  const conditionOnchange = (val: any, rowIndex: number) => {
-    updateItem(val, rowIndex, "[1].condition");
+  const codeChange = (val: any, rowIndex: number) => {
+    updateItem(val, rowIndex, "code");
   }
 
-  const currentControlChange = ({ value }: FieldChangedParams, index: number) => {
-    updateItem(value, index, "[1].currentControlValue");
+  const valueChange = ({ value }: FieldChangedParams, index: number) => {
+    updateItem(value, index, "value");
+  }
+
+  const addNewItem = () => {
+    addItem([{ assemble: '||' }])
   }
 
   const renderItem = (item: RuleData, index: number) => {
-    const [assemble, ruleItem] = item || [];
-    const condition = ruleItem?.condition;
+    const { assemble, code, value } = item || {};
     return (
       <div key={index} className={classes.item}>
         {
@@ -139,7 +143,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
             <span className={classes.itemPrefix}>当</span>
           </Col>
           <Col span={8}>
-            <Input.TextArea placeholder="formvalues['表单字段'] == 值" value={condition} onChange={(e) => conditionOnchange(e?.target?.value, index)} />
+            <Input.TextArea placeholder="formvalues['表单字段'] == 值" value={code} onChange={(e) => codeChange(e?.target?.value, index)} />
           </Col>
           <Col span={5}>
             <span className={classes.itemSuffix}>时，设置为</span>
@@ -147,9 +151,9 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
           <Col flex={1} style={{ width: '0' }}>
             <FormRender
               tagName="div"
-              initialValues={{ currentControlValue: ruleItem?.['currentControlValue'] }}
-              properties={{ currentControlValue: { compact: true, ...(controlField || {}) } }}
-              onFieldsChange={(params) => currentControlChange(params, index)}
+              initialValues={{ controlValue: value }}
+              properties={{ controlValue: { compact: true, ...(controlField || {}) } }}
+              onFieldsChange={(params) => valueChange(params, index)}
             />
           </Col>
           <Col span={2}>
@@ -163,10 +167,6 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
         </Row>
       </div>
     )
-  }
-
-  const addNewItem = () => {
-    addItem([['||', {}]])
   }
 
   return (

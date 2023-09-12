@@ -83,6 +83,9 @@ export const ConfigComponents = {
 // 配置组件的属性区域
 export const ConfigSettings = {
   "Input": { ...InputSetting, ...DefaultFieldSetting },
+  "Input.TextArea": { ...InputSetting, ...DefaultFieldSetting },
+  "InputNumber": { ...InputSetting, ...DefaultFieldSetting },
+  "Input.Password": { ...InputSetting, ...DefaultFieldSetting },
   "Radio.Group": { ...RadioGroupSetting, ...DefaultFieldSetting },
   "Checkbox.Group": { ...CheckboxGroupSetting, ...DefaultFieldSetting },
   "Select": { ...SelectSetting, ...DefaultFieldSetting },
