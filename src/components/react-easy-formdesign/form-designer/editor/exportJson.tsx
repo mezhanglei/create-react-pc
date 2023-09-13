@@ -7,7 +7,7 @@ import { Button } from 'antd';
 import { copyToClipboard } from '@/utils/string';
 import { saveAsFile } from '@/utils/file';
 import js_beautify from 'js-beautify';
-import { EditorCodeMirror } from '../../form-render/components/base/options/editor';
+import { EditorCodeMirror } from '../../form-render/components/base/CodeMirror';
 
 export interface ExportJsonModalProps extends ModalWrapperProps {
   data?: any;

@@ -1,4 +1,4 @@
-import { Button, Col, Select, Input, Row, Checkbox, CheckboxProps, ButtonProps } from "antd";
+import { Button, Col, Select, Input, Row, Checkbox, CheckboxProps } from "antd";
 import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/SvgIcon";
@@ -185,7 +185,7 @@ export interface LinkageRulesCodeStr {
 }
 
 // 按钮点击联动弹窗
-export const LinkageBtn = (props: LinkageRulesCodeStr & ButtonProps) => {
+export const LinkageBtn = (props: LinkageRulesCodeStr) => {
 
   const {
     value,

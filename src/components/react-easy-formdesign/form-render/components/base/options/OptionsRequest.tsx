@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
 import CodeTextArea from "../CodeTextarea";
-import { EditorCodeMirrorModal } from "./editor";
 import RenderForm, { RenderFormProps, useFormStore } from "../../..";
 import { getDesignerItem, setDesignerItem } from '../../../utils/utils';
 import { useFormDesign } from '../../../utils/hooks';
+import { EditorCodeMirrorModal } from "../CodeMirror";
 
 export interface RequestResponseConfig {
   url?: string; // 请求的路径
@@ -15,7 +15,7 @@ export interface RequestResponseConfig {
   returnFn?: string | ((val: any) => any); // 解析函数字符串
 }
 
-export interface RequestSourceProps {
+export interface OptionsRequestProps {
   value?: RequestResponseConfig;
   onChange?: (val?: RequestResponseConfig) => void;
   className?: string;
@@ -35,7 +35,7 @@ const paramsTypeOptions = [
   { value: 'json', label: 'JSON' }
 ];
 
-const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, ref) => {
+const OptionsRequest = React.forwardRef<HTMLElement, OptionsRequestProps>((props, ref) => {
 
   const {
     value,
@@ -103,10 +103,9 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (!name) return;
     const oldProps = getDesignerItem(designer, selectedPath)?.props || {};
-    const newConfig = oldProps?.requestConfig || {};
+    const newConfig = oldProps?.options || {};
     newConfig[name] = value;
     onChange && onChange(newConfig);
-    setDesignerItem(designer, newConfig, selectedPath, 'props.requestConfig')
   }
 
   return (
@@ -121,4 +120,4 @@ const RequestSource = React.forwardRef<HTMLElement, RequestSourceProps>((props, 
   );
 });
 
-export default RequestSource;
+export default OptionsRequest;

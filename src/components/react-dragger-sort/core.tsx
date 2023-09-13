@@ -7,6 +7,7 @@ import { DndManager } from './manager';
 import { isMobile } from '@/utils/brower';
 import { isDisabledDrop, isDisabledSort, isDisabledDrag, isHiddenFrom, setMouseEvent, createAnimate, isMoveIn } from './utils/utils';
 import { isEqual } from '@/utils/object';
+import pickAttrs from "@/utils/pickAttrs";
 
 const ismobile = isMobile();
 
@@ -455,7 +456,7 @@ class DndSortable extends React.Component<DndSortableProps> {
     const ref = this.parentElRef;
 
     return (
-      <div ref={ref} className={cls} {...rest}>
+      <div ref={ref} className={cls} {...pickAttrs(rest)}>
         {
           React.Children.map(children, (child) => {
             if (child) {

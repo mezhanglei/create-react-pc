@@ -2,7 +2,7 @@ export default {
   configIcon: 'grid',
   configLabel: '栅格布局',
   ignore: true,
-  type: 'Grid.Row',
+  type: 'GridRow',
   includes: ['GridCol'],
   properties: {
     col1: {

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
-import { RequestResponseConfig } from './request';
 
 /**
  * 自动给目标组件某个数据来源绑定请求，默认该数据的字段为options
@@ -12,28 +11,27 @@ import { RequestResponseConfig } from './request';
 
 export function bindRequest(component: any, codeStr: string = "options") {
   const Component = component;
-  return React.forwardRef<any, { requestConfig?: RequestResponseConfig }>((props, ref) => {
-    const {
-      requestConfig,
-      ...rest
-    } = props;
+  return React.forwardRef<any, any>((props, ref) => {
+    // 目标参数
+    const target = props?.[codeStr];
+    // 是否为配置请求
+    const isRequestConfig = target instanceof Array ? false : true;
 
     const [response, setResponse] = useState<unknown>();
-
-    const {
-      url,
-      method,
-      paramsType,
-      params,
-      headers,
-      returnFn,
-    } = requestConfig || {};
 
     useEffect(() => {
       getRequest();
     }, []);
 
     const getRequest = async () => {
+      const {
+        url,
+        method,
+        paramsType,
+        params,
+        headers,
+        returnFn,
+      } = target || {};
       if (method && url) {
         const paramsKey = ['get', 'delete'].includes(method) ? 'params' : 'data';
         const data = paramsType === 'formdata' ? objectToFormData(params) : params;
@@ -46,10 +44,10 @@ export function bindRequest(component: any, codeStr: string = "options") {
       }
     }
 
-    const requestParams = requestConfig?.url && codeStr ? { [codeStr]: response } : {};
+    const configParams = isRequestConfig ? (target?.url && codeStr ? { [codeStr]: response } : {}) : { [codeStr]: target };
 
     return (
-      <Component {...rest} {...requestParams} ref={ref} />
+      <Component {...props} {...configParams} ref={ref} />
     );
   })
 }

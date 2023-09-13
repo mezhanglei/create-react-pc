@@ -41,7 +41,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   }
 
   const componentData = {
-    '布局组件': pickObject(components, ['GridRow', 'Divider', 'Alert']),
+    '布局组件': pickObject(components, ['Grid', 'Divider', 'Alert']),
     '控件组合': pickObject(components, ['FormTable']),
     '基础控件': pickObject(components, [
       "Input",

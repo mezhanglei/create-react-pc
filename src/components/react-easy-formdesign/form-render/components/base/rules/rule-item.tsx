@@ -16,6 +16,10 @@ export interface InputFormRule {
   message?: string
 }
 
+export interface RuleItemRefs {
+  showRuleModal: () => void
+}
+
 export interface RuleItemProps {
   name?: keyof InputFormRule;
   ruleName?: string;
@@ -39,7 +43,7 @@ const SelectOptions = [
   { label: '联动设置', value: 'linkage' }
 ];
 
-const RuleItem = React.forwardRef<{ showRuleModal: () => void }, RuleItemProps>((props, ref) => {
+const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
 
   const {
     ruleName,

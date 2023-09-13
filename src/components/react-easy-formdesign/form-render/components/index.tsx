@@ -22,7 +22,7 @@ import { SliderNumber } from './base/SliderNumber';
 import { bindRequest } from './base/options/bind';
 import RulesComponent from './base/rules';
 import { LinkageCheckbox } from './base/linkage';
-import { EditorCodeMirror } from './base/options/editor';
+import { EditorCodeMirror } from './base/CodeMirror';
 import RichEditor, { RichEditorModalBtn } from './base/RichEditor';
 import { RichText } from './base/RichText';
 import FormTable from './base/FormTable';

@@ -105,6 +105,6 @@ export const ConfigSettings = {
   "Alert": AlertSetting,
   "RichText": RichTextSetting,
   "RichEditor": DefaultFieldSetting,
-  "Grid.Row": GridRowSetting,
+  "GridRow": GridRowSetting,
   "GridCol": GridColSetting,
 }

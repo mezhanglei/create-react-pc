@@ -1,10 +1,11 @@
 import { Select } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-import OptionsList from './list';
-import { EditorCodeMirror } from './editor';
-import RequestSource from './request';
+import OptionsList from './OptionsList';
+import OptionsRequest from './OptionsRequest';
 import './index.less';
-import { LinkageBtn } from "../linkage";
+import OptionsLinkage from "./OptionsLinkage";
+import { EditorCodeMirror } from "../CodeMirror";
+import { getArrMap } from "@/utils/array";
 
 /**
  * 数据源的配置组件。
@@ -25,7 +26,18 @@ const classes = {
   component: `${prefixCls}-component`
 }
 
-const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((props, ref) => {
+const OptionsComponents = [
+  { value: 'list', label: '选项数据', component: OptionsList },
+  { value: 'json', label: '静态数据', component: EditorCodeMirror },
+  { value: 'request', label: '接口请求', component: OptionsRequest },
+  { value: 'linkage', label: '联动设置', component: OptionsLinkage },
+]
+
+const OptionsComponentsMap = getArrMap(OptionsComponents, 'value');
+
+type OptionsTypes = (typeof OptionsComponents)[number]['value'];
+
+const OptionsComponent: React.FC<OptionsComponentProps> = (props) => {
 
   const {
     includes = ['list', 'json', 'request', 'linkage'],
@@ -34,59 +46,43 @@ const OptionsComponent = React.forwardRef<HTMLElement, OptionsComponentProps>((p
     ...rest
   } = props;
 
-  const buttons = useMemo(() => ([
-    { value: 'list', label: '选项数据' },
-    { value: 'json', label: '静态数据' },
-    { value: 'request', label: '接口请求' },
-    { value: 'linkage', label: '联动设置' },
-  ]?.filter((item) => includes?.includes(item?.value))), [includes])
+  const buttons = useMemo(() => (OptionsComponents?.filter((item) => includes?.includes(item?.value))), [includes])
 
-  const [tab, setTab] = useState<string>();
-  const [dataMap, setDataMap] = useState<any>({});
+  const [current, setCurrent] = useState<string>();
+  const [optionsDataMap, setOptionsDataMap] = useState<{ [key in OptionsTypes]: unknown }>({});
 
   // 接受外部赋值
-  const defaultTab = buttons[0]?.value;
+  const defaultKey = buttons[0]?.value;
   useEffect(() => {
-    setTab(defaultTab);
-    setDataMap({ [defaultTab]: value });
-  }, [defaultTab]);
+    setCurrent(defaultKey);
+    setOptionsDataMap({ [defaultKey]: value });
+  }, [defaultKey]);
 
   const selectTypeChange = (key?: string) => {
-    setTab(key);
+    setCurrent(key);
     if (key) {
-      onChange && onChange(dataMap[key]);
+      onChange && onChange(optionsDataMap[key]);
     }
   }
 
-  const dataChange = (key: string, data: any) => {
-    setDataMap((old: any) => ({ ...old, [key]: data }));
-    onChange && onChange(data);
-    setTab(key);
+  const handleChange = (value: unknown) => {
+    if (!current) return;
+    setOptionsDataMap((old) => ({ ...old, [current]: value }));
+    onChange && onChange(value);
   }
 
-  const ComponentMap = {
-    list: <OptionsList value={dataMap['list']} onChange={(val) => dataChange('list', val)} {...rest} />,
-    json: <EditorCodeMirror value={dataMap['json']} onChange={(val) => dataChange('json', val)} {...rest} />,
-    request: <RequestSource />,
-    linkage: <LinkageBtn
-      {...rest}
-      value={dataMap['linkage']}
-      onChange={(val) => dataChange('linkage', val)}
-      controlField={{ type: 'CodeTextArea', }} />
-  }
-
-  const Component = tab && ComponentMap[tab];
+  const Child = current && OptionsComponentsMap[current]?.component as any;
 
   return (
     <>
       <div className={classes.tab}>
-        <Select value={tab} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
+        <Select value={current} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
       </div>
       <div className={classes.component}>
-        {Component}
+        {Child ? <Child value={optionsDataMap[current]} onChange={handleChange} /> : null}
       </div>
     </>
-  );
-});
+  )
+};
 
 export default OptionsComponent;

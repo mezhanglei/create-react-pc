@@ -3,7 +3,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
 import classNames from 'classnames';
-import './editor.less';
+import './index.less';
 import { Button } from "antd";
 import { js_beautify } from 'js-beautify';
 import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";

@@ -258,7 +258,7 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
     let result;
     if (haveProperties) {
       // 不携带表单域的节点
-      result = React.isValidElement(FormNodeWidget) ? React.cloneElement(FormNodeWidget, Object.assign(fieldProps, { children: FormNodeChildren })) : FormNodeChildren
+      result = React.isValidElement(FormNodeWidget) ? React.cloneElement(FormNodeWidget, { children: FormNodeChildren } as Partial<unknown>) : FormNodeChildren
     } else {
       // 携带表单域的节点
       result = (
