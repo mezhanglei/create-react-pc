@@ -18,6 +18,7 @@ const operationSetting = {
   hidden: {
     type: 'LinkageCheckbox',
     inline: true,
+    compact: true,
     props: { children: '隐藏' }
   },
   props: {
@@ -25,16 +26,19 @@ const operationSetting = {
       disabled: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '可清除' }
       },
       allowHalf: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '可半选' }
       },
     }

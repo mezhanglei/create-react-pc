@@ -37,6 +37,7 @@ const operationSetting = {
   hidden: {
     type: 'LinkageCheckbox',
     inline: true,
+    compact: true,
     props: { children: '隐藏' }
   },
   props: {
@@ -44,11 +45,13 @@ const operationSetting = {
       plain: {
         type: 'Checkbox',
         inline: true,
+        compact: true,
         props: { children: '正文样式' }
       },
       dashed: {
         type: 'Checkbox',
         inline: true,
+        compact: true,
         props: { children: '是否虚线' }
       },
     }

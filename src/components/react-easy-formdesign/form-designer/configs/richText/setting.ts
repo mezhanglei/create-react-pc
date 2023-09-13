@@ -9,6 +9,7 @@ const operationSetting = {
   hidden: {
     type: 'LinkageCheckbox',
     inline: true,
+    compact: true,
     props: { children: '隐藏' }
   },
 }

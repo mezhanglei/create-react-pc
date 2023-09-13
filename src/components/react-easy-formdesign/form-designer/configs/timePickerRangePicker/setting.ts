@@ -53,6 +53,7 @@ const operationSetting = {
   hidden: {
     type: 'LinkageCheckbox',
     inline: true,
+    compact: true,
     props: { children: '隐藏' }
   },
   props: {
@@ -60,17 +61,20 @@ const operationSetting = {
       disabled: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         initialValue: true,
         props: { children: '可清除' }
       },
       use12Hours: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '12小时制' }
       },
     }

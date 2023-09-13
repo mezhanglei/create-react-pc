@@ -27,6 +27,7 @@ const operationSetting = {
   hidden: {
     type: 'LinkageCheckbox',
     inline: true,
+    compact: true,
     props: { children: '隐藏' }
   },
   props: {
@@ -34,6 +35,7 @@ const operationSetting = {
       disabled: {
         type: 'LinkageCheckbox',
         inline: true,
+        compact: true,
         props: { children: '禁用' }
       },
     }

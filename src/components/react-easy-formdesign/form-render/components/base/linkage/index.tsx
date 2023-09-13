@@ -110,7 +110,7 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   } = useTableData<RuleData>(initialValue, onChange);
 
   useEffect(() => {
-    setDataSource(value || initialValue);
+    setDataSource(value?.length ? value : initialValue);
   }, [value])
 
   const assembleChange = (val: any, rowIndex: number) => {

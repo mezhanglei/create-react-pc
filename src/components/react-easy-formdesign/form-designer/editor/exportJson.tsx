@@ -38,7 +38,11 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
   }
 
   const copyJson = (e: any) => {
-    copyToClipboard(JSON.stringify(data), e);
+    const codeStr = JSON.stringify(data);
+    const formatStr = codeStr && js_beautify(codeStr, {
+      indent_size: 2
+    });
+    copyToClipboard(formatStr, e);
   }
 
   const downloadJS = () => {
