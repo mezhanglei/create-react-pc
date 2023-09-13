@@ -1,7 +1,7 @@
 import { arrayMove } from "@/utils/array";
 import { FormNodeProps, PropertiesData } from "../types";
 import { pathToArr, deepSet, joinFormPath, deepGet } from "../../react-easy-formcore";
-import { getType, isArray, isEmpty, isObject } from "@/utils/type";
+import { isEmpty } from "@/utils/type";
 import { deepMergeObject } from "@/utils/object";
 
 // 匹配字符串表达式
@@ -65,14 +65,7 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
   if (end) {
     const endData = temp[end];
     if (attributeName) {
-      const oldData = deepGet(temp[end], attributeName);
-      const isCanMerge = getType(oldData) == getType(data) && (isObject(oldData) || isArray(oldData));
-      if (isCanMerge) {
-        const mergeData = deepMergeObject(oldData, data);
-        temp[end] = deepSet(endData, attributeName, mergeData);
-      } else {
-        temp[end] = deepSet(endData, attributeName, data);
-      }
+      temp[end] = deepSet(endData, attributeName, data);
     } else {
       if (data === undefined) {
         if (temp instanceof Array) {
@@ -82,8 +75,7 @@ export const updateItemByPath = (properties: PropertiesData, data?: any, path?: 
           delete temp[end];
         }
       } else {
-        const isCanMerge = getType(endData) == getType(data) && (isObject(data) || isArray(data));
-        temp[end] = isCanMerge ? deepMergeObject(endData, data) : data;
+        temp[end] = deepMergeObject(endData, data)
       }
     }
   }

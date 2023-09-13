@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
-import CodeTextArea from "../codeTextarea";
+import CodeTextArea from "../CodeTextarea";
 import { EditorCodeMirrorModal } from "./editor";
 import RenderForm, { RenderFormProps, useFormStore } from "../../..";
 import { getDesignerItem, setDesignerItem } from '../../../utils/utils';

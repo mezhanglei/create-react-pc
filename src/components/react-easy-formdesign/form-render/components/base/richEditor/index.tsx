@@ -18,19 +18,14 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
   const {
     serverURL,
     getFileUrl,
+    value,
     onChange,
   } = props;
 
-  const [content, setContent] = useState<string>();
   const BraftEditorRef = useRef<BraftEditor>(null);
-
-  useEffect(() => {
-    setContent(props?.value);
-  }, [props.value]);
 
   const onChangeEditor: BraftEditorProps['onChange'] = (state) => {
     const htmlStr = state.toHTML();
-    setContent(htmlStr);
     onChange && onChange(htmlStr);
   }
 
@@ -82,7 +77,7 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
     <BraftEditor
       ref={BraftEditorRef}
       className="rich-editor"
-      defaultValue={BraftEditor.createEditorState(props?.value)}
+      defaultValue={BraftEditor.createEditorState(value)}
       onChange={onChangeEditor}
       textAligns={['left', 'center', 'right']}
       fontSizes={[12, 14, 16, 18, 20, 24, 28, 30, 32, 36, 40, 48]}

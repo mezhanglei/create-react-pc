@@ -1,10 +1,9 @@
 import React from "react";
-import './style.less';
 import RuleItem, { RuleItemProps } from "./rule-item";
 
-const MinOrMaxComponent = React.forwardRef<HTMLDivElement, Omit<RuleItemProps, 'controlLabel' | 'controlField'>>((props, ref) => {
+const MinOrMaxComponent = React.forwardRef<HTMLDivElement, RuleItemProps>((props, ref) => {
 
-  return <RuleItem {...props} ref={ref} controlLabel="数值" controlField={{ type: 'InputNumber', props: {} }} />
+  return <RuleItem {...props} ref={ref} ruleField={{ label: '数值', type: 'InputNumber', props: {} }} />
 });
 
 export default MinOrMaxComponent;

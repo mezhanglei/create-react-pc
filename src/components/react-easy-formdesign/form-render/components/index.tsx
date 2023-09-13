@@ -14,20 +14,20 @@ import {
   Alert,
   Divider,
 } from 'antd';
-import CodeInput from './base/codeInput';
-import CodeTextArea from './base/codeTextarea';
-import ColorPicker from './base/colorPicker';
+import CodeInput from './base/CodeInput';
+import CodeTextArea from './base/CodeTextarea';
+import ColorPicker from './base/ColorPicker';
 import OptionsComponent from './base/options';
-import { SliderNumber } from './base/sliderNumber';
+import { SliderNumber } from './base/SliderNumber';
 import { bindRequest } from './base/options/bind';
 import RulesComponent from './base/rules';
 import { LinkageCheckbox } from './base/linkage';
 import { EditorCodeMirror } from './base/options/editor';
-import RichEditor, { RichEditorModalBtn } from './base/richEditor';
-import { RichText } from './base/richText';
-import FormTable from './base/formTable';
-import Collapse from './base/collapse';
-import Table, { TableBody, TableCell, TableHead, TableRow } from './base/layoutTable';
+import RichEditor, { RichEditorModalBtn } from './base/RichEditor';
+import { RichText } from './base/RichText';
+import FormTable from './base/FormTable';
+import Collapse from './base/Collapse';
+import Table, { TableBody, TableCell, TableHead, TableRow } from './base/LayoutTable';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
 import GroupExample from './groups/example';
