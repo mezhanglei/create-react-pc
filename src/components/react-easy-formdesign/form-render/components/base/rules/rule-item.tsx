@@ -65,7 +65,7 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
 
   const properties = name ? {
     selectType: {
-      label: '赋值方式',
+      label: '设置类型',
       layout: 'horizontal',
       labelWidth: 80,
       initialValue: 'handle',
@@ -100,9 +100,9 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
 
   useEffect(() => {
     setRuleValue(value);
-    setRuleModal(value);
-  }, [value])
+  }, [value]);
 
+  // 给弹窗的表单赋值
   const setRuleModal = (data?: InputFormRule) => {
     if (name && data?.[name] !== undefined) {
       const matchStr = matchExpression(data?.[name]);
@@ -110,6 +110,11 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
     } else {
       currentForm.setFieldsValue({});
     }
+  }
+
+  const clickEdit = (showModal: () => void) => {
+    showModal();
+    setRuleModal(value);
   }
 
   const handleOk = async (closeModal: () => void) => {
@@ -136,7 +141,7 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
             <label className={classes.edit}>
               {ruleName}
             </label>
-            <span ref={editRef} onClick={showModal}>
+            <span ref={editRef} onClick={() => clickEdit(showModal)}>
               <Icon className={classes.icon} title="编辑" name="edit" />
             </span>
             {name && ruleValue && <Icon className={classes.icon} onClick={clearValue} title="清除" name="qingchu" />}
