@@ -30,8 +30,8 @@ export default function RenderFormChildren(props: RenderFormChildrenProps) {
 
   const formOptions = useContext(FormOptionsContext);
   const form = useContext<FormStore>(FormStoreContext);
-  const { onValuesChange } = formOptions;
   const formRenderStore = formrender || useFormRenderStore();
+  const { onValuesChange } = formOptions;
   formRenderStore.registry('components', Object.assign({}, defaultComponents, components));
 
   const valuesCallback: ItemCoreProps['onValuesChange'] = (...args) => {

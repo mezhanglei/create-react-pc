@@ -1,6 +1,6 @@
-import { FormNodeProps } from "@/components/FormRender";
 import { ColumnType, TableProps } from "antd/lib/table";
 import { CSSProperties } from "react";
+import { FormNodeProps } from "../react-easy-formrender";
 
 export interface FormTableProps extends TableProps<any> {
   minRows?: number; // 表格默认最少行数

@@ -59,7 +59,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       message.error(`请上传正确的文件格式`)
       return Upload.LIST_IGNORE;
     }
-    if (!accept?.includes(suffix.toLowerCase())) {
+    if (!DOC_MIME_KEYS?.includes(suffix.toLowerCase())) {
       message.error(`请上传正确的文件格式: ${DOC_MIME_KEYS?.join('，')}`)
       return Upload.LIST_IGNORE;
     }
