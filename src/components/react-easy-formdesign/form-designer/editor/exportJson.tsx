@@ -8,6 +8,7 @@ import { copyToClipboard } from '@/utils/string';
 import { saveAsFile } from '@/utils/file';
 import js_beautify from 'js-beautify';
 import { EditorCodeMirror } from '../../form-render/components/CodeMirror';
+import { handleStringify } from '../../form-render/utils/utils';
 
 export interface ExportJsonModalProps extends ModalWrapperProps {
   data?: any;
@@ -35,6 +36,14 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
   const closeModal = () => {
     setModalOpen(false);
     onClose && onClose();
+  }
+
+  const copyJs = (e: any) => {
+    const codeStr = handleStringify(data);
+    const formatStr = codeStr && js_beautify(codeStr, {
+      indent_size: 2
+    });
+    copyToClipboard(formatStr, e);
   }
 
   const copyJson = (e: any) => {
@@ -73,6 +82,7 @@ export const ExportJsonModal = React.forwardRef<HTMLDivElement, ExportJsonModalP
         />
       </div>
       <div className={`${prefixCls}-footer`}>
+        <Button type='default' onClick={copyJs}>复制JS对象</Button>
         <Button type='default' onClick={copyJson}>复制JSON</Button>
         <Button type='primary' onClick={downloadJS}>导出文件</Button>
         <Button type='default' onClick={closeModal}>关闭</Button>

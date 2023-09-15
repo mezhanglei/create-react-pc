@@ -13,12 +13,6 @@ export interface FormTableProps extends TableProps<any> {
 }
 
 export interface CustomColumnType<T = any> extends ColumnType<T>, FormNodeProps {
-  key?: string;
-  title: string;
-  dataIndex: string;
-  type?: string;
-  props?: any;
   initialValue?: any;
-  render?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
   renderFormItem?: (val: unknown, record?: unknown, rowIndex?: number, colIndex?: number) => any;
 }

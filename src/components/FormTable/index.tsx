@@ -84,7 +84,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
         dataIndex: dataIndex,
         title: title,
         onCell: (record: any, rowIndex?: number) => {
-          const formControl = renderFormItem && renderFormItem(record?.[dataIndex], record);
+          const formControl = renderFormItem && typeof dataIndex == 'string' && renderFormItem(record?.[dataIndex], record);
           return {
             record,
             name: joinFormPath(rowIndex, dataIndex), // 拼接路径
