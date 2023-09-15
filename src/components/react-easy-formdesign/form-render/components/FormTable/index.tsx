@@ -15,7 +15,7 @@ export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementPr
   style?: CSSProperties;
 }
 
-export interface CustomColumnType<T = any> extends Omit<ColumnType<T>, 'includes'>, ELementProps {
+export interface CustomColumnType<T = any> extends ColumnType<T>, ELementProps {
   key?: string;
   title: string;
   dataIndex: string;

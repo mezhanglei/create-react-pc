@@ -1,9 +1,11 @@
 export default {
-  configIcon: 'grid',
-  configLabel: '栅格布局',
+  configInfo: {
+    icon: 'grid',
+    label: '栅格布局',
+    includes: ['GridCol'],
+  },
   ignore: true,
   type: 'GridRow',
-  includes: ['GridCol'],
   properties: {
     col1: {
       type: 'GridCol',

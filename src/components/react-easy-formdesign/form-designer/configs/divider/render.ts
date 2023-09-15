@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'divider',
-  configLabel: '分割线',
+  configInfo: {
+    icon: 'divider',
+    label: '分割线',
+  },
   type: 'Divider',
   ignore: true,
   labelWidth: 'auto',

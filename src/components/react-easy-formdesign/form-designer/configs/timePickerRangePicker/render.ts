@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'time-field',
-  configLabel: '时间范围',
+  configInfo: {
+    icon: 'time-field',
+    label: '时间范围',
+  },
   label: '时间范围',
   type: 'TimePicker.RangePicker',
   valueSetter: "{{(value)=> value instanceof Array && value.map((item) => typeof item === 'string' && moment(item, 'HH:mm:ss'))}}",

@@ -35,9 +35,12 @@ import { GridCol, GridRow } from './grid';
 import { CustomOptions, FormNodeProps } from '..';
 
 export interface ELementProps extends FormNodeProps, CustomOptions {
-  includes?: string[]; // 子元素限制可以添加的组件类型
-  configLabel?: string; // 配置组件的名
-  configIcon?: string; // 配置组件的图标
+  // 配置信息
+  configInfo?: {
+    label?: string; // 配置组件的名
+    icon?: string; // 配置组件的图标
+    includes?: string[]; // 子元素限制可以添加的组件类型
+  };
   properties?: { [name: string]: ELementProps } | ELementProps[] // 子元素渲染树
 }
 

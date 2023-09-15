@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'checkbox-field',
-  configLabel: '多选框',
+  configInfo: {
+    icon: 'checkbox-field',
+    label: '多选框',
+  },
   label: '多选框',
   type: 'Checkbox.Group',
   props: {

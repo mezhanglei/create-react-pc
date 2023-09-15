@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'rich-editor-field',
-  configLabel: '富文本编辑器',
+  configInfo: {
+    icon: 'rich-editor-field',
+    label: '富文本编辑器',
+  },
   label: '富文本编辑器',
   type: 'RichEditor',
   props: {

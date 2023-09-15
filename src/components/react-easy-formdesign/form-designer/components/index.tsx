@@ -32,7 +32,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
     if (attributeName) return;
     const newIndex = getSelectedIndex(selected) + 1; // 插入位置序号
     const initialField = getConfigItem(key, components, settings); // 插入的属性类型
-    const includesIds = selectedParent?.field?.includes;
+    const configInfo = selectedParent?.field?.configInfo;
+    const includesIds = configInfo?.includes;
     if (includesIds && !includesIds.includes(key)) {
       message.warning("当前不可插入")
       return;
@@ -83,7 +84,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
               >
                 {
                   Object.entries(configs || {})?.map(([key, data]) => {
-                    return <Tag key={key} data-id={key} icon={data?.configIcon} onChange={() => onChange?.(key, data)}>{data?.configLabel}</Tag>
+                    const configInfo = data?.configInfo || {};
+                    return <Tag key={key} data-id={key} icon={configInfo?.icon} onChange={() => onChange?.(key, data)}>{configInfo.label}</Tag>
                   })
                 }
               </DndSortable>

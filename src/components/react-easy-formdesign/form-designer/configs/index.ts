@@ -46,6 +46,8 @@ import AlertSetting from './alert/setting';
 import FormTable from "./formTable/render";
 import FormTableSetting from "./formTable/setting";
 import { ELementProps } from "../../form-render/components";
+// 业务组件
+import Expample from "./groups/example/render";
 
 export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
 export type ConfigSetting = { [key: string]: FormDesignData }
@@ -78,6 +80,7 @@ export const ConfigComponents = {
   "ImageUpload": ImageUpload,
   "RichEditor": RichEditor,
   "RichText": RichText,
+  "example": Expample
 }
 
 // 配置组件的属性区域

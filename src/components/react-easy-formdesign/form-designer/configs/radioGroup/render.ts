@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'radio-field',
-  configLabel: '单选框',
+  configInfo: {
+    icon: 'radio-field',
+    label: '单选框',
+  },
   label: '单选框',
   type: 'Radio.Group',
   props: {

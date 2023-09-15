@@ -1,7 +1,9 @@
 
 export default {
-  configIcon: 'alert',
-  configLabel: '提示',
+  configInfo: {
+    icon: 'alert',
+    label: '提示',
+  },
   type: 'Alert',
   ignore: true,
   labelWidth: 'auto',

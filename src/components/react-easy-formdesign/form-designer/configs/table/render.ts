@@ -1,6 +1,8 @@
 export default {
-  configIcon: 'table',
-  configLabel: '表格布局',
+  configInfo: {
+    icon: 'table',
+    label: '表格布局',
+  },
   type: 'Table',
   ignore: true,
   properties: [
