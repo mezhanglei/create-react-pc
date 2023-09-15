@@ -1,10 +1,10 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import Icon from "@/components/SvgIcon";
-import RenderForm, { useFormStore, useFormValues } from '../../../';
+import RenderForm, { useFormStore, useFormValues } from '../../';
 import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 import './rule-item.less';
 import CustomModal from "@/components/AntdModal";
-import { ELementProps } from "../..";
+import { ELementProps } from "../";
 import { LinkageBtn } from "../linkage";
 import classNames from "classnames";
 

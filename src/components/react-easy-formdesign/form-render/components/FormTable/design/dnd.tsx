@@ -4,8 +4,8 @@ import './dnd.less';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/form-render/utils/hooks';
 import { DndType } from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { GeneratePrams } from '../../../..';
-import { ELementProps } from '../../..';
+import { GeneratePrams } from '../../../';
+import { ELementProps } from '../../';
 
 export interface TableDndProps extends GeneratePrams<ELementProps> {
   children?: any;

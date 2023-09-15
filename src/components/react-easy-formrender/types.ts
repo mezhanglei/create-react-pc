@@ -43,8 +43,11 @@ export type FormNodeProps = {
 
 export type WatchHandler = (newValue: any, oldValue: any) => void
 
-// 不带form容器的渲染组件props
-export interface RenderFormChildrenProps<T = {}> {
+export interface RenderFormProps<T = {}> extends Omit<FormProps, 'form'> {
+  form?: FormStore;
+  formrender?: FormRenderStore;
+  options?: GenerateFormNodeProps<T> | ((params: GenerateFormNodeProps<T>) => GenerateFormNodeProps<T>); // 组件公共传参
+  evalPropNames?: Array<string>; // 表达式允许的字符串
   // 给字符串表达式传入外部变量
   expressionImports?: object;
   uneval?: boolean;
@@ -58,14 +61,6 @@ export interface RenderFormChildrenProps<T = {}> {
   renderItem?: CustomRenderType;
   // 渲染数据回调函数
   onPropertiesChange?: (newValue: PropertiesData, oldValue?: PropertiesData) => void;
-  formrender?: FormRenderStore;
-  options?: GenerateFormNodeProps<T> | ((params: GenerateFormNodeProps<T>) => GenerateFormNodeProps<T>); // 组件公共传参
-  evalPropNames?: Array<string>; // 表达式允许的字符串
-}
-
-// 带form容器的渲染组件props
-export interface RenderFormProps<T = {}> extends Omit<FormProps, 'form'>, RenderFormChildrenProps<T> {
-  form?: FormStore;
 };
 
 // 组件公共的参数

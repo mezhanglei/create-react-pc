@@ -1,11 +1,11 @@
 import { GridRow as BaseGridRow } from '@/components/react-easy-formrender/components/grid';
-import { GeneratePrams } from '../../../';
+import { GeneratePrams } from '../../';
 import React from 'react';
 import RowSelection from './row-selection';
 import { RowProps } from 'antd';
 import classnames from 'classnames';
 import './row.less';
-import { ELementProps } from '../..';
+import { ELementProps } from '../';
 
 // row组件
 export type CustomRowProps = RowProps & GeneratePrams<ELementProps>;

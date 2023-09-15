@@ -1,4 +1,4 @@
-import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormChildrenProps, RenderFormProps } from '@/components/react-easy-formrender';
+import RenderFormDefault, { RenderFormChildren as RenderFormChilds, RenderFormProps } from '@/components/react-easy-formrender';
 import React from 'react';
 import { registerComponents } from './components';
 import moment from 'moment';
@@ -9,8 +9,9 @@ export interface CustomOptions {
 }
 
 // RenderFormChildren
-export type CustomRenderFormChildrenProps = RenderFormChildrenProps<CustomOptions>;
-export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
+export type CustomRenderFormProps = RenderFormProps<CustomOptions>;
+
+export function RenderFormChildren(props: CustomRenderFormProps) {
   const { components, expressionImports, ...rest } = props;
   return (
     <RenderFormChilds
@@ -23,7 +24,6 @@ export function RenderFormChildren(props: CustomRenderFormChildrenProps) {
 }
 
 // RenderForm
-export type CustomRenderFormProps = RenderFormProps<CustomOptions>
 export default function FormRender(props: CustomRenderFormProps) {
   const { components, expressionImports, ...rest } = props;
   return (

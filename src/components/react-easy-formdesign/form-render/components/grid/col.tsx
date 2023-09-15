@@ -2,11 +2,11 @@ import { GridCol as BaseGridCol } from '@/components/react-easy-formrender/compo
 import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
-import { GeneratePrams } from '../../../';
+import { GeneratePrams } from '../../';
 import ColSelection from './col-selection';
 import './col.less';
 import ControlDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { ELementProps } from '../..';
+import { ELementProps } from '../';
 
 // row组件
 export type CustomColProps = ColProps & GeneratePrams<ELementProps>;

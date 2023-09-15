@@ -6,7 +6,7 @@ import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-for
 import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/form-render/utils/hooks';
 import FormTableColSetting from './column-setting';
 import { SelectedType } from '@/components/react-easy-formdesign/form-designer/designer-context';
-import { ELementProps } from '../../..';
+import { ELementProps } from '../../';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;

@@ -14,24 +14,24 @@ import {
   Alert,
   Divider,
 } from 'antd';
-import CodeInput from './base/CodeInput';
-import CodeTextArea from './base/CodeTextarea';
-import ColorPicker from './base/ColorPicker';
-import OptionsComponent from './base/options';
-import { SliderNumber } from './base/SliderNumber';
-import { bindRequest } from './base/options/bind';
-import RulesComponent from './base/rules';
-import { LinkageCheckbox } from './base/linkage';
-import { EditorCodeMirror } from './base/CodeMirror';
-import RichEditor, { RichEditorModalBtn } from './base/RichEditor';
-import { RichText } from './base/RichText';
-import FormTable from './base/FormTable';
-import Collapse from './base/Collapse';
-import Table, { TableBody, TableCell, TableHead, TableRow } from './base/LayoutTable';
+import CodeInput from './CodeInput';
+import CodeTextArea from './CodeTextarea';
+import ColorPicker from './ColorPicker';
+import OptionsComponent from './options';
+import { SliderNumber } from './SliderNumber';
+import { bindRequest } from './options/bind';
+import RulesComponent from './rules';
+import { LinkageCheckbox } from './linkage';
+import { EditorCodeMirror } from './CodeMirror';
+import RichEditor, { RichEditorModalBtn } from './RichEditor';
+import { RichText } from './RichText';
+import FormTable from './FormTable';
+import Collapse from './Collapse';
+import Table, { TableBody, TableCell, TableHead, TableRow } from './LayoutTable';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
-import GroupExample from './groups/example';
-import { GridCol, GridRow } from './base/grid';
+import GroupExample from './groups/example/index';
+import { GridCol, GridRow } from './grid';
 import { CustomOptions, FormNodeProps } from '..';
 
 export interface ELementProps extends FormNodeProps, CustomOptions {

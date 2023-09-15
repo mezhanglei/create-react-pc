@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
 import CodeTextArea from "../CodeTextarea";
-import RenderForm, { RenderFormProps, useFormStore } from "../../..";
-import { getDesignerItem, setDesignerItem } from '../../../utils/utils';
-import { useFormDesign } from '../../../utils/hooks';
+import RenderForm, { RenderFormProps, useFormStore } from "../../";
+import { getDesignerItem, setDesignerItem } from '../../utils/utils';
+import { useFormDesign } from '../../utils/hooks';
 import { EditorCodeMirrorModal } from "../CodeMirror";
 
 export interface RequestResponseConfig {

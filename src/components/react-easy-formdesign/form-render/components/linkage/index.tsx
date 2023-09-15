@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/SvgIcon";
 import { useTableData } from "@/components/react-easy-formdesign/form-render/utils/hooks";
-import FormRender, { FieldChangedParams } from "../../../";
+import FormRender, { FieldChangedParams } from "../../";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";
 import CustomModal from "@/components/AntdModal";
-import { ELementProps } from "../..";
+import { ELementProps } from "../";
 
 export interface LinkageRulesProps {
   controlField?: ELementProps;

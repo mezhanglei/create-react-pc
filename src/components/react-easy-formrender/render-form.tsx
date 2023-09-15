@@ -31,6 +31,7 @@ export default function RenderForm(props: RenderFormProps) {
         options={options}
         expressionImports={expressionImports}
         uneval={uneval}
+        form={formStore}
         formrender={formrender}
         properties={properties}
         components={components}
