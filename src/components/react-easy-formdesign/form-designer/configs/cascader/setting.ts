@@ -6,10 +6,10 @@ const baseSetting = {
   props: {
     properties: {
       options: {
-        type: 'OptionsComponent',
+        type: 'SetOptions',
         label: '选项数据',
         props: {
-          includes: ['json', 'request', 'linkage']
+          includes: ['json', 'request', 'dynamic']
         }
       },
     }
@@ -18,7 +18,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -26,25 +26,25 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '可清除' }
       },
       multiple: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '多选' }
       },
       showSearch: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '可搜索' }

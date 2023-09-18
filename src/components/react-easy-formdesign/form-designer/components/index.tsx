@@ -30,8 +30,8 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
 
   const onChange = (key: string, item: ELementProps) => {
     if (attributeName) return;
-    const newIndex = getSelectedIndex(selected) + 1; // 插入位置序号
-    const initialField = getConfigItem(key, components, settings); // 插入的属性类型
+    const newIndex = getSelectedIndex(designer, selected) + 1; // 插入位置序号
+    const initialField = getConfigItem(key, components, settings); // 提取默认值
     const configInfo = selectedParent?.field?.configInfo;
     const includesIds = configInfo?.includes;
     if (includesIds && !includesIds.includes(key)) {

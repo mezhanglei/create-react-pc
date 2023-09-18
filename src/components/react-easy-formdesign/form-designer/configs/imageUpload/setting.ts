@@ -17,7 +17,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -25,7 +25,7 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '禁用' }

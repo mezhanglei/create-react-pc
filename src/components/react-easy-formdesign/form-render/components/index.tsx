@@ -17,11 +17,11 @@ import {
 import CodeInput from './CodeInput';
 import CodeTextArea from './CodeTextarea';
 import ColorPicker from './ColorPicker';
-import OptionsComponent from './options';
+import SetOptions from './SetOptions';
 import { SliderNumber } from './SliderNumber';
-import { bindRequest } from './options/bind';
+import { bindRequest } from './SetOptions/bind';
 import RulesComponent from './rules';
-import { LinkageCheckbox } from './linkage';
+import { DynamicSettingCheckbox } from './DynamicSetting';
 import { EditorCodeMirror } from './CodeMirror';
 import RichEditor, { RichEditorModalBtn } from './RichEditor';
 import { RichText } from './RichText';
@@ -33,6 +33,7 @@ import ImageUpload from '@/components/ImageUpload';
 import GroupExample from './groups/example/index';
 import { GridCol, GridRow } from './grid';
 import { CustomOptions, FormNodeProps } from '..';
+import CustomSelect from '@/components/AntdSelect';
 
 export interface ELementProps extends FormNodeProps, CustomOptions {
   // 配置信息
@@ -63,7 +64,7 @@ export const registerComponents = {
   "DatePicker": DatePicker, // 日期控件
   "DatePicker.RangePicker": DatePicker.RangePicker, // 日期范围控件
   "Rate": Rate, // 星星评分控件
-  "Select": bindRequest(Select), // 选择控件
+  "Select": bindRequest(CustomSelect), // 选择控件
   "Select.Option": Select.Option, // 选择的选项
   "Slider": Slider, // 滑动输入项
   "Switch": Switch, // 切换组件
@@ -73,7 +74,7 @@ export const registerComponents = {
   "Alert": Alert, // 提示组件
   "Divider": Divider, // 分割线组件
   // 自定义组件
-  "OptionsComponent": OptionsComponent, // 用于显示数据源的控件
+  "SetOptions": SetOptions, // 设置options字段数据源
   "RulesComponent": RulesComponent, // 添加校验规则的控件
   "CodeInput": CodeInput, // 值的输入框
   "CodeTextArea": CodeTextArea, // 值的输入框(支持函数)
@@ -81,7 +82,7 @@ export const registerComponents = {
   "ColorPicker": ColorPicker, // 颜色选择器
   "FileUpload": FileUpload, // 文件上传
   "ImageUpload": ImageUpload, // 图片上传
-  "LinkageCheckbox": LinkageCheckbox, // 携带联动设置的checkbox
+  "DynamicSettingCheckbox": DynamicSettingCheckbox, // 携带联动设置的checkbox
   "RichEditor": RichEditor, // 富文本编辑器
   "RichText": RichText, // 富文本展示
   "RichEditorModalBtn": RichEditorModalBtn, // 富文本编辑器按钮弹窗

@@ -5,7 +5,7 @@ import { matchExpression } from "@/components/react-easy-formrender/utils/utils"
 import './rule-item.less';
 import CustomModal from "@/components/AntdModal";
 import { ELementProps } from "../";
-import { LinkageBtn } from "../linkage";
+import { DynamicSettingBtn } from "../DynamicSetting";
 import classNames from "classnames";
 
 export interface InputFormRule {
@@ -40,7 +40,7 @@ const classes = {
 
 const SelectOptions = [
   { label: '手动设置', value: 'handle' },
-  { label: '联动设置', value: 'linkage' }
+  { label: '联动设置', value: 'dynamic' }
 ];
 
 const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
@@ -75,12 +75,12 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
         options: SelectOptions
       }
     },
-    [name]: selectType === 'linkage' ? {
+    [name]: selectType === 'dynamic' ? {
       label: '联动条件',
       layout: 'horizontal',
       rules: [{ required: true, message: '请输入' }],
       labelWidth: 80,
-      typeRender: <LinkageBtn controlField={restField} />
+      typeRender: <DynamicSettingBtn controlField={restField} />
     } : {
       ...ruleField,
       rules: [{ required: true, message: '请输入' }],
@@ -106,7 +106,7 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
   const setRuleModal = (data?: InputFormRule) => {
     if (name && data?.[name] !== undefined) {
       const matchStr = matchExpression(data?.[name]);
-      currentForm.setFieldsValue({ selectType: matchStr ? 'linkage' : 'handle', ...data })
+      currentForm.setFieldsValue({ selectType: matchStr ? 'dynamic' : 'handle', ...data })
     } else {
       currentForm.setFieldsValue({});
     }

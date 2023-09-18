@@ -51,7 +51,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -59,20 +59,20 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         initialValue: true,
         props: { children: '可清除' }
       },
       use12Hours: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '12小时制' }

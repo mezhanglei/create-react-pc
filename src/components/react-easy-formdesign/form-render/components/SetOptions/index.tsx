@@ -3,71 +3,86 @@ import React, { useEffect, useMemo, useState } from "react";
 import OptionsList from './OptionsList';
 import OptionsRequest from './OptionsRequest';
 import './index.less';
-import OptionsLinkage from "./OptionsLinkage";
+import OptionsDynamicSetting from "./OptionsDynamic";
 import { EditorCodeMirror } from "../CodeMirror";
 import { getArrMap } from "@/utils/array";
+import { GeneratePrams } from "../..";
+import { ELementProps } from "..";
+import { isObject } from "@/utils/type";
+import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 
 /**
  * 数据源的配置组件。
  */
 
-export interface OptionsProps {
+export interface SetOptionsProps extends GeneratePrams<ELementProps> {
   value?: any;
   onChange?: (val: any) => void;
-}
-
-export interface OptionsComponentProps extends OptionsProps {
   includes?: string[]; // 当前可用模块
 }
 
-const prefixCls = 'option-source'
+const prefixCls = 'option-source';
 const classes = {
-  tab: `${prefixCls}-tab`,
+  type: `${prefixCls}-type`,
   component: `${prefixCls}-component`
-}
+};
 
 const OptionsComponents = [
   { value: 'list', label: '选项数据', component: OptionsList },
   { value: 'json', label: '静态数据', component: EditorCodeMirror },
   { value: 'request', label: '接口请求', component: OptionsRequest },
-  { value: 'linkage', label: '联动设置', component: OptionsLinkage },
+  { value: 'dynamic', label: '联动设置', component: OptionsDynamicSetting },
 ]
 
 const OptionsComponentsMap = getArrMap(OptionsComponents, 'value');
 
 type OptionsTypes = (typeof OptionsComponents)[number]['value'];
 
-const OptionsComponent: React.FC<OptionsComponentProps> = (props) => {
+const SetOptions: React.FC<SetOptionsProps> = (props) => {
 
   const {
-    includes = ['list', 'json', 'request', 'linkage'],
+    includes = ['list', 'json', 'request', 'dynamic'],
     value,
     onChange,
     ...rest
   } = props;
 
   const buttons = useMemo(() => (OptionsComponents?.filter((item) => includes?.includes(item?.value))), [includes])
-
-  const [current, setCurrent] = useState<string>();
-  const [optionsDataMap, setOptionsDataMap] = useState<{ [key in OptionsTypes]: unknown }>({});
-
-  // 接受外部赋值
   const defaultKey = buttons[0]?.value;
+
+  const [current, setCurrent] = useState<OptionsTypes>();
+
+  // 值对应的类型
+  const currentKey = useMemo(() => {
+    if (value instanceof Array) {
+      return 'list';
+    } else if (isObject(value)) {
+      return 'request';
+    } else if (typeof value === 'string') {
+      const matchStr = matchExpression(value);
+      if (matchStr) {
+        return 'dynamic'
+      } else {
+        return 'json'
+      }
+    }
+    return defaultKey;
+  }, [value, defaultKey]);
+
+  // 初始值
   useEffect(() => {
-    setCurrent(defaultKey);
-    setOptionsDataMap({ [defaultKey]: value });
-  }, [defaultKey]);
+    setCurrent(currentKey);
+  }, [currentKey]);
 
   const selectTypeChange = (key?: string) => {
     setCurrent(key);
     if (key) {
-      onChange && onChange(optionsDataMap[key]);
+      onChange && onChange(undefined);
     }
   }
 
   const handleChange = (value: unknown) => {
     if (!current) return;
-    setOptionsDataMap((old) => ({ ...old, [current]: value }));
     onChange && onChange(value);
   }
 
@@ -75,14 +90,14 @@ const OptionsComponent: React.FC<OptionsComponentProps> = (props) => {
 
   return (
     <>
-      <div className={classes.tab}>
+      <div className={classes.type}>
         <Select value={current} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
       </div>
       <div className={classes.component}>
-        {Child ? <Child value={optionsDataMap[current]} onChange={handleChange} /> : null}
+        {Child ? <Child value={value} onChange={handleChange} /> : null}
       </div>
     </>
-  )
+  );
 };
 
-export default OptionsComponent;
+export default SetOptions;

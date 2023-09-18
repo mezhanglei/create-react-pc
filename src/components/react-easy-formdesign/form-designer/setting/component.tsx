@@ -39,7 +39,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
   }, []);
 
   useEffect(() => {
-    asyncSettingForm(form, selected);
+    asyncSettingForm(form, designer, selected);
   }, [selectedPath, attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
@@ -79,7 +79,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
   return (
     <div ref={ref} className={cls} style={style}>
       <Form layout="vertical" form={form} onFieldsChange={onFieldsChange}>
-        <RenderFormChildren properties={nameSetting} />
+        <RenderFormChildren properties={nameSetting} uneval />
         {renderCommonList()}
       </Form>
     </div>

@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import ModalWrapper, { ModalWrapperProps } from '@/components/GlobalModal/modalWrapper';
 import { create } from '@/components/GlobalModal/createPromise';
 import { Button, Col, Row } from 'antd';
+import { PropertiesData } from '../../form-render';
 import './importModal.less';
 
 export interface ImportModalProps extends ModalWrapperProps {
-
+  data?: Array<{ img: string; name: string; data: PropertiesData }>
+  loadTemplate?: (data?: PropertiesData) => void;
 }
 
 export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((props, ref) => {
@@ -16,6 +18,8 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
     className,
     open,
     onClose,
+    data = [],
+    loadTemplate,
     ...rest
   } = props;
 
@@ -32,8 +36,8 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
   const prefixCls = 'import-modal';
   const cls = classnames(prefixCls, className);
 
-  const loadJson = (item) => {
-
+  const load = (item?: PropertiesData) => {
+    loadTemplate && loadTemplate(item);
   }
 
   return (
@@ -45,17 +49,21 @@ export const ImportModal = React.forwardRef<HTMLDivElement, ImportModalProps>((p
       {...rest}>
       <div className={`${prefixCls}-title`}>导入模板</div>
       <Row className={`${prefixCls}-body`} gutter={16}>
-        <Col className={`${prefixCls}-col`} span={6}>
-          <div className={`${prefixCls}-col-img`}>
-            <img />
-          </div>
-          <div className={`${prefixCls}-col-name`}>
-            1111
-          </div>
-          <div className={`${prefixCls}-col-cover`}>
-            <Button type='primary' onClick={() =>loadJson(1)}>加载模板</Button>
-          </div>
-        </Col>
+        {
+          data?.map((item) => (
+            <Col className={`${prefixCls}-col`} span={6}>
+              <div className={`${prefixCls}-col-img`}>
+                <img src={item?.img} />
+              </div>
+              <div className={`${prefixCls}-col-name`}>
+                {item?.name}
+              </div>
+              <div className={`${prefixCls}-col-cover`}>
+                <Button type='primary' onClick={() => load(item?.data)}>加载模板</Button>
+              </div>
+            </Col>
+          ))
+        }
       </Row>
     </ModalWrapper>
   );

@@ -11,7 +11,7 @@ const baseSetting = {
         initialValue: '请输入'
       },
       options: {
-        type: 'OptionsComponent',
+        type: 'SetOptions',
         label: '选项数据',
         props: {
         }
@@ -53,7 +53,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -61,19 +61,19 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '可清除' }
       },
       showSearch: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '可搜索' }

@@ -7,7 +7,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }

@@ -38,14 +38,16 @@ export const getNameSetting = (selected?: SelectedType) => {
 }
 
 // 获取当前选中位置序号
-export const getSelectedIndex = (selected?: SelectedType) => {
-  if (isNoSelected(selected?.path)) return -1;
+export const getSelectedIndex = (designer?: FormRenderStore, selected?: SelectedType) => {
+  if (!designer) return -1;
+  const len = Object.keys(designer.getProperties() || {}).length || 0;
+  if (isNoSelected(selected?.path)) return len;
   const index = selected?.field?.index as number;
   return typeof index === 'number' ? index : -1;
 }
 
 // 根据节点的配置返回节点的初始值
-const getSettingInitial = (setting?: ConfigSetting) => {
+export const getSettingInitial = (setting?: ConfigSetting) => {
   // 从配置表单中获取初始属性
   const expandSetting = Object.values(setting || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
@@ -55,7 +57,7 @@ const getSettingInitial = (setting?: ConfigSetting) => {
   return initialValues;
 }
 
-// 根据配置键名获取配置
+// 根据配置键名获取默认值
 export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settings?: ConfigSettingsType) => {
   if (!key || !components) return;
   const item = components[key];
@@ -135,14 +137,12 @@ export const setDesignerFormValue = (designerForm?: FormStore, formPath?: string
 }
 
 // 同步目标的编辑区域值到属性面板回显
-export const asyncSettingForm = (settingForm?: FormStore, selected?: SelectedType) => {
+export const asyncSettingForm = (settingForm?: FormStore, designer?: FormRenderStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
-  const field = selected?.field;
-  const attributeName = selected?.attributeName;
-  const currentField = attributeName ? deepGet(field, attributeName) : field;
+  const currentField = getDesignerItem(designer, selected?.path, selected?.attributeName);
   const endName = getPathEnd(selected?.path);
-  const settingValues = attributeName ? currentField : { ...currentField, name: endName }
-  settingForm.setFieldsValue({ ...settingValues, initialValue: currentField?.initialValue });
+  const settingValues = selected?.attributeName ? currentField : { ...currentField, name: endName };
+  settingForm.setFieldsValue({ ...settingValues });
 }
 
 // 代码编辑器执行解析字符串

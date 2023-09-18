@@ -15,7 +15,7 @@ const baseSetting = {
   },
   initialValue: {
     label: '默认值',
-    type: '{{formvalues["type"] ? formvalues["type"] : "Input"}}'
+    type: 'Input',
   },
   // === 控件自身的props的设置
   props: {
@@ -49,7 +49,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'LinkageCheckbox',
+    type: 'DynamicSetting',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -57,13 +57,13 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
-        type: 'LinkageCheckbox',
+        type: 'DynamicSetting',
         inline: true,
         compact: true,
         props: { children: '可清除' }

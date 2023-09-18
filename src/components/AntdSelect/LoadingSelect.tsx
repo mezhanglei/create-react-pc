@@ -27,6 +27,7 @@ const LoadingSelect: React.FC<LoadingSelectProps> = props => {
     onDropdownVisibleChange,
     immediate = true,
     disabledSearch,
+    options: propsOptions,
     ...rest
   } = props;
 
@@ -86,9 +87,11 @@ const LoadingSelect: React.FC<LoadingSelectProps> = props => {
     onDropdownVisibleChange && onDropdownVisibleChange(visible);
   };
 
+  const resultOptions = propsOptions || options;
+
   return (
     <BaseSelect
-      options={options}
+      options={resultOptions instanceof Array ? resultOptions : []}
       hasMore={false}
       loading={loading}
       onSearch={onSearchHandle}

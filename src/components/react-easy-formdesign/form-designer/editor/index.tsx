@@ -10,7 +10,7 @@ import Tooltip from '@/components/tooltip';
 import Icon from "@/components/SvgIcon";
 import { Button, Divider, Radio } from 'antd';
 import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer';
-import { showImportModal } from './importModal';
+import { ImportModalProps, showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
 import { updateDesignerItem } from '../../form-render/utils/utils';
@@ -35,6 +35,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   const cls = classnames(prefixCls, className);
   const [platType, setPlatType] = useState<PlatContainerProps['plat']>('pc');
   const hoverSelected = useHoverSelected();
+  const [templates, setTemplates] = useState<ImportModalProps['data']>([]);
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
@@ -42,7 +43,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
   }
 
   // 监听选中项改动
-  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ value }) => {
+  const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     // 延迟变更值
     setTimeout(() => {
       // 更新目标的initialValue
@@ -102,7 +103,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
             buttonStyle="solid"
           />
         </div>
-        <Button type='link' onClick={importJson}>导入模板</Button>
+        <Button type='link' disabled={templates?.length ? false : true} onClick={importJson}>导入模板</Button>
         <Button type='link' onClick={showPreview}>预览</Button>
         <Button type='link' onClick={clearEditor}>清空</Button>
         <Button type='link' onClick={showExportJson}>生成JSON</Button>

@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import './index.less';
 import Icon from "@/components/SvgIcon";
 import { useTableData } from "@/components/react-easy-formdesign/form-render/utils/hooks";
-import FormRender, { FieldChangedParams } from "../../";
+import FormRender, { FieldChangedParams } from "../..";
 import { evalString } from "@/utils/string";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import { handleStringify } from "@/components/react-easy-formdesign/form-render/utils/utils";
 import CustomModal from "@/components/AntdModal";
-import { ELementProps } from "../";
+import { ELementProps } from "..";
 
-export interface LinkageRulesProps {
+export interface DynamicSettingRulesProps {
   controlField?: ELementProps;
   value?: RuleData[];
   onChange?: (codeStr?: RuleData[]) => void;
@@ -25,7 +25,7 @@ type RuleData = {
   value?: unknown;
 }
 
-const prefixCls = 'linkage-rules';
+const prefixCls = 'dynamic-rules';
 const classes = {
   cls: `${prefixCls}`,
   modal: `${prefixCls}-modal`,
@@ -57,10 +57,11 @@ const transformToRule = (codeStr?: string) => {
     const matchStrWithBracket = str.match(/\((\S*.*?\s*)\)/)?.[0]; // 匹配目标
     const matchStr = str.match(/\((\S*.*?\s*)\)/)?.[1]; // 匹配目标(不带括号)
     if (matchStr) {
-      const item = matchStr?.split('&&');
-      const code = item[0];
-      const value = evalString(item[1]);
       const matchAssemble = str.match(/^\|\||^\&\&/)?.[0] as AssembleType; // 匹配assemble符号
+      const item = matchStr?.split('?');
+      const code = item[0];
+      const valueStr = matchStr.match(/(?<=\?).*(?=:)/)?.[0] as string;
+      const value = evalString(valueStr);
       result.push({ assemble: matchAssemble, code, value });
       // 剩余的字符串继续处理
       if (matchStrWithBracket) {
@@ -80,7 +81,7 @@ const ruleToCodeStr = (data?: RuleData[]) => {
     const assembleStr = current?.assemble || "";
     const conditionStr = current?.code || "";
     const controlValue = current?.value;
-    const currentStr = conditionStr ? `(${conditionStr} && ${handleStringify(controlValue)})` : ""
+    const currentStr = conditionStr ? `(${conditionStr} ? ${handleStringify(controlValue)} : undefined)` : ""
     return preStr + assembleStr + currentStr;
   }, "");
   codeStr = codeStr ? `{{${codeStr}}}` : "";
@@ -90,7 +91,7 @@ const ruleToCodeStr = (data?: RuleData[]) => {
 /**
  * 联动规则设置
  */
-export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((props, ref) => {
+export const DynamicSettingRules = React.forwardRef<HTMLElement, DynamicSettingRulesProps>((props, ref) => {
 
   const {
     value,
@@ -178,14 +179,14 @@ export const LinkageRules = React.forwardRef<HTMLElement, LinkageRulesProps>((pr
   );
 });
 
-export interface LinkageRulesCodeStr {
+export interface DynamicSettingRulesCodeStr {
   controlField?: ELementProps;
   value?: string;
   onChange?: (codeStr?: string) => void;
 }
 
 // 按钮点击联动弹窗
-export const LinkageBtn = (props: LinkageRulesCodeStr) => {
+export const DynamicSettingBtn = (props: DynamicSettingRulesCodeStr) => {
 
   const {
     value,
@@ -222,7 +223,7 @@ export const LinkageBtn = (props: LinkageRulesCodeStr) => {
         </div>
       )
     }>
-      <LinkageRules
+      <DynamicSettingRules
         value={ruleData}
         onChange={rulesOnchange}
         controlField={controlField}
@@ -232,7 +233,7 @@ export const LinkageBtn = (props: LinkageRulesCodeStr) => {
 };
 
 // checkbox点击联动弹窗
-export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { value?: boolean | string, onChange?: (val?: boolean | string) => void }) => {
+export const DynamicSettingCheckbox = (props: DynamicSettingRulesProps & CheckboxProps & { value?: boolean | string, onChange?: (val?: boolean | string) => void }) => {
 
   const {
     value,
@@ -311,7 +312,7 @@ export const LinkageCheckbox = (props: LinkageRulesProps & CheckboxProps & { val
         </span>
       )
     }>
-      <LinkageRules
+      <DynamicSettingRules
         value={ruleData}
         onChange={rulesOnchange}
         controlField={controlField}
