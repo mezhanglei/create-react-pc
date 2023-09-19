@@ -19,7 +19,7 @@ import CodeTextArea from './CodeTextarea';
 import ColorPicker from './ColorPicker';
 import SetOptions from './SetOptions';
 import { SliderNumber } from './SliderNumber';
-import { bindRequest } from './SetOptions/bind';
+import bindRequest from './SetOptions/bind';
 import RulesComponent from './rules';
 import { DynamicSettingCheckbox } from './DynamicSetting';
 import { EditorCodeMirror } from './CodeMirror';
@@ -33,7 +33,6 @@ import ImageUpload from '@/components/ImageUpload';
 import GroupExample from './groups/example/index';
 import { GridCol, GridRow } from './grid';
 import { CustomOptions, FormNodeProps } from '..';
-import CustomSelect from '@/components/AntdSelect';
 
 export interface ELementProps extends FormNodeProps, CustomOptions {
   // 配置信息
@@ -64,7 +63,7 @@ export const registerComponents = {
   "DatePicker": DatePicker, // 日期控件
   "DatePicker.RangePicker": DatePicker.RangePicker, // 日期范围控件
   "Rate": Rate, // 星星评分控件
-  "Select": bindRequest(CustomSelect), // 选择控件
+  "Select": bindRequest(Select), // 选择控件
   "Select.Option": Select.Option, // 选择的选项
   "Slider": Slider, // 滑动输入项
   "Switch": Switch, // 切换组件

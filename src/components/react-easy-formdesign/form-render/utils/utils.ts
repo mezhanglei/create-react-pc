@@ -1,7 +1,7 @@
 import { FormStore, isValidNumber } from '@/components/react-easy-formcore';
 import { FormRenderStore } from '@/components/react-easy-formrender';
 import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
-import { deepGet, deepMergeObject } from '@/utils/object';
+import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
 import { ConfigSetting, ConfigSettingsType } from '../../form-designer/configs';
@@ -70,7 +70,7 @@ export const getConfigItem = (key: string | undefined, components?: { [key: stri
 // 根据路径获取节点的值和属性
 export const getDesignerItem = (designer?: FormRenderStore, path?: string, attributeName?: string) => {
   if (isNoSelected(path) || !designer) return;
-  const item = designer.getItemByPath(path, attributeName) || {};
+  const item = designer.getItemByPath(path, attributeName);
   return item;
 }
 
@@ -137,12 +137,12 @@ export const setDesignerFormValue = (designerForm?: FormStore, formPath?: string
 }
 
 // 同步目标的编辑区域值到属性面板回显
-export const asyncSettingForm = (settingForm?: FormStore, designer?: FormRenderStore, selected?: SelectedType) => {
+export const asyncSettingForm = (settingForm?: FormStore | null, designer?: FormRenderStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
   const currentField = getDesignerItem(designer, selected?.path, selected?.attributeName);
-  const endName = getPathEnd(selected?.path);
-  const settingValues = selected?.attributeName ? currentField : { ...currentField, name: endName };
-  settingForm.setFieldsValue({ ...settingValues });
+  // 非属性节点需要该节点的字段名
+  const settingValues = selected?.attributeName ? currentField : { ...currentField, name: selected?.name };
+  settingForm.setFieldsValue(settingValues);
 }
 
 // 代码编辑器执行解析字符串

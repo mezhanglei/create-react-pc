@@ -51,7 +51,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'DynamicSetting',
+    type: 'DynamicSettingCheckbox',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -59,20 +59,20 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'DynamicSetting',
+        type: 'DynamicSettingCheckbox',
         inline: true,
         compact: true,
         props: { children: '禁用' }
       },
       allowClear: {
-        type: 'DynamicSetting',
+        type: 'DynamicSettingCheckbox',
         inline: true,
         compact: true,
         initialValue: true,
         props: { children: '可清除' }
       },
       use12Hours: {
-        type: 'DynamicSetting',
+        type: 'DynamicSettingCheckbox',
         inline: true,
         compact: true,
         props: { children: '12小时制' }

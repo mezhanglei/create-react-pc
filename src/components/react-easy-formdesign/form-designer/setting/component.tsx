@@ -38,27 +38,27 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     setEdit({ settingForm: form });
   }, []);
 
-  useEffect(() => {
-    asyncSettingForm(form, designer, selected);
-  }, [selectedPath, attributeName]);
+  // useEffect(() => {
+  //   asyncSettingForm(form, designer, selected);
+  // }, [selectedPath, attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (typeof name !== 'string') return;
     if (name == 'name') {
       designer?.updateNameByPath(value, selectedPath);
-    } else {
-      designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
-    }
-    // 非attributeName节点才存在值和selected的更新
-    if (!attributeName) {
-      if (name === 'initialValue') {
-        // 如果是值的更新则同时更新编辑区域表单
-        setDesignerFormValue(designerForm, selectedName, value);
-      } else if (name === 'name') {
-        // 更新name字段时需要同步当前选中项
+      // 选中项同步新字段
+      if (!attributeName) {
         const joinName = joinFormPath(selected?.parent?.name, value);
         const joinPath = joinFormPath(selected?.parent?.path, value);
         setEdit({ selected: { ...selected, name: joinName, path: joinPath } });
+      }
+    } else {
+      designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
+      if (!attributeName) {
+        // 同步编辑区域表单值
+        if (name === 'initialValue') {
+          setDesignerFormValue(designerForm, selectedName, value);
+        }
       }
     }
   }

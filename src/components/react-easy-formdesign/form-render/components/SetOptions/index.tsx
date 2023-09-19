@@ -1,15 +1,15 @@
 import { Select } from "antd";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import OptionsList from './OptionsList';
 import OptionsRequest from './OptionsRequest';
 import './index.less';
 import OptionsDynamicSetting from "./OptionsDynamic";
 import { EditorCodeMirror } from "../CodeMirror";
 import { getArrMap } from "@/utils/array";
-import { GeneratePrams } from "../..";
+import { GeneratePrams, joinFormPath } from "../..";
 import { ELementProps } from "..";
-import { isObject } from "@/utils/type";
-import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
+import { useFormDesign } from "../../utils/hooks";
+import { getDesignerItem } from "../../utils/utils";
 
 /**
  * 数据源的配置组件。
@@ -36,7 +36,7 @@ const OptionsComponents = [
 
 const OptionsComponentsMap = getArrMap(OptionsComponents, 'value');
 
-type OptionsTypes = (typeof OptionsComponents)[number]['value'];
+// type OptionsTypes = (typeof OptionsComponents)[number]['value'];
 
 const SetOptions: React.FC<SetOptionsProps> = (props) => {
 
@@ -44,54 +44,31 @@ const SetOptions: React.FC<SetOptionsProps> = (props) => {
     includes = ['list', 'json', 'request', 'dynamic'],
     value,
     onChange,
-    ...rest
   } = props;
 
+  const { selected, designer } = useFormDesign();
   const buttons = useMemo(() => (OptionsComponents?.filter((item) => includes?.includes(item?.value))), [includes])
   const defaultKey = buttons[0]?.value;
-
-  const [current, setCurrent] = useState<OptionsTypes>();
-
-  // 值对应的类型
-  const currentKey = useMemo(() => {
-    if (value instanceof Array) {
-      return 'list';
-    } else if (isObject(value)) {
-      return 'request';
-    } else if (typeof value === 'string') {
-      const matchStr = matchExpression(value);
-      if (matchStr) {
-        return 'dynamic'
-      } else {
-        return 'json'
-      }
-    }
-    return defaultKey;
-  }, [value, defaultKey]);
-
-  // 初始值
-  useEffect(() => {
-    setCurrent(currentKey);
-  }, [currentKey]);
+  const optionsType = getDesignerItem(designer, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType')) || defaultKey;
 
   const selectTypeChange = (key?: string) => {
-    setCurrent(key);
     if (key) {
       onChange && onChange(undefined);
+      designer?.updateItemByPath(key, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType'));
     }
   }
 
   const handleChange = (value: unknown) => {
-    if (!current) return;
+    if (!optionsType) return;
     onChange && onChange(value);
   }
 
-  const Child = current && OptionsComponentsMap[current]?.component as any;
+  const Child = optionsType && OptionsComponentsMap[optionsType]?.component as any;
 
   return (
     <>
       <div className={classes.type}>
-        <Select value={current} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
+        <Select value={optionsType} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
       </div>
       <div className={classes.component}>
         {Child ? <Child value={value} onChange={handleChange} /> : null}

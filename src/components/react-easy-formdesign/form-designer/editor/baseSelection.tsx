@@ -7,6 +7,7 @@ import { useFormDesign, useFormEdit } from '../../form-render/utils/hooks';
 import pickAttrs from '@/utils/pickAttrs';
 import { SelectedType } from '../designer-context';
 import { ELementProps } from '../../form-render/components';
+import { asyncSettingForm } from '../../form-render/utils/utils';
 
 export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
@@ -42,7 +43,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
 
   const [isOver, setIsOver] = useState<boolean>(false);
   const { setEdit } = useFormEdit();
-  const { selected, eventBus } = useFormDesign();
+  const { settingForm, selected, eventBus } = useFormDesign();
   const completePath = joinFormPath(path, attributeName) as string;
   const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
@@ -64,6 +65,8 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     setEdit({
       selected: nextSelected
     });
+    // 同步编辑区域到属性区域
+    asyncSettingForm(settingForm, designer, nextSelected);
   }
 
   const prefixCls = "editor-selection";

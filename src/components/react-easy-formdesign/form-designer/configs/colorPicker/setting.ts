@@ -7,7 +7,7 @@ const baseSetting = {
 
 const operationSetting = {
   hidden: {
-    type: 'DynamicSetting',
+    type: 'DynamicSettingCheckbox',
     inline: true,
     compact: true,
     props: { children: '隐藏' }
@@ -15,7 +15,7 @@ const operationSetting = {
   props: {
     properties: {
       disabled: {
-        type: 'DynamicSetting',
+        type: 'DynamicSettingCheckbox',
         inline: true,
         compact: true,
         props: { children: '禁用' }

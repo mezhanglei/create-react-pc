@@ -173,7 +173,7 @@ export const DynamicSettingRules = React.forwardRef<HTMLElement, DynamicSettingR
   return (
     <div className={classes.cls}>
       {
-        dataSource?.map((item, index) => renderItem(item, index))
+        dataSource instanceof Array && dataSource?.map((item, index) => renderItem(item, index))
       }
     </div>
   );

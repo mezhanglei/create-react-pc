@@ -78,7 +78,7 @@ const OptionsList = React.forwardRef<HTMLElement, OptionsListProps>((props, ref)
   return (
     <div>
       {
-        dataSource?.map((item, index) => {
+        dataSource instanceof Array && dataSource?.map((item, index) => {
           return renderItem(item, index);
         })
       }

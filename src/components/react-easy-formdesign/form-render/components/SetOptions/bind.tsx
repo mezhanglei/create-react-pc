@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
+import { isObject } from '@/utils/type';
 
 /**
  * 自动给目标组件某个数据来源绑定请求，默认该数据的字段为options
@@ -9,13 +10,13 @@ import { objectToFormData } from '@/utils/object';
  * @returns 
  */
 
-export function bindRequest(component: any, codeStr: string = "options") {
+export default function bindRequest(component: any, codeStr: string = "options") {
   const Component = component;
   return React.forwardRef<any, any>((props, ref) => {
     // 目标参数
     const target = props?.[codeStr];
     // 是否为配置请求
-    const isRequestConfig = target instanceof Array ? false : true;
+    const isRequestConfig = isObject(target) ? true : false;
 
     const [response, setResponse] = useState<unknown>();
 
@@ -44,10 +45,11 @@ export function bindRequest(component: any, codeStr: string = "options") {
       }
     }
 
-    const configParams = isRequestConfig ? (target?.url && codeStr ? { [codeStr]: response } : {}) : { [codeStr]: target };
+    const resultData = isRequestConfig ? (target?.url && codeStr ? response : undefined) : (target instanceof Array ? target : []);
+    const params = { [codeStr]: resultData };
 
     return (
-      <Component {...props} {...configParams} ref={ref} />
+      <Component {...props} {...params} ref={ref} />
     );
   })
 }
