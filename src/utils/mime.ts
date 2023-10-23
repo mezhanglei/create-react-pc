@@ -5,7 +5,7 @@
 import { isBase64 } from './type';
 
 // 从base64字符串中提取扩展名
-export function getExtensionFromBase64(base64?: string): string {
+export function getExtensionFromBase64(base64?: string) {
   if (typeof base64 !== 'string') return '';
   const matchRes = new RegExp('data:\\S+/(?<ext>.*?);base64,.*')
   const res = matchRes.exec(base64)
@@ -13,22 +13,14 @@ export function getExtensionFromBase64(base64?: string): string {
 }
 
 // 提取字符串中的后缀名， 例如：csv或者doc
-export const getUrlSuffix = (url?: string): string => {
+export const getUrlSuffix = (url?: string) => {
   if (typeof url !== 'string') return '';
   if (isBase64(url)) {
     return getExtensionFromBase64(url);
   }
   const filename = url.substring(url.lastIndexOf('/') + 1);
-  const suffix = filename ? filename.split('.').pop() : ''
+  const suffix = filename ? filename.split('.').pop() : '';
   return suffix || '';
-}
-
-// 获取文件的后缀名， 例如：csv或者doc
-export const getFileSuffix = (file?: File) => {
-  if (!file) return;
-  const filename = file.name;
-  const fileExtension = getUrlSuffix(filename);
-  return fileExtension;
 }
 
 // 文档的mime映射
@@ -76,14 +68,14 @@ export const IMAGE_MIME = {
   "jpg": "image/jpg",
   "png": "image/png",
   "webp": "image/webp",
-  "bmp": "image/bmp"
+  "bmp": "image/bmp;image/x-ms-bmp",
 }
 export const IMAGE_MIME_KEYS = Object.keys(IMAGE_MIME);
 export const IMAGE_MIME_VALUES = Object.values(IMAGE_MIME);
 
 // 是否为图片链接
 export const isImageUrl = (url?: string) => {
-  if (!url) return;
+  if (typeof url != 'string') return;
   const fileExtension = getUrlSuffix(url);
   return IMAGE_MIME_KEYS.includes(fileExtension)
 }
@@ -91,13 +83,13 @@ export const isImageUrl = (url?: string) => {
 // 是否为图片文件
 export const isImageFile = (file?: File) => {
   if (!file) return;
-  const filename = file.name;
-  const fileExtension = getUrlSuffix(filename);
-  return IMAGE_MIME_KEYS.includes(fileExtension);
+  const filetype = file.type;
+  const joinTypes = IMAGE_MIME_VALUES.join(';')
+  return joinTypes.indexOf(filetype) > -1;
 }
 
 // 是否为图片文件或路径
-export const isImageFileOrUrl = (data?: File | string) => {
+export const isImageFileOrUrl = (data: string | File) => {
   if (typeof data === 'string') {
     return isImageUrl(data)
   }
@@ -126,21 +118,21 @@ export const VIDEO_MIME_VALUES = Object.values(VIDEO_MIME);
 
 // 是否为视频链接
 export const isVideoUrl = (url?: string) => {
-  if (!url) return;
+  if (typeof url !== 'string') return;
   const fileExtension = getUrlSuffix(url);
   return VIDEO_MIME_KEYS.includes(fileExtension);
 }
 
 // 是否为视频文件
-export const isVideoFile = (file?: File) => {
+export const isVideoFile = (file: File) => {
   if (!file) return;
-  const filename = file.name;
-  const fileExtension = getUrlSuffix(filename);
-  return VIDEO_MIME_KEYS.includes(fileExtension);
+  const filetype = file.type;
+  const joinTypes = VIDEO_MIME_VALUES.join(';')
+  return joinTypes.indexOf(filetype) > -1;
 }
 
 // 是否为视频文件或路径
-export const isVideoFileOrUrl = (data?: File | string) => {
+export const isVideoFileOrUrl = (data: string | File) => {
   if (typeof data === 'string') {
     return isVideoUrl(data)
   }
