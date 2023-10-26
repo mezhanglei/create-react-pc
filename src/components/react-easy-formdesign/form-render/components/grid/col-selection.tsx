@@ -1,19 +1,18 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
 import { insertDesignItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
-import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
+import BaseSelection from '../BaseSelection';
 import classnames from 'classnames';
 import './col-selection.less';
+import { CustomColProps } from './col';
 
-export interface ColSelectionProps extends CommonSelectionProps {
-}
 /**
  * 给表单中的控件外围添加选中框
  * @param props 
  * @param ref 
  * @returns 
  */
-function ColSelection(props: ColSelectionProps, ref: any) {
+function ColSelection(props: CustomColProps, ref: any) {
   const {
     children,
     style,

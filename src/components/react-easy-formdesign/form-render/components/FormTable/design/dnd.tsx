@@ -2,12 +2,10 @@ import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/compon
 import React from 'react';
 import './dnd.less';
 import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
-import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/form-render/utils/hooks';
-import { DndType } from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { GeneratePrams } from '../../../';
-import { ELementProps } from '../../';
+import { GenerateParams } from '../../..';
+import { ELementProps } from '../..';
 
-export interface TableDndProps extends GeneratePrams<ELementProps> {
+export interface TableDndProps extends GenerateParams<ELementProps> {
   children?: any;
 }
 
@@ -17,11 +15,10 @@ function TableDnd(props: TableDndProps, ref: any) {
 
   const attributeName = `props.columns`;
   const currentPath = path;
-  const { setEdit } = useFormEdit();
-  const { settingForm, components, settings } = useFormDesign();
+  const { setDesignState, settingForm, components, settings } = field?.context || {};
 
   const removeSelect = () => {
-    setEdit({ selected: {} });
+    setDesignState({ selected: {} });
     settingForm && settingForm.reset();
   }
 
@@ -54,7 +51,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const dropIndex = to?.index || 0;
     let controlField;
     // 从侧边栏插入进来
-    if (fromCollection?.type === DndType.Components) {
+    if (fromCollection?.type === 'components') {
       const type = from?.id as string;
       controlField = getConfigItem(type, components, settings);
       // 从表单节点中插入
@@ -73,7 +70,7 @@ function TableDnd(props: TableDndProps, ref: any) {
   }
 
   const disabledDrop: DndCondition = (param) => {
-    // 禁止自定义属性被拖拽进来
+    // 如果目标来自于attributeName，则不允许放进来
     const fromCollection = param?.from?.group?.collection;
     if (fromCollection?.attributeName) {
       return true

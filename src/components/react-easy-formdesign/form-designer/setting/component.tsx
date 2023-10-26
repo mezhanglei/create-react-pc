@@ -1,10 +1,10 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { setDesignerFormValue, getNameSetting, asyncSettingForm } from '../../form-render/utils/utils';
-import { useFormDesign, useFormEdit } from '../../form-render/utils/hooks';
+import { setDesignerFormValue, getNameSetting } from '../../form-render/utils/utils';
 import './component.less';
 import CustomCollapse from '../../form-render/components/Collapse';
+import { useFormDesign } from '../hooks';
 export interface SelectedSettingProps {
   className?: string
   style?: CSSProperties
@@ -18,8 +18,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     className,
   } = props;
 
-  const { setEdit } = useFormEdit();
-  const { selected, designer, designerForm, settings } = useFormDesign();
+  const { setDesignState, selected, designer, designerForm, settings } = useFormDesign();
   const selectedPath = selected?.path;
   const selectedName = selected?.name;
   const attributeName = selected?.attributeName;
@@ -35,12 +34,8 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
   const nameSetting = useMemo(() => getNameSetting(selected), [selectedPath, attributeName]); // 表单节点字段设置
 
   useEffect(() => {
-    setEdit({ settingForm: form });
+    setDesignState({ settingForm: form });
   }, []);
-
-  // useEffect(() => {
-  //   asyncSettingForm(form, designer, selected);
-  // }, [selectedPath, attributeName]);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (typeof name !== 'string') return;
@@ -50,7 +45,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
       if (!attributeName) {
         const joinName = joinFormPath(selected?.parent?.name, value);
         const joinPath = joinFormPath(selected?.parent?.path, value);
-        setEdit({ selected: { ...selected, name: joinName, path: joinPath } });
+        setDesignState({ selected: { ...selected, name: joinName, path: joinPath } });
       }
     } else {
       designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));

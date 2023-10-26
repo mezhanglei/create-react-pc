@@ -1,20 +1,22 @@
 import { joinFormPath } from '@/components/react-easy-formcore';
 import classnames from 'classnames';
 import React, { useState } from 'react';
-import { GeneratePrams } from '../../form-render';
-import './baseSelection.less';
-import { useFormDesign, useFormEdit } from '../../form-render/utils/hooks';
+import { GenerateParams } from '../../index';
+import './index.less';
 import pickAttrs from '@/utils/pickAttrs';
-import { SelectedType } from '../designer-context';
-import { ELementProps } from '../../form-render/components';
-import { asyncSettingForm } from '../../form-render/utils/utils';
+import { ELementProps } from '../../components';
+import { asyncSettingForm } from '../../utils/utils';
 
-export type CommonSelectionProps = GeneratePrams<ELementProps> & React.HtmlHTMLAttributes<any>;
+export type SelectedType = GenerateParams<ELementProps> & {
+  setting?: ELementProps['setting']; // 当前选中项的属性
+  attributeName?: string; // 树节点中的属性路径
+};
+export type CommonSelectionProps = GenerateParams<ELementProps> & React.HtmlHTMLAttributes<any>;
 export interface EditorSelectionProps extends CommonSelectionProps {
   tools?: any[]; // 工具栏
   attributeName?: string; // 属性路径
   configLabel?: string; // 当前组件的名字
-  onChoose?: (selected?: SelectedType) => void; // 
+  onChoose?: (selected?: any) => void; // 
 }
 /**
  * 基础选择框组件
@@ -42,8 +44,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   } = props;
 
   const [isOver, setIsOver] = useState<boolean>(false);
-  const { setEdit } = useFormEdit();
-  const { settingForm, selected, eventBus } = useFormDesign();
+  const { setDesignState, settingForm, selected, eventBus } = field?.context || {};
   const completePath = joinFormPath(path, attributeName) as string;
   const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
@@ -62,10 +63,10 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       onChoose(nextSelected);
       return;
     }
-    setEdit({
+    setDesignState({
       selected: nextSelected
     });
-    // 同步编辑区域到属性区域
+    // 点击选中时同步编辑区域值到属性区域
     asyncSettingForm(settingForm, designer, nextSelected);
   }
 

@@ -1,14 +1,12 @@
 import { GridRow as BaseGridRow } from '@/components/react-easy-formrender/components/grid';
-import { GeneratePrams } from '../../';
 import React from 'react';
 import RowSelection from './row-selection';
 import { RowProps } from 'antd';
 import classnames from 'classnames';
 import './row.less';
-import { ELementProps } from '../';
+import { CommonSelectionProps } from '../BaseSelection';
 
-// row组件
-export type CustomRowProps = RowProps & GeneratePrams<ELementProps>;
+export type CustomRowProps = RowProps & CommonSelectionProps;
 
 const GridRow = React.forwardRef<any, CustomRowProps>((props, ref) => {
   const {

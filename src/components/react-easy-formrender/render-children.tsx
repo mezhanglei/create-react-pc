@@ -209,10 +209,16 @@ export default function RenderFormChildren(props: RenderFormProps) {
     return cloneChilds;
   }
 
+  // 获取合并options
+  const getMergeOptions = (field?: GenerateFormNodeProps) => {
+    const result = Object.assign({}, typeof options === 'function' ? options(field) : options, formOptions);
+    return result;
+  }
+
   // 生成子元素
   const generateChild = (name: string, path: string, field: GenerateFormNodeProps, parent?: GeneratePrams['parent']) => {
     if (field?.hidden === true || !field) return;
-    const mergeOptions = Object.assign({}, typeof options === 'function' ? options(field) : options, formOptions);
+    const mergeOptions = getMergeOptions(field);
     const mergeField = Object.assign({}, mergeOptions, field, { props: Object.assign({}, mergeOptions?.props, field?.props) })
     const commonParams = {
       name,

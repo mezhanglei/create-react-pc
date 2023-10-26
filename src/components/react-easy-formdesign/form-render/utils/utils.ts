@@ -4,9 +4,8 @@ import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender
 import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';
-import { ConfigSetting, ConfigSettingsType } from '../../form-designer/configs';
-import { SelectedType } from '../../form-designer/designer-context';
 import { ELementProps } from '../components';
+import { SelectedType } from '../components/BaseSelection';
 
 export const defaultGetId = (key?: string) => {
   return typeof key == 'string' ? `${key.replace(/\./g, '')}_${nanoid(6)}` : '';
@@ -47,7 +46,7 @@ export const getSelectedIndex = (designer?: FormRenderStore, selected?: Selected
 }
 
 // 根据节点的配置返回节点的初始值
-export const getSettingInitial = (setting?: ConfigSetting) => {
+export const getSettingInitial = (setting?: ELementProps['setting']) => {
   // 从配置表单中获取初始属性
   const expandSetting = Object.values(setting || {}).reduce((pre, cur) => {
     const result = deepMergeObject(pre, cur);
@@ -58,7 +57,7 @@ export const getSettingInitial = (setting?: ConfigSetting) => {
 }
 
 // 根据配置键名获取默认值
-export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settings?: ConfigSettingsType) => {
+export const getConfigItem = (key: string | undefined, components?: { [key: string]: ELementProps }, settings?: { [key: string]: ELementProps['setting'] }) => {
   if (!key || !components) return;
   const item = components[key];
   const itemSetting = settings?.[key];

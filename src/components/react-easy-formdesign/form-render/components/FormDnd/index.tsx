@@ -1,24 +1,18 @@
 import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
-import { GeneratePrams } from '../../form-render';
-import './dnd.less';
-import { getConfigItem, insertDesignItem } from '../../form-render/utils/utils';
-import { useFormDesign } from '../../form-render/utils/hooks';
-import { ELementProps } from '../../form-render/components';
+import './index.less';
+import { getConfigItem, insertDesignItem } from '../../utils/utils';
+import { ELementProps } from '..';
+import { GenerateParams } from '../..';
 
-// 可拖拽的区域类型
-export enum DndType {
-  Components = 'components'
-}
-
-export interface ControlDndProps extends GeneratePrams<ELementProps> {
+export interface ControlDndProps extends GenerateParams<ELementProps> {
   children?: any;
 }
 
-// 控件的拖放控制
-function ControlDnd(props: ControlDndProps, ref: any) {
-  const { children, formrender, path, ...rest } = props;
-  const { components, settings } = useFormDesign();
+// 控件的拖放区域组件
+function FormDnd(props: ControlDndProps, ref: any) {
+  const { children, formrender, path, field, ...rest } = props;
+  const { components, settings } = field?.context || {};
 
   const currentPath = path;
 
@@ -54,7 +48,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
     const dropCollection = dropGroup?.collection;
     const dropIndex = to?.index || 0;
     // 从侧边栏插入进来
-    if (fromCollection?.type === DndType.Components) {
+    if (fromCollection?.type === 'components') {
       const type = from?.id as string;
       const field = getConfigItem(type, components, settings);
       formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
@@ -64,7 +58,7 @@ function ControlDnd(props: ControlDndProps, ref: any) {
   }
 
   const disabledDrop: DndCondition = (param) => {
-    // 禁止自定义属性被拖拽进来
+    // 如果目标来自于attributeName，则不允许放进来
     const fromCollection = param?.from?.group?.collection;
     if (fromCollection?.attributeName) {
       return true
@@ -87,4 +81,4 @@ function ControlDnd(props: ControlDndProps, ref: any) {
   )
 };
 
-export default React.forwardRef(ControlDnd);
+export default React.forwardRef(FormDnd);

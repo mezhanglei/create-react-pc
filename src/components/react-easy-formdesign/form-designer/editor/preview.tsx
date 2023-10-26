@@ -8,7 +8,7 @@ import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer'
 import { Button, Radio } from 'antd';
 import { showExportJsonModal } from './exportJson';
 import { CloseOutlined } from '@ant-design/icons';
-import { FormDesignData } from '../configs';
+import { FormDesignData } from '../../form-render/components';
 
 export interface PreviewModalProps extends ModalWrapperProps {
   properties?: FormDesignData;

@@ -4,12 +4,11 @@ import { message } from 'antd';
 import './index.less';
 import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../form-render/utils/utils';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign } from '../../form-render/utils/hooks';
 import DndSortable from '@/components/react-dragger-sort';
-import { DndType } from '../editor/dnd';
 import Tag from './tag';
 import { pickObject } from '@/utils/object';
 import { ELementProps } from '../../form-render/components';
+import { useFormDesign } from '../hooks';
 
 export interface DesignComponentsProps {
   className?: string
@@ -75,7 +74,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
               <div className={`components-list-title`}>{title}</div>
               <DndSortable
                 className='elements-list'
-                collection={{ type: DndType.Components }}
+                collection={{ type: 'components' }}
                 options={{
                   disabledDrop: true,
                   hiddenFrom: false,

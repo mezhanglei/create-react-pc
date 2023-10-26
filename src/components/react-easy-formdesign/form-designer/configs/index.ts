@@ -45,13 +45,8 @@ import AlertSetting from './alert/setting';
 // 组合组件
 import FormTable from "./formTable/render";
 import FormTableSetting from "./formTable/setting";
-import { ELementProps } from "../../form-render/components";
-// 业务组件
-import Expample from "./groups/example/render";
-
-export type FormDesignData = { [key: string]: ELementProps } | ELementProps[]
-export type ConfigSetting = { [key: string]: FormDesignData }
-export type ConfigSettingsType = { [key: string]: ConfigSetting }
+// 控件组
+import Groups from "./groups";
 
 // 配置组件
 export const ConfigComponents = {
@@ -80,7 +75,7 @@ export const ConfigComponents = {
   "ImageUpload": ImageUpload,
   "RichEditor": RichEditor,
   "RichText": RichText,
-  "example": Expample
+  ...Groups.GroupsConfig
 }
 
 // 配置组件的属性区域
@@ -110,4 +105,5 @@ export const ConfigSettings = {
   "RichEditor": DefaultFieldSetting,
   "GridRow": GridRowSetting,
   "GridCol": GridColSetting,
+  ...Groups.GroupsSetting
 }

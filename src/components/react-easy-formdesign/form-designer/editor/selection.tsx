@@ -1,7 +1,7 @@
 import { insertDesignItem } from '../../form-render/utils/utils';
 import React, { CSSProperties } from 'react';
 import Icon from '@/components/SvgIcon';
-import BaseSelection, { CommonSelectionProps } from './baseSelection';
+import BaseSelection, { CommonSelectionProps } from '../../form-render/components/BaseSelection';
 
 export interface ControlSelectionProps extends CommonSelectionProps {
   children?: any;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomUnionType, FormComponent, GeneratePrams } from "../types";
+import { CustomUnionType, FormComponent, GenerateParams } from "../types";
 import { isReactComponent, isValidChildren } from "@/utils/ReactIs";
 import { isObject } from '@/utils/type';
 
@@ -23,7 +23,7 @@ export const parseComponent = (target: CustomUnionType | undefined, typeMap?: { 
 }
 
 // 生成组件实例
-export const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GeneratePrams): any => {
+export const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GenerateParams): any => {
   if (target instanceof Array) {
     return target?.map((item) => {
       return createInstance(item, typeMap, commonProps);

@@ -2,14 +2,12 @@ import { GridCol as BaseGridCol } from '@/components/react-easy-formrender/compo
 import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
-import { GeneratePrams } from '../../';
 import ColSelection from './col-selection';
 import './col.less';
-import ControlDnd from '@/components/react-easy-formdesign/form-designer/editor/dnd';
-import { ELementProps } from '../';
+import FormDnd from '../FormDnd';
+import { CommonSelectionProps } from '../BaseSelection';
 
-// row组件
-export type CustomColProps = ColProps & GeneratePrams<ELementProps>;
+export type CustomColProps = ColProps & CommonSelectionProps;
 // col组件
 const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   const {
@@ -30,9 +28,9 @@ const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
     <BaseGridCol ref={ref} style={style} className={cls} {...rest}>
       {isEditor ?
         <ColSelection {...rest}>
-          <ControlDnd {...rest}>
+          <FormDnd {...rest}>
             {children}
-          </ControlDnd>
+          </FormDnd>
         </ColSelection>
         :
         children

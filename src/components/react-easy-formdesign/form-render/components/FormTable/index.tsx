@@ -1,11 +1,11 @@
 import { ColumnType, TableProps } from 'antd/lib/table';
 import React, { CSSProperties } from 'react';
 import { ELementProps } from '../';
-import { GeneratePrams } from '../../';
+import { GenerateParams } from '../..';
 import DesignTable from './design/designTable';
 import FormTable from './render/formTable';
 
-export interface FormTableProps extends TableProps<any>, GeneratePrams<ELementProps> {
+export interface FormTableProps extends TableProps<any>, GenerateParams<ELementProps> {
   minRows?: number; // 表格默认最少行数
   maxRows?: number; // 表格默认最大行数
   disabled?: boolean; // 禁用

@@ -6,7 +6,6 @@ import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
 import { FormTableProps } from "..";
 import { Form } from "../../../";
-import { useFormDesign } from "@/components/react-easy-formdesign/form-render/utils/hooks";
 import { updateDesignerItem } from "@/components/react-easy-formdesign/form-render/utils/utils";
 
 const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
@@ -38,7 +37,7 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     form: rest?.form,
   }
 
-  const { designer, settingForm } = useFormDesign();
+  const { designer, settingForm } = rest?.field?.context || {};
 
   const onFieldsChange = (colIndex: number, newVal: any) => {
     // 设置初始值

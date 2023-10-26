@@ -6,16 +6,15 @@ import './index.less';
 import OptionsDynamicSetting from "./OptionsDynamic";
 import { EditorCodeMirror } from "../CodeMirror";
 import { getArrMap } from "@/utils/array";
-import { GeneratePrams, joinFormPath } from "../..";
-import { ELementProps } from "..";
-import { useFormDesign } from "../../utils/hooks";
+import { GenerateParams, joinFormPath } from "../..";
 import { getDesignerItem } from "../../utils/utils";
+import { ELementProps } from "..";
 
 /**
  * 数据源的配置组件。
  */
 
-export interface SetOptionsProps extends GeneratePrams<ELementProps> {
+export interface SetOptionsProps extends GenerateParams<ELementProps> {
   value?: any;
   onChange?: (val: any) => void;
   includes?: string[]; // 当前可用模块
@@ -44,9 +43,10 @@ const SetOptions: React.FC<SetOptionsProps> = (props) => {
     includes = ['list', 'json', 'request', 'dynamic'],
     value,
     onChange,
+    ...rest
   } = props;
 
-  const { selected, designer } = useFormDesign();
+  const { selected, designer } = rest?.field?.context || {};
   const buttons = useMemo(() => (OptionsComponents?.filter((item) => includes?.includes(item?.value))), [includes])
   const defaultKey = buttons[0]?.value;
   const optionsType = getDesignerItem(designer, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType')) || defaultKey;
@@ -71,7 +71,7 @@ const SetOptions: React.FC<SetOptionsProps> = (props) => {
         <Select value={optionsType} style={{ width: "100%" }} options={buttons} onChange={selectTypeChange} />
       </div>
       <div className={classes.component}>
-        {Child ? <Child value={value} onChange={handleChange} /> : null}
+        {Child ? <Child value={value} onChange={handleChange} {...rest} /> : null}
       </div>
     </>
   );

@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
 import CodeTextArea from "../CodeTextarea";
-import RenderForm, { RenderFormProps, useFormStore } from "../../";
-import { getDesignerItem, setDesignerItem } from '../../utils/utils';
-import { useFormDesign } from '../../utils/hooks';
+import RenderForm, { GenerateParams, RenderFormProps, useFormStore } from "../../";
+import { getDesignerItem } from '../../utils/utils';
 import { EditorCodeMirrorModal } from "../CodeMirror";
+import { ELementProps } from "..";
 
 export interface RequestResponseConfig {
   url?: string; // 请求的路径
@@ -15,7 +15,7 @@ export interface RequestResponseConfig {
   returnFn?: string | ((val: any) => any); // 解析函数字符串
 }
 
-export interface OptionsRequestProps {
+export interface OptionsRequestProps extends GenerateParams<ELementProps> {
   value?: RequestResponseConfig;
   onChange?: (val?: RequestResponseConfig) => void;
   className?: string;
@@ -41,10 +41,11 @@ const OptionsRequest = React.forwardRef<HTMLElement, OptionsRequestProps>((props
     value,
     onChange,
     className,
+    field,
     ...rest
   } = props;
 
-  const { selected, designer } = useFormDesign();
+  const { selected, designer } = field?.context || {};
   const selectedPath = selected?.path;
   const requestForm = useFormStore();
   const [properties, setProperties] = useState({

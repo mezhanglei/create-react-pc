@@ -30,10 +30,11 @@ import Collapse from './Collapse';
 import Table, { TableBody, TableCell, TableHead, TableRow } from './LayoutTable';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
-import GroupExample from './groups/example/index';
 import { GridCol, GridRow } from './grid';
 import { CustomOptions, FormNodeProps } from '..';
+import Groups from './groups/index';
 
+// 表单渲染节点的props
 export interface ELementProps extends FormNodeProps, CustomOptions {
   // 配置信息
   configInfo?: {
@@ -41,8 +42,11 @@ export interface ELementProps extends FormNodeProps, CustomOptions {
     icon?: string; // 配置组件的图标
     includes?: string[]; // 子元素限制可以添加的组件类型
   };
-  properties?: { [name: string]: ELementProps } | ELementProps[] // 子元素渲染树
+  properties?: FormDesignData;
+  setting?: { [title: string]: FormDesignData };
 }
+// 表单渲染数据的类型
+export type FormDesignData = { [key: string]: ELementProps } | ELementProps[];
 
 // 注册组件
 export const registerComponents = {
@@ -94,5 +98,5 @@ export const registerComponents = {
   "TableBody": TableBody,
   "GridRow": GridRow,
   "GridCol": GridCol,
-  "example": GroupExample,
+  ...Groups
 }

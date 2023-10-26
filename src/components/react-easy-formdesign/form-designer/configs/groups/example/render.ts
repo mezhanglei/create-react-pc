@@ -1,6 +1,6 @@
 export default {
   configInfo: {
-    icon: 'table',
+    icon: '',
     label: 'demo',
   },
   label: '',

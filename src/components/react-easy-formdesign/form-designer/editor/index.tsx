@@ -2,10 +2,9 @@ import React, { CSSProperties, useState } from 'react';
 import classnames from 'classnames';
 import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
-import ControlDnd from './dnd';
+import RootDnd from './RootDnd';
 import ComponentSelection from './selection';
 import { DesignprefixCls } from '../provider';
-import { useFormDesign, useFormEdit, useHoverSelected } from '../../form-render/utils/hooks';
 import Tooltip from '@/components/tooltip';
 import Icon from "@/components/SvgIcon";
 import { Button, Divider, Radio } from 'antd';
@@ -14,6 +13,7 @@ import { ImportModalProps, showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
 import { updateDesignerItem } from '../../form-render/utils/utils';
+import { useFormDesign, useHoverSelected } from '../hooks';
 
 export interface DesignEditorProps {
   className?: string
@@ -23,8 +23,8 @@ const prefixCls = `${DesignprefixCls}-editor`;
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const { designer, designerForm, settingForm, properties } = useFormDesign();
-  const { setEdit } = useFormEdit();
+  const designContext = useFormDesign();
+  const { setDesignState, designer, designerForm, settingForm, properties } = designContext;
 
   const {
     style,
@@ -39,7 +39,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
-    setEdit({ properties: newData });
+    setDesignState({ properties: newData });
   }
 
   // 监听选中项改动
@@ -60,7 +60,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     showPreviewModal({ properties, plat: platType });
   }
   const clearEditor = () => {
-    setEdit({ properties: undefined });
+    setDesignState({ properties: undefined });
   }
   const showExportJson = () => {
     showExportJsonModal({ data: properties, title: '渲染JSON' });
@@ -111,13 +111,13 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       <main className="editor-main">
         <PlatContainer plat={platType}>
           <RenderForm
-            options={{ isEditor: true }}
+            options={{ isEditor: true, context: designContext }}
             formrender={designer}
             form={designerForm}
             properties={properties}
             onPropertiesChange={onPropertiesChange}
             onFieldsChange={onFieldsChange}
-            inside={ControlDnd}
+            inside={RootDnd}
             renderItem={renderItem}
           />
         </PlatContainer>

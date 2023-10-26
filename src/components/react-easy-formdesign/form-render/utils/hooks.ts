@@ -1,44 +1,10 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { deepSet } from "..";
-import { FormDesignContext, FormEditContext, SelectedType } from "../../form-designer/designer-context";
-import { setExpandComponents } from "@/components/react-easy-formrender/utils/utils";
 import EventBus from "@/utils/event-bus";
+
 
 export function useEventBus() {
   return useMemo(() => new EventBus(), [])
-}
-
-// 获取当前hover的内容
-export function useHoverSelected() {
-  const context = useContext(FormDesignContext);
-  const [hoverSelected, setHoverSelected] = useState<SelectedType>();
-
-  useEffect(() => {
-    context.eventBus && context.eventBus.on('hover', (val: SelectedType) => {
-      setHoverSelected(val);
-    });
-  }, []);
-
-  return hoverSelected;
-}
-
-// 表单设计器的context
-export function useFormDesign() {
-  const context = useContext(FormDesignContext);
-  return context;
-}
-
-// 表单设计器的state
-export function useFormEdit() {
-  const context = useContext(FormEditContext);
-  return context;
-}
-
-// 表单设计器的展开的控件
-export function useExpandComponents() {
-  const { properties } = useContext(FormDesignContext);
-  const result = setExpandComponents(properties);
-  return result;
 }
 
 // 处理列表型的数据

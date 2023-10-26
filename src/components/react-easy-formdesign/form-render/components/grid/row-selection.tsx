@@ -1,19 +1,18 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
 import { insertDesignItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
-import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
+import BaseSelection from '../BaseSelection';
 import classnames from 'classnames';
 import './row-selection.less';
+import { CustomRowProps } from './row';
 
-export interface EditorSelectionProps extends CommonSelectionProps {
-}
 /**
  * 给表单中的控件外围添加选中框
  * @param props 
  * @param ref 
  * @returns 
  */
-function RowSelection(props: EditorSelectionProps, ref: any) {
+function RowSelection(props: CustomRowProps, ref: any) {
   const {
     children,
     style,

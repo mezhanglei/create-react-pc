@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, ColProps, Row, RowProps } from "antd";
-import { GeneratePrams } from '../types';
+import { GenerateParams } from '../types';
 import './grid.less';
 import classnames from 'classnames';
 
@@ -23,7 +23,7 @@ export const getColProps = (props: ColProps, inline?: boolean) => {
   }
 }
 
-export interface GridRowProps extends RowProps, GeneratePrams {
+export interface GridRowProps extends RowProps, GenerateParams {
   children: any;
 }
 // row组件
@@ -47,7 +47,7 @@ export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
   );
 });
 
-export interface GridColProps extends ColProps, GeneratePrams {
+export interface GridColProps extends ColProps, GenerateParams {
   children: any;
 }
 // col组件

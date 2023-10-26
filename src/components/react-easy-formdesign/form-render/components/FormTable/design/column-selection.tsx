@@ -2,10 +2,8 @@ import React from 'react';
 import Icon from '@/components/SvgIcon';
 import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { deepSet, pickObject } from "@/utils/object";
-import BaseSelection, { CommonSelectionProps } from '@/components/react-easy-formdesign/form-designer/editor/baseSelection';
-import { useFormDesign, useFormEdit } from '@/components/react-easy-formdesign/form-render/utils/hooks';
+import BaseSelection, { CommonSelectionProps, SelectedType } from '../../BaseSelection';
 import FormTableColSetting from './column-setting';
-import { SelectedType } from '@/components/react-easy-formdesign/form-designer/designer-context';
 import { ELementProps } from '../../';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
@@ -30,22 +28,21 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     form: designerForm,
     colIndex,
     column,
-    ...restProps
+    // ...restProps
   } = props;
 
   const columns = field?.props?.columns || [];
   const columnsPath = `props.columns`;
   const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = path;
-  const { setEdit } = useFormEdit();
-  const { settings } = useFormDesign();
+  const { setDesignState, settings } = field?.context || {};
 
   const onChoose = (val?: SelectedType) => {
     const type = column?.type;
     const appendSetting = type && settings ? settings[type] : undefined;
     const controlSetting = pickObject(appendSetting, (key) => key !== '公共属性');
     const mergeSetting = Object.assign({}, FormTableColSetting, controlSetting)
-    setEdit({
+    setDesignState({
       selected: Object.assign({ setting: mergeSetting }, val)
     });
   }
@@ -65,7 +62,7 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
 
   const deleteColumn = (e) => {
     e.stopPropagation();
-    setEdit({ selected: {} });
+    setDesignState({ selected: {} });
     designer && setDesignerItem(designer, undefined, currentPath, attributeName);
   }
 
