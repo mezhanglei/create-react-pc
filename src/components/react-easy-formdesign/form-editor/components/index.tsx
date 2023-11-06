@@ -2,34 +2,33 @@ import React, { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { message } from 'antd';
 import './index.less';
-import { getConfigItem, getSelectedIndex, insertDesignItem } from '../../form-render/utils/utils';
-import { DesignprefixCls } from '../provider';
+import { getConfigItem, getSelectedIndex, insertEditorFormItem } from '../../form-render/utils/utils';
 import DndSortable from '@/components/react-dragger-sort';
 import Tag from './tag';
 import { pickObject } from '@/utils/object';
 import { ELementProps } from '../../form-render/components';
-import { useFormDesign } from '../hooks';
+import { useFormEditor } from '../hooks';
 
-export interface DesignComponentsProps {
+export interface EditorComponentsProps {
   className?: string
   style?: CSSProperties
 }
 
-const prefixCls = `${DesignprefixCls}-components`;
-function DesignComponents(props: DesignComponentsProps, ref: any) {
+const prefixCls = `easy-form-components`;
+function EditorComponents(props: EditorComponentsProps, ref: any) {
   const {
     style,
     className,
   } = props;
 
-  const { selected, designer, components, settings } = useFormDesign();
+  const { selected, editor, components, settings } = useFormEditor();
   const selectedParent = selected?.parent;
   const attributeName = selected?.attributeName;
   const cls = classnames(prefixCls, className);
 
   const onChange = (key: string, item: ELementProps) => {
     if (attributeName) return;
-    const newIndex = getSelectedIndex(designer, selected) + 1; // 插入位置序号
+    const newIndex = getSelectedIndex(editor, selected) + 1; // 插入位置序号
     const initialField = getConfigItem(key, components, settings); // 提取默认值
     const configInfo = selectedParent?.field?.configInfo;
     const includesIds = configInfo?.includes;
@@ -37,7 +36,7 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
       message.warning("当前不可插入")
       return;
     };
-    insertDesignItem(designer, initialField, newIndex, { path: selectedParent?.path });
+    insertEditorFormItem(editor, initialField, newIndex, { path: selectedParent?.path });
   }
 
   const componentData = {
@@ -96,5 +95,5 @@ function DesignComponents(props: DesignComponentsProps, ref: any) {
   );
 };
 
-DesignComponents.displayName = 'design-components';
-export default React.forwardRef(DesignComponents);
+EditorComponents.displayName = 'editor-components';
+export default React.forwardRef(EditorComponents);

@@ -1,7 +1,7 @@
 import DndSortable, { arrayMove, DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './dnd.less';
-import { defaultGetId, getConfigItem, insertDesignItem, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
+import { defaultGetId, getConfigItem, insertEditorFormItem, setEditorFormItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { GenerateParams } from '../../..';
 import { ELementProps } from '../..';
 
@@ -15,10 +15,10 @@ function TableDnd(props: TableDndProps, ref: any) {
 
   const attributeName = `props.columns`;
   const currentPath = path;
-  const { setDesignState, settingForm, components, settings } = field?.context || {};
+  const { setContextValue, settingForm, components, settings } = field?.context || {};
 
   const removeSelect = () => {
-    setDesignState({ selected: {} });
+    setContextValue({ selected: {} });
     settingForm && settingForm.reset();
   }
 
@@ -31,7 +31,7 @@ function TableDnd(props: TableDndProps, ref: any) {
     const columns = field?.props?.columns || [];
     const oldColumns = [...columns];
     const newColumns = arrayMove(oldColumns, fromIndex, dropIndex);
-    formrender && setDesignerItem(formrender, newColumns, currentPath, attributeName);
+    formrender && setEditorFormItem(formrender, newColumns, currentPath, attributeName);
     removeSelect()
   }
 
@@ -65,7 +65,7 @@ function TableDnd(props: TableDndProps, ref: any) {
       title: controlField?.label,
       dataIndex: defaultGetId(controlField.type)
     }
-    formrender && insertDesignItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
+    formrender && insertEditorFormItem(formrender, newColumn, dropIndex, { path: currentPath, attributeName: attributeName });
     removeSelect();
   }
 

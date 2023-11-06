@@ -2,22 +2,21 @@ import React from 'react';
 import { useFormRenderStore, useFormStore } from '../../react-easy-formrender';
 import { ConfigComponents, ConfigSettings } from './configs';
 import { useEventBus } from '../form-render/utils/hooks';
-import { useSet } from './hooks';
-import { FormDesignContext } from './context';
+import { useSetContext } from './hooks';
+import { FormEditorContext } from './context';
 
 export interface ProviderProps {
   children: any;
 }
-export const DesignprefixCls = 'easy-form-design';
 function Provider(props: ProviderProps) {
 
-  const designerStore = useFormRenderStore();
-  const designerForm = useFormStore();
+  const formrender = useFormRenderStore();
+  const editorForm = useFormStore();
   const eventBus = useEventBus();
 
-  const [state, setDesignState] = useSet({
-    designerForm: designerForm,
-    designer: designerStore,
+  const context = useSetContext({
+    editorForm: editorForm,
+    editor: formrender,
     settingForm: null,
     eventBus: eventBus,
     selected: {},
@@ -36,9 +35,9 @@ function Provider(props: ProviderProps) {
   } = props;
 
   return (
-    <FormDesignContext.Provider value={Object.assign(state, { setDesignState: setDesignState })}>
+    <FormEditorContext.Provider value={context}>
       {children}
-    </FormDesignContext.Provider>
+    </FormEditorContext.Provider>
   );
 }
 

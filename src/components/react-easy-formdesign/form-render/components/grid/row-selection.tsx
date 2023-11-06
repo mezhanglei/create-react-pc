@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
-import { insertDesignItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
+import { insertEditorFormItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import BaseSelection from '../BaseSelection';
 import classnames from 'classnames';
 import './row-selection.less';
@@ -21,15 +21,15 @@ function RowSelection(props: CustomRowProps, ref: any) {
     path,
     field,
     parent,
-    formrender: designer,
-    form: designerForm,
+    formrender: editor,
+    form: editorForm,
     ...restProps
   } = props;
 
   const currentPath = path;
 
   const addCol = () => {
-    const currentItem = designer?.getItemByPath(currentPath);
+    const currentItem = editor?.getItemByPath(currentPath);
     const nextIndex = Object.keys(currentItem?.properties || {})?.length;
     const newField = {
       type: 'GridCol',
@@ -38,11 +38,11 @@ function RowSelection(props: CustomRowProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, newField, nextIndex, { path: currentPath });
+    editor && insertEditorFormItem(editor, newField, nextIndex, { path: currentPath });
   }
 
   const deleteItem = () => {
-    currentPath && designer?.delItemByPath(currentPath);
+    currentPath && editor?.delItemByPath(currentPath);
   }
 
   const prefixCls = "row-selection";

@@ -6,7 +6,7 @@ import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
 import { FormTableProps } from "..";
 import { Form } from "../../../";
-import { updateDesignerItem } from "@/components/react-easy-formdesign/form-render/utils/utils";
+import { updateEditorFormItem } from "@/components/react-easy-formdesign/form-render/utils/utils";
 
 const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
@@ -37,13 +37,13 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
     form: rest?.form,
   }
 
-  const { designer, settingForm } = rest?.field?.context || {};
+  const { editor, settingForm } = rest?.field?.context || {};
 
   const onFieldsChange = (colIndex: number, newVal: any) => {
     // 设置初始值
     setTimeout(() => {
       // 表单记录下新的initialValue值
-      updateDesignerItem(designer, { initialValue: newVal }, rest?.path, `props.columns[${colIndex}]`);
+      updateEditorFormItem(editor, { initialValue: newVal }, rest?.path, `props.columns[${colIndex}]`);
       // 回填setting表单的intialValue选项
       settingForm?.setFieldValue('initialValue', newVal);
     }, 0);

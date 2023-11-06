@@ -7,7 +7,7 @@ import OptionsDynamicSetting from "./OptionsDynamic";
 import { EditorCodeMirror } from "../CodeMirror";
 import { getArrMap } from "@/utils/array";
 import { GenerateParams, joinFormPath } from "../..";
-import { getDesignerItem } from "../../utils/utils";
+import { getEditorFormItem } from "../../utils/utils";
 import { ELementProps } from "..";
 
 /**
@@ -46,15 +46,15 @@ const SetOptions: React.FC<SetOptionsProps> = (props) => {
     ...rest
   } = props;
 
-  const { selected, designer } = rest?.field?.context || {};
+  const { selected, editor } = rest?.field?.context || {};
   const buttons = useMemo(() => (OptionsComponents?.filter((item) => includes?.includes(item?.value))), [includes])
   const defaultKey = buttons[0]?.value;
-  const optionsType = getDesignerItem(designer, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType')) || defaultKey;
+  const optionsType = getEditorFormItem(editor, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType')) || defaultKey;
 
   const selectTypeChange = (key?: string) => {
     if (key) {
       onChange && onChange(undefined);
-      designer?.updateItemByPath(key, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType'));
+      editor?.updateItemByPath(key, selected?.path, joinFormPath(selected?.attributeName, 'props.optionsType'));
     }
   }
 

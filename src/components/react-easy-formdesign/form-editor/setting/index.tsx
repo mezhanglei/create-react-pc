@@ -3,14 +3,13 @@ import classnames from 'classnames';
 import { Tabs } from 'antd';
 import ComponentSetting from './component';
 import './index.less';
-import { DesignprefixCls } from '../provider';
 
-export interface DesignSettingProps {
+export interface EditorSettingProps {
   className?: string
   style?: CSSProperties
 }
-const prefixCls = `${DesignprefixCls}-setting`;
-function DesignSetting(props: DesignSettingProps, ref: any) {
+const prefixCls = `easy-form-setting`;
+function EditorSetting(props: EditorSettingProps, ref: any) {
   const {
     style,
     className
@@ -42,5 +41,5 @@ function DesignSetting(props: DesignSettingProps, ref: any) {
   )
 };
 
-DesignSetting.displayName = 'design-setting';
-export default React.forwardRef(DesignSetting);
+EditorSetting.displayName = 'editor-setting';
+export default React.forwardRef(EditorSetting);

@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
-import { insertDesignItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
+import { insertEditorFormItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import BaseSelection from '../BaseSelection';
 import classnames from 'classnames';
 import './col-selection.less';
@@ -21,8 +21,8 @@ function ColSelection(props: CustomColProps, ref: any) {
     path,
     field,
     parent,
-    formrender: designer,
-    form: designerForm,
+    formrender: editor,
+    form: editorForm,
     ...restProps
   } = props;
 
@@ -37,11 +37,11 @@ function ColSelection(props: CustomColProps, ref: any) {
       properties: {
       }
     };
-    designer && insertDesignItem(designer, newField, nextIndex, { path: parent?.path });
+    editor && insertEditorFormItem(editor, newField, nextIndex, { path: parent?.path });
   }
 
   const deleteItem = () => {
-    currentPath && designer?.delItemByPath(currentPath);
+    currentPath && editor?.delItemByPath(currentPath);
   }
 
   const prefixCls = "col-selection";

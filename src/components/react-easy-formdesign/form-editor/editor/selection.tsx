@@ -1,4 +1,4 @@
-import { insertDesignItem } from '../../form-render/utils/utils';
+import { insertEditorFormItem } from '../../form-render/utils/utils';
 import React, { CSSProperties } from 'react';
 import Icon from '@/components/SvgIcon';
 import BaseSelection, { CommonSelectionProps } from '../../form-render/components/BaseSelection';
@@ -23,21 +23,21 @@ function ControlSelection(props: ControlSelectionProps, ref: any) {
     path,
     field,
     parent,
-    formrender: designer,
-    form: designerForm,
+    formrender: editor,
+    form: editorForm,
   } = props;
 
   const currentPath = path;
 
   const copyItem = () => {
     const nextIndex = (field?.index as number) + 1;
-    const newField = currentPath && designer?.getItemByPath(currentPath);
-    designer && insertDesignItem(designer, newField, nextIndex, { path: parent?.path });
+    const newField = currentPath && editor?.getItemByPath(currentPath);
+    editor && insertEditorFormItem(editor, newField, nextIndex, { path: parent?.path });
   }
 
   const deleteItem = (e) => {
     e.stopPropagation();
-    currentPath && designer?.delItemByPath(currentPath);
+    currentPath && editor?.delItemByPath(currentPath);
   }
 
   return (

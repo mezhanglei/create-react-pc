@@ -33,8 +33,8 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     parent,
     attributeName,
     field,
-    formrender: designer,
-    form: designerForm,
+    formrender: editor,
+    form: editorForm,
     configLabel,
     tools,
     onMouseOver,
@@ -44,7 +44,7 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
   } = props;
 
   const [isOver, setIsOver] = useState<boolean>(false);
-  const { setDesignState, settingForm, selected, eventBus } = field?.context || {};
+  const { setContextValue, settingForm, selected, eventBus } = field?.context || {};
   const completePath = joinFormPath(path, attributeName) as string;
   const currentPath = joinFormPath(selected?.path, selected?.attributeName);
   const isSelected = completePath ? completePath === currentPath : false;
@@ -63,11 +63,11 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       onChoose(nextSelected);
       return;
     }
-    setDesignState({
+    setContextValue({
       selected: nextSelected
     });
     // 点击选中时同步编辑区域值到属性区域
-    asyncSettingForm(settingForm, designer, nextSelected);
+    asyncSettingForm(settingForm, editor, nextSelected);
   }
 
   const prefixCls = "editor-selection";

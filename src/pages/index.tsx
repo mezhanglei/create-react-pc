@@ -11,8 +11,6 @@ import "slick-carousel/slick/slick-theme.css";
 import "../less/index.less";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
-// 引入图标
-import "@/icons/index.js";
 import { getUrlQuery } from "@/utils/url";
 import { clearUserInfo, initUserInfo, setToken } from "@/utils/auth";
 

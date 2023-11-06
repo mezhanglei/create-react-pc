@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from '@/components/SvgIcon';
-import { defaultGetId, setDesignerItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
+import { defaultGetId, setEditorFormItem } from '@/components/react-easy-formdesign/form-render/utils/utils';
 import { deepSet, pickObject } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps, SelectedType } from '../../BaseSelection';
 import FormTableColSetting from './column-setting';
@@ -24,8 +24,8 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     path,
     field,
     parent,
-    formrender: designer,
-    form: designerForm,
+    formrender: editor,
+    form: editorForm,
     colIndex,
     column,
     // ...restProps
@@ -35,14 +35,14 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
   const columnsPath = `props.columns`;
   const attributeName = `${columnsPath}[${colIndex}]`;
   const currentPath = path;
-  const { setDesignState, settings } = field?.context || {};
+  const { setContextValue, settings } = field?.context || {};
 
   const onChoose = (val?: SelectedType) => {
     const type = column?.type;
     const appendSetting = type && settings ? settings[type] : undefined;
     const controlSetting = pickObject(appendSetting, (key) => key !== '公共属性');
     const mergeSetting = Object.assign({}, FormTableColSetting, controlSetting)
-    setDesignState({
+    setContextValue({
       selected: Object.assign({ setting: mergeSetting }, val)
     });
   }
@@ -57,13 +57,13 @@ function ColumnSelection(props: ColumnSelectionProps, ref: any) {
     };
     oldColumns.splice(nextColIndex, 0, newColumn);
     const newField = deepSet(field, columnsPath, oldColumns);
-    designer && setDesignerItem(designer, newField, currentPath);
+    editor && setEditorFormItem(editor, newField, currentPath);
   }
 
   const deleteColumn = (e) => {
     e.stopPropagation();
-    setDesignState({ selected: {} });
-    designer && setDesignerItem(designer, undefined, currentPath, attributeName);
+    setContextValue({ selected: {} });
+    editor && setEditorFormItem(editor, undefined, currentPath, attributeName);
   }
 
   return (

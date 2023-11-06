@@ -5,9 +5,9 @@ import { ELementProps, FormDesignData } from '../form-render/components';
 import { SelectedType } from '../form-render/components/BaseSelection';
 
 // 表单编辑器的context
-export interface FormDesignContextProps {
-  designerForm?: FormStore;
-  designer?: FormRenderStore;
+export interface FormEditorContextProps {
+  editorForm?: FormStore;
+  editor?: FormRenderStore;
   settingForm?: FormStore | null;
   eventBus?: EventBus;
   selected?: SelectedType;
@@ -19,8 +19,8 @@ export interface FormDesignContextProps {
     maxStep: number;
     steps: Array<SelectedType>;
   },
-  setDesignState: (params: Partial<FormDesignContextProps>) => void
+  setContextValue: (params: Partial<FormEditorContextProps>) => void
 }
 
 // 表单状态的context
-export const FormDesignContext = React.createContext<FormDesignContextProps>({});
+export const FormEditorContext = React.createContext<FormEditorContextProps>({});

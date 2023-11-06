@@ -1,10 +1,10 @@
 import React, { CSSProperties, useEffect, useMemo } from 'react'
 import classnames from 'classnames';
 import { Form, joinFormPath, RenderFormChildren, RenderFormProps, useFormStore } from '../../form-render';
-import { setDesignerFormValue, getNameSetting } from '../../form-render/utils/utils';
+import { setEditorFormValue, getNameSetting } from '../../form-render/utils/utils';
 import './component.less';
 import CustomCollapse from '../../form-render/components/Collapse';
-import { useFormDesign } from '../hooks';
+import { useFormEditor } from '../hooks';
 export interface SelectedSettingProps {
   className?: string
   style?: CSSProperties
@@ -18,7 +18,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     className,
   } = props;
 
-  const { setDesignState, selected, designer, designerForm, settings } = useFormDesign();
+  const { setContextValue, selected, editor, editorForm, settings } = useFormEditor();
   const selectedPath = selected?.path;
   const selectedName = selected?.name;
   const attributeName = selected?.attributeName;
@@ -30,29 +30,29 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     const itemSetting = type && settings ? settings[type] : undefined;
     const selectedSetting = selected?.setting; // 如果有setting则优先
     return selectedSetting || itemSetting;
-  }, [designer, selectedPath, attributeName, settings]);
+  }, [editor, selectedPath, attributeName, settings]);
   const nameSetting = useMemo(() => getNameSetting(selected), [selectedPath, attributeName]); // 表单节点字段设置
 
   useEffect(() => {
-    setDesignState({ settingForm: form });
+    setContextValue({ settingForm: form });
   }, []);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (typeof name !== 'string') return;
     if (name == 'name') {
-      designer?.updateNameByPath(value, selectedPath);
+      editor?.updateNameByPath(value, selectedPath);
       // 选中项同步新字段
       if (!attributeName) {
         const joinName = joinFormPath(selected?.parent?.name, value);
         const joinPath = joinFormPath(selected?.parent?.path, value);
-        setDesignState({ selected: { ...selected, name: joinName, path: joinPath } });
+        setContextValue({ selected: { ...selected, name: joinName, path: joinPath } });
       }
     } else {
-      designer?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
+      editor?.updateItemByPath(value, selectedPath, joinFormPath(attributeName, name));
       if (!attributeName) {
         // 同步编辑区域表单值
         if (name === 'initialValue') {
-          setDesignerFormValue(designerForm, selectedName, value);
+          setEditorFormValue(editorForm, selectedName, value);
         }
       }
     }

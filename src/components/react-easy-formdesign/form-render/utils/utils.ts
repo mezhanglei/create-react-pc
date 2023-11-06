@@ -37,9 +37,9 @@ export const getNameSetting = (selected?: SelectedType) => {
 }
 
 // 获取当前选中位置序号
-export const getSelectedIndex = (designer?: FormRenderStore, selected?: SelectedType) => {
-  if (!designer) return -1;
-  const len = Object.keys(designer.getProperties() || {}).length || 0;
+export const getSelectedIndex = (editor?: FormRenderStore, selected?: SelectedType) => {
+  if (!editor) return -1;
+  const len = Object.keys(editor.getProperties() || {}).length || 0;
   if (isNoSelected(selected?.path)) return len;
   const index = selected?.field?.index as number;
   return typeof index === 'number' ? index : -1;
@@ -67,78 +67,78 @@ export const getConfigItem = (key: string | undefined, components?: { [key: stri
 }
 
 // 根据路径获取节点的值和属性
-export const getDesignerItem = (designer?: FormRenderStore, path?: string, attributeName?: string) => {
-  if (isNoSelected(path) || !designer) return;
-  const item = designer.getItemByPath(path, attributeName);
+export const getEditorFormItem = (editor?: FormRenderStore, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !editor) return;
+  const item = editor.getItemByPath(path, attributeName);
   return item;
 }
 
 // 插入新节点
-export const insertDesignItem = (designer?: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
-  if (!designer) return;
+export const insertEditorFormItem = (editor?: FormRenderStore, data?: ELementProps, index?: number, parent?: { path?: string, attributeName?: string }) => {
+  if (!editor) return;
   const { path, attributeName } = parent || {};
-  const parentItem = designer && designer.getItemByPath(path, attributeName);
+  const parentItem = editor && editor.getItemByPath(path, attributeName);
   const childs = attributeName ? parentItem : (path ? parentItem?.properties : parentItem);
   const isInArray = childs instanceof Array;
   if (isInArray) {
-    designer?.insertItemByIndex(data, index, parent);
+    editor?.insertItemByIndex(data, index, parent);
   } else {
     if (data?.type) {
       const newName = defaultGetId(data?.type);
       const newData = { [newName]: data };
-      designer?.insertItemByIndex(newData, index, parent);
+      editor?.insertItemByIndex(newData, index, parent);
     }
   }
 }
 
 // 更新节点的属性(不包括值)
-export const updateDesignerItem = (designer: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
-  if (isNoSelected(path) || !designer) return;
+export const updateEditorFormItem = (editor: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !editor) return;
   if (attributeName) {
     // 设置属性节点
-    designer?.updateItemByPath(data, path, attributeName);
+    editor?.updateItemByPath(data, path, attributeName);
   } else {
     // 更新表单节点
     const { name, ...rest } = data || {};
     if (rest) {
-      designer?.updateItemByPath(rest, path);
+      editor?.updateItemByPath(rest, path);
     }
     if (name) {
-      designer?.updateNameByPath(name, path);
+      editor?.updateNameByPath(name, path);
     }
   }
 }
 
 // 覆盖设置节点的属性(不包括值)
-export const setDesignerItem = (designer: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
-  if (isNoSelected(path) || !designer) return;
+export const setEditorFormItem = (editor: FormRenderStore | undefined, data: any, path?: string, attributeName?: string) => {
+  if (isNoSelected(path) || !editor) return;
   if (attributeName) {
     // 设置属性节点
-    designer?.setItemByPath(data, path, attributeName);
+    editor?.setItemByPath(data, path, attributeName);
   } else {
     // 设置表单节点
     const { name, ...rest } = data || {};
     if (rest) {
-      designer?.setItemByPath(rest, path);
+      editor?.setItemByPath(rest, path);
     }
     if (name) {
-      designer?.updateNameByPath(name, path);
+      editor?.updateNameByPath(name, path);
     }
   }
 }
 
 // 设置设计器区域的表单值
-export const setDesignerFormValue = (designerForm?: FormStore, formPath?: string, initialValue?: any) => {
-  if (isNoSelected(formPath) || !formPath || !designerForm) return;
+export const setEditorFormValue = (editorForm?: FormStore, formPath?: string, initialValue?: any) => {
+  if (isNoSelected(formPath) || !formPath || !editorForm) return;
   if (initialValue !== undefined) {
-    designerForm?.setFieldValue(formPath, initialValue);
+    editorForm?.setFieldValue(formPath, initialValue);
   }
 }
 
 // 同步目标的编辑区域值到属性面板回显
-export const asyncSettingForm = (settingForm?: FormStore | null, designer?: FormRenderStore, selected?: SelectedType) => {
+export const asyncSettingForm = (settingForm?: FormStore | null, editor?: FormRenderStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
-  const currentField = getDesignerItem(designer, selected?.path, selected?.attributeName);
+  const currentField = getEditorFormItem(editor, selected?.path, selected?.attributeName);
   // 非属性节点需要该节点的字段名
   const settingValues = selected?.attributeName ? currentField : { ...currentField, name: selected?.name };
   settingForm.setFieldsValue(settingValues);

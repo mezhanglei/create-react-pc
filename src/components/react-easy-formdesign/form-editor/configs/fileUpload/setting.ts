@@ -6,7 +6,7 @@ const baseSetting = {
         type: 'InputNumber',
         initialValue: 5
       },
-      fileSizeLimit: {
+      maxSize: {
         label: '文件大小限制(MB)',
         type: 'InputNumber',
         initialValue: 5

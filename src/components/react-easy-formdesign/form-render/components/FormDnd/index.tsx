@@ -1,7 +1,7 @@
 import DndSortable, { DndCondition, DndSortableProps } from '@/components/react-dragger-sort';
 import React from 'react';
 import './index.less';
-import { getConfigItem, insertDesignItem } from '../../utils/utils';
+import { getConfigItem, insertEditorFormItem } from '../../utils/utils';
 import { ELementProps } from '..';
 import { GenerateParams } from '../..';
 
@@ -51,7 +51,7 @@ function FormDnd(props: ControlDndProps, ref: any) {
     if (fromCollection?.type === 'components') {
       const type = from?.id as string;
       const field = getConfigItem(type, components, settings);
-      formrender && insertDesignItem(formrender, field, dropIndex, { path: dropCollection?.path });
+      formrender && insertEditorFormItem(formrender, field, dropIndex, { path: dropCollection?.path });
     } else {
       formrender?.moveItemByPath({ index: fromIndex, parent: fromCollection?.path }, { index: dropIndex, parent: dropCollection?.path });
     }

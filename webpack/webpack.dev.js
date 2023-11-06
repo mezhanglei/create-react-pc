@@ -6,8 +6,6 @@ const fs = require('fs');
 // 1. path.join('字段1','字段2'....) 使用平台特定的分隔符把所有的片段链接生成相对路径,遇到..和../时会进行相对路径计算
 // 2. path.resolve('字段1','字段2'....) 从右到左拼接路径片段,返回一个相对于当前工作目录的绝对路径,当遇到/时表示根路径,遇到../表示上一个目录, 如果还不是完整路径则自动添加当前绝对路径
 const path = require("path");
-// 引入配置
-const configs = require('./configs.js');
 // 引入路径
 const paths = require('./paths.js');
 
@@ -30,7 +28,6 @@ module.exports = merge(base, {
     // 忽视的文件夹,多个文件夹使用这种形式['files/**/*.js', 'node_modules/**']
     ignored: /node_modules/,
   },
-  // 开发服务器配置
   // 配置webpack的开发服务器
   devServer: {
     // 启动时打开浏览器
@@ -38,7 +35,6 @@ module.exports = merge(base, {
     // 有时无法访问可能是端口被占用n
     port: 8033,
     // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
-    // host: configs.getNetworkIp(),
     host: '0.0.0.0',
     // 开启热更新
     hot: true,

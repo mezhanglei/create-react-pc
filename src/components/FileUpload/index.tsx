@@ -8,7 +8,7 @@ import { DOC_MIME_KEYS, DOC_MIME_VALUES } from '@/utils/mime';
 import request from '@/http/request';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
-  fileSizeLimit?: number; // 每个文件的限制上传大小
+  maxSize?: number; // 每个文件的限制上传大小
   autoUpload?: boolean; // 是否在选取文件后立即上传
   value?: Array<UploadFile>; // 赋值给defaultFileList
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
@@ -18,7 +18,7 @@ export type FileItem = UploadFile & RcFile;
 const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
   const {
-    fileSizeLimit = 5,
+    maxSize = 5,
     autoUpload = true,
     // 组件原生props
     value,
@@ -45,8 +45,8 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
   const checkFile = (file: RcFile) => {
     const fileSize = file.size / 1024 / 1024
-    if (fileSize > fileSizeLimit) {
-      message.error(`附件大小应小于${fileSizeLimit}M`)
+    if (fileSize > maxSize) {
+      message.error(`附件大小应小于${maxSize}M`)
       return Upload.LIST_IGNORE;
     }
     if (fileSize === 0) {

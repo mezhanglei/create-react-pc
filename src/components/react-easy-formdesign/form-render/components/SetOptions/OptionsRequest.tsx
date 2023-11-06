@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { CSSProperties, useState } from "react";
 import CodeTextArea from "../CodeTextarea";
 import RenderForm, { GenerateParams, RenderFormProps, useFormStore } from "../../";
-import { getDesignerItem } from '../../utils/utils';
+import { getEditorFormItem } from '../../utils/utils';
 import { EditorCodeMirrorModal } from "../CodeMirror";
 import { ELementProps } from "..";
 
@@ -45,7 +45,7 @@ const OptionsRequest = React.forwardRef<HTMLElement, OptionsRequestProps>((props
     ...rest
   } = props;
 
-  const { selected, designer } = field?.context || {};
+  const { selected, editor } = field?.context || {};
   const selectedPath = selected?.path;
   const requestForm = useFormStore();
   const [properties, setProperties] = useState({
@@ -103,7 +103,7 @@ const OptionsRequest = React.forwardRef<HTMLElement, OptionsRequestProps>((props
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
     if (!name) return;
-    const oldProps = getDesignerItem(designer, selectedPath)?.props || {};
+    const oldProps = getEditorFormItem(editor, selectedPath)?.props || {};
     const newConfig = oldProps?.options || {};
     newConfig[name] = value;
     onChange && onChange(newConfig);

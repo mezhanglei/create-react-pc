@@ -9,15 +9,15 @@ import CustomModal from '@/components/AntdModal';
 export interface RichEditorProps extends BraftEditorProps {
   value?: string;
   onChange?: (val?: string) => void;
-  serverURL?: string;
-  getFileUrl?: (res: any) => string;
+  action?: string;
+  handleResponse?: (res: any) => string;
 }
 
 const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
 
   const {
-    serverURL,
-    getFileUrl,
+    action,
+    handleResponse,
     value,
     onChange,
   } = props;
@@ -35,7 +35,7 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
 
     const successFn = (response: XMLHttpRequestEventTargetEventMap['load']) => {
       const res = xhr.responseText && JSON.parse(xhr.responseText);
-      const fileUrl = getFileUrl ? getFileUrl(res) : res; // 上传后文件地址
+      const fileUrl = handleResponse ? handleResponse(res) : res; // 上传后文件地址
       param.success({
         url: fileUrl,
         meta: {
@@ -66,8 +66,8 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
     xhr.addEventListener('abort', errorFn, false);
 
     fd.append('file', param.file);
-    if (serverURL) {
-      xhr.open('POST', serverURL, true);
+    if (action) {
+      xhr.open('POST', action, true);
       xhr.setRequestHeader('', '');
       xhr.send(fd);
     }

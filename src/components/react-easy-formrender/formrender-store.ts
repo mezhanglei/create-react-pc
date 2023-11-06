@@ -24,8 +24,8 @@ export class FormRenderStore {
   }
 
   // 注册components
-  public registry(key: 'components', data: any) {
-    this[key] = data;
+  public registry(data: any) {
+    this.components = data;
   };
 
   // 解析components

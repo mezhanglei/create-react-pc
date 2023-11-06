@@ -4,7 +4,6 @@ import RenderForm, { RenderFormProps } from '../../form-render';
 import './index.less';
 import RootDnd from './RootDnd';
 import ComponentSelection from './selection';
-import { DesignprefixCls } from '../provider';
 import Tooltip from '@/components/tooltip';
 import Icon from "@/components/SvgIcon";
 import { Button, Divider, Radio } from 'antd';
@@ -12,19 +11,19 @@ import PlatContainer, { PlatContainerProps, PlatOptions } from './platContainer'
 import { ImportModalProps, showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
-import { updateDesignerItem } from '../../form-render/utils/utils';
-import { useFormDesign, useHoverSelected } from '../hooks';
+import { updateEditorFormItem } from '../../form-render/utils/utils';
+import { useFormEditor, useHoverSelected } from '../hooks';
 
 export interface DesignEditorProps {
   className?: string
   style?: CSSProperties
 }
-const prefixCls = `${DesignprefixCls}-editor`;
+const prefixCls = `easy-form-editor`;
 
 function DesignEditor(props: DesignEditorProps, ref: any) {
 
-  const designContext = useFormDesign();
-  const { setDesignState, designer, designerForm, settingForm, properties } = designContext;
+  const editorContext = useFormEditor();
+  const { setContextValue, editor, editorForm, settingForm, properties } = editorContext;
 
   const {
     style,
@@ -39,7 +38,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
-    setDesignState({ properties: newData });
+    setContextValue({ properties: newData });
   }
 
   // 监听选中项改动
@@ -47,7 +46,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     // 延迟变更值
     setTimeout(() => {
       // 更新目标的initialValue
-      updateDesignerItem(designer, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
+      updateEditorFormItem(editor, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
       // 回填setting表单的intialValue选项
       settingForm?.setFieldValue('initialValue', value);
     }, 0);
@@ -60,7 +59,7 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
     showPreviewModal({ properties, plat: platType });
   }
   const clearEditor = () => {
-    setDesignState({ properties: undefined });
+    setContextValue({ properties: undefined });
   }
   const showExportJson = () => {
     showExportJsonModal({ data: properties, title: '渲染JSON' });
@@ -111,9 +110,9 @@ function DesignEditor(props: DesignEditorProps, ref: any) {
       <main className="editor-main">
         <PlatContainer plat={platType}>
           <RenderForm
-            options={{ isEditor: true, context: designContext }}
-            formrender={designer}
-            form={designerForm}
+            options={{ isEditor: true, context: editorContext }}
+            formrender={editor}
+            form={editorForm}
             properties={properties}
             onPropertiesChange={onPropertiesChange}
             onFieldsChange={onFieldsChange}
