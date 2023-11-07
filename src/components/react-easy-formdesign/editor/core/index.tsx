@@ -43,13 +43,10 @@ function EditorCore(props: EditorCoreProps, ref: any) {
 
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
-    // 延迟变更值
-    setTimeout(() => {
-      // 更新目标的initialValue
-      updateEditorFormItem(editor, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
-      // 回填setting表单的intialValue选项
-      settingForm?.setFieldValue('initialValue', value);
-    }, 0);
+    // 更新目标的initialValue
+    updateEditorFormItem(editor, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
+    // 回填setting表单的intialValue选项
+    settingForm?.setFieldValue('initialValue', value);
   }
 
   const importJson = () => {

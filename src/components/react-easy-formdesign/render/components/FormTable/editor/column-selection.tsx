@@ -4,7 +4,7 @@ import { defaultGetId, setEditorFormItem } from '@/components/react-easy-formdes
 import { deepSet, pickObject } from "@/utils/object";
 import BaseSelection, { CommonSelectionProps, SelectedType } from '../../BaseSelection';
 import FormTableColSetting from './column-setting';
-import { ELementProps } from '../../';
+import { ELementProps } from '../..';
 
 export interface ColumnSelectionProps extends CommonSelectionProps {
   colIndex: number;

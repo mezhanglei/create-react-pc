@@ -2,8 +2,8 @@ import { ColumnType, TableProps } from 'antd/lib/table';
 import React, { CSSProperties } from 'react';
 import { ELementProps } from '../';
 import { GenerateParams } from '../..';
-import DesignTable from './design/designTable';
-import FormTable from './render/formTable';
+import EditorTable from './editor';
+import FormTable from './render';
 
 export interface FormTableProps extends TableProps<any>, GenerateParams<ELementProps> {
   minRows?: number; // 表格默认最少行数
@@ -34,7 +34,7 @@ const Table = React.forwardRef<any, FormTableProps>((props, ref) => {
   const columns = field?.props?.columns;
 
   return (
-    isEditor ? <DesignTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
+    isEditor ? <EditorTable {...props} columns={columns} ref={ref} /> : <FormTable {...props} ref={ref} columns={columns} />
   );
 });
 

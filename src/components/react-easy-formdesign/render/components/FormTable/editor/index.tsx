@@ -1,14 +1,14 @@
 import React from "react";
 import classnames from "classnames";
-import './designTable.less';
+import './index.less';
 import pickAttrs from "@/utils/pickAttrs";
 import ColumnSelection from "./column-selection";
 import TableDnd from './dnd';
 import { FormTableProps } from "..";
-import { Form } from "../../../";
+import { Form } from "../../..";
 import { updateEditorFormItem } from "@/components/react-easy-formdesign/render/utils/utils";
 
-const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
+const EditorTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   columns = [],
   disabled,
   className,
@@ -83,4 +83,4 @@ const DesignTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
   );
 });
 
-export default DesignTable;
+export default EditorTable;
