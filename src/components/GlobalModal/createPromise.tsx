@@ -1,5 +1,5 @@
 import React from 'react';
-import {createRoot} from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 // default Provider
 let Container = ({ children }: any) => <>{children}</>
@@ -59,5 +59,5 @@ export const create = async (Template: any, data = {}, options: { unmountDelay?:
     return Promise.reject(err)
   }
 
-  return p.then(callbackResolve, callbackReject)
+  return p.then(callbackResolve, callbackReject).catch((err) => err);
 };

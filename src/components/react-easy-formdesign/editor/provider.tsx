@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormRenderStore, useFormStore } from '../../react-easy-formrender';
+import { useFormRenderStore, useFormStore } from '../render';
 import { ConfigComponents, ConfigSettings } from './configs';
 import { useEventBus } from '../render/utils/hooks';
 import { useSetContext } from './hooks';

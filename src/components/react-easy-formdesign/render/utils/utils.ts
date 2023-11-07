@@ -1,6 +1,6 @@
 import { FormStore, isValidNumber } from '@/components/react-easy-formcore';
-import { FormRenderStore } from '@/components/react-easy-formrender';
-import { getInitialValues, getPathEnd } from '@/components/react-easy-formrender/utils/utils';
+import { FormRenderStore } from '../index';
+import { getInitialValues, getPathEnd } from '..';
 import { deepMergeObject } from '@/utils/object';
 import { evalString, uneval } from '@/utils/string';
 import { nanoid } from 'nanoid';

@@ -1,4 +1,4 @@
-import { GridCol as BaseGridCol } from '@/components/react-easy-formrender/components/grid';
+import { CustomCol } from '../../';
 import { ColProps } from 'antd';
 import classnames from 'classnames';
 import React from 'react';
@@ -25,7 +25,7 @@ const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   });
 
   return (
-    <BaseGridCol ref={ref} style={style} className={cls} {...rest}>
+    <CustomCol ref={ref} style={style} className={cls} {...rest}>
       {isEditor ?
         <ColSelection {...rest}>
           <FormDnd {...rest}>
@@ -35,7 +35,7 @@ const GridCol = React.forwardRef<any, CustomColProps>((props, ref) => {
         :
         children
       }
-    </BaseGridCol>
+    </CustomCol>
   );
 });
 

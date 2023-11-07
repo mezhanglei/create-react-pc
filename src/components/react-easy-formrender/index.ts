@@ -4,6 +4,8 @@ export default RenderForm;
 export { RenderFormChildren };
 export * from './types';
 export * from './components';
+export * from './utils/utils';
+export * from './utils/handle';
 export * from './formrender-store';
 export * from '../react-easy-formcore';
 export * from "./use-formrender";

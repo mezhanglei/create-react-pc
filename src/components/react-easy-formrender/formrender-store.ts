@@ -25,7 +25,7 @@ export class FormRenderStore {
 
   // 注册components
   public registry(data: any) {
-    this.components = data;
+    this.components = Object.assign({}, this.components, data);
   };
 
   // 解析components

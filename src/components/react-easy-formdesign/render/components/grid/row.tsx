@@ -1,4 +1,4 @@
-import { GridRow as BaseGridRow } from '@/components/react-easy-formrender/components/grid';
+import { CustomRow } from '../../';
 import React from 'react';
 import RowSelection from './row-selection';
 import { RowProps } from 'antd';
@@ -23,7 +23,7 @@ const GridRow = React.forwardRef<any, CustomRowProps>((props, ref) => {
   });
 
   return (
-    <BaseGridRow ref={ref} style={style} className={cls} {...rest}>
+    <CustomRow ref={ref} style={style} className={cls} {...rest}>
       {isEditor ?
         <RowSelection {...rest}>
           {children}
@@ -31,7 +31,7 @@ const GridRow = React.forwardRef<any, CustomRowProps>((props, ref) => {
         :
         children
       }
-    </BaseGridRow>
+    </CustomRow>
   );
 });
 

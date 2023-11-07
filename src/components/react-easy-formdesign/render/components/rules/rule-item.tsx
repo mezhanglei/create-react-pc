@@ -1,7 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import Icon from "@/components/SvgIcon";
 import RenderForm, { useFormStore, useFormValues } from '../../';
-import { matchExpression } from "@/components/react-easy-formrender/utils/utils";
 import './rule-item.less';
 import CustomModal from "@/components/AntdModal";
 import { ELementProps } from "../";
@@ -105,8 +104,7 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
   // 给弹窗的表单赋值
   const setRuleModal = (data?: InputFormRule) => {
     if (name && data?.[name] !== undefined) {
-      const matchStr = matchExpression(data?.[name]);
-      currentForm.setFieldsValue({ selectType: matchStr ? 'dynamic' : 'handle', ...data })
+      currentForm.setFieldsValue(data);
     } else {
       currentForm.setFieldsValue({});
     }
@@ -114,15 +112,15 @@ const RuleItem = React.forwardRef<RuleItemRefs, RuleItemProps>((props, ref) => {
 
   const clickEdit = (showModal: () => void) => {
     showModal();
+    console.log(value, 2222)
     setRuleModal(value);
   }
 
   const handleOk = async (closeModal: () => void) => {
     const { error, values } = await currentForm.validate();
     if (error) return;
-    const { selectType, ...rest } = values || {}
-    setRuleValue(rest);
-    onChange && onChange(rest);
+    setRuleValue(values);
+    onChange && onChange(values);
     closeModal();
   }
 

@@ -23,11 +23,11 @@ export const getColProps = (props: ColProps, inline?: boolean) => {
   }
 }
 
-export interface GridRowProps extends RowProps, GenerateParams {
+export interface CustomRowProps extends RowProps, GenerateParams {
   children: any;
 }
 // row组件
-export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
+export const CustomRow = React.forwardRef<any, CustomRowProps>((props, ref) => {
   const {
     name,
     path,
@@ -39,7 +39,7 @@ export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
     className,
     ...rest
   } = props;
-  const cls = classnames('grid-row', className);
+  const cls = classnames('custom-row', className);
   return (
     <Row ref={ref} className={cls} {...rest}>
       {children}
@@ -47,11 +47,11 @@ export const GridRow = React.forwardRef<any, GridRowProps>((props, ref) => {
   );
 });
 
-export interface GridColProps extends ColProps, GenerateParams {
+export interface CustomColProps extends ColProps, GenerateParams {
   children: any;
 }
 // col组件
-export const GridCol = React.forwardRef<any, GridColProps>((props, ref) => {
+export const CustomCol = React.forwardRef<any, CustomColProps>((props, ref) => {
   const {
     name,
     path,
@@ -64,7 +64,7 @@ export const GridCol = React.forwardRef<any, GridColProps>((props, ref) => {
     ...rest
   } = props;
   const calcProps = getColProps(rest, field?.inline);
-  const cls = classnames('grid-col', className);
+  const cls = classnames('custom-col', className);
   return (
     <Col ref={ref} className={cls} {...calcProps}>
       {children}

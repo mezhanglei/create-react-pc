@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RenderForm, { RenderFormChildren, useFormRenderStore } from '@/components/react-easy-formdesign/form-render';
+import RenderForm, { RenderFormChildren, useFormRenderStore } from '@/components/react-easy-formdesign/render';
 import { Form, useFormStore } from '@/components/react-easy-formcore';
 import './index.less'
 import Button from '@/components/button';

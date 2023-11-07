@@ -14,13 +14,13 @@ import { showExportJsonModal } from './exportJson';
 import { updateEditorFormItem } from '../../render/utils/utils';
 import { useFormEditor, useHoverSelected } from '../hooks';
 
-export interface DesignEditorProps {
+export interface EditorCoreProps {
   className?: string
   style?: CSSProperties
 }
 const prefixCls = `easy-form-editor`;
 
-function DesignEditor(props: DesignEditorProps, ref: any) {
+function EditorCore(props: EditorCoreProps, ref: any) {
 
   const editorContext = useFormEditor();
   const { setContextValue, editor, editorForm, settingForm, properties } = editorContext;
@@ -136,5 +136,5 @@ const renderItem: RenderFormProps['renderItem'] = (params) => {
   return children;
 }
 
-DesignEditor.displayName = 'design-editor';
-export default React.forwardRef(DesignEditor);
+EditorCore.displayName = 'editor-core';
+export default React.forwardRef(EditorCore);
