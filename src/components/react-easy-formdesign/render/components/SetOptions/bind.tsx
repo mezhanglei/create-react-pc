@@ -12,7 +12,7 @@ import { isObject } from '@/utils/type';
 
 export default function bindRequest(component: any, codeStr: string = "options") {
   const Component = component;
-  return React.forwardRef<any, any>((props, ref) => {
+  return React.forwardRef<any, any>(({ optionsType, ...props }, ref) => {
     // 目标参数
     const target = props?.[codeStr];
     // 是否为配置请求
