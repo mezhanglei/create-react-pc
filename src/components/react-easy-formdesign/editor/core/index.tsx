@@ -12,11 +12,11 @@ import { ImportModalProps, showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
 import { updateEditorFormItem } from '../../render/utils/utils';
-import { useFormEditor, useHoverSelected } from '../hooks';
+import { useFormEditor, useEventBusState } from '../hooks';
 
 export interface EditorCoreProps {
-  className?: string
-  style?: CSSProperties
+  className?: string;
+  style?: CSSProperties;
 }
 const prefixCls = `easy-form-editor`;
 
@@ -33,7 +33,7 @@ function EditorCore(props: EditorCoreProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
   const [platType, setPlatType] = useState<PlatContainerProps['plat']>('pc');
-  const hoverSelected = useHoverSelected();
+  const chooseSelected = useEventBusState('choose');
   const [templates, setTemplates] = useState<ImportModalProps['data']>([]);
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
@@ -43,15 +43,19 @@ function EditorCore(props: EditorCoreProps, ref: any) {
 
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
-    // 更新目标的initialValue
-    updateEditorFormItem(editor, { initialValue: value }, hoverSelected?.path, hoverSelected?.attributeName);
     // 回填setting表单的intialValue选项
     settingForm?.setFieldValue('initialValue', value);
+    // 同时把变更的值存在initialValue字段
+    setTimeout(() => {
+      console.log(chooseSelected)
+      updateEditorFormItem(editor, { initialValue: value }, chooseSelected?.path, chooseSelected?.attributeName);
+    }, 0);
   }
 
   const importJson = () => {
     showImportModal()
   }
+
   const showPreview = () => {
     showPreviewModal({ properties, plat: platType });
   }

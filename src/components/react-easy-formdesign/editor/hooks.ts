@@ -31,16 +31,19 @@ export function useFormEditor() {
   return context;
 }
 
-// 获取当前hover的内容
-export function useHoverSelected() {
+// 监听eventBus的值
+export function useEventBusState<T = any>(type: string) {
   const context = useContext(FormEditorContext);
-  const [hoverSelected, setHoverSelected] = useState<SelectedType>();
+  const [value, setValue] = useState<T>();
 
   useEffect(() => {
-    context.eventBus && context.eventBus.on('hover', (val: SelectedType) => {
-      setHoverSelected(val);
+    context.eventBus && context.eventBus.on(type, (val: T) => {
+      setValue(val);
     });
+    return () => {
+      context.eventBus && context.eventBus.remove(type);
+    };
   }, []);
 
-  return hoverSelected;
+  return value;
 }

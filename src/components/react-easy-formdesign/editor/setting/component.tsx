@@ -38,7 +38,6 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
   }, []);
 
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
-    console.log(11112222)
     if (typeof name !== 'string') return;
     if (name == 'name') {
       editor?.updateNameByPath(value, selectedPath);

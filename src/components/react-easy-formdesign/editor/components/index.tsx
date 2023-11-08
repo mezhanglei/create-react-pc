@@ -40,18 +40,18 @@ function EditorComponents(props: EditorComponentsProps, ref: any) {
   }
 
   const componentData = {
-    '布局组件': pickObject(components, ['Grid', 'Divider', 'Alert']),
-    '控件组合': pickObject(components, ['FormTable']),
-    '基础控件': pickObject(components, [
+    '布局组件': pickObject(components, (key) => ['Grid', 'Divider', 'Alert'].includes(key || '')),
+    '控件组合': pickObject(components, (key) => ['FormTable'].includes(key || '')),
+    '基础控件': pickObject(components, (key) => [
       "Input",
-      "RadioGroup",
-      "CheckboxGroup",
+      "Radio.Group",
+      "Checkbox.Group",
       "Select",
       "Switch",
       "TimePicker",
-      "TimePickerRangePicker",
+      "TimePicker.RangePicker",
       "DatePicker",
-      "DatePickerRangePicker",
+      "DatePicker.RangePicker",
       "Slider",
       "Rate",
       "ColorPicker",
@@ -60,8 +60,8 @@ function EditorComponents(props: EditorComponentsProps, ref: any) {
       "ImageUpload",
       "RichEditor",
       "RichText",
-    ]),
-    '业务组件': pickObject(components, ['example'])
+    ].includes(key || '')),
+    '业务组件': pickObject(components, (key) => ['example'].includes(key || ''))
   }
 
   return (

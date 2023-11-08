@@ -139,7 +139,6 @@ export const setEditorFormValue = (editorForm?: FormStore, formPath?: string, in
 export const asyncSettingForm = (settingForm?: FormStore | null, editor?: FormRenderStore, selected?: SelectedType) => {
   if (isNoSelected(selected?.path) || !settingForm) return;
   const currentField = getEditorFormItem(editor, selected?.path, selected?.attributeName);
-  console.log(currentField, selected?.path, '属性')
   // 非属性节点需要该节点的字段名
   const settingValues = selected?.attributeName ? currentField : { ...currentField, name: selected?.name };
   settingForm.setFieldsValue(settingValues);

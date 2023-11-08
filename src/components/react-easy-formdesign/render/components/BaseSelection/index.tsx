@@ -66,6 +66,8 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
     setContextValue({
       selected: nextSelected
     });
+    // 订阅选中事件
+    eventBus && eventBus.emit('choose', nextSelected);
     // 点击选中时同步编辑区域值到属性区域
     asyncSettingForm(settingForm, editor, nextSelected);
   }
@@ -79,7 +81,6 @@ function BaseSelection(props: EditorSelectionProps, ref: any) {
       target.classList.add(overCls);
       setIsOver(true);
     }
-    eventBus && eventBus.emit('hover', nextSelected);
     onMouseOver && onMouseOver(e);
   }
 
