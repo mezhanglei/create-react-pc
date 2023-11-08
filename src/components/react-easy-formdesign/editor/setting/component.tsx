@@ -18,7 +18,8 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
     className,
   } = props;
 
-  const { setContextValue, selected, editor, editorForm, settings } = useFormEditor();
+  const editorContext = useFormEditor();
+  const { setContextValue, selected, editor, editorForm, settings } = editorContext;
   const selectedPath = selected?.path;
   const selectedName = selected?.name;
   const attributeName = selected?.attributeName;
@@ -64,7 +65,7 @@ function SelectedSetting(props: SelectedSettingProps, ref: any) {
       Object.entries(configSetting)?.map(([name, data]) => {
         return (
           <CustomCollapse header={name} key={name} isOpened>
-            <RenderFormChildren properties={data} />
+            <RenderFormChildren properties={data} options={{ context: editorContext }} />
           </CustomCollapse>
         )
       })
