@@ -6,7 +6,7 @@ export * from '@/components/react-easy-formrender';
 
 export interface CustomOptions {
   isEditor?: boolean; // 是否为编辑态
-  context?: any; // 上下文环境
+  context?: any; // 编辑器上下文环境
 }
 
 // RenderFormChildren

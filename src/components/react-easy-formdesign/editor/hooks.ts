@@ -38,7 +38,6 @@ export function useEventBusRef<T = any>(type: string) {
 
   useEffect(() => {
     context.eventBus && context.eventBus.on(type, (val: T) => {
-      console.log(val, '触发')
       dataRef.current = val;
     });
     return () => {

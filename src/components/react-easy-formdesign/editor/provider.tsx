@@ -10,13 +10,13 @@ export interface ProviderProps {
 }
 function Provider(props: ProviderProps) {
 
-  const formrender = useFormRenderStore();
+  const editor = useFormRenderStore();
   const editorForm = useFormStore();
   const eventBus = useEventBus();
 
   const context = useSetContext({
+    editor: editor,
     editorForm: editorForm,
-    editor: formrender,
     settingForm: null,
     eventBus: eventBus,
     selected: {},

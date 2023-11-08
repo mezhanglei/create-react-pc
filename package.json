@@ -86,7 +86,7 @@
     "@types/js-beautify": "^1.13.3",
     "@types/react-color": "^3.0.6",
     "animejs": "^3.2.1",
-    "antd": "^4.20.2",
+    "antd": "^4.24.14",
     "axios": "^0.24.0",
     "bignumber.js": "^9.1.0",
     "braft-editor": "^2.3.9",
