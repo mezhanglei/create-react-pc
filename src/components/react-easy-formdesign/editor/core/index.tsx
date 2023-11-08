@@ -12,7 +12,7 @@ import { ImportModalProps, showImportModal } from './importModal';
 import { showPreviewModal } from './preview';
 import { showExportJsonModal } from './exportJson';
 import { updateEditorFormItem } from '../../render/utils/utils';
-import { useFormEditor, useEventBusState } from '../hooks';
+import { useFormEditor, useEventBusRef } from '../hooks';
 
 export interface EditorCoreProps {
   className?: string;
@@ -33,8 +33,8 @@ function EditorCore(props: EditorCoreProps, ref: any) {
 
   const cls = classnames(prefixCls, className);
   const [platType, setPlatType] = useState<PlatContainerProps['plat']>('pc');
-  const chooseSelected = useEventBusState('choose');
   const [templates, setTemplates] = useState<ImportModalProps['data']>([]);
+  const selectedRef = useEventBusRef('choose');
 
   const onPropertiesChange: RenderFormProps['onPropertiesChange'] = (newData) => {
     console.log(newData, '表单')
@@ -43,12 +43,12 @@ function EditorCore(props: EditorCoreProps, ref: any) {
 
   // 监听选中项改动
   const onFieldsChange: RenderFormProps['onFieldsChange'] = ({ name, value }) => {
-    // 回填setting表单的intialValue选项
-    settingForm?.setFieldValue('initialValue', value);
-    // 同时把变更的值存在initialValue字段
     setTimeout(() => {
-      console.log(chooseSelected)
-      updateEditorFormItem(editor, { initialValue: value }, chooseSelected?.path, chooseSelected?.attributeName);
+      // 表单值保存在initialValue字段
+      const selected = selectedRef.current;
+      updateEditorFormItem(editor, { initialValue: value }, selected?.path, selected?.attributeName);
+      // 回填setting表单的intialValue选项
+      settingForm?.setFieldValue('initialValue', value);
     }, 0);
   }
 

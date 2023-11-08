@@ -1,4 +1,4 @@
-import { useContext, useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import { SelectedType } from "../render/components/BaseSelection";
 import { FormEditorContext } from "./context";
 
@@ -32,18 +32,19 @@ export function useFormEditor() {
 }
 
 // 监听eventBus的值
-export function useEventBusState<T = any>(type: string) {
+export function useEventBusRef<T = any>(type: string) {
   const context = useContext(FormEditorContext);
-  const [value, setValue] = useState<T>();
+  const dataRef = useRef<T>();
 
   useEffect(() => {
     context.eventBus && context.eventBus.on(type, (val: T) => {
-      setValue(val);
+      console.log(val, '触发')
+      dataRef.current = val;
     });
     return () => {
       context.eventBus && context.eventBus.remove(type);
     };
   }, []);
 
-  return value;
+  return dataRef;
 }
