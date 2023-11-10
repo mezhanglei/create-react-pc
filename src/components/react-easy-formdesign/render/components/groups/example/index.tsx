@@ -1,10 +1,16 @@
 import React from 'react';
-import FormRender, { useFormStore } from '../../../';
+import FormRender, { CustomRenderFormProps, useFormStore } from '../../../';
 import FormConfigs from './render';
 
-const ExampleGroup = (props) => {
+const ExampleGroup = (props: any) => {
   const form = useFormStore();
-  return <FormRender form={form} properties={FormConfigs} />
+  const { value, onChange } = props;
+
+  const handleChange: CustomRenderFormProps['onFieldsChange'] = (_, values) => {
+    onChange && onChange(values);
+  }
+
+  return <FormRender form={form} properties={FormConfigs} onFieldsChange={handleChange} />
 }
 
 export default ExampleGroup;

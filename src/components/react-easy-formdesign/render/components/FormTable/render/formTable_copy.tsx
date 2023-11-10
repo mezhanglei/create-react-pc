@@ -74,7 +74,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>(({
               <TableRow key={getRowKey(record, rowIndex)}>
                 {columns.map((column, colIndex) => {
                   const { render, dataIndex } = column || {};
-                  const columnInstance = formrender && formrender.componentInstance(column);
+                  const columnInstance = formrender && formrender.renderComponent(column);
                   const child = typeof render == 'function' ? render(record[dataIndex], record, rowIndex, colIndex) : (columnInstance || record[dataIndex]);
                   const joinPath = joinFormPath(rowIndex, dataIndex);
                   return (

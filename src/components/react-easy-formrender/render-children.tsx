@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormNodeProps, RenderFormProps, GenerateParams, PropertiesData, GenerateFormNodeProps, CustomUnionType, CustomRenderType } from './types';
+import { FormNodeProps, RenderFormProps, GenerateParams, PropertiesData, CustomUnionType, CustomRenderType } from './types';
 import { CustomRow, CustomCol } from './components';
 import { Form, FormOptionsContext, FormStore, FormStoreContext, ItemCoreProps, joinFormPath } from '../react-easy-formcore';
 import { useFormRenderStore } from './use-formrender';
@@ -210,30 +210,23 @@ export default function RenderFormChildren(props: RenderFormProps) {
   // 目标套上其他组件
   const withSide = (children: any, side?: CustomUnionType, render?: CustomRenderType, commonProps?: GenerateParams) => {
     const childs = typeof render === 'function' ? render?.(Object.assign({ children }, commonProps)) : children;
-    const sideInstance = side && formRenderStore.componentInstance(side, Object.assign({}, commonProps, ignoreTag));
+    const sideInstance = side && formRenderStore.renderComponent(side, Object.assign({}, commonProps, ignoreTag));
     const childsWithSide = React.isValidElement(sideInstance) ? React.cloneElement(sideInstance, { children: childs } as Partial<unknown>) : childs;
     const cloneChilds = React.isValidElement(childsWithSide) ? React.cloneElement(childsWithSide, { key: commonProps?.path }) : childsWithSide;
     return cloneChilds;
   }
 
-  // 生成子元素
-  const generateChild = (name: string, path: string, field: GenerateFormNodeProps, parent?: GenerateParams['parent']) => {
-    if (field?.hidden === true || !field) return;
+  // 生成表单项
+  const renderChild = (params: GenerateParams) => {
+    const { name, path, field, parent } = params;
+    if (!field) return;
     const mergeOptions = Object.assign({}, typeof options === 'function' ? options(field) : options, formOptions);
-    const mergeField = Object.assign({}, mergeOptions, field, { props: Object.assign({}, mergeOptions?.props, field?.props) })
-    const commonParams = {
-      name,
-      path,
-      field: mergeField,
-      parent,
-      form: formStore,
-      formrender: formRenderStore
-    }; // 公共参数
+    const mergeField = Object.assign({}, mergeOptions, field, { props: Object.assign({}, mergeOptions?.props, field?.props) });
     const {
       readOnlyRender,
       hidden,
-      props,
       type,
+      props,
       typeRender,
       properties,
       footer,
@@ -243,65 +236,77 @@ export default function RenderFormChildren(props: RenderFormProps) {
       outside,
       ...restField
     } = mergeField;
+    if (hidden === true) return;
     // 是否有子节点
     const haveProperties = isObject(properties) || properties instanceof Array;
     // 当前节点是否为只读
     const isReadOnly = restField?.readOnly === true;
-    const footerInstance = formRenderStore.componentInstance(footer, commonParams);
-    const suffixInstance = formRenderStore.componentInstance(suffix, commonParams);
+    const commonParams = {
+      name,
+      path,
+      field: mergeField,
+      parent,
+      form: formStore,
+      formrender: formRenderStore
+    }; // 公共参数
+    const footerInstance = formRenderStore.renderComponent(footer, commonParams);
+    const suffixInstance = formRenderStore.renderComponent(suffix, commonParams);
     const fieldProps = Object.assign({
       name: name,
       footer: footerInstance,
       suffix: suffixInstance,
-      component: component !== undefined ? formRenderStore.componentParse(component) : undefined,
+      component: component !== undefined ? formRenderStore.parseComponent(component) : undefined,
     }, restField);
-    // 只读显示组件
-    const readOnlyWidget = formRenderStore.componentInstance(readOnlyRender, commonParams);
     if (isReadOnly) {
+      const readOnlyWidget = formRenderStore.renderComponent(readOnlyRender, commonParams);
       return haveProperties ?
         readOnlyWidget
         :
         <Form.Item {...fieldProps}>
           {readOnlyWidget}
         </Form.Item>
-    };
+    }
     // 当前节点组件
-    const FormNodeWidget = formRenderStore.componentInstance(typeRender || { type, props }, commonParams);
-    // 节点的子组件
-    const FormNodeChildren = renderChildren(properties, inside, commonParams)
+    const FormNodeWidget = formRenderStore.renderComponent(typeRender || { type, props }, commonParams);
     let result;
-    if (haveProperties) {
-      // 不携带表单域的节点
-      result = React.isValidElement(FormNodeWidget) ? React.cloneElement(FormNodeWidget, { children: FormNodeChildren } as Partial<unknown>) : FormNodeChildren
+    if (properties) {
+      const FormNodeChildren = Object.entries(properties as PropertiesData || {}).map(([key, field], index: number) => {
+        const joinPath = joinFormPath(path, key);
+        const generateField = getEvalFieldProps(field, joinPath);
+        const joinName = generateField?.ignore === true ? name : joinFormPath(name, key);
+        if (generateField) {
+          generateField['index'] = index;
+        }
+        return renderChild({
+          name: joinName,
+          path: joinPath,
+          field: generateField,
+          parent: { name, path, field: mergeField }
+        });
+      }) as any;
+      result = React.isValidElement(FormNodeWidget) ?
+        React.cloneElement(FormNodeWidget, { children: FormNodeChildren } as Partial<unknown>)
+        : FormNodeChildren;
     } else {
-      // 携带表单域的节点
+      // 最底层的项携带表单域的节点
       result = (
         <Form.Item {...fieldProps} onValuesChange={valuesCallback}>
           {FormNodeWidget}
         </Form.Item>
       );
+    };
+    return withSide(result, outside, renderItem, commonParams);
+  }
+
+  const childs = Object.entries(properties || {}).map(([key, field], index: number) => {
+    const generateField = getEvalFieldProps(field, key);
+    if (generateField) {
+      generateField['index'] = index;
     }
-    return withSide(result, outside, renderItem, commonParams)
-  }
+    return renderChild({ name: key, path: key, field: generateField });
+  });
 
-  // 渲染children
-  const renderChildren = (properties: FormNodeProps['properties'], inside: CustomUnionType | undefined, current: GenerateParams): any => {
-    const { name, path, field } = current || {};
-    const childs = Object.entries(properties || {})?.map(([key, childField], index: number) => {
-      if (typeof key === 'string' || typeof key === 'number') {
-        const joinPath = joinFormPath(path, key);
-        const generateField = getEvalFieldProps(childField, joinPath);
-        const joinName = generateField?.ignore === true ? name : joinFormPath(name, key);
-        if (generateField) {
-          generateField['index'] = index;
-          return generateChild(joinName, joinPath, generateField, { name, path, field });
-        }
-      }
-    });
-    return withSide(childs, inside, renderList, current)
-  }
-
-  return renderChildren(properties, inside, { formrender: formRenderStore, form: formStore });
+  return withSide(childs, inside, renderList, { formrender: formRenderStore, form: formStore });
 }
 
 RenderFormChildren.displayName = 'Form.Children';

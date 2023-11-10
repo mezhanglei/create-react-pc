@@ -18,7 +18,7 @@ const Generator = ({ className, ...props }: EasyFormEditorProps, ref: any) => {
       <Provider {...props}>
         <Col className='components' xs={24} sm={24} md={5} lg={5}><Components /></Col>
         <Col className='editor' xs={24} sm={24} md={14} lg={14}><EditorCore /></Col>
-        <Col className='settings' xs={24} sm={24} md={5} lg={5}><Setting /></Col>
+        <Col className='setting' xs={24} sm={24} md={5} lg={5}><Setting /></Col>
       </Provider>
     </Row>
   );

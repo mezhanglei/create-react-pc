@@ -78,7 +78,7 @@ const FormTable = React.forwardRef<HTMLTableElement, FormTableProps>((props, ref
         dataIndex: dataIndex,
         title: title,
         onCell: (record: unknown, rowIndex?: number) => {
-          const formControl = formrender && formrender.componentInstance({ type, props: Object.assign({ disabled }, props) });
+          const formControl = formrender && formrender.renderComponent({ type, props: Object.assign({ disabled }, props) });
           return {
             record,
             name: joinFormPath(name, rowIndex, dataIndex), // 拼接路径

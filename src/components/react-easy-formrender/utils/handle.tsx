@@ -1,45 +1,45 @@
 import React from 'react';
 import { CustomUnionType, FormComponent, GenerateParams } from "../types";
-import { isReactComponent, isValidChildren } from "@/utils/ReactIs";
-import { isObject } from '@/utils/type';
+import { isReactComponent } from "@/utils/ReactIs";
+import { isEmpty, isObject } from '@/utils/type';
+
+// 是否为注册组件
+export const isFormRegistered = (target?: any, typeMap?: { [key: string]: React.ElementType }) => {
+  const Com = isObject(target) && typeMap && typeMap[(target as FormComponent).type || ''];
+  return Com;
+}
 
 // 解析组件声明
 export const parseComponent = (target: CustomUnionType | undefined, typeMap?: { [key: string]: React.ElementType }) => {
-  if (target === undefined) return;
-  if (isValidChildren(target)) return null;
-  // 是否为类或函数组件声明
-  if (isReactComponent(target)) {
-    return target as any
+  // 是否为空
+  if (isEmpty(target)) return target;
+  // 如果是react元素则返回空
+  if (React.isValidElement(target)) return null;
+  // 是否为注册组件
+  const Com = isFormRegistered(target, typeMap);
+  if (Com) {
+    return Com;
   }
-  // 是否为已注册的组件声明
-  if (isObject(target)) {
-    const targetInfo = target as FormComponent;
-    const register = typeMap && targetInfo?.type && typeMap[targetInfo?.type];
-    if (register) {
-      return register
-    }
-  }
+  if (isReactComponent(target)) return target;
   return null;
 }
 
-// 生成组件实例
-export const createInstance = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GenerateParams): any => {
-  if (target instanceof Array) {
-    return target?.map((item) => {
-      return createInstance(item, typeMap, commonProps);
-    });
-  } else {
-    const Child = parseComponent(target, typeMap) as React.ElementType;
-    // 声明组件
-    if (Child) {
-      const { children, ...restProps } = (target as FormComponent)?.props || {};
-      return (
-        <Child {...Object.assign({}, commonProps, restProps)}>
-          {createInstance(children, typeMap, commonProps)}
-        </Child>
-      );
-    } else {
-      return isValidChildren(target) ? target : null
-    }
+// 渲染组件
+export const renderComponent = (target?: any, typeMap?: { [key: string]: React.ElementType }, commonProps?: GenerateParams): any => {
+  // 如果为列表
+  if (target instanceof Array) return target.map((item) => renderComponent(item, typeMap, commonProps));
+  // 是否为注册组件
+  const Com = isFormRegistered(target, typeMap);
+  if (Com) {
+    const { children, ...rest } = target?.props;
+    const mergeProps = Object.assign({}, commonProps, rest);
+    return (
+      <Com {...mergeProps}>
+        {renderComponent(children, typeMap, commonProps)}
+      </Com>
+    );
   }
+  // 是否为React元素
+  if (React.isValidElement(target) || typeof target === 'string' || typeof target === 'number') return target;
+  return null;
 }

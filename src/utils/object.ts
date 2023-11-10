@@ -1,4 +1,4 @@
-import { isArray, isEmpty, isNumberStr, isObject } from "./type";
+import { isEmpty, isNumberStr, isObject } from "./type";
 import { copy } from 'copy-anything';
 import compare from 'react-fast-compare';
 

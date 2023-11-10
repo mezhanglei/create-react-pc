@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import request from '@/http/request';
 import { objectToFormData } from '@/utils/object';
-import { isObject } from '@/utils/type';
+import { isEmpty, isObject } from '@/utils/type';
 
 /**
  * 自动给目标组件某个数据来源绑定请求，默认该数据的字段为options
@@ -16,9 +16,9 @@ export default function bindRequest(component: any, codeStr: string = "options")
     // 目标参数
     const target = props?.[codeStr];
     // 是否为配置请求
-    const isRequestConfig = isObject(target) ? true : false;
+    const isRequest = isObject(target) ? true : false;
 
-    const [response, setResponse] = useState<unknown>();
+    const [response, setResponse] = useState<any>();
 
     useEffect(() => {
       getRequest();
@@ -45,8 +45,8 @@ export default function bindRequest(component: any, codeStr: string = "options")
       }
     }
 
-    const resultData = isRequestConfig ? (target?.url && codeStr ? response : undefined) : (target instanceof Array ? target : []);
-    const params = { [codeStr]: resultData };
+    const resultData = isRequest ? (target?.url && codeStr ? response : undefined) : (target instanceof Array ? target : undefined);
+    const params = isEmpty(resultData) ? {} : { [codeStr]: resultData };
 
     return (
       <Component {...props} {...params} ref={ref} />

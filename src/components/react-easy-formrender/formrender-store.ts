@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils/object";
 import { joinFormPath } from "../react-easy-formcore";
 import { CustomUnionType, GenerateParams, PropertiesData } from "./types";
-import { createInstance, parseComponent } from "./utils/handle";
+import { renderComponent, parseComponent } from "./utils/handle";
 import { getItemByPath, setItemByPath, updateItemByPath, moveSameLevel, moveDiffLevel, insertItemByIndex, updateName, InsertItemType, getKeyValueByIndex } from "./utils/utils";
 
 export type FormRenderListener = (newValue?: any, oldValue?: any) => void;
@@ -18,8 +18,8 @@ export class FormRenderStore {
     this.getProperties = this.getProperties.bind(this)
     this.setProperties = this.setProperties.bind(this)
     this.registry = this.registry.bind(this)
-    this.componentParse = this.componentParse.bind(this)
-    this.componentInstance = this.componentInstance.bind(this)
+    this.parseComponent = this.parseComponent.bind(this)
+    this.renderComponent = this.renderComponent.bind(this)
     this.components = {};
   }
 
@@ -29,15 +29,15 @@ export class FormRenderStore {
   };
 
   // 解析components
-  public componentParse(target?: CustomUnionType) {
+  public parseComponent(target?: CustomUnionType) {
     const typeMap = this.components;
     return parseComponent(target, typeMap);
   }
 
   // 创建components的实例
-  public componentInstance(target?: CustomUnionType, commonProps?: GenerateParams) {
+  public renderComponent(target?: CustomUnionType, commonProps?: GenerateParams) {
     const typeMap = this.components;
-    return createInstance(target, typeMap, commonProps);
+    return renderComponent(target, typeMap, commonProps);
   }
 
   // 获取当前组件的properties
