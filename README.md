@@ -11,7 +11,7 @@ npm install ---会创建package-lock.json
 npm run start 运行项目
 npm run build:sit 测试打包
 npm run build:prod 生产打包
-npm run eslint 检查js规范
+npm run lint 检查js规范
 npm run csslint 检查css规范
 ```
 
