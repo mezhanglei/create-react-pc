@@ -4,7 +4,7 @@ import { objectToFormData } from '@/utils/object';
 import { isEmpty, isObject } from '@/utils/type';
 
 /**
- * 自动给目标组件某个数据来源绑定请求，默认该数据的字段为options
+ * 自动给目标组件某个数据来源字段绑定请求，默认该数据的字段为options
  * @param component 目标控件
  * @param codeStr 请求数据源的字段名
  * @returns 

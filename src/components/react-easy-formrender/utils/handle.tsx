@@ -31,7 +31,7 @@ export const renderComponent = (target?: any, typeMap?: { [key: string]: React.E
   // 是否为注册组件
   const Com = isFormRegistered(target, typeMap);
   if (Com) {
-    const { children, ...rest } = target?.props;
+    const { children, ...rest } = target?.props || {};
     const mergeProps = Object.assign({}, commonProps, rest);
     return (
       <Com {...mergeProps}>
