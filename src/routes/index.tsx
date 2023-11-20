@@ -7,7 +7,7 @@ import { isLogin } from "@/utils/auth";
 
 export interface MyRouteProps extends RouteProps {
   auth?: boolean; // 是否需要权限验证
-  component: any; // 组件
+  component: React.ComponentType<any>; // 组件
   animationConfig?: { // 组件切换的动画类
     enter: string;
     exit: string;
@@ -37,7 +37,7 @@ export default function RouteComponent() {
               if (!isLogin() && item.auth) {
                 return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
               } else {
-                return <item.component key={item.path} {...props}></item.component>
+                return <item.component key={item.path} {...props}></item.component>;
               }
             }}
           />;
