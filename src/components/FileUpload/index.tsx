@@ -4,14 +4,15 @@ import React, { useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import './index.less';
 import { objectToFormData } from '@/utils/object';
-import { DOC_MIME_KEYS, DOC_MIME_VALUES } from '@/utils/mime';
-import request from '@/http/request';
+import { DOC_MIME_KEYS, DOC_MIME_VALUES, isDocFile } from '@/utils/mime';
+import http from '@/http/request';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
   maxSize?: number; // 每个文件的限制上传大小
   autoUpload?: boolean; // 是否在选取文件后立即上传
   value?: Array<UploadFile>; // 赋值给defaultFileList
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
+  request: any;
 }
 // 扩展后的文件类型
 export type FileItem = UploadFile & RcFile;
@@ -31,39 +32,29 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     accept = DOC_MIME_VALUES.join(','),
     multiple = true,
     children,
+    request = http,
     ...rest
   } = props;
 
   const [fileList, setFileList] = useState<Array<FileItem>>([]);
   const [loading, setLoading] = useState<boolean>();
 
-  // 获取文件名
-  const getFileName = (file?: FileItem) => {
-    const defaultFileName = file?.url && (file.url.substring(file.url.lastIndexOf('/') + 1));
-    return file?.name || defaultFileName;
-  }
-
   const checkFile = (file: RcFile) => {
-    const fileSize = file.size / 1024 / 1024
+    const fileSize = file.size / 1024 / 1024;
     if (fileSize > maxSize) {
-      message.error(`附件大小应小于${maxSize}M`)
+      message.error(`附件大小应小于${maxSize}M`);
       return Upload.LIST_IGNORE;
     }
     if (fileSize === 0) {
-      message.error(`文件不能为空`)
+      message.error(`文件不能为空`);
       return Upload.LIST_IGNORE;
     }
-    const filename = getFileName(file);
-    const suffix = filename?.split('.')?.pop?.()
-    if (!suffix) {
-      message.error(`请上传正确的文件格式`)
+    const isDoc = isDocFile(file);
+    if (!isDoc) {
+      message.error(`请上传正确的文件格式: ${DOC_MIME_KEYS?.join('，')}`);
       return Upload.LIST_IGNORE;
     }
-    if (!DOC_MIME_KEYS?.includes(suffix.toLowerCase())) {
-      message.error(`请上传正确的文件格式: ${DOC_MIME_KEYS?.join('，')}`)
-      return Upload.LIST_IGNORE;
-    }
-  }
+  };
 
   // 更新fileList
   const updateFileList = (file: FileItem) => {
@@ -75,7 +66,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       }
       return cloneData;
     });
-  }
+  };
 
   // 手动上传
   const handleUploadProps: UploadProps = {
@@ -89,13 +80,13 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       return rest?.onRemove && rest?.onRemove(file);
     },
     beforeUpload: (data) => {
-      const file = data as FileItem
+      const file = data as FileItem;
       if (checkFile(data) == Upload.LIST_IGNORE) {
         // 改变上传状态为报错
-        file.status = 'error'
+        file.status = 'error';
         return Upload.LIST_IGNORE;
       }
-      file.status = 'done'
+      file.status = 'done';
       const newFileList = [...fileList, file];
       setFileList(newFileList);
       onChange && onChange(newFileList);
@@ -115,7 +106,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       return rest?.onRemove && rest?.onRemove(file);
     },
     beforeUpload: (data) => {
-      const file = data as FileItem
+      const file = data as FileItem;
       if (checkFile(file) == Upload.LIST_IGNORE) {
         return Upload.LIST_IGNORE;
       }
@@ -124,19 +115,20 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
       const file = option?.file as FileItem;
       const formdata = objectToFormData(data);
       formdata.append(name, file);
-      setLoading(true)
+      setLoading(true);
       request.post(action as string, {
         data: formdata,
         headers: headers,
-        onUploadProgress: (event) => {
+        onUploadProgress: (event: any) => {
           const complete = (event.loaded / event.total * 100 | 0);
           file.percent = complete;
           updateFileList(file);
         }
-      }).then((res) => {
+      }).then(() => {
+        // @ts-ignore
         file.status = 'success';
         updateFileList(file);
-      }).catch((err) => {
+      }).catch(() => {
         file.status = 'error';
         updateFileList(file);
         message.error(`${file.name}上传失败`);
@@ -144,7 +136,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
         setLoading(false);
       });
     }
-  }
+  };
 
   return (
     <Upload
@@ -158,7 +150,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     >
       {children || <Button loading={loading}>上传文件</Button>}
     </Upload>
-  )
+  );
 });
 
 export default FileUpload;

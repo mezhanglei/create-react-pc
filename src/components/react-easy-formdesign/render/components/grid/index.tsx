@@ -3,4 +3,4 @@ import GridCol from './col';
 
 export {
   GridRow, GridCol
-}
+};

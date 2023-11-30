@@ -1,4 +1,3 @@
-import { CustomRow } from '../../';
 import React from 'react';
 import RowSelection from './row-selection';
 import { RowProps } from 'antd';

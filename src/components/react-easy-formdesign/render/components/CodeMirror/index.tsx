@@ -1,69 +1,60 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript';
-import { IUnControlledCodeMirror, UnControlled as CodeMirror } from 'react-codemirror2';
+import React, { CSSProperties, FocusEventHandler, useEffect, useRef, useState } from "react";
 import classNames from 'classnames';
 import './index.less';
 import { Button } from "antd";
 import { js_beautify } from 'js-beautify';
 import { handleEvalString, handleStringify } from "@/components/react-easy-formdesign/render/utils/utils";
 import CustomModal from "@/components/AntdModal";
+import { javascript } from '@codemirror/lang-javascript';
+import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
+import { json } from "@codemirror/lang-json";
 
-const prefixCls = 'options-codemirror';
+const prefixCls = 'custom-editor';
 const classes = {
-  editor: `${prefixCls}-editor`,
+  editor: prefixCls,
   disabled: `${prefixCls}-disabled`,
   modal: `${prefixCls}-modal`,
-}
-export interface EditorCodeMirrorProps extends IUnControlledCodeMirror {
+};
+export interface EditorCodeMirrorProps {
   value?: any;
   onChange?: (val: any) => void;
   disabled?: boolean; // 是否禁止输入
+  className?: string;
   style?: CSSProperties;
 }
 // 代码编辑器(不可以编辑函数)
-export const EditorCodeMirror = React.forwardRef<CodeMirror, EditorCodeMirrorProps>((props, ref) => {
+export const EditorCodeMirror = React.forwardRef<any, EditorCodeMirrorProps>((props, ref) => {
 
   const {
     value,
     onChange,
-    options,
-    disabled,
+    disabled = true,
     className,
     ...rest
   } = props;
 
-  const onBlur: IUnControlledCodeMirror['onBlur'] = (editor) => {
-    const codeStr = editor.getValue();
+  const editorRef = useRef<ViewUpdate>(null);
+
+  const onBlur: FocusEventHandler = () => {
+    const cm = editorRef.current?.view;
+    const codeStr = cm?.state.doc.toString() || '';
     const code = handleEvalString(codeStr);
     onChange && onChange(code);
-  }
+  };
 
   const codeStr = handleStringify(value);
   const formatStr = codeStr && js_beautify(codeStr, {
     indent_size: 2
   });
 
-  return (
-    <CodeMirror
-      ref={ref}
-      className={classNames(classes.editor, className, disabled ? classes.disabled : '')}
-      value={formatStr}
-      options={{
-        lineNumbers: true,
-        mode: 'javascript',
-        gutters: ['CodeMirror-lint-markers'],
-        lint: true,
-        line: true,
-        tabSize: 2,
-        lineWrapping: true,
-        readOnly: disabled,
-        ...options
-      }}
-      onBlur={onBlur}
-      {...rest}
-    />
-  );
+  return <CodeMirror
+    ref={editorRef}
+    value={formatStr}
+    editable={disabled ? false : true}
+    className={classNames(classes.editor, className, disabled ? classes.disabled : '')}
+    extensions={[javascript(), json()]}
+    onBlur={onBlur}
+  />;
 });
 
 // 代码编辑器弹窗
@@ -72,7 +63,6 @@ export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
   const {
     value,
     onChange,
-    options,
     disabled,
   } = props;
 
@@ -80,9 +70,9 @@ export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
   const codemirrorRef = useRef<any>();
 
   useEffect(() => {
-    const code = handleStringify(value)
-    setCodeStr(code ?? '')
-  }, [value])
+    const code = handleStringify(value);
+    setCodeStr(code ?? '');
+  }, [value]);
 
   const handleOk = (closeModal: () => void) => {
     const codemirror = codemirrorRef.current;
@@ -94,7 +84,7 @@ export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
       const code = handleEvalString(codeStr);
       onChange && onChange(code);
     }
-  }
+  };
 
   return (
     <CustomModal title="编辑数据" onOk={handleOk} displayElement={
@@ -108,7 +98,6 @@ export const EditorCodeMirrorModal = (props: EditorCodeMirrorProps) => {
       <EditorCodeMirror
         ref={codemirrorRef}
         value={value}
-        options={options}
         disabled={disabled}
       />
     </CustomModal>

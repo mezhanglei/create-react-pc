@@ -1,8 +1,8 @@
-import { Collapse } from 'react-collapse';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import "./index.less";
 import classNames from 'classnames';
-import Icon from '@/components/SvgIcon';
+import SvgIcon from '@/components/SvgIcon';
+import { useCollapse } from 'react-collapsed';
 
 export interface CustomCollapseProps extends React.HtmlHTMLAttributes<HTMLElement> {
   header?: React.ReactNode;
@@ -19,31 +19,28 @@ const CustomCollapse: React.FC<CustomCollapseProps> = (props) => {
     ...rest
   } = props;
 
-  const [isOpenedState, setIsOpenedState] = useState<boolean>();
+  const [isExpanded, setExpanded] = useState(isOpened);
+  const { getCollapseProps } = useCollapse({ isExpanded });
 
-  useEffect(() => {
-    setIsOpenedState(isOpened)
-  }, [isOpened])
-
-  const prefix = 'editor-setting-collapse';
+  const prefix = 'setting-collapse';
   const cls = classNames(prefix, className);
 
   return (
     <div className={cls}>
-      <div className={`${prefix}-header`} onClick={() => setIsOpenedState(!isOpenedState)}>
+      <div className={`${prefix}-header`} onClick={() => setExpanded(!isExpanded)}>
         <div>{header}</div>
         {
-          isOpenedState ?
-            <Icon name="zhedie-down" />
+          isExpanded ?
+            <SvgIcon name="zhedie-down" />
             :
-            <Icon name="zhedie-right" />
+            <SvgIcon name="zhedie-right" />
         }
       </div>
-      <Collapse isOpened={isOpenedState} {...rest}>
+      <div {...getCollapseProps()}>
         {children}
-      </Collapse>
+      </div>
     </div>
   );
-}
+};
 
 export default CustomCollapse;
