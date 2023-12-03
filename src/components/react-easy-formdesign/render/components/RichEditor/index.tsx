@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { Input, Button, ButtonProps } from 'antd';
 import './index.less';
 import CustomModal from '@/components/AntdModal';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
+
 
 export interface RichEditorProps {
   value?: string;
@@ -20,7 +23,30 @@ const RichEditor = React.forwardRef<any, RichEditorProps>((props, ref) => {
     onChange,
   } = props;
 
-  return <div id="editor">{value}</div>;
+  const editorRef = useRef<Quill>();
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const quill = new Quill(parentRef.current, {
+      theme: 'snow'
+    });
+    quill.on('text-change', function (delta, oldDelta, source) {
+      if (source == 'user') {
+        const htmlStr = quill.root.innerHTML;
+        onChange && onChange(htmlStr);
+      }
+    });
+    quill.pasteHTML(value || '');
+    const index = quill.getLength();
+    quill.setSelection(index, Quill.sources.USER); // 需要设置USER否则移动端光标会异常
+    editorRef.current = quill;
+  }, []);
+
+  return (
+    <div className='custom-editor'>
+      <div ref={parentRef}></div>
+    </div>
+  );
 });
 
 export default RichEditor;
