@@ -5,14 +5,14 @@ import './index.less';
 import classnames from 'classnames';
 
 export interface GetCodeProps extends ButtonProps {
-  onSendPromise: () => Promise<any>; // 发送验证码的promise方法
+  onSend: () => Promise<any>; // 发送验证码的promise方法
 }
 
 const TOTAL_TIME = 60;
 const GetCode = React.forwardRef<{ sendMsg: () => void }, GetCodeProps>((props, ref) => {
-  const { onSendPromise, className, ...rest } = props;
+  const { onSend, className, ...rest } = props;
   const [count, setCount] = useState<number>();
-  const [suffix, setSuffix] = useState<string>('发送验证码');
+  const [message, setMessage] = useState<string>('发送验证码');
   const [disabled, setDisabled] = useState<boolean>();
   const [loading, setLoading] = useState<boolean>();
   const canSendRef = useRef<boolean>(true);
@@ -27,15 +27,14 @@ const GetCode = React.forwardRef<{ sendMsg: () => void }, GetCodeProps>((props, 
   }, []);
 
   const resetBtn = () => {
-    setSuffix('重新发送');
+    setMessage(!count ? message : '重新发送');
     clearInterval(timerRef.current);
     timerRef.current = null;
     setDisabled(false);
     canSendRef.current = true;
-  }
+  };
 
   const visiblityListen = () => {
-    if (count === undefined) return;
     let start: number, end: number, vibs: number, newS: number;
     document.addEventListener('visibilitychange', () => {
       // hidden 为锁屏隐藏状态，visible为重新显示状态
@@ -55,36 +54,39 @@ const GetCode = React.forwardRef<{ sendMsg: () => void }, GetCodeProps>((props, 
     });
   };
 
-  const sendMsg = () => {
+  const sendMsg = async () => {
     const canSend = canSendRef.current;
-    if (typeof onSendPromise !== 'function') return;
+    if (typeof onSend !== 'function') return;
+    if (loading) return;
     if (canSend) {
       setLoading(true);
-      onSendPromise()
-        .then(() => {
+      try {
+        const data = await onSend();
+        setLoading(false);
+        setDisabled(true);
+        if (!data) return;
+        if (!timerRef.current) {
           canSendRef.current = false;
-          setLoading(false);
-          setDisabled(true);
-          if (!timerRef.current) {
-            setCount(TOTAL_TIME);
-            setSuffix('s后重发');
-            timerRef.current = setInterval(() => {
-              setCount(oldCount => {
-                if (oldCount && oldCount <= TOTAL_TIME) {
-                  return oldCount - 1;
-                } else {
-                  resetBtn();
-                  return undefined;
-                }
-              });
-            }, 1000);
-          }
-        })
-        .catch(() => {
-          setLoading(false);
-        });
+          setCount(TOTAL_TIME);
+          setMessage('s后重发');
+          timerRef.current = setInterval(() => {
+            setCount(oldCount => {
+              if (oldCount && oldCount <= TOTAL_TIME) {
+                return oldCount - 1;
+              } else {
+                resetBtn();
+                return undefined;
+              }
+            });
+          }, 1000);
+        }
+      } catch (error) {
+        setLoading(false);
+      }
     }
   };
+
+  const btnText = loading ? '发送中' : (count || '') + message;
 
   return (
     <Button
@@ -95,8 +97,7 @@ const GetCode = React.forwardRef<{ sendMsg: () => void }, GetCodeProps>((props, 
       loading={loading}
       {...rest}
     >
-      {count}
-      {suffix}
+      {btnText}
     </Button>
   );
 });

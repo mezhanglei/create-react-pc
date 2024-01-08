@@ -1,6 +1,6 @@
 // ===AXIOS请求的配置信息=== //
 
-import { AxiosRequestConfig, Canceler } from "axios";
+import { InternalAxiosRequestConfig, Canceler } from "axios";
 
 export enum MESSAGE {
   SUCCESS = '更新成功',
@@ -55,8 +55,8 @@ export interface CancelPending {
   cancel: Canceler
 }
 // axios config
-export interface CustomConfig extends AxiosRequestConfig {
+export interface CustomConfig extends InternalAxiosRequestConfig {
   trim?: boolean // 去除空格
   unique?: boolean // 去除重复请求
   withResponse?: boolean; // 返回值是否携带请求体
-}
+};

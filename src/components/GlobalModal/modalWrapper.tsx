@@ -30,19 +30,19 @@ const ModalWrapper = React.forwardRef<HTMLDivElement, ModalWrapperProps>((props,
   }, [open]);
 
   const handleOk = () => {
-    closeModal()
-    onResolve && onResolve()
-  }
+    closeModal();
+    onResolve && onResolve();
+  };
 
   const handleCancel = () => {
     closeModal();
     onReject && onReject();
-  }
+  };
 
   const closeModal = () => {
     setModalOpen(false);
     onClose && onClose();
-  }
+  };
 
   const cls = classnames('modal-wrapper', className);
 

@@ -26,7 +26,7 @@ export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props
 
   const closeModal = () => {
     setModalOpen(false);
-  }
+  };
 
   const cls = classnames('modal-demo', className);
 
@@ -46,6 +46,6 @@ export const DemoModal = React.forwardRef<HTMLDivElement, DemoModalProps>((props
 export const showDemoSwitch = () => {
   const Props = {
     open: true
-  }
-  return create(DemoModal, { ...Props })
+  };
+  return create(DemoModal, { ...Props });
 };

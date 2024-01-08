@@ -1,6 +1,7 @@
 import './result.less';
 import React, { ReactNode } from "react";
 import { isEmpty } from "@/utils/type";
+import NodataImage from 'src/assets/fail.png';
 
 export interface ResultProps {
   imgUrl?: string;
@@ -20,7 +21,7 @@ export default class extends React.Component<ResultProps> {
   }
   static defaultProps = {
     // 图标
-    imgUrl: require('src/assets/no-data.png'),
+    imgUrl: NodataImage,
     // 加重字体
     title: "暂无数据",
     // 描述性文本
@@ -29,7 +30,7 @@ export default class extends React.Component<ResultProps> {
     width: "100%",
     // 高(自适应)
     height: "100%"
-  }
+  };
 
   render() {
     const { imgUrl, title, text, width, height } = this.props;

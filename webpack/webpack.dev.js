@@ -28,6 +28,7 @@ module.exports = merge(base, {
     // 忽视的文件夹,多个文件夹使用这种形式['files/**/*.js', 'node_modules/**']
     ignored: /node_modules/,
   },
+  // 开发服务器配置
   // 配置webpack的开发服务器
   devServer: {
     // 启动时打开浏览器
@@ -35,7 +36,7 @@ module.exports = merge(base, {
     // 有时无法访问可能是端口被占用n
     port: 8033,
     // 启动webpack-dev-server时的host(设置为0.0.0.0无论是本机ip或127.0.0.1或localhost都会响应请求)
-    host: '0.0.0.0',
+    host: "localhost",
     // 开启热更新
     hot: true,
     // 一切服务都启用gzip 压缩(也可以通过webpack-dev-server --compress启动)

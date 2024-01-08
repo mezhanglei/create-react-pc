@@ -1,8 +1,8 @@
-import request from '@/http/request';
-import { RequestResponse } from '../interface';
+import request from '@/http';
 import { UserInfo } from './interface';
 
 // 获取用户信息
-export const getUserInfo = (): RequestResponse<UserInfo> => {
-  return request.post('user/info');
+export const getUserInfo = async (): Promise<UserInfo> => {
+  const res = await request('user/info', { method: 'post' });
+  return res.data;
 };

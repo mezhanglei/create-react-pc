@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { objectToFormData } from '@/utils/object';
 import { getBase64 } from './util';
-import request from '@/http/request';
+import { IMAGE_MIME_KEYS, isImageFile } from '@/utils/mime';
+import request from '@/http/index';
 
 export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
+  formdataKey: string; // FormData的key
   maxSize?: number; // 每张图片的限制上传大小
   autoUpload?: boolean; // 是否在选取文件后立即上传
   value?: Array<UploadFile>; // 赋值给defaultFileList
@@ -24,13 +26,13 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     onChange,
     action,
     headers,
-    name = 'file', // 文件参数名
     data, // 额外参数
     accept = 'image/gif,image/jpeg,image/jpg,image/png,image/webp,image/bmp',
     listType = 'picture-card',
     maxCount = 5,
     multiple = true,
     children,
+    formdataKey = 'file',
     ...rest
   } = props;
 
@@ -41,16 +43,21 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
   const [loading, setLoading] = useState<boolean>();
 
   const checkFile = (file: RcFile) => {
-    const fileSize = file.size / 1024 / 1024
+    const fileSize = file.size / 1024 / 1024;
     if (fileSize > maxSize) {
-      message.error(`附件大小应小于${maxSize}M`)
+      message.error(`附件大小应小于${maxSize}M`);
       return Upload.LIST_IGNORE;
     }
     if (fileSize === 0) {
-      message.error(`文件不能为空`)
+      message.error(`文件不能为空`);
       return Upload.LIST_IGNORE;
     }
-  }
+    const isDoc = isImageFile(file);
+    if (!isDoc) {
+      message.error(`请上传正确的图片格式: ${IMAGE_MIME_KEYS?.join('，')}`);
+      return Upload.LIST_IGNORE;
+    }
+  };
 
   // 更新fileList
   const updateFileList = (file: FileItem) => {
@@ -62,7 +69,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       }
       return cloneData;
     });
-  }
+  };
 
   // 手动上传(只上传到本地)
   const handleUploadProps: UploadProps = {
@@ -75,13 +82,13 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       return rest?.onRemove && rest?.onRemove(file);
     },
     beforeUpload: async (data) => {
-      const file = data as FileItem
+      const file = data as FileItem;
       if (checkFile(data) == Upload.LIST_IGNORE) {
         // 改变上传状态为报错
-        file.status = 'error'
+        file.status = 'error';
         return Upload.LIST_IGNORE;
       }
-      file.status = 'done'
+      file.status = 'done';
       file.thumbUrl = await getBase64(file);
       const newFileList = [...fileList, file];
       setFileList(newFileList);
@@ -100,7 +107,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       return rest?.onRemove && rest?.onRemove(file);
     },
     beforeUpload: async (data) => {
-      const file = data as FileItem
+      const file = data as FileItem;
       if (checkFile(file) == Upload.LIST_IGNORE) {
         return Upload.LIST_IGNORE;
       }
@@ -111,20 +118,22 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     customRequest: async (option) => {
       const file = option?.file as FileItem;
       const formdata = objectToFormData(data);
-      formdata.append(name, file);
-      setLoading(true)
-      request.post(action as string, {
+      formdata.append(formdataKey, file);
+      setLoading(true);
+      request(action, {
+        method: 'post',
         data: formdata,
         headers: headers,
-        onUploadProgress: (event) => {
+        onUploadProgress: (event: any) => {
           const complete = (event.loaded / event.total * 100 | 0);
           file.percent = complete;
           updateFileList(file);
         }
-      }).then((res) => {
+      }).then(() => {
+        // @ts-ignore
         file.status = 'success';
         updateFileList(file);
-      }).catch((err) => {
+      }).catch(() => {
         file.status = 'error';
         updateFileList(file);
         message.error(`${file.name}上传失败`);
@@ -132,7 +141,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         setLoading(false);
       });
     }
-  }
+  };
 
   const handlePreview = async (data: UploadFile) => {
     const file = data as FileItem;
@@ -144,17 +153,17 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     setImageVisible(true);
     const filename = getFileName(file);
     setImageTitle(filename);
-  }
+  };
 
   const handleCancel = () => {
     setImageVisible(false);
-  }
+  };
 
   // 获取文件名
   const getFileName = (file?: FileItem) => {
     const defaultFileName = file?.url && (file.url.substring(file.url.lastIndexOf('/') + 1));
     return file?.name || defaultFileName;
-  }
+  };
 
   const uploadButton = children || (
     <div>
@@ -187,7 +196,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         <img alt="example" style={{ width: '100%' }} src={imageSrc} />
       </Modal>
     </>
-  )
+  );
 });
 
 export default ImageUpload;

@@ -5,7 +5,7 @@ import { TableCell } from "./components";
 import classNames from 'classnames';
 import './index.less';
 import SvgIcon from '@/components/SvgIcon';
-import { Form, FormProps, FormStore, joinFormPath, useFormStore } from "@/components/react-easy-formrender";
+import { Form, FormProps, SimpleForm, joinFormPath, useSimpleForm } from "@simpleform/render";
 import { useTableData } from "./utils";
 import { FormTableProps } from "./types";
 
@@ -22,10 +22,10 @@ const CustomTableCell = (props: any) => {
       }
     </TableCell>
   );
-}
+};
 
 // 可编辑表格(ref方案，通过ref来获取值)
-const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
+const FormTable = React.forwardRef<SimpleForm, FormTableProps>((props, ref) => {
   const {
     className,
     columns = [],
@@ -35,7 +35,7 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
     showBtn = true,
     pagination = false,
     ...rest
-  } = props
+  } = props;
 
   const defaultValue = Array.from({ length: minRows || 0 });
   const {
@@ -49,13 +49,13 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
     setDataSource(defaultValue);
   }, [minRows]);
 
-  const tableForm = useFormStore();
+  const tableForm = useSimpleForm();
 
-  useImperativeHandle(ref, () => tableForm)
+  useImperativeHandle(ref, () => tableForm);
 
   const onValuesChange: FormProps['onValuesChange'] = (_, values) => {
-    setDataSource(values)
-  }
+    setDataSource(values);
+  };
 
   const deleteBtn = (rowIndex: number) => {
     if (disabled) return;
@@ -64,17 +64,17 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
     const old = tableForm.getFieldValue() || [];
     old.splice(rowIndex, 1);
     tableForm.setFieldsValue([...old]);
-  }
+  };
 
   const addBtn = () => {
     if (tableData?.length >= maxRows) {
-      message.info(`最大行数不能超过${maxRows}`)
+      message.info(`最大行数不能超过${maxRows}`);
       return;
     }
-    addItem([{}])
+    addItem([{}]);
     const newDataSource = tableData.concat({});
     tableForm.setFieldsValue(newDataSource);
-  }
+  };
 
   const newColumns = useMemo(() => {
     const result = columns?.map((col) => {
@@ -90,9 +90,9 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
             name: joinFormPath(rowIndex, dataIndex), // 拼接路径
             formControl: formControl,
             ...restCol,
-          }
+          };
         },
-      }
+      };
     }) as TableProps<any>['columns'] || [];
     if (showBtn) {
       // 添加删除按键
@@ -101,10 +101,10 @@ const FormTable = React.forwardRef<FormStore, FormTableProps>((props, ref) => {
         width: 50,
         render: (text: any, record, index: number) => {
           if (tableData?.length > minRows) {
-            return <SvgIcon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />
+            return <SvgIcon name="delete" className="delete-icon" onClick={() => deleteBtn(index)} />;
           }
         }
-      })
+      });
     }
     return result;
   }, [columns, showBtn, tableData, disabled]);

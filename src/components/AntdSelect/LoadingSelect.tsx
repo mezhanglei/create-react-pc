@@ -1,4 +1,4 @@
-import request from '@/http/request';
+import request from '@/http';
 import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import type { BaseSelectProps } from './BaseSelect';
@@ -64,7 +64,7 @@ const LoadingSelect: React.FC<LoadingSelectProps> = props => {
 
   useEffect(() => {
     if (immediate) {
-      fecthData()
+      fecthData();
     }
   }, [JSON.stringify(params), url, immediate]);
 

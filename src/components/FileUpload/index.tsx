@@ -5,14 +5,14 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import './index.less';
 import { objectToFormData } from '@/utils/object';
 import { DOC_MIME_KEYS, DOC_MIME_VALUES, isDocFile } from '@/utils/mime';
-import http from '@/http/request';
+import request from '@/http/index';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
+  formdataKey: string; // FormData的key
   maxSize?: number; // 每个文件的限制上传大小
   autoUpload?: boolean; // 是否在选取文件后立即上传
   value?: Array<UploadFile>; // 赋值给defaultFileList
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
-  request: any;
 }
 // 扩展后的文件类型
 export type FileItem = UploadFile & RcFile;
@@ -26,13 +26,12 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     onChange,
     action,
     headers,
-    name = 'file', // 文件参数名
     data, // 额外参数
     showUploadList,
     accept = DOC_MIME_VALUES.join(','),
     multiple = true,
     children,
-    request = http,
+    formdataKey = 'file',
     ...rest
   } = props;
 
@@ -114,9 +113,10 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     customRequest: async (option) => {
       const file = option?.file as FileItem;
       const formdata = objectToFormData(data);
-      formdata.append(name, file);
+      formdata.append(formdataKey, file);
       setLoading(true);
-      request.post(action as string, {
+      request(action, {
+        method: 'post',
         data: formdata,
         headers: headers,
         onUploadProgress: (event: any) => {

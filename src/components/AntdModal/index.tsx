@@ -4,7 +4,7 @@ import { useState } from 'react';
 import './style.less';
 
 export interface CustomModalProps extends ModalProps {
-  displayElement?: ((showModal: () => void) => ReactNode) | ReactNode;
+  displayElement?: ((showModal: () => any) => ReactNode) | ReactNode;
   onOk?: (closeModal: any) => void | Promise<void>;
   onCancel?: (closeModal: any) => void | Promise<void>;
 }
@@ -20,39 +20,37 @@ const CustomModal = (props: CustomModalProps) => {
     ...rest
   } = props;
 
-  const [visible, setVisible] = useState<boolean>()
+  const [visible, setVisible] = useState<boolean>();
 
   const showModal = () => {
-    setVisible(true)
-  }
+    setVisible(true);
+  };
 
   const closeModal = () => {
     setVisible(false);
-  }
+  };
 
   const handleCancel = async (e: any) => {
     if (typeof onCancel == 'function') {
-      onCancel(closeModal)
+      onCancel(closeModal);
     } else {
-      closeModal()
+      closeModal();
     }
-  }
+  };
 
   const handleOk = async (e: any) => {
     if (typeof onOk == 'function') {
-      onOk(closeModal)
+      onOk(closeModal);
     } else {
-      closeModal()
+      closeModal();
     }
-  }
+  };
 
   return (
     <>
       {
         React.isValidElement(displayElement) ?
-          React.cloneElement(displayElement, {
-            onClick: showModal
-          })
+          React.cloneElement(displayElement, { onClick: showModal } as any)
           :
           typeof displayElement === 'function' ?
             displayElement(showModal) : null

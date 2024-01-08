@@ -1,7 +1,6 @@
 import { getToken } from "@/utils/auth";
-import request from "@/http/request";
+import request, { ServiceRes } from "@/http";
 import { addUrlQuery } from "@/utils/url";
-import { RequestResponse } from "../interface";
 
 
 // 上传文件路径
@@ -14,8 +13,9 @@ export const GetUploadFileUrl = 'uoload/download';
 export interface UploadFilesRes {
 
 }
-export const uploadFiles = (data: FormData): RequestResponse<UploadFilesRes> => {
-  return request.post(UploadFileUrl, {
+export const uploadFiles = (data: FormData): Promise<ServiceRes<UploadFilesRes>> => {
+  return request(UploadFileUrl, {
+    method: 'post',
     data
   });
 };

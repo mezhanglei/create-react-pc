@@ -3,11 +3,11 @@ import { calculateHashSample, createFileChunk } from "./utils";
 import CreateWorker from 'worker-loader!./md5-worker.js';
 import { from, mergeMap } from "rxjs";
 
-let id = 0
+let id = 0;
 
 export class Uploader {
 
-  public dom: HTMLInputElement
+  public dom: HTMLInputElement;
   beforeUpload: UploadParams['beforeUpload'];
   uploading: UploadParams['uploading'];
   afterUpload: UploadParams['afterUpload'];
@@ -27,12 +27,12 @@ export class Uploader {
     if (props?.multiple) input.multiple = true;
 
     // 产生实例的同时会向document添加一个隐藏的input:file元素
-    document.body.appendChild(input)
-    input.style.visibility = 'hidden'
-    input.style.position = 'absolute'
+    document.body.appendChild(input);
+    input.style.visibility = 'hidden';
+    input.style.position = 'absolute';
 
     // 监听上传
-    input.addEventListener('input', this.handleFileChange.bind(this))
+    input.addEventListener('input', this.handleFileChange.bind(this));
 
     this.dom = input;
     this.chunkSize = 2 * 1024 * 1024;
@@ -92,7 +92,7 @@ export class Uploader {
     const params = {
       file,
       fileHash
-    }
+    };
     console.log('校验函数，返回已上传的列表');
     return this.beforeUpload(params);
   }
@@ -107,18 +107,18 @@ export class Uploader {
         // 有请求，有通道
         while (count < len && max > 0) {
           max--;
-          const index = queues.findIndex(v => v.status == Status.wait || v.status == Status.error)
+          const index = queues.findIndex(v => v.status == Status.wait || v.status == Status.error);
           const execItem = queues[index];
           const fn = execItem?.callback;
           const chunkName = execItem?.chunk?.chunkName;
-          execItem.status = Status.uploading
+          execItem.status = Status.uploading;
           const chunks = this.chunksMap[execItem?.file?.name];
-          const chunkIndex = chunks?.findIndex((item) => item.chunkName === chunkName)
+          const chunkIndex = chunks?.findIndex((item) => item.chunkName === chunkName);
           fn().then((res) => {
             max++;
             count++;
             // 设置状态Status.done
-            execItem.status = Status.done
+            execItem.status = Status.done;
             // 进度更改
             chunks[chunkIndex].progress = 100;
             if (count === len) {
@@ -132,12 +132,12 @@ export class Uploader {
             if (errorCount === undefined) {
               errorMap[chunkName] = 0;
             } else {
-              const newCount = errorCount + 1
+              const newCount = errorCount + 1;
               errorMap[chunkName] = newCount;
               // 一个请求报错三次就会reject
               if (newCount >= 2) {
-                this.onError?.(execItem)
-                return reject(err)
+                this.onError?.(execItem);
+                return reject(err);
               }
             }
             // 设置状态Status.error
@@ -145,10 +145,10 @@ export class Uploader {
             // 进度报错
             chunks[chunkIndex].progress = -1;
             max++;
-            start()
-          })
+            start();
+          });
         }
-      }
+      };
       start();
     });
   }
@@ -159,12 +159,12 @@ export class Uploader {
       return new Promise((resolve, reject) => {
         const fn = queue?.callback;
         const chunkName = queue?.chunk?.chunkName;
-        queue.status = Status.uploading
+        queue.status = Status.uploading;
         const chunks = this.chunksMap[queue?.file?.name];
-        const chunkIndex = chunks?.findIndex((item) => item.chunkName === chunkName)
+        const chunkIndex = chunks?.findIndex((item) => item.chunkName === chunkName);
         fn().then((res) => {
           // 设置状态Status.done
-          queue.status = Status.done
+          queue.status = Status.done;
           // 进度更改
           chunks[chunkIndex].progress = 100;
           resolve(res);
@@ -173,15 +173,15 @@ export class Uploader {
           queue.status = Status.error;
           // 进度报错
           chunks[chunkIndex].progress = -1;
-          return reject(err)
-        })
-      })
-    }, 4))
+          return reject(err);
+        });
+      });
+    }, 4));
   }
 
   // 计算当前文件进度
   fileProgress(chunks: UploadChunk[], file: File) {
-    const uploadSize = chunks?.reduce((prev, next) => prev + next.chunkSize * next.progress, 0)
+    const uploadSize = chunks?.reduce((prev, next) => prev + next.chunkSize * next.progress, 0);
     const currentFileProgress = parseInt((uploadSize / file.size).toFixed(2));
     this.progress = currentFileProgress;
     return currentFileProgress;
@@ -199,7 +199,7 @@ export class Uploader {
     try {
       const queues = this.createUploadQueue((filAndChunk) => {
         const progress = this.fileProgress(chunks, file);
-        return this.uploading?.({ ...filAndChunk, progress, chunks })
+        return this.uploading?.({ ...filAndChunk, progress, chunks });
       }, { chunks: chunks, file, fileHash, uploadedList });
       await this.handleConcurrent(queues);
       // 结束后在计算一次进度
@@ -209,7 +209,7 @@ export class Uploader {
         await this.mergeRequest(file);
       }
     } catch (e) {
-      console.log('上传失败，请重试', e)
+      console.log('上传失败，请重试', e);
       this.reset();
     }
   }
@@ -220,7 +220,7 @@ export class Uploader {
       file: file,
       size: this.chunkSize,
       fileHash: this.hashMap[file.name]
-    }
+    };
     this.reset();
     this.afterUpload(params);
   }
@@ -263,10 +263,10 @@ export class Uploader {
         progress: uploadedList?.indexOf(chunkName) > -1 ? 100 : 0,
         fileHash: fileHash
       };
-      ret?.push(item)
+      ret?.push(item);
     }
     return ret;
-  }
+  };
 
   // 继续上传
   async handleResume(file: File) {

@@ -52,7 +52,7 @@ const BaseSelect: React.FC<BaseSelectProps> = props => {
           <div>{subLabel}</div>
         </Tooltip>
       </div>
-    )
+    );
   };
 
   const formatOptions = options?.map(option => {
@@ -67,7 +67,7 @@ const BaseSelect: React.FC<BaseSelectProps> = props => {
       label: customLabelNode,
       value: option[valueCode],
       key: option[valueCode],
-    }
+    };
   });
 
   // 加载请求完成

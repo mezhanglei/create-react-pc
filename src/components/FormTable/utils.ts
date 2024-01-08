@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { deepSet } from "@/components/FormRender";
+import { deepSet } from "@simpleform/render";
 import { nanoid } from 'nanoid';
 
 export const defaultGetId = (key?: string) => {
@@ -16,12 +16,12 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
       setData(data);
       dataSourceRef.current = data;
     }
-  }
+  };
 
   // onChange事件
   const dataChange = (data: T[]) => {
     onChange && onChange(data);
-  }
+  };
 
   // 更新目标数据
   const updateItem = (data: any, rowIndex: number, path?: string) => {
@@ -29,20 +29,20 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
     const cloneData = oldData ? [...oldData] : [];
     let item = cloneData?.[rowIndex] ?? {};
     if (path) {
-      cloneData[rowIndex] = deepSet(item, path, data)
+      cloneData[rowIndex] = deepSet(item, path, data);
     } else {
       cloneData[rowIndex] = data;
     }
     setDataSource(cloneData);
     dataChange(cloneData);
-  }
+  };
 
   // 新增一行
   const addItem = (data: T[]) => {
     const oldData = dataSourceRef.current;
     const newData = oldData?.concat(data);
     setDataSource(newData);
-  }
+  };
 
   // 删除一行
   const deleteItem = (rowIndex: number) => {
@@ -52,7 +52,7 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
     newData.splice(rowIndex, 1);
     setDataSource(newData);
     dataChange(newData);
-  }
+  };
 
   return {
     updateItem,
@@ -60,5 +60,5 @@ export function useTableData<T = any>(intialValue?: T[], onChange?: (data: T[]) 
     deleteItem,
     dataSource,
     setDataSource
-  }
+  };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import 'react-responsive-modal/styles.css';
-import "./baseModal.less"
+import "./baseModal.less";
 import { Modal, ModalProps } from 'react-responsive-modal';
 
 export interface BaseModalProps extends ModalProps {

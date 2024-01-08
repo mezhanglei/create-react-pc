@@ -1,4 +1,4 @@
-import request from '@/http/request';
+import request from '@/http';
 import { AutoComplete, AutoCompleteProps } from 'antd';
 import React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -42,17 +42,17 @@ const LoadingAutoComplete: React.FC<LoadingAutoCompleteProps> = props => {
 
   useEffect(() => {
     if (immediate) {
-      fecthData()
+      fecthData();
     }
   }, [JSON.stringify(params), url, immediate]);
 
   const setFormatOptions = (options: Array<any>) => {
     let result: Array<{ label: string; value: string | number }> = [];
     if (options instanceof Array) {
-      result = options.map((option) => ({ ...option, label: option[labelCode], value: option[valueCode], }))
+      result = options.map((option) => ({ ...option, label: option[labelCode], value: option[valueCode], }));
     }
     setOptions(result);
-  }
+  };
 
   // 根据关键词搜索结果
   const fecthData = (keywords?: string | number) => {
@@ -111,9 +111,9 @@ const LoadingAutoComplete: React.FC<LoadingAutoCompleteProps> = props => {
   const transformValue = useMemo(() => {
     const item = options?.find?.((data: any) => data?.[valueCode] == value);
     if (item) {
-      return item[labelCode]
+      return item[labelCode];
     }
-  }, [value, JSON.stringify(options)])
+  }, [value, JSON.stringify(options)]);
 
   return (
     <AutoComplete
