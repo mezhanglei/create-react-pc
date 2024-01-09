@@ -5,28 +5,21 @@ export default function Demo5(props) {
 
   const watch = {
     'name2': (newValue, oldValue) => {
-      console.log(newValue, oldValue)
+      console.log(newValue, oldValue);
     },
     'name3[0]': (newValue, oldValue) => {
-      console.log(newValue, oldValue)
+      console.log(newValue, oldValue);
     },
     'name4': (newValue, oldValue) => {
-      console.log(newValue, oldValue)
+      console.log(newValue, oldValue);
     }
-  }
+  };
 
   const properties = {
     name1: {
-      label: "readonly",
+      label: "只读",
       readOnly: true,
-      readOnlyRender: "readonly component",
-      type: 'Input',
-      props: {}
-    },
-    name2: {
-      label: "readonly",
-      readOnly: true,
-      readOnlyRender: "readonly component",
+      readOnlyRender: "只读选项制度选项",
       type: 'Input',
       props: {}
     },
@@ -110,7 +103,7 @@ export default function Demo5(props) {
         children: 'option'
       }
     },
-  }
+  };
 
   const form = useSimpleForm();
   // const formrender = useSimpleFormRender();
@@ -133,4 +126,4 @@ export default function Demo5(props) {
       </div>
     </div>
   );
-}
+};
