@@ -5,7 +5,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import { objectToFormData } from '@/utils/object';
 import { getBase64 } from './util';
 import { IMAGE_MIME_KEYS, isImageFile } from '@/utils/mime';
-import request from '@/http/index';
+import request from '@/request/index';
 
 export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
   formdataKey: string; // FormData的key

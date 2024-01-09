@@ -1,4 +1,4 @@
-import request from '@/http';
+import request from '@/request';
 import { AutoComplete, AutoCompleteProps } from 'antd';
 import React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';

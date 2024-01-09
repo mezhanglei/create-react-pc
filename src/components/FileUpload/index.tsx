@@ -5,7 +5,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import './index.less';
 import { objectToFormData } from '@/utils/object';
 import { DOC_MIME_KEYS, DOC_MIME_VALUES, isDocFile } from '@/utils/mime';
-import request from '@/http/index';
+import request from '@/request/index';
 
 export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
   formdataKey: string; // FormData的key

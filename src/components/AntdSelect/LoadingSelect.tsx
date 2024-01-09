@@ -1,4 +1,4 @@
-import request from '@/http';
+import request from '@/request';
 import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import type { BaseSelectProps } from './BaseSelect';
