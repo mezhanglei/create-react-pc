@@ -24,16 +24,23 @@ export type SendData = string | ArrayBufferLike | Blob | ArrayBufferView;
 // Websocket 使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket 协议使用 80 端口；如果运行在 TLS 之上时，默认使用 443 端口。
 export default class CreateWebSocket {
   config: CreateWebSocketProps;
-  lockReconnect: boolean = false; // true禁止重连
-  status: IMEvent = IMEvent.CONNECTED;
-  handlerMap: Map<string, Set<Function>> = new Map(); // 存储事件Map结构
-  dataQueue: Set<SendData> = new Set(); // 消息队列
-  socket?: WebSocket = undefined; // webscoket实例
-  reconnectTimer?: any = undefined;
-  reconnectCount: number = 0;
+  lockReconnect: boolean; // true禁止重连
+  status: IMEvent;
+  handlerMap: Map<string, Set<Function>>; // 存储事件Map结构
+  dataQueue: Set<SendData>; // 消息队列
+  socket?: WebSocket; // webscoket实例
+  reconnectTimer?: any;
+  reconnectCount: number;
 
   constructor(config: CreateWebSocketProps) {
     this.config = Object.assign({ reconnectTimeout: 5000, heartCheckTimeout: 5000 }, config);
+    this.lockReconnect = false;
+    this.status = IMEvent.CONNECTED;
+    this.handlerMap = new Map();
+    this.dataQueue = new Set();
+    this.socket = undefined;
+    this.reconnectTimer = undefined;
+    this.reconnectCount = 0;
     this.connect();
   }
 

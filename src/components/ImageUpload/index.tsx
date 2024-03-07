@@ -1,26 +1,24 @@
 import { message, Modal, Upload, UploadProps } from 'antd';
 import { RcFile } from 'antd/lib/upload';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { objectToFormData } from '@/utils/object';
 import { getBase64 } from './util';
 import { IMAGE_MIME_KEYS, isImageFile } from '@/utils/mime';
 import request from '@/request/index';
 
+// 扩展后的文件类型
+export type FileItem = UploadFile & RcFile & Record<string, any>;
 export interface ImageUploadProps extends Omit<UploadProps, 'onChange'> {
   formdataKey: string; // FormData的key
   maxSize?: number; // 每张图片的限制上传大小
-  autoUpload?: boolean; // 是否在选取文件后立即上传
-  value?: Array<UploadFile>; // 赋值给defaultFileList
+  value?: Array<FileItem>;
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
 }
-// 扩展后的文件类型
-export type FileItem = UploadFile & RcFile;
 const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
 
   const {
     maxSize = 5,
-    autoUpload = true,
     // 组件原生props
     value,
     onChange,
@@ -42,6 +40,10 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
   const [imageSrc, setImageSrc] = useState<string>();
   const [loading, setLoading] = useState<boolean>();
 
+  useEffect(() => {
+    setFileList(JSON.parse(JSON.stringify(value || [])));
+  }, [value]);
+
   const checkFile = (file: RcFile) => {
     const fileSize = file.size / 1024 / 1024;
     if (fileSize > maxSize) {
@@ -60,7 +62,7 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
   };
 
   // 更新fileList
-  const updateFileList = (file: FileItem) => {
+  const updateFileList = (file: RcFile, params: Partial<FileItem>) => {
     setFileList((old) => {
       const cloneData = old?.length ? [...old] : [];
       const index = old.indexOf(file) > -1 ? old?.indexOf(file) : cloneData?.length;
@@ -71,34 +73,8 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     });
   };
 
-  // 手动上传(只上传到本地)
-  const handleUploadProps: UploadProps = {
-    onRemove: (file) => {
-      const index = fileList.indexOf(file as RcFile);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      setFileList(newFileList);
-      onChange && onChange(newFileList);
-      return rest?.onRemove && rest?.onRemove(file);
-    },
-    beforeUpload: async (data) => {
-      const file = data as FileItem;
-      if (checkFile(data) == Upload.LIST_IGNORE) {
-        // 改变上传状态为报错
-        file.status = 'error';
-        return Upload.LIST_IGNORE;
-      }
-      file.status = 'done';
-      file.thumbUrl = await getBase64(file);
-      const newFileList = [...fileList, file];
-      setFileList(newFileList);
-      onChange && onChange(newFileList);
-      return Upload.LIST_IGNORE;
-    },
-  };
-
   // 远程上传
-  const autoUploadProps: UploadProps = {
+  const UploadProps: UploadProps = {
     onRemove: (file) => {
       const index = fileList.indexOf(file as RcFile);
       const newFileList = fileList.slice();
@@ -107,16 +83,13 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
       return rest?.onRemove && rest?.onRemove(file);
     },
     beforeUpload: async (data) => {
-      const file = data as FileItem;
+      const file = data as RcFile;
       if (checkFile(file) == Upload.LIST_IGNORE) {
         return Upload.LIST_IGNORE;
       }
-      file.thumbUrl = await getBase64(file);
-      const newFileList = [...fileList, file];
-      setFileList(newFileList);
     },
     customRequest: async (option) => {
-      const file = option?.file as FileItem;
+      const file = option?.file as RcFile;
       const formdata = objectToFormData(data);
       formdata.append(formdataKey, file);
       setLoading(true);
@@ -126,16 +99,15 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         headers: headers,
         onUploadProgress: (event: any) => {
           const complete = (event.loaded / event.total * 100 | 0);
-          file.percent = complete;
-          updateFileList(file);
+          updateFileList(file, { percent: complete });
         }
-      }).then(() => {
+      }).then((res) => {
+        // TODO: 获取fileId
+        const data = res.data;
         // @ts-ignore
-        file.status = 'success';
-        updateFileList(file);
+        updateFileList(file, { status: 'success' });
       }).catch(() => {
-        file.status = 'error';
-        updateFileList(file);
+        updateFileList(file, { status: 'error' });
         message.error(`${file.name}上传失败`);
       }).finally(() => {
         setLoading(false);
@@ -177,12 +149,11 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         ref={ref}
         multiple={multiple}
         fileList={fileList}
-        defaultFileList={value}
         accept={accept}
         listType={listType}
         onPreview={handlePreview}
         maxCount={maxCount}
-        {...(!autoUpload ? handleUploadProps : autoUploadProps)}
+        {...UploadProps}
         {...rest}
       >
         {fileList?.length >= maxCount ? null : uploadButton}
