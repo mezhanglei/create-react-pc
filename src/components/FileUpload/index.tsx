@@ -14,6 +14,7 @@ export interface FileUploadProps extends Omit<UploadProps, 'onChange'> {
   maxSize?: number; // 每个文件的限制上传大小
   value?: Array<FileItem>; // 赋值给defaultFileList
   onChange?: (data: Array<FileItem>) => void; // 手动上传时的回调
+  uploadCallback?: (data: any) => any; // 上传请求函数回调
 }
 const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
 
@@ -30,6 +31,7 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
     multiple = true,
     children,
     formdataKey = 'file',
+    uploadCallback,
     ...rest
   } = props;
 
@@ -101,10 +103,10 @@ const FileUpload = React.forwardRef<any, FileUploadProps>((props, ref) => {
           updateFileList(file, { percent: complete });
         }
       }).then((res) => {
-        // TODO: 获取fileId
         const data = res.data;
+        const params = uploadCallback ? uploadCallback(data) : {};
         // @ts-ignore
-        updateFileList(file, { status: 'success' });
+        updateFileList(file, { status: 'success', ...params });
       }).catch(() => {
         updateFileList(file, { status: 'error' });
         message.error(`${file.name}上传失败`);
