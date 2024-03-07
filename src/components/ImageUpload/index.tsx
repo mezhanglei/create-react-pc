@@ -65,9 +65,10 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
   const updateFileList = (file: RcFile, params: Partial<FileItem>) => {
     setFileList((old) => {
       const cloneData = old?.length ? [...old] : [];
-      const index = old.indexOf(file) > -1 ? old?.indexOf(file) : cloneData?.length;
+      const oldIndex = cloneData.findIndex((item) => item.uid === file.uid);
+      const index = oldIndex > -1 ? oldIndex : cloneData?.length;
       if (file) {
-        cloneData[index] = file;
+        cloneData[index] = { ...file, ...params };
       }
       return cloneData;
     });
