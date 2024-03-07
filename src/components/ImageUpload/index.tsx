@@ -63,19 +63,6 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     }
   };
 
-  // 更新fileList
-  const updateFileList = (file: RcFile, params: Partial<FileItem>) => {
-    setFileList((old) => {
-      const cloneData = old?.length ? [...old] : [];
-      const oldIndex = cloneData.findIndex((item) => item.uid === file.uid);
-      const index = oldIndex > -1 ? oldIndex : cloneData?.length;
-      if (file) {
-        cloneData[index] = { ...file, ...params };
-      }
-      return cloneData;
-    });
-  };
-
   // 远程上传
   const UploadProps: UploadProps = {
     onRemove: (file) => {
@@ -93,6 +80,9 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
     },
     customRequest: async (option) => {
       const file = option?.file as RcFile;
+      if (!file) return;
+      const cloneData = [...fileList];
+      const insertIndex = cloneData?.length;
       const formdata = objectToFormData(data);
       formdata.append(formdataKey, file);
       setLoading(true);
@@ -102,15 +92,27 @@ const ImageUpload = React.forwardRef<any, ImageUploadProps>((props, ref) => {
         headers: headers,
         onUploadProgress: (event: any) => {
           const complete = (event.loaded / event.total * 100 | 0);
-          updateFileList(file, { percent: complete });
+          cloneData[insertIndex] = { ...file, percent: complete };
+          setFileList(cloneData);
         }
       }).then((res) => {
         const data = res.data;
         const params = uploadCallback ? uploadCallback(data) : {};
-        // @ts-ignore
-        updateFileList(file, { status: 'success', ...params });
+        cloneData[insertIndex] = { ...file, status: 'success', ...params };
+        if (!cloneData[insertIndex].url) {
+          getBase64(file).then((url) => {
+            cloneData[insertIndex].thumbUrl = url;
+          }).finally(() => {
+            onChange && onChange(cloneData);
+            setFileList(cloneData);
+          });
+        } else {
+          onChange && onChange(cloneData);
+          setFileList(cloneData);
+        }
       }).catch(() => {
-        updateFileList(file, { status: 'error' });
+        cloneData[insertIndex] = { ...file, status: 'error' };
+        setFileList(cloneData);
         message.error(`${file.name}上传失败`);
       }).finally(() => {
         setLoading(false);
