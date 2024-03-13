@@ -14,9 +14,14 @@ const CustomTableCell = (props: any) => {
   return (
     <TableCell key={name} {...restProps}>
       {
-        React.isValidElement(formControl) ?
+        formControl ?
           <Form.Item {...restProps} label="" name={name}>
-            {hidden === true ? null : ({ bindProps }: any) => React.cloneElement(formControl, bindProps)}
+            {hidden === true ?
+              null :
+              (React.isValidElement(formControl)
+                ? ({ bindProps }: any) => React.cloneElement(formControl, bindProps)
+                : formControl
+              )}
           </Form.Item>
           : children
       }
