@@ -1,12 +1,13 @@
 import { Modal, ModalProps } from 'antd';
-import React, { ReactNode } from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './style.less';
 
-export interface CustomModalProps extends ModalProps {
-  displayElement?: ((showModal: () => any) => ReactNode) | ReactNode;
-  onOk?: (closeModal: any) => void | Promise<void>;
-  onCancel?: (closeModal: any) => void | Promise<void>;
+export interface CustomModalProps {
+  displayElement?: ((showModal: () => void) => React.ReactElement) | React.ReactElement;
+  onOk?: (closeModal: () => void) => void | Promise<void>;
+  onCancel?: (closeModal: () => void) => void | Promise<void>;
+  modalProps?: ModalProps;
+  children?: React.ReactNode;
 }
 
 // 简化使用弹窗组件
@@ -16,13 +17,17 @@ const CustomModal = (props: CustomModalProps) => {
     onCancel,
     onOk,
     displayElement,
+    modalProps,
     children,
     ...rest
   } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
-  const showModal = () => {
+  const showModal = async () => {
+    if (typeof displayElement !== 'function') {
+      displayElement?.props?.onClick?.();
+    }
     setVisible(true);
   };
 
@@ -30,7 +35,7 @@ const CustomModal = (props: CustomModalProps) => {
     setVisible(false);
   };
 
-  const handleCancel = async (e: any) => {
+  const handleCancel = async () => {
     if (typeof onCancel == 'function') {
       onCancel(closeModal);
     } else {
@@ -38,7 +43,7 @@ const CustomModal = (props: CustomModalProps) => {
     }
   };
 
-  const handleOk = async (e: any) => {
+  const handleOk = async () => {
     if (typeof onOk == 'function') {
       onOk(closeModal);
     } else {
@@ -50,10 +55,9 @@ const CustomModal = (props: CustomModalProps) => {
     <>
       {
         React.isValidElement(displayElement) ?
-          React.cloneElement(displayElement, { onClick: showModal } as any)
+          React.cloneElement(displayElement, { onClick: showModal, ...rest } as React.Attributes)
           :
-          typeof displayElement === 'function' ?
-            displayElement(showModal) : null
+          typeof displayElement === 'function' ? displayElement(showModal) : displayElement
       }
       <Modal
         destroyOnClose
@@ -62,10 +66,10 @@ const CustomModal = (props: CustomModalProps) => {
         onCancel={handleCancel}
         onOk={handleOk}
         maskClosable={false} //默认点击蒙层不关闭弹窗
-        {...rest}
+        {...modalProps}
       >
         {children}
-      </Modal >
+      </Modal>
     </>
   );
 };
