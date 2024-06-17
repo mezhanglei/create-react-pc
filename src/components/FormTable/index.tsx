@@ -5,7 +5,7 @@ import { TableCell } from "./components";
 import classNames from 'classnames';
 import './index.less';
 import SvgIcon from '@/components/SvgIcon';
-import { Form, FormProps, SimpleForm, joinFormPath, useSimpleForm } from "@simpleform/render";
+import { Form, SimpleForm, joinFormPath, useSimpleForm } from "@simpleform/render";
 import { useTableData } from "./utils";
 import { FormTableProps } from "./types";
 
@@ -58,7 +58,7 @@ const FormTable = React.forwardRef<SimpleForm, FormTableProps>((props, ref) => {
 
   useImperativeHandle(ref, () => tableForm);
 
-  const onValuesChange: FormProps['onValuesChange'] = (_, values) => {
+  const onValuesChange = (_, values) => {
     setDataSource(values);
   };
 
