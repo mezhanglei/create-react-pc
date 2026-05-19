@@ -3,7 +3,7 @@ import loadable from "./loadable";
 export const DemoRoutes = [
   {
     path: "/",
-    component: loadable(() => import('@/pages/demo1/index'))
+    component: loadable(() => import('@/pages/demo2/index'))
   },
   {
     path: "/demo1",

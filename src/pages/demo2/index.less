@@ -1,0 +1,38 @@
+.wrap {
+  display: flex;
+  align-items: start;
+  width: 1200px;
+}
+
+.btns {
+  margin-right: 20px;
+}
+
+.btn {
+  margin-bottom: 10px;
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  color: #fff;
+  background: #6363f5;
+  cursor: pointer;
+
+  &.disabled {
+    background: #9696ab;
+    cursor: not-allowed;
+  }
+}
+
+.table {
+  border-collapse: collapse;
+}
+
+.cell {
+  margin: 0;
+  padding: 0;
+}
+
+.cell.active {
+  background: #6363f5;
+}

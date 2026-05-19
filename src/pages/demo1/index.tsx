@@ -15,95 +15,103 @@ export default function Demo5(props) {
     }
   };
 
-  const properties = {
-    name1: {
+  const widgetList = [
+    {
       label: "只读",
+      name: 'name1',
       readOnly: true,
       readOnlyRender: "只读选项制度选项",
       type: 'Input',
       props: {}
     },
-    name3: {
-      // type: '',
-      // props: {},
-      properties: [{
+    {
+      children: [{
         label: 'list[0]',
+        name: 'list[0]',
         rules: [{ required: true, message: 'list[0] empty' }],
         initialValue: { label: 'option1', value: '1', key: '1' },
         type: 'Select',
         props: {
           labelInValue: true,
           style: { width: '100%' },
-          children: [
-            { type: 'Select.Option', props: { key: 1, value: '1', children: 'option1' } },
-            { type: 'Select.Option', props: { key: 2, value: '2', children: 'option2' } }
+          options: [
+            { label: 'option1', value: '1' },
+            { label: 'option2', value: '2' },
           ]
         }
       }, {
         label: 'list[1]',
+        name: 'list[1]',
         rules: [{ required: true, message: 'list[1] empty' }],
         type: 'Select',
         props: {
           labelInValue: true,
           style: { width: '100%' },
-          children: [
-            { type: 'Select.Option', props: { key: 1, value: '1', children: 'option1' } },
-            { type: 'Select.Option', props: { key: 2, value: '2', children: 'option2' } }
+          options: [
+            { label: 'option1', value: '1' },
+            { label: 'option2', value: '2' },
           ]
         }
       }]
     },
-    name4: {
-      // type: '',
-      // props: {},
-      properties: {
-        first: {
+    {
+      children: [
+        {
           label: 'first',
+          name: 'first',
           rules: [{ required: true, message: 'first empty' }],
           type: 'Select',
           props: {
             style: { width: '100%' },
-            children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: 'option1' } }]
+            options: [
+              { label: 'option1', value: '1' },
+              { label: 'option2', value: '2' },
+            ]
           }
         },
-        second: {
+        {
           label: 'second',
+          name: 'second',
           rules: [{ required: true, message: 'second empty' }],
           type: 'Select',
           props: {
             style: { width: '100%' },
-            children: [{ type: 'Select.Option', props: { key: 1, value: '1', children: 'option1' } }]
+            options: [
+              { label: 'option1', value: '1' },
+              { label: 'option2', value: '2' },
+            ]
           }
         }
-      }
+      ]
     },
-    name5: {
+    {
       label: 'name5',
+      name: 'name5',
       initialValue: { span: 12 },
       valueSetter: "{{(value)=> (value && value['span'])}}",
       valueGetter: "{{(value) => ({span: value})}}",
       type: 'Select',
       props: {
         style: { width: '100%' },
-        children: [
-          { type: 'Select.Option', props: { key: 1, value: 12, children: 'option1' } },
-          { type: 'Select.Option', props: { key: 2, value: 6, children: 'option2' } },
-          { type: 'Select.Option', props: { key: 3, value: 4, children: 'option3' } }
+        options: [
+          { label: 'option1', value: '1' },
+          { label: 'option2', value: '2' },
         ]
       }
     },
-    name6: {
+    {
       label: 'checkbox',
+      name: 'checkbox',
       valueProp: 'checked',
       initialValue: true,
       rules: [{ required: true, message: 'checkbox empty' }],
       type: 'Checkbox',
       props: {
         style: { width: '100%' },
-        children: 'option'
-      }
+      },
+      children: 'option'
     },
-  };
+  ];
 
   const form = useSimpleForm();
   // const formrender = useSimpleFormRender();
@@ -119,7 +127,7 @@ export default function Demo5(props) {
       <FormRender
         form={form}
         // formrender={formrender}
-        properties={properties}
+        widgetList={widgetList}
         watch={watch} />
       <div style={{ marginLeft: '120px' }}>
         <Button onClick={onSubmit}>submit</Button>

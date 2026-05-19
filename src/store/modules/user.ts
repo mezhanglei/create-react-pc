@@ -1,5 +1,4 @@
 import { StateCreator } from 'zustand';
-import { Store } from "../createStore";
 import { UserInfo } from '@/services/account/interface';
 import { getUserInfo } from '@/services/account';
 // import withNameSpace from '../withNamespace';
@@ -17,8 +16,8 @@ const initialState = {
 };
 
 // 账户信息
-const createUser: StateCreator<
-  Store,
+const createUserSlice: StateCreator<
+  UserStore,
   [],
   [
     // ["zustand/persist", UserStore]
@@ -38,4 +37,4 @@ const createUser: StateCreator<
   },
 });
 
-export default createUser;
+export default createUserSlice;
